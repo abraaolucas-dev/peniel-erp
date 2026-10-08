@@ -41,7 +41,7 @@
             </div>
             <nav class="flex-1 px-2 space-y-1 mt-2 overflow-y-auto pb-6">
                 <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-4 px-4">Geral</div>
-                <a href="index.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📈 Dashboard</a>
+                <a href="dashboard.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📈 Dashboard</a>
                 
                 <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Captação</div>
                 <a href="painel.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📥 Leads Typebot</a>
@@ -70,7 +70,7 @@
                     <p class="text-slate-500">Status ao vivo da equipe docente e agendamento escolar.</p>
                 </div>
                 <div class="bg-white px-4 py-2 rounded-lg border border-slate-200 shadow-sm text-sm font-bold text-slate-700 flex items-center gap-2">
-                    <span>🕒</span> Horário: <?php echo date('H:i'); ?>
+                    <span>🕒</span> Horário: <span id="current-time">--:--</span>
                 </div>
             </header>
 
@@ -191,9 +191,21 @@
         </main>
     </div>
 
-    <!-- Script de Inicialização do Calendário -->
+    <!-- Script de Inicialização do Calendário e Relógio -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Relógio Dinâmico
+            const timeEl = document.getElementById('current-time');
+            if(timeEl) {
+                const updateTime = () => {
+                    const now = new Date();
+                    timeEl.textContent = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                };
+                updateTime();
+                setInterval(updateTime, 60000); // Atualiza a cada 1 minuto
+            }
+
+            // Inicialização do Calendário
             var calendarEl = document.getElementById('calendario-escolar');
             
             var eventosSalvos = JSON.parse(localStorage.getItem('eventosPeniel')) || [
@@ -298,7 +310,7 @@
                         <span>Modo Gestor Master Ativo (Tela Cheia Executiva)</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <a href="configuracoes.php?modo_gestor=1" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                        <a href="configuracoes.html?modo_gestor=1" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
                             &larr; Voltar à Central de Bordo
                         </a>
                         <button onclick="sairModoGestorGlobal()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-xl text-xs font-bold transition shadow-sm">
@@ -314,7 +326,7 @@
     function sairModoGestorGlobal() {
         if(confirm("Deseja realmente encerrar a sessão de Gestor Master e bloquear o painel?")) {
             localStorage.removeItem('peniel_modo_gestor');
-            window.location.href = 'configuracoes.php';
+            window.location.href = 'configuracoes.html';
         }
     }
 </script>
