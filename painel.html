@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Interno | Peniel Christian School</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { marinho: '#003057', laranja: '#E85D04' },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], heading: ['Montserrat', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- Menu Lateral Interno -->
+        <!-- Menu Lateral Interno -->
+        <aside class="w-64 bg-marinho text-white flex flex-col hidden md:flex">
+            <div class="p-6">
+                <h1 class="font-heading text-2xl font-bold tracking-tight">PENIEL <span class="text-sm font-sans font-normal block text-blue-300">Sistema Interno</span></h1>
+            </div>
+            <nav class="flex-1 px-2 space-y-1 mt-2 overflow-y-auto pb-6">
+                
+                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-4 px-4">Captação</div>
+                <a href="painel.php" class="block px-4 py-2.5 bg-blue-900 rounded-lg font-medium text-white shadow-inner">📥 Leads Typebot</a>
+                
+                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Secretaria</div>
+                <a href="matriculas.php" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📝 Matrículas</a>
+                <a href="fichas.php" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">👥 Fichas (Alunos/Pais)</a>
+                <a href="rematricula.php" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">🔄 Rematrícula</a>
+
+                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Acadêmico</div>
+                <a href="calendario.php" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📅 Calendário Escolar</a>
+                <a href="notas.php" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📊 Notas e Avaliações</a>
+
+                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Administrativo</div>
+                <a href="financeiro.php" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">💰 Gestão Financeira</a>
+                <a href="configuracoes.php" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">⚙️ Configurações</a>
+            
+            </nav>
+        </aside>
+
+        <!-- Área Principal de Conteúdo -->
+        <main class="flex-1 overflow-y-auto p-6 md:p-10">
+            <header class="flex justify-between items-center mb-8">
+                <h2 class="font-heading text-3xl font-bold text-slate-800">Gestão de Captação (2027)</h2>
+                <div class="text-sm text-slate-500 font-medium">Secretaria</div>
+            </header>
+
+            <!-- Tabela de Dados -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                    <h3 class="font-semibold text-lg text-slate-800">Leads Recebidos via Typebot</h3>
+                    <span id="contador" class="bg-blue-100 text-marinho py-1 px-3 rounded-full text-xs font-bold tracking-wide">
+                        A carregar...
+                    </span>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 text-slate-500 border-b border-slate-200">
+                            <tr>
+                                <th class="px-6 py-4 font-semibold">Data e Hora</th>
+                                <th class="px-6 py-4 font-semibold">Nome do Aluno</th>
+                                <th class="px-6 py-4 font-semibold">Idade</th>
+                                <th class="px-6 py-4 font-semibold">Série</th>
+                                <th class="px-6 py-4 font-semibold text-right">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpo-tabela" class="divide-y divide-slate-100">
+                            <tr>
+                                <td colspan="5" class="px-6 py-12 text-center text-slate-500 font-medium">
+                                    <span class="animate-pulse">A buscar dados no banco...</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Script que faz o navegador buscar os dados com segurança -->
+    <script>
+        // Configurações do Supabase
+        const apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4amRtaHJsdWppYWprb3VkdWhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjcwNTcsImV4cCI6MjA5NzQwMzA1N30.EebEMiPS5NjfltzchFH--_HWSKVDhnmhJsa2YtKBzl8';
+        const url = 'https://fxjdmhrlujiajkouduhg.supabase.co/rest/v1/mensagens_typebot?select=*&order=criado_at.desc';
+
+        async function carregarDados() {
+            try {
+                // Navegador conecta diretamente ao HTTPS do Supabase
+                const resposta = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': apiKey,
+                        'Authorization': 'Bearer ' + apiKey,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const matriculas = await resposta.json();
+                
+                // Atualiza o contador
+                document.getElementById('contador').innerText = matriculas.length + ' Registros';
+
+                const tbody = document.getElementById('corpo-tabela');
+                tbody.innerHTML = ''; // Limpa a mensagem "A buscar..."
+
+                if (matriculas.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-12 text-center text-slate-500 font-medium">Nenhum lead recebido ainda. Faça um teste no Typebot!</td></tr>';
+                    return;
+                }
+
+                // Preenche as linhas
+                matriculas.forEach(linha => {
+                    // Formata a Data
+                    let dataFormatada = 'N/D';
+                    if(linha.criado_at) {
+                        const data = new Date(linha.criado_at);
+                        dataFormatada = data.toLocaleDateString('pt-BR') + ' ' + data.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+                    }
+
+                    // Prepara o Telefone para o WhatsApp
+                    const telefone = linha.telefone_responsavel || '';
+                    const telefoneLimpo = telefone.replace(/[^0-9]/g, '');
+
+                    let botaoWhats = '<span class="text-slate-400 text-xs">Sem contato</span>';
+                    if (telefoneLimpo) {
+                        botaoWhats = `<a href="https://wa.me/55${telefoneLimpo}?text=Olá,%20somos%20da%20secretaria%20da%20Peniel%20Christian%20School!" target="_blank" class="inline-flex items-center justify-center bg-green-500 text-white px-4 py-2 rounded-lg font-medium text-sm hover:bg-green-600 transition shadow-sm">💬 Contatar Pai/Mãe</a>`;
+                    }
+
+                    // Cria a linha na tabela
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-slate-50 transition duration-150 group';
+                    tr.innerHTML = `
+                        <td class="px-6 py-4 text-slate-500">${dataFormatada}</td>
+                        <td class="px-6 py-4 font-medium text-slate-800">${linha.nome_aluno || '-'}</td>
+                        <td class="px-6 py-4 text-slate-600">${linha.idade_aluno || '-'} anos</td>
+                        <td class="px-6 py-4 text-slate-600"><span class="bg-slate-100 border border-slate-200 text-slate-700 py-1 px-2 rounded-md text-xs font-medium">${linha.serie_pretendida || '-'}</span></td>
+                        <td class="px-6 py-4 text-right">${botaoWhats}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+            } catch (erro) {
+                console.error("Erro ao puxar dados:", erro);
+                document.getElementById('corpo-tabela').innerHTML = '<tr><td colspan="5" class="px-6 py-12 text-center text-red-500 font-medium">Falha na conexão com o Supabase. Verifique a sua internet.</td></tr>';
+            }
+        }
+
+        // Executa a busca assim que a página abrir
+        window.onload = carregarDados;
+    </script>
+</body>
+</html>

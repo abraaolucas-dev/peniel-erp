@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financeiro e Estoque | Peniel Christian School</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { marinho: '#003057', laranja: '#E85D04' }, fontFamily: { sans: ['Inter', 'sans-serif'], heading: ['Montserrat', 'sans-serif'] } } }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- Menu Lateral -->
+        <aside id="menu-lateral" class="w-64 bg-marinho text-white flex flex-col hidden md:flex transition-all z-10">
+            <div class="p-6">
+                <h1 class="font-heading text-2xl font-bold tracking-tight">PENIEL <span class="text-sm font-sans font-normal block text-blue-300">Sistema Interno</span></h1>
+            </div>
+            <nav class="flex-1 px-2 space-y-1 mt-2 overflow-y-auto pb-6">
+                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-4 px-4">Geral</div>
+                <a href="dashboard.php" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📈 Dashboard</a>
+                
+                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Captação</div>
+                <a href="painel.php" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📥 Leads Typebot</a>
+                
+                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Secretaria</div>
+                <a href="matriculas.php" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📝 Matrículas</a>
+                <a href="fichas.php" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">👥 Fichas (Alunos/Pais)</a>
+                <a href="rematricula.php" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">🔄 Rematrícula</a>
+
+                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Acadêmico</div>
+                <a href="calendario.php" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📅 Calendário e Equipe</a>
+                <a href="notas.php" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📊 Notas e Avaliações</a>
+
+                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Administrativo</div>
+                <a href="financeiro.php" class="block px-4 py-2.5 bg-blue-900 rounded-lg font-medium text-white shadow-inner">💰 Financeiro & Estoque</a>
+                <a href="configuracoes.php" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">⚙️ Configurações / ADM</a>
+            </nav>
+        </aside>
+
+        <!-- Área Principal -->
+        <main class="flex-1 overflow-y-auto p-6 md:p-8 flex flex-col gap-6 relative">
+            
+            <header class="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <div>
+                    <h2 class="font-heading text-3xl font-bold text-slate-800">Centro de Custos e Receitas</h2>
+                    <p class="text-slate-500 text-sm">Gerencie cobranças, estoque de materiais e fornecedores da escola.</p>
+                </div>
+                
+                <div class="flex bg-slate-100 p-1 rounded-xl border border-slate-200 w-full lg:w-auto">
+                    <button onclick="mudarAbaPrincipal('financeiro')" id="btnAbaFinanceiro" class="flex-1 lg:flex-none px-6 py-2 rounded-lg font-bold text-sm bg-white text-marinho shadow-sm transition border border-slate-200">💰 Fluxo Financeiro</button>
+                    <button onclick="mudarAbaPrincipal('estoque')" id="btnAbaEstoque" class="flex-1 lg:flex-none px-6 py-2 rounded-lg font-bold text-sm text-slate-500 hover:text-slate-800 transition border border-transparent">📦 Materiais & Fornecedores</button>
+                </div>
+            </header>
+
+            <!-- ===================================================================== -->
+            <!-- MÓDULO 1: FLUXO FINANCEIRO E COBRANÇAS -->
+            <!-- ===================================================================== -->
+            <div id="moduloFinanceiro" class="space-y-6 block animate-fade-in">
+
+                <!-- BANNER DE AUTOMAÇÃO DE COBRANÇAS -->
+                <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-2xl shadow-sm border border-blue-100">🤖</div>
+                        <div>
+                            <h4 class="font-bold text-blue-900 text-base">Automação de Lembretes Ativada</h4>
+                            <p class="text-xs text-blue-700 mt-0.5">O sistema envia notificações de vencimento no WhatsApp do responsável <strong class="bg-blue-200 px-1 rounded">5 dias antes</strong> da data limite.</p>
+                        </div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="toggleAutomacao" checked onchange="atualizarStatusAutomacao()" class="sr-only peer">
+                        <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600 shadow-inner"></div>
+                    </label>
+                </div>
+                
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="flex items-center gap-3 w-full md:w-auto">
+                        <select id="filtroMes" onchange="filtrarPorMes()" class="w-full md:w-auto border border-slate-300 bg-white text-slate-700 rounded-xl px-4 py-2.5 font-bold shadow-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                            <option value="todos">Todos os Meses (Geral)</option>
+                            <option value="setembro" selected>Setembro / 2026</option>
+                            <option value="agosto">Agosto / 2026</option>
+                        </select>
+                    </div>
+                    <button onclick="abrirModalNovaCobranca()" class="w-full md:w-auto bg-laranja hover:bg-orange-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm transition flex items-center justify-center gap-2">
+                        ➕ Nova Cobrança
+                    </button>
+                </div>
+
+                <!-- KPIs Dinâmicos (Calculados via JS) -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <button onclick="filtrarPorStatus('todos')" class="text-left bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-blue-500 hover:-translate-y-1 hover:shadow-md transition">
+                        <h3 class="text-slate-500 text-xs font-bold uppercase">Receita Total Prevista</h3>
+                        <div id="kpi-receita" class="text-2xl font-black text-slate-800 mt-1">Calculando...</div>
+                    </button>
+                    <button onclick="filtrarPorStatus('pago')" class="text-left bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-green-500 hover:-translate-y-1 hover:shadow-md transition">
+                        <h3 class="text-slate-500 text-xs font-bold uppercase">Faturas Pagas</h3>
+                        <div id="kpi-pagas" class="text-2xl font-black text-slate-800 mt-1">Calculando...</div>
+                    </button>
+                    <button onclick="filtrarPorStatus('pendente')" class="text-left bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-orange-500 hover:-translate-y-1 hover:shadow-md transition">
+                        <h3 class="text-slate-500 text-xs font-bold uppercase">A Vencer (Pendentes)</h3>
+                        <div id="kpi-pendentes" class="text-2xl font-black text-slate-800 mt-1">Calculando...</div>
+                    </button>
+                    <button onclick="filtrarPorStatus('atrasado')" class="text-left bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-red-500 hover:-translate-y-1 hover:shadow-md transition">
+                        <h3 class="text-slate-500 text-xs font-bold uppercase">Inadimplência</h3>
+                        <div id="kpi-atrasadas" class="text-2xl font-black text-red-600 mt-1">Calculando...</div>
+                    </button>
+                </div>
+
+                <!-- Tabela Financeira -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-4 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row justify-between items-center gap-3">
+                        <div class="flex gap-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0">
+                            <button onclick="filtrarPorStatus('todos')" class="btn-filtro-fin bg-marinho text-white px-4 py-2 rounded-lg text-xs font-bold shadow-sm whitespace-nowrap">Todos</button>
+                            <button onclick="filtrarPorStatus('pago')" class="btn-filtro-fin bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 px-4 py-2 rounded-lg text-xs font-bold transition whitespace-nowrap">Pagos</button>
+                            <button onclick="filtrarPorStatus('pendente')" class="btn-filtro-fin bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 px-4 py-2 rounded-lg text-xs font-bold transition whitespace-nowrap">Pendentes</button>
+                            <button onclick="filtrarPorStatus('atrasado')" class="btn-filtro-fin bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 px-4 py-2 rounded-lg text-xs font-bold transition whitespace-nowrap">Atrasados</button>
+                        </div>
+                        <div class="relative w-full sm:w-64">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔍</span>
+                            <input type="text" id="buscaFin" onkeyup="buscarFinanceiro()" placeholder="Buscar aluno ou fatura..." class="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm" id="tabelaFinanceiro">
+                            <thead class="bg-slate-50 text-slate-500 border-b border-slate-200 uppercase text-[10px] tracking-wider font-bold">
+                                <tr>
+                                    <th class="px-5 py-3">Aluno / Pagador</th>
+                                    <th class="px-5 py-3">Referência</th>
+                                    <th class="px-5 py-3 text-center">Valor</th>
+                                    <th class="px-5 py-3 text-center">Vencimento</th>
+                                    <th class="px-5 py-3 text-center">Status</th>
+                                    <th class="px-5 py-3 text-right">Ações de Cobrança</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                
+                                <!-- DADOS DE SETEMBRO -->
+                                <tr class="hover:bg-slate-50 transition linha-fin" data-status="pago" data-mes="setembro" data-valor="1250">
+                                    <td class="px-5 py-4"><p class="font-bold text-slate-800">Davi Lucas</p><p class="text-[10px] text-slate-400">Responsável: Carlos Lucas</p></td>
+                                    <td class="px-5 py-4 font-mono text-xs text-slate-500">Set/2026</td>
+                                    <td class="px-5 py-4 text-center font-bold text-slate-800">R$ 1.250,00</td>
+                                    <td class="px-5 py-4 text-center text-xs text-slate-500">05/09/2026</td>
+                                    <td class="px-5 py-4 text-center"><span class="bg-green-100 text-green-700 px-2.5 py-1 rounded text-[10px] font-bold uppercase">Pago</span></td>
+                                    <td class="px-5 py-4 text-right">
+                                        <button onclick="abrirModalRecibo('Carlos Lucas', 'R$ 1.250,00', 'Mensalidade Setembro/2026', '04/09/2026')" class="text-blue-600 border border-blue-200 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded font-bold text-xs transition">📄 Ver Recibo</button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition linha-fin" data-status="pago" data-mes="setembro" data-valor="1300">
+                                    <td class="px-5 py-4"><p class="font-bold text-slate-800">Marcos Paulo</p><p class="text-[10px] text-slate-400">Responsável: Juliana Paulo</p></td>
+                                    <td class="px-5 py-4 font-mono text-xs text-slate-500">Set/2026</td>
+                                    <td class="px-5 py-4 text-center font-bold text-slate-800">R$ 1.300,00</td>
+                                    <td class="px-5 py-4 text-center text-xs text-slate-500">08/09/2026</td>
+                                    <td class="px-5 py-4 text-center"><span class="bg-green-100 text-green-700 px-2.5 py-1 rounded text-[10px] font-bold uppercase">Pago</span></td>
+                                    <td class="px-5 py-4 text-right">
+                                        <button onclick="abrirModalRecibo('Juliana Paulo', 'R$ 1.300,00', 'Mensalidade Setembro/2026', '05/09/2026')" class="text-blue-600 border border-blue-200 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded font-bold text-xs transition">📄 Ver Recibo</button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition linha-fin" data-status="pendente" data-mes="setembro" data-valor="1100">
+                                    <td class="px-5 py-4"><p class="font-bold text-slate-800">Isabela Mendes</p><p class="text-[10px] text-slate-400">Responsável: Mariana Mendes</p></td>
+                                    <td class="px-5 py-4 font-mono text-xs text-slate-500">Set/2026</td>
+                                    <td class="px-5 py-4 text-center font-bold text-slate-800">R$ 1.100,00</td>
+                                    <td class="px-5 py-4 text-center text-xs text-slate-500">15/09/2026</td>
+                                    <td class="px-5 py-4 text-center"><span class="bg-orange-100 text-orange-700 px-2.5 py-1 rounded text-[10px] font-bold uppercase">Pendente</span></td>
+                                    <td class="px-5 py-4 text-right celula-acao-pendente"></td>
+                                </tr>
+
+                                <!-- DADOS DE AGOSTO -->
+                                <tr class="hover:bg-slate-50 transition linha-fin" data-status="pago" data-mes="agosto" data-valor="1250">
+                                    <td class="px-5 py-4"><p class="font-bold text-slate-800">Davi Lucas</p><p class="text-[10px] text-slate-400">Responsável: Carlos Lucas</p></td>
+                                    <td class="px-5 py-4 font-mono text-xs text-slate-500">Ago/2026</td>
+                                    <td class="px-5 py-4 text-center font-bold text-slate-800">R$ 1.250,00</td>
+                                    <td class="px-5 py-4 text-center text-xs text-slate-500">05/08/2026</td>
+                                    <td class="px-5 py-4 text-center"><span class="bg-green-100 text-green-700 px-2.5 py-1 rounded text-[10px] font-bold uppercase">Pago</span></td>
+                                    <td class="px-5 py-4 text-right">
+                                        <button onclick="abrirModalRecibo('Carlos Lucas', 'R$ 1.250,00', 'Mensalidade Agosto/2026', '02/08/2026')" class="text-blue-600 border border-blue-200 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded font-bold text-xs transition">📄 Ver Recibo</button>
+                                    </td>
+                                </tr>
+                                <tr class="bg-red-50/40 hover:bg-red-50 transition linha-fin" data-status="atrasado" data-mes="agosto" data-valor="1300">
+                                    <td class="px-5 py-4"><p class="font-bold text-slate-800">Pedro Souza</p><p class="text-[10px] text-slate-400">Responsável: Roberto Souza</p></td>
+                                    <td class="px-5 py-4 font-mono text-xs text-slate-500">Ago/2026</td>
+                                    <td class="px-5 py-4 text-center font-bold text-red-600">R$ 1.300,00</td>
+                                    <td class="px-5 py-4 text-center text-xs text-red-600 font-bold">10/08/2026</td>
+                                    <td class="px-5 py-4 text-center"><span class="bg-red-100 text-red-700 px-2.5 py-1 rounded text-[10px] font-bold uppercase">Atrasado</span></td>
+                                    <td class="px-5 py-4 text-right">
+                                        <button onclick="alert('Iniciando fluxo de renegociação via WhatsApp...')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded font-bold text-xs transition shadow-sm">Negociar Fatura</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div id="msgSemResultadosFin" class="hidden p-8 text-center text-slate-500 font-medium">Nenhuma cobrança encontrada com os filtros atuais.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================================================================== -->
+            <!-- MÓDULO 2: GESTÃO DE ESTOQUE E FORNECEDORES -->
+            <!-- ===================================================================== -->
+            <div id="moduloEstoque" class="space-y-6 hidden animate-fade-in">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-lg">📦 Controle de Suprimentos & Fornecedores</h3>
+                        <p class="text-xs text-slate-500">Gerencie materiais de limpeza, uso comum e expediente escolar.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm"><h3 class="text-slate-500 text-xs font-bold uppercase">Fornecedores Homologados</h3><div class="text-3xl font-black text-blue-900 mt-1">14</div></div>
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-b-4 border-b-orange-500"><h3 class="text-slate-500 text-xs font-bold uppercase">Estoque em Alerta</h3><div class="text-3xl font-black text-orange-600 mt-1">3 <span class="text-xs font-bold text-slate-400">Itens para reposição</span></div></div>
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm"><h3 class="text-slate-500 text-xs font-bold uppercase">Gasto Previsto (Mês)</h3><div class="text-3xl font-black text-slate-800 mt-1">R$ 4.200</div></div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-50 text-slate-500 border-b border-slate-200 uppercase text-[10px] tracking-wider font-bold">
+                                <tr>
+                                    <th class="px-5 py-3">Item / Produto</th>
+                                    <th class="px-5 py-3">Categoria</th>
+                                    <th class="px-5 py-3 text-center">Qtd. Atual</th>
+                                    <th class="px-5 py-3 text-center">Status</th>
+                                    <th class="px-5 py-3 text-right">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr class="hover:bg-slate-50 transition">
+                                    <td class="px-5 py-4"><p class="font-bold text-slate-800">Papel Chamex A4</p></td>
+                                    <td class="px-5 py-4 text-xs font-semibold text-slate-600">Material Escolar</td>
+                                    <td class="px-5 py-4 text-center font-bold text-slate-800">15 un</td>
+                                    <td class="px-5 py-4 text-center"><span class="bg-green-100 text-green-700 px-2.5 py-1 rounded text-[10px] font-bold uppercase">Estoque Bom</span></td>
+                                    <td class="px-5 py-4 text-right"><button onclick="abrirFichaMaterial('Papel Chamex A4', 'Material Escolar', 'Kalunga S/A', 15, 'bom')" class="text-marinho bg-slate-100 border border-slate-300 px-3 py-1.5 rounded font-bold text-xs hover:bg-slate-200 transition">Ficha Completa</button></td>
+                                </tr>
+                                <tr class="bg-orange-50/40">
+                                    <td class="px-5 py-4"><p class="font-bold text-slate-800">Desinfetante Pinho 5L</p></td>
+                                    <td class="px-5 py-4 text-xs font-semibold text-slate-600">Limpeza</td>
+                                    <td class="px-5 py-4 text-center font-bold text-orange-600">2 un</td>
+                                    <td class="px-5 py-4 text-center"><span class="bg-orange-100 text-orange-700 px-2.5 py-1 rounded text-[10px] font-bold uppercase animate-pulse">Repor Urgente</span></td>
+                                    <td class="px-5 py-4 text-right"><button onclick="abrirFichaMaterial('Desinfetante Pinho 5L', 'Limpeza', 'Distribuidora LimpaFácil', 2, 'baixo')" class="bg-laranja hover:bg-orange-600 text-white px-3 py-1.5 rounded font-bold text-xs transition">Reposição (Ficha)</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- MODAIS DO SISTEMA -->
+    <!-- ========================================================================= -->
+
+    <!-- MODAL: NOVA COBRANÇA -->
+    <div id="modalNovaCobranca" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden flex justify-center items-center z-[80] p-4">
+        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+            <div class="p-5 border-b border-slate-100 bg-marinho text-white flex justify-between items-center">
+                <h3 class="font-bold text-lg">➕ Gerar Nova Fatura</h3>
+                <button onclick="fecharModalNovaCobranca()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div><label class="block text-xs font-bold text-slate-700 mb-1">Selecionar Aluno</label><select class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 bg-white"><option>Davi Lucas</option><option>Isabela Mendes</option></select></div>
+                <div><label class="block text-xs font-bold text-slate-700 mb-1">Valor (R$)</label><input type="text" placeholder="1.250,00" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"></div>
+            </div>
+            <div class="p-5 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
+                <button onclick="fecharModalNovaCobranca()" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 font-bold rounded-lg text-sm transition hover:bg-slate-100">Cancelar</button>
+                <button onclick="fecharModalNovaCobranca(); alert('Nova Fatura gerada com sucesso!');" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg text-sm shadow-sm transition">Gerar Boleto</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: RECIBO OFICIAL TIMBRADO E AUTENTICADO -->
+    <div id="modalRecibo" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden flex justify-center items-center z-[90] p-4">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-fade-in relative">
+            <div class="absolute inset-0 flex justify-center items-center opacity-[0.03] pointer-events-none z-0"><span class="text-9xl font-black transform -rotate-45">PENIEL</span></div>
+            <div class="p-6 bg-marinho text-white text-center relative z-10 border-b-4 border-laranja">
+                <div class="flex justify-center mb-3"><div class="w-14 h-14 bg-white rounded-full flex items-center justify-center text-marinho text-3xl shadow-inner font-bold font-heading">P</div></div>
+                <h3 class="font-heading font-black text-xl tracking-widest uppercase">Peniel Christian School</h3>
+                <p class="text-[10px] text-blue-200 mt-1 uppercase tracking-widest">Educação por Princípios</p>
+                <p class="text-[10px] text-blue-400 mt-2 font-mono">CNPJ: 32.145.987/0001-00</p>
+            </div>
+            <div class="py-3 text-center border-b border-dashed border-slate-300 bg-slate-50 relative z-10">
+                <h4 class="font-bold text-slate-600 tracking-widest text-sm uppercase">Comprovante de Pagamento</h4>
+            </div>
+            <div class="p-6 space-y-4 text-sm font-medium text-slate-700 relative z-10">
+                <div class="flex justify-between border-b border-slate-100 pb-2"><span class="text-slate-500 uppercase text-[10px] tracking-wider font-bold">Pagador:</span> <strong id="reciboNome" class="text-base text-slate-900">...</strong></div>
+                <div class="flex justify-between border-b border-slate-100 pb-2"><span class="text-slate-500 uppercase text-[10px] tracking-wider font-bold">Referência:</span> <strong id="reciboRef">...</strong></div>
+                <div class="flex justify-between border-b border-slate-100 pb-2"><span class="text-slate-500 uppercase text-[10px] tracking-wider font-bold">Data Pagto:</span> <strong id="reciboData">...</strong></div>
+                <div class="flex flex-col items-center pt-2 pb-1 bg-green-50 rounded-lg border border-green-100 mt-2">
+                    <span class="text-green-700 uppercase text-[10px] tracking-widest font-bold">Valor Recebido</span> 
+                    <strong class="text-3xl text-green-700" id="reciboValor">...</strong>
+                </div>
+            </div>
+            <div class="px-6 pb-6 relative z-10">
+                <div class="bg-slate-100 border border-slate-200 rounded-lg p-3 text-center">
+                    <p class="text-[9px] uppercase font-bold text-slate-500 tracking-widest mb-1">Chave de Autenticação Digital</p>
+                    <p class="font-mono text-sm font-black text-slate-800 tracking-widest" id="reciboCodigo">GERANDO...</p>
+                    <p class="text-[9px] text-slate-400 mt-1 leading-tight">Documento eletrônico imutável. Rasuras anulam a validade.</p>
+                </div>
+            </div>
+            <div class="p-4 bg-slate-800 flex justify-between gap-3 relative z-10">
+                <button onclick="document.getElementById('modalRecibo').classList.add('hidden')" class="px-4 text-center bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-bold text-xs py-3 transition">Fechar</button>
+                <button onclick="alert('Recibo enviado por WhatsApp!');" class="flex-1 text-center bg-green-600 hover:bg-green-700 text-white rounded-lg font-bold text-xs py-3 shadow-sm transition">Compartilhar PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: FICHA DO MATERIAL / FORNECEDOR E GERADOR DE PEDIDOS -->
+    <div id="modalFichaMaterial" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden flex justify-center items-center z-[85] p-4">
+        <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-fade-in max-h-[90vh]">
+            <div class="p-5 border-b border-blue-900 bg-marinho text-white flex justify-between items-center shrink-0">
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl" id="iconeFichaMat">📦</span>
+                    <div>
+                        <h3 class="font-bold text-lg font-heading" id="tituloFichaMat">Nome do Item</h3>
+                        <p class="text-blue-300 text-xs" id="subFichaMat">Categoria</p>
+                    </div>
+                </div>
+                <button onclick="fecharFichaMaterial()" class="text-white hover:text-red-300 font-bold text-3xl leading-none">&times;</button>
+            </div>
+            <div class="p-6 bg-slate-50/50 flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 overflow-y-auto">
+                <div class="space-y-4">
+                    <h4 class="font-bold text-slate-800 border-b border-slate-200 pb-1">Gestão de Estoque</h4>
+                    <div class="bg-white p-5 border border-slate-200 rounded-xl shadow-sm">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-slate-500 uppercase">Quantidade Atual</span>
+                            <span class="text-2xl font-black text-slate-800" id="qtdFichaMat">15 un</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2 mb-2"><div class="bg-blue-600 h-2 rounded-full transition-all duration-1000" style="width: 70%" id="barraFichaMat"></div></div>
+                        <p class="text-[10px] text-slate-400 font-bold">ESTOQUE MÍNIMO: 5 unidades</p>
+                    </div>
+                    
+                    <div class="bg-orange-50 border border-orange-200 rounded-xl p-4 shadow-sm">
+                        <h5 class="font-bold text-orange-900 text-sm mb-3">🛍️ Gerador de Pedido (WhatsApp)</h5>
+                        <div class="flex items-center gap-2 mb-3">
+                            <input type="number" id="inputReporQtd" value="10" min="1" class="w-16 border border-slate-300 rounded px-2 py-1 text-sm font-bold text-center">
+                            <span class="text-xs text-slate-600 font-bold">Unidades a solicitar</span>
+                        </div>
+                        <textarea id="inputReporObs" rows="2" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs mb-3" placeholder="Observações (ex: entregar na portaria 2)"></textarea>
+                        <button onclick="enviarPedidoFicha()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-lg shadow-sm text-xs transition flex items-center justify-center gap-2">
+                            <span>📱</span> Enviar ao Fornecedor
+                        </button>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <h4 class="font-bold text-slate-800 border-b border-slate-200 pb-1">Ficha do Fornecedor</h4>
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 shadow-sm">
+                        <p class="font-bold text-blue-900 text-base" id="fornecedorFichaMat">Kalunga S/A</p>
+                        <p class="text-xs text-blue-800 font-mono mt-1">CNPJ: 11.111.111/0001-11</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ========================================================================= -->
+    <!-- SCRIPTS DE LÓGICA (CÁLCULO DINÂMICO DE KPIS) E MODO GESTOR MASTER -->
+    <!-- ========================================================================= -->
+    <script>
+        // --- 1. LÓGICA DO ROBÔ DE COBRANÇAS ---
+        function atualizarStatusAutomacao() {
+            const isAtivo = document.getElementById('toggleAutomacao').checked;
+            const celulas = document.querySelectorAll('.celula-acao-pendente');
+            
+            if(isAtivo) {
+                celulas.forEach(c => {
+                    c.innerHTML = `<span class="inline-flex items-center gap-1 bg-green-50 border border-green-200 text-green-700 px-3 py-1.5 rounded-lg text-[10px] font-bold shadow-sm whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> 🤖 Programado p/ 10/09</span>`;
+                });
+            } else {
+                celulas.forEach(c => {
+                    c.innerHTML = `<button onclick="alert('📨 Lembrete enviado!')" class="text-slate-600 border border-slate-200 bg-white hover:bg-slate-100 px-4 py-2 rounded-lg font-bold text-xs transition shadow-sm whitespace-nowrap">Enviar Lembrete</button>`;
+                });
+            }
+        }
+
+        // --- 2. MOTOR DE CÁLCULO DINÂMICO DE KPIS ---
+        let statusAtivoAtual = 'todos';
+        let mesAtivoAtual = 'setembro';
+
+        function calcularKPIs() {
+            let totalReceita = 0;
+            let totalPago = 0;
+            let totalPendente = 0;
+            let totalAtrasado = 0;
+
+            // Busca todas as linhas da tabela para somar
+            const linhas = document.querySelectorAll('.linha-fin');
+            
+            linhas.forEach(linha => {
+                const mesLinha = linha.getAttribute('data-mes');
+                const statusLinha = linha.getAttribute('data-status');
+                const valor = parseFloat(linha.getAttribute('data-valor'));
+
+                // Soma os valores APENAS se o mês bater com o filtro global de mês
+                if (mesAtivoAtual === 'todos' || mesLinha === mesAtivoAtual) {
+                    totalReceita += valor;
+                    if (statusLinha === 'pago') totalPago += valor;
+                    if (statusLinha === 'pendente') totalPendente += valor;
+                    if (statusLinha === 'atrasado') totalAtrasado += valor;
+                }
+            });
+
+            // Formatação para Real (BRL)
+            const fmt = (val) => val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+            // Atualiza o HTML dos Cards
+            const textoPeriodo = mesAtivoAtual === 'todos' ? 'No ano letivo' : 'Neste mês';
+            document.getElementById('kpi-receita').innerHTML = `${fmt(totalReceita)} <span class="text-xs font-normal text-slate-400 block">${textoPeriodo}</span>`;
+            document.getElementById('kpi-pagas').innerHTML = `${fmt(totalPago)} <span class="text-xs font-normal text-green-500 block">Recebido</span>`;
+            document.getElementById('kpi-pendentes').innerHTML = `${fmt(totalPendente)} <span class="text-xs font-normal text-slate-400 block">A Vencer</span>`;
+            document.getElementById('kpi-atrasadas').innerHTML = `${fmt(totalAtrasado)} <span class="text-xs font-normal text-red-400 block">Inadimplência</span>`;
+        }
+
+        // --- 3. FILTROS E ABAS ---
+        function mudarAbaPrincipal(aba) {
+            const btnFin = document.getElementById('btnAbaFinanceiro');
+            const btnEst = document.getElementById('btnAbaEstoque');
+            const modFin = document.getElementById('moduloFinanceiro');
+            const modEst = document.getElementById('moduloEstoque');
+
+            if(aba === 'financeiro') {
+                modFin.classList.remove('hidden'); modFin.classList.add('block');
+                modEst.classList.remove('block'); modEst.classList.add('hidden');
+                btnFin.className = 'flex-1 lg:flex-none px-6 py-2 rounded-lg font-bold text-sm bg-white text-marinho shadow-sm border border-slate-200 transition';
+                btnEst.className = 'flex-1 lg:flex-none px-6 py-2 rounded-lg font-bold text-sm text-slate-500 hover:text-slate-800 border border-transparent transition';
+            } else {
+                modFin.classList.remove('block'); modFin.classList.add('hidden');
+                modEst.classList.remove('hidden'); modEst.classList.add('block');
+                btnEst.className = 'flex-1 lg:flex-none px-6 py-2 rounded-lg font-bold text-sm bg-white text-marinho shadow-sm border border-slate-200 transition';
+                btnFin.className = 'flex-1 lg:flex-none px-6 py-2 rounded-lg font-bold text-sm text-slate-500 hover:text-slate-800 border border-transparent transition';
+            }
+        }
+
+        function filtrarPorMes() { 
+            mesAtivoAtual = document.getElementById('filtroMes').value; 
+            aplicarFiltrosFinanceiros(); 
+            calcularKPIs(); // Recalcula o dinheiro ao mudar o mês
+        }
+
+        function filtrarPorStatus(status) {
+            statusAtivoAtual = status;
+            document.querySelectorAll('.btn-filtro-fin').forEach(btn => {
+                btn.className = 'btn-filtro-fin bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 px-4 py-2 rounded-lg text-xs font-bold transition whitespace-nowrap';
+                if(btn.innerText.toLowerCase().includes(status) || (status === 'todos' && btn.innerText === 'Todos')) {
+                    btn.className = 'btn-filtro-fin bg-marinho text-white px-4 py-2 rounded-lg text-xs font-bold shadow-sm whitespace-nowrap transition';
+                }
+            });
+            aplicarFiltrosFinanceiros();
+        }
+
+        function aplicarFiltrosFinanceiros() {
+            const termoBusca = document.getElementById('buscaFin').value.toLowerCase();
+            const linhas = document.querySelectorAll('.linha-fin');
+            let encontrouAlguem = false;
+
+            linhas.forEach(linha => {
+                const statusLinha = linha.getAttribute('data-status');
+                const mesLinha = linha.getAttribute('data-mes');
+                const textoLinha = linha.innerText.toLowerCase();
+                const matchStatus = (statusAtivoAtual === 'todos' || statusLinha === statusAtivoAtual);
+                const matchMes = (mesAtivoAtual === 'todos' || mesLinha === mesAtivoAtual);
+                const matchBusca = textoLinha.includes(termoBusca);
+
+                if (matchStatus && matchMes && matchBusca) {
+                    linha.style.display = ''; encontrouAlguem = true;
+                } else { linha.style.display = 'none'; }
+            });
+
+            document.getElementById('msgSemResultadosFin').style.display = encontrouAlguem ? 'none' : 'block';
+            document.getElementById('tabelaFinanceiro').style.display = encontrouAlguem ? 'table' : 'none';
+        }
+        function buscarFinanceiro() { aplicarFiltrosFinanceiros(); }
+        
+        document.addEventListener('DOMContentLoaded', () => { 
+            atualizarStatusAutomacao();
+            aplicarFiltrosFinanceiros(); 
+            calcularKPIs(); // Roda o cálculo assim que a página abre
+        });
+
+        // --- 4. RECIBO E ESTOQUE/WHATSAPP ---
+        function abrirModalRecibo(nome, valor, ref, data) {
+            document.getElementById('reciboNome').innerText = nome;
+            document.getElementById('reciboValor').innerText = valor;
+            document.getElementById('reciboRef').innerText = ref;
+            document.getElementById('reciboData').innerText = data;
+            const b1 = Math.random().toString(36).substring(2, 6).toUpperCase();
+            const b2 = Math.random().toString(36).substring(2, 6).toUpperCase();
+            const b3 = Math.random().toString(36).substring(2, 6).toUpperCase();
+            document.getElementById('reciboCodigo').innerText = `PNS-${b1}-${b2}-${b3}`;
+            document.getElementById('modalRecibo').classList.remove('hidden');
+        }
+
+        function abrirFichaMaterial(nome, categoria, fornecedor, qtd, status) {
+            document.getElementById('tituloFichaMat').innerText = nome;
+            document.getElementById('subFichaMat').innerText = `Categoria: ${categoria}`;
+            document.getElementById('fornecedorFichaMat').innerText = fornecedor;
+            document.getElementById('qtdFichaMat').innerText = `${qtd} un`;
+            const barra = document.getElementById('barraFichaMat');
+            const icone = document.getElementById('iconeFichaMat');
+
+            if (categoria.toLowerCase().includes('limpeza')) icone.innerText = '🧼'; else icone.innerText = '🖍️';
+            if(status === 'baixo') {
+                barra.className = 'bg-red-500 h-2 rounded-full transition-all duration-1000'; barra.style.width = '15%';
+                document.getElementById('qtdFichaMat').classList.replace('text-slate-800', 'text-red-600');
+            } else {
+                barra.className = 'bg-blue-600 h-2 rounded-full transition-all duration-1000'; barra.style.width = '70%';
+                document.getElementById('qtdFichaMat').classList.replace('text-red-600', 'text-slate-800');
+            }
+            document.getElementById('modalFichaMaterial').classList.remove('hidden');
+        }
+        function fecharFichaMaterial() { document.getElementById('modalFichaMaterial').classList.add('hidden'); }
+
+        function enviarPedidoFicha() {
+            const fornecedor = document.getElementById('fornecedorFichaMat').innerText;
+            const item = document.getElementById('tituloFichaMat').innerText;
+            const qtd = document.getElementById('inputReporQtd').value;
+            const obs = document.getElementById('inputReporObs').value.trim();
+
+            let msg = `Olá *${fornecedor}*, tudo bem?%0AAqui é do setor de compras da *Peniel Christian School*.%0A%0AGostaria de solicitar reposição do seguinte item:%0A- ${qtd}x ${item}`;
+            if(obs !== '') { msg += `%0A%0A*Observações de Entrega:*%0A${obs}`; }
+            msg += `%0A%0APoderia confirmar o recebimento e o prazo? Obrigado!`;
+
+            window.open(`https://wa.me/5521999999999?text=${msg}`, '_blank');
+        }
+
+        // --- BLOCO GLOBAL DO MODO GESTOR MASTER ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('modo_gestor') === '1') { localStorage.setItem('peniel_modo_gestor', 'ativo'); }
+
+            if (localStorage.getItem('peniel_modo_gestor') === 'ativo') {
+                const menuLateral = document.getElementById('menu-lateral');
+                if (menuLateral) { menuLateral.remove(); }
+                const containerPrincipal = document.querySelector('.flex.h-screen');
+                if (containerPrincipal) { containerPrincipal.classList.remove('overflow-hidden'); }
+                const main = document.querySelector('main');
+                if (main && !document.getElementById('barraExecutivaMaster')) {
+                    const barraGestor = document.createElement('div');
+                    barraGestor.id = 'barraExecutivaMaster';
+                    barraGestor.className = 'bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl mb-6 flex flex-col sm:flex-row justify-between items-center border-2 border-blue-500/40 z-[100] gap-4';
+                    barraGestor.innerHTML = `
+                        <div class="flex items-center gap-3 text-xs font-bold text-blue-300">
+                            <span class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></span>
+                            <span>Modo Gestor Master Ativo (Tela Cheia Executiva)</span>
+                        </div>
+                        <div class="flex items-center gap-2 w-full sm:w-auto">
+                            <a href="configuracoes.php?modo_gestor=1" class="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
+                                &larr; Voltar à Central
+                            </a>
+                            <button onclick="sairModoGestorGlobal()" class="flex-1 sm:flex-none bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-sm">
+                                🔒 Bloquear Painel
+                            </button>
+                        </div>
+                    `;
+                    main.prepend(barraGestor);
+                }
+            }
+        });
+
+        function sairModoGestorGlobal() {
+            if(confirm("Deseja encerrar a sessão Master e bloquear o painel executivo?")) {
+                localStorage.removeItem('peniel_modo_gestor');
+                window.location.href = 'configuracoes.php';
+            }
+        }
+    </script>
+</body>
+</html>
+<!-- FIM DO CÓDIGO -->
