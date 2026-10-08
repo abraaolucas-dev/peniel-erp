@@ -19,18 +19,22 @@
     </script>
 </head>
 <body id="corpo-sistema" class="bg-slate-50 text-slate-800 antialiased min-h-screen transition-colors duration-300 scroll-smooth">
+
+    <!-- Áudio de Alarme Oculto -->
     <audio id="som-alerta" preload="auto">
         <source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" type="audio/ogg">
     </audio>
 
     <div class="flex h-screen overflow-hidden">
+        
+        <!-- Menu Lateral Interno -->
         <aside id="menu-lateral" class="w-64 bg-marinho text-white flex flex-col hidden md:flex transition-colors duration-300">
             <div class="p-6">
                 <h1 class="font-heading text-2xl font-bold tracking-tight">PENIEL <span class="text-sm font-sans font-normal block text-blue-300" id="label-unidade-menu">Unidade Matriz</span></h1>
             </div>
             <nav class="flex-1 px-2 space-y-1 mt-2 overflow-y-auto pb-6">
                 <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-4 px-4">Geral</div>
-                <a href="index.html" class="block px-4 py-2.5 bg-blue-900 rounded-lg font-medium text-white shadow-inner">📈 Dashboard</a>
+                <a href="dashboard.html" class="block px-4 py-2.5 bg-blue-900 rounded-lg font-medium text-white shadow-inner">📈 Dashboard</a>
                 
                 <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Captação</div>
                 <a href="painel.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📥 Leads Typebot</a>
@@ -50,7 +54,10 @@
             </nav>
         </aside>
 
+        <!-- Área Principal -->
         <main class="flex-1 overflow-y-auto p-6 md:p-8 flex flex-col gap-6 relative">
+            
+            <!-- HEADER COM O PAINEL DE PERFIL E UNIDADES -->
             <header class="flex flex-col lg:flex-row justify-between items-start lg:items-center bg-white p-5 rounded-2xl border border-slate-200 shadow-sm gap-4">
                 <div>
                     <div class="flex items-center gap-2 mb-1">
@@ -63,7 +70,7 @@
                 
                 <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
                     <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700">
-                        <span>📅</span><span>08/10/2026</span>
+                        <span>📅</span><span id="data-atual"></span>
                     </div>
                     <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl">
                         <span class="text-sm">🏫</span>
@@ -73,6 +80,7 @@
                             <option value="Filial Barra">Filial Barra da Tijuca</option>
                         </select>
                     </div>
+                    <!-- Botão de abrir Ficha do Gestor -->
                     <button onclick="abrirModalPerfil()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
                         👤 <span id="nomeGestorBtn">Abraão Lucas</span>
                     </button>
@@ -86,6 +94,7 @@
                 </div>
             </header>
 
+            <!-- Banner de Alerta Visual (Oculto) -->
             <div id="alerta-visual" class="hidden bg-red-600 text-white p-4 rounded-xl shadow-lg flex justify-between items-center animate-pulse border-2 border-red-300 sticky top-4 z-40">
                 <div class="flex items-center gap-3">
                     <span class="text-3xl">🚨</span>
@@ -99,6 +108,7 @@
                 </button>
             </div>
 
+            <!-- KPIs -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <a href="matriculas.html" class="block bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-blue-500 hover:-translate-y-1 hover:shadow-md transition-all cursor-pointer group">
                     <div class="flex justify-between items-start"><h3 class="text-slate-500 text-xs font-semibold uppercase tracking-wider">Alunos na Escola</h3><span class="text-blue-500 text-lg opacity-0 group-hover:opacity-100 transition-opacity">↗</span></div>
@@ -118,6 +128,7 @@
                 </a>
             </div>
 
+            <!-- SALAS E TURMAS AO VIVO -->
             <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-5 border-b border-slate-100 pb-3 gap-3">
                     <div>
@@ -161,7 +172,9 @@
                 </div>
             </div>
 
+            <!-- Layout Inferior (Gráficos, Reuniões, Anotações e Liberações) -->
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                
                 <div class="lg:col-span-1 flex flex-col gap-6">
                     <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
                         <div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
@@ -193,6 +206,7 @@
                 </div>
 
                 <div class="lg:col-span-3 flex flex-col gap-6">
+                    
                     <div class="bg-amber-50 rounded-xl border border-amber-200 shadow-sm p-4 relative group">
                         <div class="flex justify-between items-center mb-2">
                             <h3 class="font-bold text-amber-800 text-sm flex items-center gap-2">📌 Bloco de Anotações (Gestão)</h3>
@@ -201,6 +215,7 @@
                         <textarea id="campo-anotacao" class="w-full bg-transparent border-0 focus:ring-0 p-1 text-sm text-amber-900 resize-none font-medium" rows="2" placeholder="Anotações rápidas da diretoria..."></textarea>
                     </div>
 
+                    <!-- CENTRAL DE LIBERAÇÕES (Âncora de rolagem) -->
                     <div id="central-liberacoes" class="bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col h-full scroll-mt-20">
                         <div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-xl flex justify-between items-center">
                             <h3 class="font-bold text-slate-800">🛂 Central de Liberações de Saída e Portaria</h3>
@@ -248,20 +263,300 @@
                                         <p class="text-sm font-bold text-slate-900">Avó: Maria Silva</p>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                     </div>
+
                 </div>
+
             </div>
         </main>
     </div>
 
-    <!-- Modais omitidos para economizar espaço de exibição (mesmo código original da sua tela) -->
-    <!-- ... Restante do código de Modais e Script de Estatísticas ... -->
+    <!-- MODAIS DO SISTEMA -->
 
+    <!-- ========================================================================= -->
+    <!-- NOVA FICHA CADASTRAL DO GESTOR (AMPLIADA) -->
+    <!-- ========================================================================= -->
+    <div id="modalPerfil" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden flex justify-center items-center z-[60] p-4 overflow-y-auto">
+        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto max-h-[95vh]">
+            
+            <div class="p-6 border-b border-slate-100 bg-marinho text-white flex justify-between items-center sticky top-0 z-10">
+                <div>
+                    <h3 class="font-bold text-xl font-heading flex items-center gap-2">👤 Ficha Cadastral do Gestor</h3>
+                    <p class="text-blue-200 text-xs mt-1">Informações completas e dados profissionais do administrador da unidade.</p>
+                </div>
+                <button onclick="fecharModalPerfil()" class="text-white hover:text-red-300 font-bold text-3xl leading-none transition">&times;</button>
+            </div>
+            
+            <div class="p-8 overflow-y-auto bg-slate-50/50 space-y-8">
+                
+                <!-- Seção 1: Dados Pessoais -->
+                <div>
+                    <h4 class="text-sm font-bold text-marinho uppercase tracking-wider mb-4 border-b border-slate-200 pb-2">1. Dados Pessoais</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Nome Completo</label>
+                            <input type="text" id="inputNomeGestor" value="Abraão Lucas" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 font-bold text-slate-800">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Data de Nascimento</label>
+                            <input type="date" value="1980-10-15" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">CPF</label>
+                            <input type="text" value="000.000.000-00" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">RG / Órgão Emissor</label>
+                            <input type="text" value="00.000.000-0 DETRAN/RJ" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Estado Civil</label>
+                            <select class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 bg-white">
+                                <option>Casado(a)</option>
+                                <option>Solteiro(a)</option>
+                                <option>Divorciado(a)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção 2: Contato e Endereço -->
+                <div>
+                    <h4 class="text-sm font-bold text-marinho uppercase tracking-wider mb-4 border-b border-slate-200 pb-2">2. Contato e Endereço</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">E-mail Principal (Login)</label>
+                            <input type="email" id="inputEmailGestor" value="abraao@peniel.com" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Telefone / WhatsApp</label>
+                            <input type="text" id="inputTelGestor" value="(21) 99999-9999" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-5">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">CEP</label>
+                                <input type="text" value="20000-000" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Endereço Completo</label>
+                                <input type="text" value="Rua Principal, 123, Centro, Rio de Janeiro - RJ" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção 3: Dados Profissionais -->
+                <div>
+                    <h4 class="text-sm font-bold text-marinho uppercase tracking-wider mb-4 border-b border-slate-200 pb-2">3. Dados Profissionais</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Cargo Atual</label>
+                            <input type="text" value="Gestor Geral / Diretor" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold text-slate-700 bg-slate-100 focus:outline-none" readonly>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Data de Admissão / Início</label>
+                            <input type="date" value="2025-08-01" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Unidade Base (Lotação)</label>
+                            <select class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 bg-white">
+                                <option>Peniel • Matriz (Rio de Janeiro)</option>
+                                <option>Peniel • Filial Botafogo</option>
+                                <option>Peniel • Filial Barra da Tijuca</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <!-- Footer com Botões de Voltar e Salvar -->
+            <div class="p-5 border-t border-slate-200 bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+                <button onclick="fecharModalPerfil()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg text-sm transition flex items-center gap-2 w-full sm:w-auto justify-center">
+                    &larr; Voltar ao Dashboard
+                </button>
+                <div class="flex gap-3 w-full sm:w-auto">
+                    <button onclick="fecharModalPerfil()" class="flex-1 sm:flex-none px-5 py-2.5 text-slate-600 font-bold hover:bg-slate-100 rounded-lg text-sm transition">
+                        Fechar
+                    </button>
+                    <button onclick="salvarPerfilGestor()" class="flex-1 sm:flex-none bg-marinho hover:bg-blue-900 text-white px-6 py-2.5 rounded-lg font-bold text-sm shadow-sm transition">
+                        💾 Salvar Ficha
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal: Estatísticas da Turma -->
+    <div id="modalEstatisticasTurma" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm hidden flex justify-center items-center z-[70] p-4">
+        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl flex flex-col overflow-hidden max-h-[95vh]">
+            <div class="p-5 border-b border-slate-100 bg-marinho text-white flex justify-between items-center">
+                <div>
+                    <h3 class="font-bold text-lg font-heading">📊 Relatório Detalhado da Turma</h3>
+                    <p class="text-blue-200 text-sm" id="tituloModalTurma">Turma Selecionada</p>
+                </div>
+                <button onclick="fecharEstatisticasTurma()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
+            </div>
+            <div class="flex border-b border-slate-200 bg-slate-50 px-2 pt-2 overflow-x-auto hide-scrollbar">
+                <button onclick="mudarAbaTurma('diario')" id="aba-diario" class="px-5 py-3 text-sm font-bold border-b-2 border-marinho text-marinho whitespace-nowrap">Diário (Hoje)</button>
+                <button onclick="mudarAbaTurma('mensal')" id="aba-mensal" class="px-5 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap">Mensal</button>
+                <button onclick="mudarAbaTurma('trimestral')" id="aba-trimestral" class="px-5 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap">Trimestral</button>
+                <button onclick="mudarAbaTurma('semestral')" id="aba-semestral" class="px-5 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap">Semestral</button>
+                <button onclick="mudarAbaTurma('anual')" id="aba-anual" class="px-5 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap">Anual (Histórico)</button>
+            </div>
+            <div class="p-6 overflow-y-auto bg-slate-50/50 flex-1">
+                <div id="conteudo-diario" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm border-l-4 border-l-blue-500"><p class="text-[11px] font-bold text-slate-500 uppercase">Frequência de Hoje</p><p class="text-2xl font-black text-slate-800">98%</p></div>
+                        <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm border-l-4 border-l-orange-500"><p class="text-[11px] font-bold text-slate-500 uppercase">Conteúdo do Dia</p><p class="text-lg font-bold text-slate-800 mt-1 leading-tight">Ciclo da Água (Cap. 4)</p></div>
+                        <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm border-l-4 border-l-green-500"><p class="text-[11px] font-bold text-slate-500 uppercase">Comportamento</p><p class="text-2xl font-black text-slate-800">Excelente</p></div>
+                    </div>
+                </div>
+                <div id="conteudo-mensal" class="space-y-6 hidden">
+                    <h4 class="font-bold text-slate-700">Resumo do Mês Vigente</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Média de Provas Parciais</p><p class="text-xl font-bold text-marinho">8.2</p></div>
+                        <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Alunos Inadimplentes na Turma</p><p class="text-xl font-bold text-red-600">3 Alunos</p></div>
+                    </div>
+                </div>
+                <div id="conteudo-trimestral" class="hidden"><p class="text-slate-500">Dados consolidados do Trimestre...</p></div>
+                <div id="conteudo-semestral" class="hidden"><p class="text-slate-500">Histórico Semestral...</p></div>
+                <div id="conteudo-anual" class="hidden"><p class="text-slate-500">Visão Anual e Retenção...</p></div>
+            </div>
+            <div class="p-4 border-t border-slate-100 bg-white flex justify-end">
+                <button onclick="fecharEstatisticasTurma()" class="bg-slate-800 hover:bg-slate-900 text-white px-5 py-2.5 rounded-lg font-bold text-sm shadow-sm transition">Fechar Relatório</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ========================================================================= -->
+    <!-- SCRIPTS GERAIS DO DASHBOARD E INTERATIVIDADE DE LIBERAÇÃO -->
+    <!-- ========================================================================= -->
     <script>
-        // Scripts originais mantidos intactos aqui (Gráficos, Lembretes, Central)
-        // ... (Seu código original continua aqui sem alterações) ...
+        document.addEventListener('DOMContentLoaded', () => {
+            const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
+            document.getElementById('seletorUnidade').value = unidade;
+            document.getElementById('badge-unidade-atual').innerText = `Unidade ${unidade}`;
+            document.getElementById('label-unidade-menu').innerText = `Unidade ${unidade}`;
+
+            // Preenchimento dinâmico da data atual
+            document.getElementById('data-atual').innerText = new Date().toLocaleDateString('pt-BR');
+
+            const cor = localStorage.getItem('peniel_cor_sessao') || '#003057';
+            document.getElementById('seletorCor').value = cor;
+            document.getElementById('menu-lateral').style.backgroundColor = cor;
+
+            const nome = localStorage.getItem('peniel_nome_gestor');
+            if(nome) {
+                document.getElementById('saudacao-gestor').innerText = `Olá, ${nome}`;
+                document.getElementById('nomeGestorBtn').innerText = nome;
+                document.getElementById('inputNomeGestor').value = nome;
+            }
+
+            if(localStorage.getItem('anotacaoSecretaria')) { 
+                document.getElementById('campo-anotacao').value = localStorage.getItem('anotacaoSecretaria'); 
+            }
+        });
+
+        function mudarUnidade() {
+            const u = document.getElementById('seletorUnidade').value;
+            localStorage.setItem('peniel_unidade', u);
+            document.getElementById('badge-unidade-atual').innerText = `Unidade ${u}`;
+            document.getElementById('label-unidade-menu').innerText = `Unidade ${u}`;
+            alert(`🏫 Unidade alterada para: ${u}`);
+        }
+        function mudarCorSessao(cor) {
+            document.getElementById('menu-lateral').style.backgroundColor = cor;
+            localStorage.setItem('peniel_cor_sessao', cor);
+        }
+        function abrirModalPerfil() { document.getElementById('modalPerfil').classList.remove('hidden'); }
+        function fecharModalPerfil() { document.getElementById('modalPerfil').classList.add('hidden'); }
+        function salvarPerfilGestor() {
+            const n = document.getElementById('inputNomeGestor').value.trim();
+            if(!n) return;
+            localStorage.setItem('peniel_nome_gestor', n);
+            document.getElementById('saudacao-gestor').innerText = `Olá, ${n}`;
+            document.getElementById('nomeGestorBtn').innerText = n;
+            fecharModalPerfil();
+            alert('✅ Ficha Cadastral atualizada com sucesso!');
+        }
+
+        const chartOptions = { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } } };
+        new Chart(document.getElementById('graficoFrequencia').getContext('2d'), {
+            type: 'doughnut',
+            data: { labels: ['Presentes', 'Faltas', 'Atestados'], datasets: [{ data: [342, 6, 2], backgroundColor: ['#10B981', '#EF4444', '#F59E0B'], borderWidth: 0 }] },
+            options: { ...chartOptions, cutout: '65%' }
+        });
+        new Chart(document.getElementById('graficoFinanceiro').getContext('2d'), {
+            type: 'pie',
+            data: { labels: ['Pago', 'Atraso', 'Acordos'], datasets: [{ data: [85, 12, 3], backgroundColor: ['#3B82F6', '#EF4444', '#8B5CF6'], borderWidth: 0 }] },
+            options: chartOptions
+        });
+        function salvarAnotacao() {
+            localStorage.setItem('anotacaoSecretaria', document.getElementById('campo-anotacao').value);
+            alert('Lembrete salvo!');
+        }
+
+        function ativarSistemaSonoro() {
+            document.getElementById('btn-ativar-som').classList.add('hidden');
+            document.getElementById('som-alerta').play().catch(() => {});
+            alert("✅ Alertas ativados!");
+        }
+
+        setTimeout(() => { document.getElementById('alerta-visual').classList.remove('hidden'); }, 3000);
+
+        function verificarLiberacaoPendentes() {
+            document.getElementById('alerta-visual').classList.add('hidden');
+            const central = document.getElementById('central-liberacoes');
+            const cardPendente = document.getElementById('card-liberacao-pendente');
+            
+            central.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            setTimeout(() => { cardPendente.classList.add('ring-4', 'ring-red-400', 'scale-105', 'z-10'); }, 400);
+            setTimeout(() => { cardPendente.classList.remove('ring-4', 'ring-red-400', 'scale-105', 'z-10'); }, 2000);
+        }
+
+        function confirmarSaidaEstudante(btn) {
+            const card = document.getElementById('card-liberacao-pendente');
+            card.className = "border border-green-200 bg-green-50/40 rounded-xl p-4 shadow-sm transition-all duration-500";
+            card.innerHTML = `
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-xs font-bold bg-green-100 text-green-700 px-2 py-1 rounded">Liberado</span>
+                    <span class="text-xs text-slate-400 font-medium">Agora</span>
+                </div>
+                <h4 class="font-bold text-base text-slate-800">Isabela Mendes</h4>
+                <p class="text-xs text-slate-500 mb-3">2º Ano B - Vespertino</p>
+                <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                    <p class="text-[11px] uppercase tracking-wide font-semibold text-slate-500 mb-1">Autorizado e saiu com:</p>
+                    <p class="text-sm font-bold text-slate-900">Tio: Roberto Souza</p>
+                </div>
+            `;
+            alert('✅ Saída de Isabela Mendes confirmada na portaria com segurança!');
+        }
+
+        function abrirEstatisticasTurma(nomeTurma) {
+            document.getElementById('tituloModalTurma').innerText = nomeTurma;
+            document.getElementById('modalEstatisticasTurma').classList.remove('hidden');
+            mudarAbaTurma('diario');
+        }
+        function fecharEstatisticasTurma() { document.getElementById('modalEstatisticasTurma').classList.add('hidden'); }
+        function mudarAbaTurma(aba) {
+            ['diario', 'mensal', 'trimestral', 'semestral', 'anual'].forEach(a => {
+                document.getElementById(`conteudo-${a}`).classList.add('hidden');
+                const btn = document.getElementById(`aba-${a}`);
+                btn.classList.remove('border-marinho', 'text-marinho');
+                btn.classList.add('border-transparent', 'text-slate-500');
+            });
+            document.getElementById(`conteudo-${aba}`).classList.remove('hidden');
+            const btnAtivo = document.getElementById(`aba-${aba}`);
+            btnAtivo.classList.remove('border-transparent', 'text-slate-500');
+            btnAtivo.classList.add('border-marinho', 'text-marinho');
+        }
     </script>
 
     <!-- BLOCO GLOBAL DE CONTROLE DO MODO GESTOR MASTER -->
@@ -291,7 +586,7 @@
                             <a href="configuracoes.html?modo_gestor=1" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
                                 &larr; Voltar à Central de Bordo
                             </a>
-                            <button type="button" onclick="sairModoGestorGlobal()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-xl text-xs font-bold transition shadow-sm">
+                            <button onclick="sairModoGestorGlobal()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-xl text-xs font-bold transition shadow-sm">
                                 🔒 Sair e Bloquear
                             </button>
                         </div>
