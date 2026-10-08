@@ -7,27 +7,16 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: { marinho: '#003057', laranja: '#E85D04' },
-                    fontFamily: { sans: ['Inter', 'sans-serif'], heading: ['Montserrat', 'sans-serif'] }
-                }
-            }
-        }
+        tailwind.config = { theme: { extend: { colors: { marinho: '#003057', laranja: '#E85D04' }, fontFamily: { sans: ['Inter', 'sans-serif'], heading: ['Montserrat', 'sans-serif'] } } } }
     </script>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
-
     <div class="flex h-screen overflow-hidden">
-        
-        <!-- Menu Lateral Interno -->
         <aside class="w-64 bg-marinho text-white flex flex-col hidden md:flex">
             <div class="p-6">
                 <h1 class="font-heading text-2xl font-bold tracking-tight">PENIEL <span class="text-sm font-sans font-normal block text-blue-300">Sistema Interno</span></h1>
             </div>
             <nav class="flex-1 px-2 space-y-1 mt-2 overflow-y-auto pb-6">
-                
                 <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-4 px-4">Geral</div>
                 <a href="index.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📈 Dashboard</a>
                 
@@ -35,7 +24,6 @@
                 <a href="painel.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📥 Leads Typebot</a>
                 
                 <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Secretaria</div>
-                <!-- Matrículas está ATIVO -->
                 <a href="matriculas.html" class="block px-4 py-2.5 bg-blue-900 rounded-lg font-medium text-white shadow-inner">📝 Matrículas</a>
                 <a href="fichas.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">👥 Fichas (Alunos/Pais)</a>
                 <a href="rematricula.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">🔄 Rematrícula</a>
@@ -50,39 +38,18 @@
             </nav>
         </aside>
 
-        <!-- Área Principal -->
         <main class="flex-1 overflow-y-auto p-6 md:p-8">
-            
-            <!-- Header e Ações -->
             <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <div>
                     <h2 class="font-heading text-3xl font-bold text-slate-800">Gestão de Matrículas</h2>
-                    <p class="text-slate-500">Controle de alunos ativos, turmas e novos registros.</p>
                 </div>
-                
                 <div class="flex items-center gap-3 w-full md:w-auto">
-                    <!-- Barra de Pesquisa -->
-                    <div class="relative w-full md:w-64">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔍</span>
-                        <input type="text" placeholder="Buscar aluno ou RA..." class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm text-sm">
-                    </div>
-                    
-                    <!-- Botão Nova Matrícula -->
-                    <button onclick="abrirModal()" class="bg-laranja hover:bg-orange-600 text-white px-5 py-2.5 rounded-lg font-bold shadow-sm transition flex items-center gap-2 whitespace-nowrap">
+                    <button onclick="abrirModal()" class="bg-laranja hover:bg-orange-600 text-white px-5 py-2.5 rounded-lg font-bold shadow-sm transition flex items-center gap-2">
                         ➕ Nova Matrícula
                     </button>
                 </div>
             </header>
 
-            <!-- Filtros rápidos -->
-            <div class="flex gap-2 mb-6 overflow-x-auto pb-2">
-                <button class="bg-blue-900 text-white px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap shadow-sm">Todos (342)</button>
-                <button class="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap">Ensino Infantil (120)</button>
-                <button class="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap">Ensino Fundamental I (150)</button>
-                <button class="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap">Pendentes (5)</button>
-            </div>
-
-            <!-- Tabela de Alunos -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm">
@@ -90,199 +57,84 @@
                             <tr>
                                 <th class="px-6 py-4 font-semibold">RA</th>
                                 <th class="px-6 py-4 font-semibold">Aluno(a)</th>
-                                <th class="px-6 py-4 font-semibold">Turma</th>
-                                <th class="px-6 py-4 font-semibold">Responsável</th>
                                 <th class="px-6 py-4 font-semibold">Status</th>
                                 <th class="px-6 py-4 font-semibold text-right">Ação</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
-                            
-                            <!-- Linha 1 -->
                             <tr class="hover:bg-slate-50 transition">
                                 <td class="px-6 py-4 text-slate-500 font-mono text-xs">2027001</td>
-                                <td class="px-6 py-4 font-bold text-slate-800">
-                                    Davi Lucas
-                                    <span class="block text-xs text-slate-400 font-normal">Nasc: 15/04/2018 (8 anos)</span>
-                                </td>
-                                <td class="px-6 py-4 text-slate-600">3º Ano A<br><span class="text-xs bg-slate-100 px-2 py-0.5 rounded">Matutino</span></td>
-                                <td class="px-6 py-4 text-slate-600">Carlos Lucas <br><span class="text-xs text-slate-400">(Pai)</span></td>
-                                <td class="px-6 py-4">
-                                    <span class="bg-green-100 text-green-700 py-1 px-2.5 rounded-full text-xs font-bold">Ativo</span>
-                                </td>
+                                <td class="px-6 py-4 font-bold text-slate-800">Davi Lucas</td>
+                                <td class="px-6 py-4"><span class="bg-green-100 text-green-700 py-1 px-2.5 rounded-full text-xs font-bold">Ativo</span></td>
                                 <td class="px-6 py-4 text-right">
-                                    <a href="fichas.php" class="text-blue-600 hover:text-blue-800 font-semibold text-xs border border-blue-200 hover:bg-blue-50 px-3 py-1.5 rounded transition">Ver Ficha</a>
+                                    <a href="fichas.html" class="text-blue-600 hover:text-blue-800 font-semibold text-xs border border-blue-200 hover:bg-blue-50 px-3 py-1.5 rounded transition">Ver Ficha</a>
                                 </td>
                             </tr>
-
-                            <!-- Linha 2 -->
                             <tr class="hover:bg-slate-50 transition">
                                 <td class="px-6 py-4 text-slate-500 font-mono text-xs">2027002</td>
-                                <td class="px-6 py-4 font-bold text-slate-800">
-                                    Isabela Mendes
-                                    <span class="block text-xs text-slate-400 font-normal">Nasc: 10/11/2019 (7 anos)</span>
-                                </td>
-                                <td class="px-6 py-4 text-slate-600">2º Ano B<br><span class="text-xs bg-slate-100 px-2 py-0.5 rounded">Vespertino</span></td>
-                                <td class="px-6 py-4 text-slate-600">Mariana Mendes <br><span class="text-xs text-slate-400">(Mãe)</span></td>
-                                <td class="px-6 py-4">
-                                    <span class="bg-green-100 text-green-700 py-1 px-2.5 rounded-full text-xs font-bold">Ativo</span>
-                                </td>
+                                <td class="px-6 py-4 font-bold text-slate-800">Isabela Mendes</td>
+                                <td class="px-6 py-4"><span class="bg-green-100 text-green-700 py-1 px-2.5 rounded-full text-xs font-bold">Ativo</span></td>
                                 <td class="px-6 py-4 text-right">
-                                    <a href="fichas.php" class="text-blue-600 hover:text-blue-800 font-semibold text-xs border border-blue-200 hover:bg-blue-50 px-3 py-1.5 rounded transition">Ver Ficha</a>
+                                    <a href="fichas.html" class="text-blue-600 hover:text-blue-800 font-semibold text-xs border border-blue-200 hover:bg-blue-50 px-3 py-1.5 rounded transition">Ver Ficha</a>
                                 </td>
                             </tr>
-
-                            <!-- Linha 3 (Pendente) -->
                             <tr class="hover:bg-slate-50 transition">
                                 <td class="px-6 py-4 text-slate-500 font-mono text-xs">2027089</td>
-                                <td class="px-6 py-4 font-bold text-slate-800">
-                                    Pedro Souza
-                                    <span class="block text-xs text-slate-400 font-normal">Nasc: 05/02/2021 (5 anos)</span>
-                                </td>
-                                <td class="px-6 py-4 text-slate-600">Pré II<br><span class="text-xs bg-slate-100 px-2 py-0.5 rounded">Matutino</span></td>
-                                <td class="px-6 py-4 text-slate-600">Roberto Souza <br><span class="text-xs text-slate-400">(Pai)</span></td>
-                                <td class="px-6 py-4">
-                                    <span class="bg-orange-100 text-orange-700 py-1 px-2.5 rounded-full text-xs font-bold">Pendente Docs</span>
-                                </td>
+                                <td class="px-6 py-4 font-bold text-slate-800">Pedro Souza</td>
+                                <td class="px-6 py-4"><span class="bg-orange-100 text-orange-700 py-1 px-2.5 rounded-full text-xs font-bold">Pendente Docs</span></td>
                                 <td class="px-6 py-4 text-right">
-                                    <a href="fichas.php" class="text-blue-600 hover:text-blue-800 font-semibold text-xs border border-blue-200 hover:bg-blue-50 px-3 py-1.5 rounded transition">Ver Ficha</a>
+                                    <a href="fichas.html" class="text-blue-600 hover:text-blue-800 font-semibold text-xs border border-blue-200 hover:bg-blue-50 px-3 py-1.5 rounded transition">Ver Ficha</a>
                                 </td>
                             </tr>
-
                         </tbody>
                     </table>
                 </div>
-                <div class="p-4 border-t border-slate-200 text-sm text-slate-500 text-center bg-slate-50">
-                    Mostrando 3 de 342 matrículas.
-                </div>
             </div>
-
         </main>
     </div>
 
-    <!-- MODAL DE NOVA MATRÍCULA (Escondido por padrão) -->
-    <div id="modalNovaMatricula" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center z-50">
-        <div class="bg-white w-full max-w-2xl rounded-2xl shadow-xl flex flex-col max-h-[90vh]">
-            
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50 rounded-t-2xl">
-                <h3 class="font-bold text-xl text-slate-800 font-heading">Formulário de Nova Matrícula</h3>
-                <button onclick="fecharModal()" class="text-slate-400 hover:text-red-500 text-2xl font-bold leading-none">&times;</button>
-            </div>
-            
-            <div class="p-6 overflow-y-auto">
-                <form class="space-y-4">
-                    <h4 class="font-bold text-sm text-blue-600 uppercase tracking-wider mb-2 border-b pb-1">1. Dados do Aluno</h4>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="col-span-2">
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Nome Completo do Aluno</label>
-                            <input type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Data de Nascimento</label>
-                            <input type="date" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Turma Pretendida</label>
-                            <select class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
-                                <option>Selecione...</option>
-                                <option>Maternal I</option>
-                                <option>Pré II</option>
-                                <option>1º Ano - Fundamental I</option>
-                                <option>3º Ano - Fundamental I</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <h4 class="font-bold text-sm text-blue-600 uppercase tracking-wider mt-6 mb-2 border-b pb-1">2. Dados do Responsável</h4>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="col-span-2">
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Nome do Responsável Financeiro</label>
-                            <input type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">CPF</label>
-                            <input type="text" placeholder="000.000.000-00" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">WhatsApp</label>
-                            <input type="text" placeholder="(21) 90000-0000" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        </div>
-                    </div>
-                </form>
-            </div>
-            
-            <div class="p-6 border-t border-slate-100 bg-slate-50 rounded-b-2xl flex justify-end gap-3">
-                <button onclick="fecharModal()" class="px-5 py-2.5 text-slate-600 font-bold hover:bg-slate-200 rounded-lg transition text-sm">Cancelar</button>
-                <button class="bg-marinho hover:bg-blue-900 text-white px-6 py-2.5 rounded-lg font-bold shadow-sm transition text-sm">Salvar Matrícula</button>
-            </div>
-            
-        </div>
-    </div>
-
+    <!-- BLOCO GLOBAL DE CONTROLE DO MODO GESTOR MASTER -->
     <script>
-        // Funções para abrir e fechar a janela de Nova Matrícula
-        function abrirModal() {
-            document.getElementById('modalNovaMatricula').classList.remove('hidden');
-        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('modo_gestor') === '1') { localStorage.setItem('peniel_modo_gestor', 'ativo'); }
 
-        function fecharModal() {
-            document.getElementById('modalNovaMatricula').classList.add('hidden');
+            if (localStorage.getItem('peniel_modo_gestor') === 'ativo') {
+                const menuLateral = document.querySelector('aside');
+                if (menuLateral) { menuLateral.remove(); }
+                const containerPrincipal = document.querySelector('.flex.h-screen');
+                if (containerPrincipal) { containerPrincipal.classList.remove('overflow-hidden'); }
+                const main = document.querySelector('main');
+                
+                if (main && !document.getElementById('barraExecutivaMaster')) {
+                    const barraGestor = document.createElement('div');
+                    barraGestor.id = 'barraExecutivaMaster';
+                    barraGestor.className = 'bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl mb-4 flex justify-between items-center border-2 border-blue-500/40 z-50';
+                    barraGestor.innerHTML = `
+                        <div class="flex items-center gap-3 text-xs font-bold text-blue-300">
+                            <span class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></span>
+                            <span>Modo Gestor Master Ativo (Tela Cheia Executiva)</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <a href="configuracoes.html?modo_gestor=1" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                                &larr; Voltar à Central de Bordo
+                            </a>
+                            <button onclick="sairModoGestorGlobal()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-xl text-xs font-bold transition shadow-sm">
+                                🔒 Sair do Modo Gestor
+                            </button>
+                        </div>
+                    `;
+                    main.prepend(barraGestor);
+                }
+            }
+        });
+
+        function sairModoGestorGlobal() {
+            if(confirm("Deseja realmente encerrar a sessão de Gestor Master e bloquear o painel?")) {
+                localStorage.removeItem('peniel_modo_gestor');
+                window.location.href = 'configuracoes.html';
+            }
         }
     </script>
-    <!-- BLOCO GLOBAL DE CONTROLE DO MODO GESTOR MASTER -->
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('modo_gestor') === '1') {
-            localStorage.setItem('peniel_modo_gestor', 'ativo');
-        }
-
-        // Se o modo gestor estiver ativo em qualquer tela do sistema:
-        if (localStorage.getItem('peniel_modo_gestor') === 'ativo') {
-            
-            // 1. Remove ou oculta completamente qualquer menu lateral existente na tela
-            const menuLateral = document.querySelector('aside');
-            if (menuLateral) {
-                menuLateral.remove(); // Remove o elemento do DOM para liberar 100% da tela
-            }
-
-            // 2. Garante que o layout principal ocupe a largura total (sem espaço reservado para menu)
-            const containerPrincipal = document.querySelector('.flex.h-screen');
-            if (containerPrincipal) {
-                containerPrincipal.classList.remove('overflow-hidden');
-            }
-
-            // 3. Adiciona a Barra Executiva Superior com o botão de retorno e opção de sair/bloquear
-            const main = document.querySelector('main');
-            if (main && !document.getElementById('barraExecutivaMaster')) {
-                const barraGestor = document.createElement('div');
-                barraGestor.id = 'barraExecutivaMaster';
-                barraGestor.className = 'bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl mb-4 flex justify-between items-center border-2 border-blue-500/40 z-50';
-                barraGestor.innerHTML = `
-                    <div class="flex items-center gap-3 text-xs font-bold text-blue-300">
-                        <span class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></span>
-                        <span>Modo Gestor Master Ativo (Tela Cheia Executiva)</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <a href="configuracoes.php?modo_gestor=1" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
-                            &larr; Voltar à Central de Bordo
-                        </a>
-                        <button onclick="sairModoGestorGlobal()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-xl text-xs font-bold transition shadow-sm">
-                            🔒 Sair do Modo Gestor
-                        </button>
-                    </div>
-                `;
-                main.prepend(barraGestor);
-            }
-        }
-    });
-
-    function sairModoGestorGlobal() {
-        if(confirm("Deseja realmente encerrar a sessão de Gestor Master e bloquear o painel?")) {
-            localStorage.removeItem('peniel_modo_gestor');
-            window.location.href = 'configuracoes.php';
-        }
-    }
-</script>
 </body>
 </html>
