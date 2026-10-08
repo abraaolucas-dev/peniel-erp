@@ -23,7 +23,7 @@
             </div>
             <nav class="flex-1 px-2 space-y-1 mt-2 overflow-y-auto pb-6">
                 <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-4 px-4">Geral</div>
-                <a href="index.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📈 Dashboard</a>
+                <a href="dashboard.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📈 Dashboard</a>
                 
                 <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Captação</div>
                 <a href="painel.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📥 Leads Typebot</a>
@@ -548,7 +548,7 @@
                             <span>Modo Gestor Master Ativo (Tela Cheia Executiva)</span>
                         </div>
                         <div class="flex items-center gap-2 w-full sm:w-auto">
-                            <a href="configuracoes.php?modo_gestor=1" class="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
+                            <a href="configuracoes.html?modo_gestor=1" class="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
                                 &larr; Voltar à Central
                             </a>
                             <button onclick="sairModoGestorGlobal()" class="flex-1 sm:flex-none bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-sm">
@@ -564,7 +564,7 @@
         function sairModoGestorGlobal() {
             if(confirm("Deseja encerrar a sessão Master e bloquear o painel executivo?")) {
                 localStorage.removeItem('peniel_modo_gestor');
-                window.location.href = 'configuracoes.php';
+                window.location.href = 'configuracoes.html';
             }
         }
     </script>
