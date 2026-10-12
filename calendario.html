@@ -3,47 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendário e Equipe | Peniel Christian School</title>
+    <title>Configurações e Central de Bordo | Peniel Christian School</title>
     
-    <!-- Bibliotecas Necessárias -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
-    
     <script>
         tailwind.config = {
             theme: {
-                extend: {
-                    colors: { marinho: '#003057', laranja: '#E85D04' },
-                    fontFamily: { sans: ['Inter', 'sans-serif'], heading: ['Montserrat', 'sans-serif'] }
-                }
+                extend: { colors: { marinho: '#003057', laranja: '#E85D04' }, fontFamily: { sans: ['Inter', 'sans-serif'], heading: ['Montserrat', 'sans-serif'] } }
             }
         }
     </script>
-    
-    <style>
-        /* Ajustes do Calendário para Celular e Computador */
-        .fc-theme-standard .fc-scrollgrid { border-color: #e2e8f0; border-radius: 0.5rem; overflow: hidden; }
-        .fc-button-primary { background-color: #003057 !important; border-color: #003057 !important; text-transform: capitalize !important; }
-        .fc-button-primary:hover { background-color: #002240 !important; }
-        .fc-button-active { background-color: #E85D04 !important; border-color: #E85D04 !important; }
-        .fc-toolbar-title { font-family: 'Montserrat', sans-serif; font-weight: 700; color: #1e293b; font-size: 1.25rem !important; }
-        .fc-day-today { background-color: #f0f9ff !important; }
-        
-        /* Otimização para iPhone */
-        @media (max-width: 768px) {
-            .fc-toolbar { flex-direction: column; gap: 12px; }
-            .fc-toolbar-title { font-size: 1.1rem !important; }
-        }
-    </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen relative">
 
-    <div class="flex h-screen overflow-hidden relative">
+    <!-- Overlay do Menu Mobile -->
+    <div id="overlay-mobile" onclick="toggleMenuMobile()" class="fixed inset-0 bg-slate-900/60 z-[90] hidden md:hidden backdrop-blur-sm transition-opacity"></div>
+
+    <div class="flex h-screen overflow-hidden">
         
-        <!-- Menu Lateral (Com suporte automático a Mobile e Desktop) -->
-        <aside id="menu-lateral" class="w-64 bg-marinho text-white flex flex-col hidden md:flex h-full transition-transform duration-300 shrink-0 z-[100]">
-            <div class="p-6 flex justify-between items-center">
+        <!-- Menu Lateral Padrão -->
+        <aside id="menu-lateral" class="fixed md:relative left-0 top-0 w-64 bg-marinho text-white flex-col h-full z-[100] transform -translate-x-full md:translate-x-0 transition-transform duration-300 flex shrink-0">
+            <div class="p-6">
                 <h1 class="font-heading text-2xl font-bold tracking-tight">PENIEL <span class="text-sm font-sans font-normal block text-blue-300">Sistema Interno</span></h1>
             </div>
             <nav class="flex-1 px-2 space-y-1 mt-2 overflow-y-auto pb-6">
@@ -59,275 +40,344 @@
                 <a href="rematricula.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">🔄 Rematrícula</a>
 
                 <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Acadêmico</div>
-                <a href="calendario.html" class="block px-4 py-2.5 bg-blue-900 rounded-lg font-medium text-white shadow-inner">📅 Calendário e Equipe</a>
+                <a href="calendario.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📅 Calendário e Equipe</a>
                 <a href="notas.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📊 Notas e Avaliações</a>
 
                 <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Administrativo</div>
                 <a href="financeiro.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">💰 Gestão Financeira</a>
-                <a href="configuracoes.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">⚙️ Configurações / ADM</a>
+                <a href="configuracoes.html" class="block px-4 py-2.5 bg-blue-900 rounded-lg font-medium text-white shadow-inner">⚙️ Configurações / ADM</a>
             </nav>
         </aside>
 
         <!-- Área Principal -->
-        <main id="area-principal" class="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col gap-6 w-full">
+        <main class="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col gap-6" id="area-principal">
             
-            <!-- Header -->
-            <header id="main-header" class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-5 rounded-2xl border border-slate-200 shadow-sm gap-4">
-                <div>
-                    <h2 class="font-heading text-2xl md:text-3xl font-bold text-slate-800">Timeline e Calendário</h2>
-                    <p class="text-slate-500 text-sm">Status ao vivo da equipe docente e agendamento escolar.</p>
+            <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleMenuMobile()" class="md:hidden bg-slate-100 text-marinho p-2.5 rounded-lg text-xl hover:bg-slate-200 transition active:scale-95 shadow-sm">☰</button>
+                    <div>
+                        <h2 class="font-heading text-3xl font-bold text-slate-800">Painel Administrativo & Governança</h2>
+                        <p class="text-slate-500">Parâmetros globais, segurança e controle de acesso master.</p>
+                    </div>
                 </div>
-                <div class="bg-slate-50 px-4 py-2 rounded-lg border border-slate-200 shadow-sm text-sm font-bold text-slate-700 flex items-center gap-2 w-full md:w-auto justify-center">
-                    <span>🕒</span> Hoje
+                
+                <!-- Botão de Autenticação Master -->
+                <div id="blocoBotaoMaster" class="w-full md:w-auto">
+                    <button onclick="solicitarSenhaMaster()" class="w-full md:w-auto bg-slate-800 hover:bg-slate-900 text-white px-5 py-2.5 rounded-xl font-bold text-xs shadow-sm transition flex items-center justify-center gap-2">
+                        🔒 Acesso Modo Gestor (Senha Master)
+                    </button>
+                </div>
+                <div id="blocoStatusMaster" class="hidden flex items-center gap-3">
+                    <span class="bg-green-100 text-green-800 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 border border-green-200">
+                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Modo Gestor Master Ativo
+                    </span>
+                    <button onclick="bloquearModoMaster()" class="text-xs text-red-600 hover:underline font-bold">Bloquear / Sair</button>
                 </div>
             </header>
 
-            <!-- TIMELINE DE COLABORADORES (Status Ao Vivo) -->
-            <div class="bg-white p-5 md:p-6 rounded-xl border border-slate-200 shadow-sm">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 gap-3 border-b border-slate-100 pb-4">
+            <!-- BLOCO 1: Habilitação Geral de Apps -->
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-100 pb-4 mb-6 gap-4">
                     <div>
-                        <h3 class="font-bold text-slate-800 text-base">👨‍🏫 Status da Equipe e Professores (Ao Vivo)</h3>
+                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 text-blue-700 rounded-md text-xs font-bold uppercase tracking-wider mb-1">
+                            <span>📲</span> Ecossistema Mobile
+                        </div>
+                        <h3 class="font-heading font-bold text-xl text-slate-800">Habilitar Acesso aos Apps (Pais e Professores)</h3>
+                        <p class="text-xs text-slate-500">Libere o acesso individual por e-mail para consulta de boletins e diário de classe.</p>
                     </div>
-                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-[10px] md:text-xs font-bold flex items-center gap-1.5 whitespace-nowrap">
-                        <span class="w-2 h-2 rounded-full bg-green-500 animate-ping"></span> Sistema Sincronizado
-                    </span>
+
+                    <button onclick="abrirModalLiberarApp()" class="w-full md:w-auto bg-marinho hover:bg-blue-900 text-white px-4 py-2.5 rounded-lg font-bold text-xs shadow-sm transition">
+                        ➕ Autorizar Novo E-mail
+                    </button>
                 </div>
 
-                <!-- Grid de Colaboradores -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-                    <!-- Colaborador 1 -->
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 relative overflow-hidden">
-                        <div class="absolute top-0 left-0 w-1.5 h-full bg-green-500"></div>
-                        <div class="flex justify-between items-start mb-3">
-                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center font-bold text-marinho text-sm">CL</div>
-                            <span class="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1">Em Aula</span>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex justify-between items-center">
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800">App dos Pais & Responsáveis</h4>
+                            <p class="text-xs text-slate-500">Boletim, autorizações e financeiro</p>
                         </div>
-                        <h4 class="font-bold text-slate-800 text-sm">Prof. Carlos Lucas</h4>
-                        <p class="text-xs text-slate-500 mb-3">Matemática</p>
+                        <input type="checkbox" checked class="w-5 h-5 accent-marinho cursor-pointer">
                     </div>
-
-                    <!-- Colaborador 2 -->
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 relative overflow-hidden">
-                        <div class="absolute top-0 left-0 w-1.5 h-full bg-green-500"></div>
-                        <div class="flex justify-between items-start mb-3">
-                            <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center font-bold text-purple-800 text-sm">MM</div>
-                            <span class="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1">Em Aula</span>
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex justify-between items-center">
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800">App dos Professores & Docentes</h4>
+                            <p class="text-xs text-slate-500">Notas, faltas e diário de classe</p>
                         </div>
-                        <h4 class="font-bold text-slate-800 text-sm">Prof. Mariana Mendes</h4>
-                        <p class="text-xs text-slate-500 mb-3">Português</p>
-                    </div>
-
-                    <!-- Colaborador 3 -->
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 relative overflow-hidden">
-                        <div class="absolute top-0 left-0 w-1.5 h-full bg-amber-500"></div>
-                        <div class="flex justify-between items-start mb-3">
-                            <div class="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center font-bold text-amber-800 text-sm">AA</div>
-                            <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded">☕ Intervalo</span>
-                        </div>
-                        <h4 class="font-bold text-slate-800 text-sm">Prof. Amanda</h4>
-                        <p class="text-xs text-slate-500 mb-3">História / Geografia</p>
-                    </div>
-
-                    <!-- Colaborador 4 -->
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 relative overflow-hidden">
-                        <div class="absolute top-0 left-0 w-1.5 h-full bg-blue-500"></div>
-                        <div class="flex justify-between items-start mb-3">
-                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center font-bold text-blue-800 text-sm">JS</div>
-                            <span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded">🤝 Em Reunião</span>
-                        </div>
-                        <h4 class="font-bold text-slate-800 text-sm">Juliana Santos</h4>
-                        <p class="text-xs text-slate-500 mb-3">Coordenação</p>
+                        <input type="checkbox" checked class="w-5 h-5 accent-marinho cursor-pointer">
                     </div>
                 </div>
             </div>
 
-            <!-- CALENDÁRIO MENSAL -->
-            <div class="bg-white p-4 md:p-6 rounded-xl border border-slate-200 shadow-sm flex-1 flex flex-col min-h-[500px]">
-                <div class="mb-4">
-                    <h3 class="font-bold text-slate-800 text-lg">📅 Calendário Escolar Oficial (2026/2027)</h3>
-                    <p class="text-xs text-slate-500">Clique nos dias para gerenciar eventos.</p>
-                </div>
+            <!-- CENTRAL DE BORDO / PORTAL EXECUTIVO (SÓ APARECE COM SENHA) -->
+            <div id="centralDeBordo" class="hidden bg-gradient-to-br from-slate-900 to-blue-950 rounded-2xl shadow-xl p-6 md:p-8 text-white space-y-6 border-2 border-blue-400/30">
                 
-                <!-- O Calendário vai renderizar exatamente dentro desta div sem quebrar -->
-                <div id="calendario-escolar" class="w-full flex-1"></div>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-blue-800/60 pb-5 gap-4">
+                    <div>
+                        <span class="bg-blue-500/20 text-blue-300 text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-widest border border-blue-400/30">Painel Executivo Master</span>
+                        <h3 class="font-heading font-bold text-2xl text-white mt-2">🧭 Central de Bordo & Atalhos do Sistema</h3>
+                        <p class="text-xs text-blue-200/70">Visão macro de toda a operação escolar. Acesso direto a qualquer módulo em modo tela cheia.</p>
+                    </div>
+
+                    <button onclick="abrirModalNovoFuncionario()" class="w-full md:w-auto bg-laranja hover:bg-orange-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs shadow-md transition flex items-center justify-center gap-2">
+                        ➕ Cadastrar Novo Funcionário
+                    </button>
+                </div>
+
+                <!-- CARDS DE ATALHO RÁPIDO -->
+                <div>
+                    <h4 class="text-xs font-bold text-blue-300 uppercase tracking-wider mb-3">Atalhos de Navegação Executiva</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <a href="index.html?modo_gestor=1" class="bg-blue-900/40 hover:bg-blue-900/70 border border-blue-700/50 rounded-xl p-4 transition group block">
+                            <div class="flex justify-between items-start mb-2"><span class="text-2xl">📈</span><span class="text-xs text-blue-300 group-hover:translate-x-1 transition-transform">&rarr;</span></div>
+                            <h5 class="font-bold text-white text-sm">Dashboard Geral</h5>
+                        </a>
+                        <a href="matriculas.html?modo_gestor=1" class="bg-blue-900/40 hover:bg-blue-900/70 border border-blue-700/50 rounded-xl p-4 transition group block">
+                            <div class="flex justify-between items-start mb-2"><span class="text-2xl">📝</span><span class="text-xs text-blue-300 group-hover:translate-x-1 transition-transform">&rarr;</span></div>
+                            <h5 class="font-bold text-white text-sm">Matrículas</h5>
+                        </a>
+                        <a href="financeiro.html?modo_gestor=1" class="bg-blue-900/40 hover:bg-blue-900/70 border border-blue-700/50 rounded-xl p-4 transition group block">
+                            <div class="flex justify-between items-start mb-2"><span class="text-2xl">💰</span><span class="text-xs text-blue-300 group-hover:translate-x-1 transition-transform">&rarr;</span></div>
+                            <h5 class="font-bold text-white text-sm">Gestão Financeira</h5>
+                        </a>
+                        <a href="calendario.html?modo_gestor=1" class="bg-blue-900/40 hover:bg-blue-900/70 border border-blue-700/50 rounded-xl p-4 transition group block">
+                            <div class="flex justify-between items-start mb-2"><span class="text-2xl">📅</span><span class="text-xs text-blue-300 group-hover:translate-x-1 transition-transform">&rarr;</span></div>
+                            <h5 class="font-bold text-white text-sm">Calendário & Equipe</h5>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Tabela de Controle de Funcionários (ACL) -->
+                <div class="pt-2">
+                    <h4 class="text-xs font-bold text-blue-300 uppercase tracking-wider mb-3">Controle de Funcionários e Permissões (ACL)</h4>
+                    <div class="bg-slate-900/80 rounded-xl border border-blue-800/60 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm" id="tabelaFuncionarios">
+                                <thead class="bg-blue-950/80 text-blue-200 border-b border-blue-800/60 text-[11px] font-bold uppercase tracking-wider">
+                                    <tr>
+                                        <th class="px-5 py-3">Funcionário / E-mail</th>
+                                        <th class="px-5 py-3">Cargo</th>
+                                        <th class="px-5 py-3">Módulos Permitidos</th>
+                                        <th class="px-5 py-3">Status</th>
+                                        <th class="px-5 py-3 text-right">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-blue-950 text-slate-200 text-xs">
+                                    <tr class="hover:bg-blue-900/20 transition">
+                                        <td class="px-5 py-3.5 font-bold text-white">Maria da Secretaria <br><span class="text-[10px] text-slate-400 font-mono">secretaria@peniel.com</span></td>
+                                        <td class="px-5 py-3.5">Atendente</td>
+                                        <td class="px-5 py-3.5"><span class="bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded text-[10px]">Matrículas, Fichas</span></td>
+                                        <td class="px-5 py-3.5"><span class="bg-green-500/20 text-green-400 px-2 py-0.5 rounded font-bold text-[10px]">Ativo</span></td>
+                                        <!-- BOTÃO EDITAR QUE AGORA FUNCIONA -->
+                                        <td class="px-5 py-3.5 text-right"><button onclick="editarPermissoes('Maria da Secretaria', 'secretaria@peniel.com', 'Atendente')" class="bg-blue-800 hover:bg-blue-700 text-white px-3 py-1 rounded text-[11px] font-bold transition">Editar</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
         </main>
     </div>
 
-    <!-- ========================================================================= -->
-    <!-- SCRIPTS DO SISTEMA -->
-    <!-- ========================================================================= -->
-    
-    <!-- 1. Script do Calendário com os Feriados Oficiais -->
+    <!-- ========================================================= -->
+    <!-- MODAL 1: AUTORIZAR NOVO APP -->
+    <!-- ========================================================= -->
+    <div id="modalLiberarApp" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center z-[120] p-4">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-xl flex flex-col overflow-hidden">
+            <div class="p-5 border-b border-slate-100 bg-marinho text-white flex justify-between items-center">
+                <h3 class="font-bold text-base font-heading flex items-center gap-2">📲 Autorizar Novo Acesso (App)</h3>
+                <button onclick="fecharModalLiberarApp()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="bg-blue-50 border border-blue-100 p-3 rounded-lg mb-2">
+                    <p class="text-xs text-blue-800 font-medium">Insira o e-mail do usuário. Um link seguro será enviado para a criação da senha de acesso ao aplicativo escolar.</p>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">E-mail do Responsável / Professor</label>
+                    <input type="email" id="appEmail" placeholder="exemplo@email.com" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Tipo de Acesso</label>
+                    <select id="appTipo" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 bg-white font-medium">
+                        <option value="Pais">App dos Pais (Boletim e Financeiro)</option>
+                        <option value="Professores">App dos Professores (Diário de Classe)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="p-5 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
+                <button onclick="fecharModalLiberarApp()" class="px-4 py-2 bg-white border border-slate-300 text-slate-600 font-bold hover:bg-slate-50 rounded-lg text-xs transition">Cancelar</button>
+                <button onclick="salvarLiberacaoApp()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-bold text-xs shadow-sm transition">
+                    ✉️ Enviar Convite
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- MODAL 2: CADASTRO DE FUNCIONÁRIO E PERMISSÕES (ACL) -->
+    <!-- ========================================================= -->
+    <div id="modalFuncionario" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center z-[120] p-4">
+        <div class="bg-white w-full max-w-xl rounded-2xl shadow-xl flex flex-col overflow-hidden max-h-[90vh]">
+            <div class="p-5 border-b border-slate-100 bg-blue-900 text-white flex justify-between items-center">
+                <h3 id="tituloModalFunc" class="font-bold text-base font-heading">🔐 Cadastrar / Editar Funcionário</h3>
+                <button onclick="fecharModalFuncionario()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
+            </div>
+
+            <div class="p-6 overflow-y-auto space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Nome do Funcionário</label>
+                        <input type="text" id="funcNome" placeholder="Ex: Roberto Silva" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">E-mail de Acesso</label>
+                        <input type="email" id="funcEmail" placeholder="roberto@peniel.com" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Cargo / Função</label>
+                    <input type="text" id="funcCargo" placeholder="Ex: Auxiliar Administrativo" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 font-medium">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">Módulos do Sistema Permitidos:</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <label class="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer p-1 hover:bg-slate-200 rounded">
+                            <input type="checkbox" name="permMod" value="Dashboard" class="w-4 h-4 accent-blue-900"> Dashboard Geral
+                        </label>
+                        <label class="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer p-1 hover:bg-slate-200 rounded">
+                            <input type="checkbox" name="permMod" value="Matrículas" class="w-4 h-4 accent-blue-900"> Matrículas e Fichas
+                        </label>
+                        <label class="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer p-1 hover:bg-slate-200 rounded">
+                            <input type="checkbox" name="permMod" value="Financeiro" class="w-4 h-4 accent-blue-900"> Gestão Financeira
+                        </label>
+                        <label class="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer p-1 hover:bg-slate-200 rounded">
+                            <input type="checkbox" name="permMod" value="Notas" class="w-4 h-4 accent-blue-900"> Notas e Avaliações
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-5 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
+                <button onclick="fecharModalFuncionario()" class="px-4 py-2 bg-white border border-slate-300 text-slate-600 font-bold hover:bg-slate-50 rounded-lg text-xs transition">Cancelar</button>
+                <button onclick="salvarNovoFuncionario()" class="bg-blue-900 hover:bg-marinho text-white px-5 py-2 rounded-lg font-bold text-xs shadow-sm transition">
+                    💾 Salvar Permissões
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts de Controle -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var calendarEl = document.getElementById('calendario-escolar');
-            
-            // Regras Oficiais Injetadas no Banco do LocalStorage
-            var eventosSalvos = JSON.parse(localStorage.getItem('eventosPeniel')) || [
-                // Outubro
-                { title: 'Feriado: Dia das Crianças', start: '2026-10-12', color: '#EF4444' },
-                { title: 'Feriado: Dia dos Professores', start: '2026-10-15', color: '#EF4444' },
-                // Novembro
-                { title: 'Feriado: Finados', start: '2026-11-02', color: '#EF4444' },
-                { title: 'Período de Testes', start: '2026-11-18', end: '2026-11-28', color: '#F59E0B' },
-                // Dezembro
-                { title: 'Provas Finais', start: '2026-12-07', end: '2026-12-12', color: '#E85D04' },
-                { title: 'Conselho de Classe', start: '2026-12-14', color: '#003057' },
-                { title: 'Entrega de Avaliações / Reunião de Pais', start: '2026-12-15', color: '#10B981' },
-                { title: 'Recuperação', start: '2026-12-16', end: '2026-12-18', color: '#F59E0B' },
-                { title: 'Festa de Encerramento (Natal / Formatura)', start: '2026-12-19', color: '#8B5CF6' }
-            ];
+        // Função de Menu Mobile
+        function toggleMenuMobile() {
+            const menu = document.getElementById('menu-lateral');
+            const overlay = document.getElementById('overlay-mobile');
+            menu.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
 
-            // Renderiza o Calendário de forma responsiva
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: window.innerWidth < 768 ? 'listMonth' : 'dayGridMonth', // List no iPhone, Grade no PC
-                locale: 'pt-br',
-                height: '100%',
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: window.innerWidth < 768 ? '' : 'dayGridMonth,timeGridWeek'
-                },
-                buttonText: {
-                    today: 'Hoje',
-                    month: 'Mês',
-                    week: 'Semana'
-                },
-                events: eventosSalvos,
-                editable: true,
-                selectable: true,
-                
-                select: function(info) {
-                    var titulo = prompt('Qual o nome do novo evento ou reunião?');
-                    if (titulo) {
-                        var novoEvento = {
-                            title: titulo,
-                            start: info.startStr,
-                            end: info.endStr,
-                            allDay: info.allDay,
-                            color: '#003057'
-                        };
-                        calendar.addEvent(novoEvento);
-                        eventosSalvos.push(novoEvento);
-                        localStorage.setItem('eventosPeniel', JSON.stringify(eventosSalvos));
-                    }
-                    calendar.unselect();
-                },
+        // Lógica de Autenticação Master
+        const SENHA_MASTER_GESTOR = "peniel2027";
 
-                eventClick: function(info) {
-                    if (confirm('Deseja excluir o evento "' + info.event.title + '"?')) {
-                        info.event.remove();
-                        eventosSalvos = eventosSalvos.filter(function(e) {
-                            return e.title !== info.event.title || e.start !== info.event.startStr;
-                        });
-                        localStorage.setItem('eventosPeniel', JSON.stringify(eventosSalvos));
-                    }
-                }
-            });
-
-            calendar.render();
-            
-            // Recalcula o layout caso o usuário vire a tela do celular
-            window.addEventListener('resize', function() {
-                if(window.innerWidth < 768 && calendar.view.type !== 'listMonth') {
-                    calendar.changeView('listMonth');
-                } else if (window.innerWidth >= 768 && calendar.view.type === 'listMonth') {
-                    calendar.changeView('dayGridMonth');
-                }
-            });
-        });
-    </script>
-
-    <!-- 2. Script do Menu Mobile Inteligente (Evita quebrar o layout) -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const menuLateral = document.getElementById('menu-lateral');
-            const header = document.getElementById('main-header');
-            
-            if (menuLateral && header) {
-                // Prepara classes para modo Mobile
-                menuLateral.classList.remove('hidden'); 
-                menuLateral.classList.add(
-                    'fixed', 'left-0', 'top-0', 'w-64', 'h-full', 'z-[110]', 
-                    'transform', '-translate-x-full', 'transition-transform', 'duration-300',
-                    'md:relative', 'md:translate-x-0'
-                );
-
-                // Cria o Overlay escuro
-                const overlay = document.createElement('div');
-                overlay.className = 'fixed inset-0 bg-slate-900/60 z-[105] hidden backdrop-blur-sm md:hidden transition-opacity';
-                document.body.appendChild(overlay);
-
-                // Lógica de Abrir/Fechar
-                const toggleMenu = () => {
-                    const estaFechado = menuLateral.classList.contains('-translate-x-full');
-                    if(estaFechado) {
-                        menuLateral.classList.remove('-translate-x-full');
-                        overlay.classList.remove('hidden');
-                    } else {
-                        menuLateral.classList.add('-translate-x-full');
-                        overlay.classList.add('hidden');
-                    }
-                };
-
-                overlay.onclick = toggleMenu;
-
-                // Adiciona o Botão no Header com segurança
-                const btnMobile = document.createElement('button');
-                btnMobile.className = 'md:hidden bg-marinho text-white px-4 py-2 rounded-lg font-bold text-sm shadow-sm flex items-center justify-center gap-2 mb-2 w-full sm:w-auto active:scale-95 transition';
-                btnMobile.innerHTML = '<span>☰</span> Menu do Sistema';
-                btnMobile.onclick = toggleMenu;
-
-                // Insere logo no topo da área principal, ANTES do header para não quebrar o flex
-                const mainArea = document.getElementById('area-principal');
-                mainArea.insertBefore(btnMobile, header);
-            }
-        });
-    </script>
-
-    <!-- 3. Controle do Modo Gestor Master -->
-    <script>
         document.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('modo_gestor') === '1') { localStorage.setItem('peniel_modo_gestor', 'ativo'); }
-
-            if (localStorage.getItem('peniel_modo_gestor') === 'ativo') {
-                const menuLateral = document.getElementById('menu-lateral');
-                if (menuLateral) { menuLateral.remove(); }
-                const containerPrincipal = document.querySelector('.flex.h-screen');
-                if (containerPrincipal) { containerPrincipal.classList.remove('overflow-hidden'); }
-                const main = document.getElementById('area-principal');
-                
-                if (main && !document.getElementById('barraExecutivaMaster')) {
-                    const barraGestor = document.createElement('div');
-                    barraGestor.id = 'barraExecutivaMaster';
-                    barraGestor.className = 'bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl mb-4 flex flex-col md:flex-row justify-between items-center border-2 border-blue-500/40 z-[90] gap-4 w-full';
-                    barraGestor.innerHTML = `
-                        <div class="flex items-center gap-3 text-xs font-bold text-blue-300">
-                            <span class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></span>
-                            <span>Modo Gestor Master Ativo (Tela Cheia Executiva)</span>
-                        </div>
-                        <div class="flex items-center gap-2 w-full md:w-auto">
-                            <a href="configuracoes.html?modo_gestor=1" class="flex-1 md:flex-none bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition text-center shadow-sm whitespace-nowrap">
-                                &larr; Voltar à Central
-                            </a>
-                            <button onclick="sairModoGestorGlobal()" class="flex-1 md:flex-none bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-xl text-xs font-bold transition shadow-sm whitespace-nowrap">
-                                🔒 Sair e Bloquear
-                            </button>
-                        </div>
-                    `;
-                    main.prepend(barraGestor);
-                }
-            }
+            if(localStorage.getItem('peniel_modo_gestor') === 'ativo') { ativarModoGestorVisual(); }
         });
 
-        function sairModoGestorGlobal() {
-            if(confirm("Deseja realmente encerrar a sessão de Gestor Master e bloquear o painel?")) {
-                localStorage.removeItem('peniel_modo_gestor');
-                window.location.href = 'configuracoes.html';
+        function solicitarSenhaMaster() {
+            const senhaDigitada = prompt("🔒 Digite a Senha Master do Gestor Geral:");
+            if(senhaDigitada === SENHA_MASTER_GESTOR) {
+                localStorage.setItem('peniel_modo_gestor', 'ativo');
+                ativarModoGestorVisual();
+                alert("🔓 Central de Bordo (Modo Gestor) ativada com sucesso!");
+            } else if(senhaDigitada !== null) {
+                alert("❌ Senha incorreta! Acesso negado.");
             }
+        }
+
+        function ativarModoGestorVisual() {
+            document.getElementById('blocoBotaoMaster').classList.add('hidden');
+            document.getElementById('blocoStatusMaster').classList.remove('hidden');
+            document.getElementById('centralDeBordo').classList.remove('hidden');
+            const menuLateral = document.getElementById('menu-lateral');
+            if(menuLateral) { menuLateral.style.display = 'none'; }
+        }
+
+        function bloquearModoMaster() {
+            localStorage.removeItem('peniel_modo_gestor');
+            window.location.href = 'configuracoes.html';
+        }
+
+        // MODAL DE APPS
+        function abrirModalLiberarApp() { document.getElementById('modalLiberarApp').classList.remove('hidden'); }
+        function fecharModalLiberarApp() { 
+            document.getElementById('modalLiberarApp').classList.add('hidden'); 
+            document.getElementById('appEmail').value = '';
+        }
+        function salvarLiberacaoApp() {
+            const email = document.getElementById('appEmail').value;
+            const tipo = document.getElementById('appTipo').value;
+            if(!email) { alert("Por favor, digite um e-mail válido."); return; }
+            alert(`✅ Convite seguro enviado para ${email}!\n\nEste usuário agora terá acesso ao App dos ${tipo}.`);
+            fecharModalLiberarApp();
+        }
+
+        // MODAL DE FUNCIONÁRIO E EDIÇÃO
+        function abrirModalNovoFuncionario() { 
+            document.getElementById('tituloModalFunc').innerText = '🔐 Cadastrar Novo Funcionário';
+            document.getElementById('modalFuncionario').classList.remove('hidden'); 
+        }
+        function fecharModalFuncionario() { 
+            document.getElementById('modalFuncionario').classList.add('hidden');
+            document.getElementById('funcNome').value = '';
+            document.getElementById('funcEmail').value = '';
+            document.getElementById('funcCargo').value = '';
+            document.querySelectorAll('input[name="permMod"]').forEach(cb => cb.checked = false);
+        }
+
+        function editarPermissoes(nome, email, cargo) {
+            document.getElementById('funcNome').value = nome;
+            document.getElementById('funcEmail').value = email;
+            document.getElementById('funcCargo').value = cargo;
+            document.getElementById('tituloModalFunc').innerText = '✏️ Editar Permissões: ' + nome;
+            document.getElementById('modalFuncionario').classList.remove('hidden'); 
+            
+            // Marca o checkbox de Dashboard por padrão
+            document.querySelector('input[value="Dashboard"]').checked = true;
+        }
+
+        function salvarNovoFuncionario() {
+            const nome = document.getElementById('funcNome').value.trim();
+            const email = document.getElementById('funcEmail').value.trim();
+            const cargo = document.getElementById('funcCargo').value.trim();
+
+            if(!nome || !email || !cargo) { alert('Preencha todos os campos do funcionário.'); return; }
+
+            const checkboxes = document.querySelectorAll('input[name="permMod"]:checked');
+            let badgesHTML = '';
+            checkboxes.forEach(cb => { badgesHTML += `<span class="bg-blue-500/20 text-blue-300 text-[10px] font-bold px-2 py-0.5 rounded">${cb.value}</span> `; });
+            if(!badgesHTML) badgesHTML = '<span class="text-xs text-slate-400">Nenhum módulo</span>';
+
+            const tbody = document.querySelector('#tabelaFuncionarios tbody');
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-blue-900/20 transition';
+            tr.innerHTML = `
+                <td class="px-5 py-3.5 font-bold text-white">${nome} <br><span class="text-[10px] text-slate-400 font-mono">${email}</span></td>
+                <td class="px-5 py-3.5">${cargo}</td>
+                <td class="px-5 py-3.5"><div class="flex flex-wrap gap-1">${badgesHTML}</div></td>
+                <td class="px-5 py-3.5"><span class="bg-green-500/20 text-green-400 px-2 py-0.5 rounded font-bold text-[10px]">Ativo</span></td>
+                <td class="px-5 py-3.5 text-right"><button onclick="editarPermissoes('${nome}', '${email}', '${cargo}')" class="bg-blue-800 hover:bg-blue-700 text-white px-3 py-1 rounded text-[11px] font-bold transition">Editar</button></td>
+            `;
+
+            tbody.prepend(tr);
+            fecharModalFuncionario();
+            alert(`✅ Funcionário e Acessos salvos com sucesso!`);
         }
     </script>
 </body>
