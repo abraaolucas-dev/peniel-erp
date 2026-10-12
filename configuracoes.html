@@ -368,5 +368,57 @@
 
         function editarPermissoes(nome) { alert(`Editando acessos de: ${nome}`); }
     </script>
+
+    <!-- ======================================================= -->
+    <!-- SCRIPT DO MENU MOBILE (IPHONE / ANDROID) -->
+    <!-- ======================================================= -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuLateral = document.querySelector('aside');
+            const header = document.querySelector('header');
+            
+            // Verifica se a tela tem menu lateral e se não está no modo Gestor Tela Cheia
+            if (menuLateral && header && !document.getElementById('btnMobile')) {
+                
+                // 1. Adapta as classes do Tailwind para o menu deslizar no celular
+                menuLateral.classList.remove('hidden'); // Remove o bloqueio original
+                menuLateral.classList.add(
+                    'fixed', 'left-0', 'top-0', 'h-full', 'z-[100]', 
+                    'transform', '-translate-x-full', 'transition-transform', 'duration-300',
+                    'md:relative', 'md:translate-x-0' // Mantém fixo no Computador
+                );
+
+                // 2. Cria o Fundo Escuro (Overlay) para a tela do iPhone
+                const overlay = document.createElement('div');
+                overlay.className = 'fixed inset-0 bg-slate-900/60 z-[90] hidden backdrop-blur-sm md:hidden transition-opacity';
+                document.body.appendChild(overlay);
+
+                // 3. Função para Abrir e Fechar o menu
+                const toggleMenu = () => {
+                    const estaFechado = menuLateral.classList.contains('-translate-x-full');
+                    if(estaFechado) {
+                        menuLateral.classList.remove('-translate-x-full');
+                        overlay.classList.remove('hidden');
+                    } else {
+                        menuLateral.classList.add('-translate-x-full');
+                        overlay.classList.add('hidden');
+                    }
+                };
+
+                // Fechar menu ao clicar no fundo escuro
+                overlay.onclick = toggleMenu;
+
+                // 4. Cria o Botão "Hambúrguer" no Header (Só aparece no celular)
+                const btnMobile = document.createElement('button');
+                btnMobile.id = 'btnMobile';
+                btnMobile.className = 'md:hidden w-full sm:w-auto bg-marinho text-white px-4 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-md mb-4 sm:mb-0 transition active:scale-95';
+                btnMobile.innerHTML = '☰ Abrir Menu do Sistema';
+                btnMobile.onclick = toggleMenu;
+
+                // Insere o botão no topo do Header
+                header.insertBefore(btnMobile, header.firstChild);
+            }
+        });
+    </script>
 </body>
 </html>
