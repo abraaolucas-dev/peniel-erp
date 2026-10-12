@@ -2,11 +2,11 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Dashboard Geral | Peniel Christian School</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -17,437 +17,520 @@
             }
         }
     </script>
+    <style>
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </head>
-<body id="corpo-sistema" class="bg-slate-50 text-slate-800 antialiased min-h-screen transition-colors duration-300 scroll-smooth">
+<body id="corpo-sistema" class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col md:flex-row overflow-x-hidden">
 
     <!-- Áudio de Alarme Oculto -->
     <audio id="som-alerta" preload="auto">
         <source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" type="audio/ogg">
     </audio>
 
-    <!-- Overlay do Menu Mobile -->
-    <div id="overlay-mobile" onclick="toggleMenuMobile()" class="fixed inset-0 bg-slate-900/60 z-[90] hidden md:hidden backdrop-blur-sm transition-opacity"></div>
-
-    <div class="flex h-screen overflow-hidden relative">
-        
-        <!-- Menu Lateral Interno -->
-        <aside id="menu-lateral" class="fixed md:relative left-0 top-0 w-64 bg-marinho text-white flex-col h-full z-[100] transform -translate-x-full md:translate-x-0 transition-transform duration-300 flex shrink-0">
-            <div class="p-6">
-                <h1 class="font-heading text-2xl font-bold tracking-tight">PENIEL <span class="text-sm font-sans font-normal block text-blue-300" id="label-unidade-menu">Unidade Matriz</span></h1>
+    <!-- ========================================================================= -->
+    <!-- BARRA DE TOPO EXCLUSIVA MOBILE (DESTAQUE DE PALETA IGUAL AO PC) -->
+    <!-- ========================================================================= -->
+    <div id="barra-topo-mobile" class="md:hidden bg-marinho text-white px-4 py-3.5 flex justify-between items-center shadow-lg sticky top-0 z-[80] border-b border-white/10 transition-colors duration-300">
+        <div class="flex items-center gap-3">
+            <button type="button" onclick="toggleMenuMobile()" class="bg-laranja hover:bg-orange-600 text-white px-3 py-2 rounded-xl font-bold text-sm flex items-center gap-1.5 shadow-md active:scale-95 transition">
+                <span class="text-base leading-none">☰</span> Menu
+            </button>
+            <div>
+                <h1 class="font-heading text-base font-extrabold tracking-tight leading-none">PENIEL</h1>
+                <span class="text-[10px] text-blue-200 font-medium block mt-0.5" id="label-unidade-mobile">Unidade Matriz</span>
             </div>
-            <nav class="flex-1 px-2 space-y-1 mt-2 overflow-y-auto pb-6">
-                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-4 px-4">Geral</div>
-                <a href="index.html" class="block px-4 py-2.5 bg-blue-900 rounded-lg font-medium text-white shadow-inner">📈 Dashboard</a>
-                
-                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Captação</div>
-                <a href="painel.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📥 Leads Typebot</a>
-                
-                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Secretaria</div>
-                <a href="matriculas.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📝 Matrículas</a>
-                <a href="fichas.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">👥 Fichas (Alunos/Pais)</a>
-                <a href="rematricula.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">🔄 Rematrícula</a>
-
-                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Acadêmico</div>
-                <a href="calendario.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📅 Calendário e Equipe</a>
-                <a href="notas.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📊 Notas e Avaliações</a>
-
-                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Administrativo</div>
-                <a href="financeiro.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">💰 Gestão Financeira</a>
-                <a href="configuracoes.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">⚙️ Configurações / ADM</a>
-            </nav>
-        </aside>
-
-        <!-- Área Principal -->
-        <main class="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col gap-6 w-full">
-            
-            <!-- HEADER COM O PAINEL DE PERFIL E UNIDADES -->
-            <header class="flex flex-col xl:flex-row justify-between items-start xl:items-center bg-white p-5 rounded-2xl border border-slate-200 shadow-sm gap-4">
-                <div class="flex items-center gap-3 w-full xl:w-auto">
-                    <!-- Botão Mobile Nativo -->
-                    <button onclick="toggleMenuMobile()" class="md:hidden bg-slate-100 text-marinho p-2.5 rounded-lg text-xl hover:bg-slate-200 transition active:scale-95 shadow-sm">
-                        ☰
-                    </button>
-                    <div>
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="bg-blue-100 text-marinho text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider" id="badge-unidade-atual">Unidade Matriz</span>
-                            <span class="text-xs text-slate-400">Sessão Ativa</span>
-                        </div>
-                        <h2 class="font-heading text-2xl md:text-3xl font-bold text-slate-800" id="saudacao-gestor">Olá, Abraão Lucas</h2>
-                        <p class="text-xs text-slate-500">Painel de controle, turmas em tempo real e visão geral.</p>
-                    </div>
-                </div>
-                
-                <div class="flex flex-wrap items-center gap-3 w-full xl:w-auto">
-                    <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700">
-                        <span>📅</span><span id="data-topo">08/10/2026</span>
-                    </div>
-                    <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl">
-                        <span class="text-sm">🏫</span>
-                        <select id="seletorUnidade" onchange="mudarUnidade()" class="bg-transparent text-xs font-bold text-slate-700 focus:outline-none cursor-pointer">
-                            <option value="Matriz">Unidade Matriz</option>
-                            <option value="Filial Botafogo">Filial Botafogo</option>
-                            <option value="Filial Barra">Filial Barra da Tijuca</option>
-                        </select>
-                    </div>
-                    <!-- Botão de abrir Ficha do Gestor -->
-                    <button onclick="abrirModalPerfil()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
-                        👤 <span id="nomeGestorBtn">Abraão Lucas</span>
-                    </button>
-                    <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl">
-                        <span class="text-xs font-bold text-slate-500">🎨</span>
-                        <input type="color" id="seletorCor" value="#003057" onchange="mudarCorSessao(this.value)" class="w-6 h-6 rounded border-0 cursor-pointer bg-transparent">
-                    </div>
-                    <button onclick="ativarSistemaSonoro()" id="btn-ativar-som" class="bg-laranja hover:bg-orange-600 text-white px-3 py-2 rounded-xl text-xs font-bold shadow-sm transition">
-                        🔊 Ativar Alertas
-                    </button>
-                </div>
-            </header>
-
-            <!-- Banner de Alerta Visual (Oculto) -->
-            <div id="alerta-visual" class="hidden bg-red-600 text-white p-4 rounded-xl shadow-lg flex justify-between items-center animate-pulse border-2 border-red-300 sticky top-4 z-40">
-                <div class="flex items-center gap-3">
-                    <span class="text-3xl">🚨</span>
-                    <div>
-                        <h4 class="font-bold text-lg">Atenção! Nova Solicitação de Saída</h4>
-                        <p class="text-red-100 text-sm">O aluno está aguardando liberação na portaria.</p>
-                    </div>
-                </div>
-                <button onclick="verificarLiberacaoPendentes()" class="bg-white text-red-600 px-5 py-2.5 rounded-lg font-bold hover:bg-red-50 transition shadow-sm">
-                    Verificar Informações &rarr;
-                </button>
-            </div>
-
-            <!-- KPIs -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                <a href="matriculas.html" class="block bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-blue-500 hover:-translate-y-1 hover:shadow-md transition-all cursor-pointer group">
-                    <div class="flex justify-between items-start"><h3 class="text-slate-500 text-xs font-semibold uppercase tracking-wider">Alunos na Escola</h3><span class="text-blue-500 text-lg opacity-0 group-hover:opacity-100 transition-opacity">↗</span></div>
-                    <div class="text-3xl font-bold text-slate-800 mt-1">342 <span class="text-sm font-normal text-green-500">de 350</span></div>
-                </a>
-                <a href="notas.html" class="block bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-orange-500 hover:-translate-y-1 hover:shadow-md transition-all cursor-pointer group">
-                    <div class="flex justify-between items-start"><h3 class="text-slate-500 text-xs font-semibold uppercase tracking-wider">Faltas Reportadas</h3><span class="text-orange-500 text-lg opacity-0 group-hover:opacity-100 transition-opacity">↗</span></div>
-                    <div class="text-3xl font-bold text-slate-800 mt-1">8 <span class="text-sm font-normal text-slate-400">alunos</span></div>
-                </a>
-                <a href="financeiro.html" class="block bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-red-500 hover:-translate-y-1 hover:shadow-md transition-all cursor-pointer group">
-                    <div class="flex justify-between items-start"><h3 class="text-slate-500 text-xs font-semibold uppercase tracking-wider">Inadimplência Média</h3><span class="text-red-500 text-lg opacity-0 group-hover:opacity-100 transition-opacity">↗</span></div>
-                    <div class="text-3xl font-bold text-slate-800 mt-1">12% <span class="text-sm font-normal text-red-500">Atenção</span></div>
-                </a>
-                <a href="rematricula.html" class="block bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-purple-500 hover:-translate-y-1 hover:shadow-md transition-all cursor-pointer group">
-                    <div class="flex justify-between items-start"><h3 class="text-slate-500 text-xs font-semibold uppercase tracking-wider">Retenção Escolar</h3><span class="text-purple-500 text-lg opacity-0 group-hover:opacity-100 transition-opacity">↗</span></div>
-                    <div class="text-3xl font-bold text-slate-800 mt-1">65% <span class="text-sm font-normal text-green-500">Na meta</span></div>
-                </a>
-            </div>
-
-            <!-- SALAS E TURMAS AO VIVO -->
-            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-5 border-b border-slate-100 pb-3 gap-3">
-                    <div>
-                        <h3 class="font-bold text-slate-800 flex items-center gap-2 text-lg">📡 Painel de Salas e Aulas (Ao Vivo)</h3>
-                        <p class="text-xs text-slate-500">Acompanhe todas as turmas que estão em atividade na escola neste exato momento.</p>
-                    </div>
-                    <span class="bg-green-100 text-green-700 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 border border-green-200">
-                        <span class="w-2 h-2 rounded-full bg-green-500 animate-ping"></span> 4 Salas em Uso
-                    </span>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-                    <div class="border border-green-200 bg-green-50/40 rounded-xl p-4 shadow-sm relative overflow-hidden group">
-                        <div class="absolute top-0 left-0 w-1 h-full bg-green-500"></div>
-                        <div class="flex justify-between items-start mb-2"><span class="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>Em Andamento</span><span class="text-xs font-bold text-slate-500 bg-white border border-slate-200 px-2 py-0.5 rounded">Sala 02</span></div>
-                        <h4 class="font-bold text-slate-800 text-base mt-2">3º Ano A - Matutino</h4>
-                        <p class="text-xs text-slate-600 mb-4">📘 Ciências • Prof. Leandro</p>
-                        <button onclick="abrirEstatisticasTurma('3º Ano A - Matutino')" class="w-full bg-white border border-slate-200 text-marinho hover:bg-slate-50 hover:border-blue-300 text-xs font-bold py-2 rounded-lg transition shadow-sm">📊 Ver Dados da Turma</button>
-                    </div>
-                    <div class="border border-green-200 bg-green-50/40 rounded-xl p-4 shadow-sm relative overflow-hidden group">
-                        <div class="absolute top-0 left-0 w-1 h-full bg-green-500"></div>
-                        <div class="flex justify-between items-start mb-2"><span class="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>Em Andamento</span><span class="text-xs font-bold text-slate-500 bg-white border border-slate-200 px-2 py-0.5 rounded">Sala 04</span></div>
-                        <h4 class="font-bold text-slate-800 text-base mt-2">2º Ano B - Vespertino</h4>
-                        <p class="text-xs text-slate-600 mb-4">📝 Português • Prof. Mariana</p>
-                        <button onclick="abrirEstatisticasTurma('2º Ano B - Vespertino')" class="w-full bg-white border border-slate-200 text-marinho hover:bg-slate-50 hover:border-blue-300 text-xs font-bold py-2 rounded-lg transition shadow-sm">📊 Ver Dados da Turma</button>
-                    </div>
-                    <div class="border border-green-200 bg-green-50/40 rounded-xl p-4 shadow-sm relative overflow-hidden group">
-                        <div class="absolute top-0 left-0 w-1 h-full bg-green-500"></div>
-                        <div class="flex justify-between items-start mb-2"><span class="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>Em Andamento</span><span class="text-xs font-bold text-slate-500 bg-white border border-slate-200 px-2 py-0.5 rounded">Parquinho</span></div>
-                        <h4 class="font-bold text-slate-800 text-base mt-2">Pré II - Infantil</h4>
-                        <p class="text-xs text-slate-600 mb-4">🎨 Recreação • Tia Ana</p>
-                        <button onclick="abrirEstatisticasTurma('Pré II - Infantil')" class="w-full bg-white border border-slate-200 text-marinho hover:bg-slate-50 hover:border-blue-300 text-xs font-bold py-2 rounded-lg transition shadow-sm">📊 Ver Dados da Turma</button>
-                    </div>
-                    <div class="border border-green-200 bg-green-50/40 rounded-xl p-4 shadow-sm relative overflow-hidden group">
-                        <div class="absolute top-0 left-0 w-1 h-full bg-green-500"></div>
-                        <div class="flex justify-between items-start mb-2"><span class="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>Em Andamento</span><span class="text-xs font-bold text-slate-500 bg-white border border-slate-200 px-2 py-0.5 rounded">Lab 1</span></div>
-                        <h4 class="font-bold text-slate-800 text-base mt-2">1º Ano Ens. Médio</h4>
-                        <p class="text-xs text-slate-600 mb-4">🧪 Química • Prof. Roberto</p>
-                        <button onclick="abrirEstatisticasTurma('1º Ano Ensino Médio')" class="w-full bg-white border border-slate-200 text-marinho hover:bg-slate-50 hover:border-blue-300 text-xs font-bold py-2 rounded-lg transition shadow-sm">📊 Ver Dados da Turma</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Layout Inferior (Gráficos, Reuniões, Anotações e Liberações) -->
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                
-                <div class="lg:col-span-1 flex flex-col gap-6">
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
-                        <div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">🤝 Reuniões (Hoje)</h3>
-                            <span class="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full">2 Agendadas</span>
-                        </div>
-                        <ul class="space-y-3">
-                            <li class="border-l-2 border-slate-200 pl-3">
-                                <p class="text-xs font-bold text-slate-800">Pais: Davi Lucas</p>
-                                <p class="text-[11px] text-slate-500">14:30 • Coordenação</p>
-                            </li>
-                            <li class="border-l-2 border-laranja pl-3">
-                                <p class="text-xs font-bold text-laranja">Conselho de Classe</p>
-                                <p class="text-[11px] text-slate-500">17:00 • Sala Professores</p>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="font-bold text-slate-700 mb-4 text-center text-sm">Frequência Diária</h3>
-                        <div class="w-40 mx-auto"><canvas id="graficoFrequencia"></canvas></div>
-                    </div>
-                    
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="font-bold text-slate-700 mb-4 text-center text-sm">Saúde Financeira</h3>
-                        <div class="w-40 mx-auto"><canvas id="graficoFinanceiro"></canvas></div>
-                    </div>
-                </div>
-
-                <div class="lg:col-span-3 flex flex-col gap-6">
-                    
-                    <div class="bg-amber-50 rounded-xl border border-amber-200 shadow-sm p-4 relative group">
-                        <div class="flex justify-between items-center mb-2">
-                            <h3 class="font-bold text-amber-800 text-sm flex items-center gap-2">📌 Bloco de Anotações (Gestão)</h3>
-                            <button onclick="salvarAnotacao()" class="text-xs bg-amber-200 text-amber-800 px-3 py-1 rounded font-bold hover:bg-amber-300 transition">Salvar Lembrete</button>
-                        </div>
-                        <textarea id="campo-anotacao" class="w-full bg-transparent border-0 focus:ring-0 p-1 text-sm text-amber-900 resize-none font-medium" rows="2" placeholder="Anotações rápidas da diretoria..."></textarea>
-                    </div>
-
-                    <!-- CENTRAL DE LIBERAÇÕES -->
-                    <div id="central-liberacoes" class="bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col h-full scroll-mt-20">
-                        <div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-xl flex justify-between items-center">
-                            <h3 class="font-bold text-slate-800">🛂 Central de Liberações de Saída e Portaria</h3>
-                            <span class="bg-orange-100 text-laranja text-xs font-bold px-2 py-1 rounded">Hoje</span>
-                        </div>
-                        
-                        <div class="p-6 overflow-y-auto bg-slate-50/30">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                
-                                <div id="card-liberacao-pendente" class="border-2 border-red-400 bg-red-50 rounded-xl p-4 shadow-md transition-all duration-500 relative">
-                                    <div class="flex justify-between items-center mb-3">
-                                        <span class="text-xs font-bold bg-red-600 text-white px-3 py-1 rounded animate-pulse shadow-sm">Pendente</span>
-                                        <span class="text-xs text-red-500 font-bold">Aguardando na Portaria</span>
-                                    </div>
-                                    <h4 class="font-bold text-base text-slate-800">Isabela Mendes</h4>
-                                    <p class="text-xs text-slate-500 mb-4">2º Ano B - Vespertino</p>
-                                    
-                                    <div class="bg-white p-3 rounded-lg border border-red-100 mb-4 shadow-sm">
-                                        <p class="text-[11px] uppercase tracking-wide font-semibold text-slate-500 mb-1">Autorizado no sistema com:</p>
-                                        <p class="text-sm font-bold text-slate-900 flex justify-between items-center">
-                                            <span>Tio: Roberto Souza</span>
-                                            <span class="text-[10px] bg-slate-100 px-2 py-1 rounded text-slate-500">RG Validado</span>
-                                        </p>
-                                    </div>
-
-                                    <div class="flex gap-2" id="botoes-acao-liberacao">
-                                        <button onclick="confirmarSaidaEstudante(this)" class="flex-1 bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2.5 rounded-lg shadow-sm transition">
-                                            ✅ Autorizar Saída
-                                        </button>
-                                        <button class="flex-1 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-bold py-2.5 rounded-lg transition shadow-sm">
-                                            📷 Ver Identidade
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div class="border border-slate-200 bg-white rounded-xl p-4 opacity-75">
-                                    <div class="flex justify-between items-center mb-3">
-                                        <span class="text-xs font-bold bg-green-100 text-green-700 px-2 py-1 rounded">Liberado</span>
-                                        <span class="text-xs text-slate-400 font-medium">11:30</span>
-                                    </div>
-                                    <h4 class="font-bold text-base text-slate-800">Davi Lucas</h4>
-                                    <p class="text-xs text-slate-500 mb-3">3º Ano A - Matutino</p>
-                                    <div class="bg-slate-50 p-3 rounded border border-slate-100">
-                                        <p class="text-[11px] uppercase tracking-wide font-semibold text-slate-500 mb-1">Saiu com:</p>
-                                        <p class="text-sm font-bold text-slate-900">Avó: Maria Silva</p>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-        </main>
+        </div>
+        <div class="flex items-center gap-2">
+            <span id="relogio-mobile" class="font-mono text-xs bg-black/25 px-2.5 py-1.5 rounded-lg text-blue-100 font-bold border border-white/10">--:--</span>
+            <button type="button" onclick="abrirModalPerfil()" class="bg-white/15 hover:bg-white/25 text-white p-2 rounded-xl text-xs font-bold border border-white/15 active:scale-95">
+                👤
+            </button>
+        </div>
     </div>
 
-    <!-- MODAIS DO SISTEMA -->
+    <!-- Overlay Escuro do Menu Mobile -->
+    <div id="overlay-mobile" onclick="toggleMenuMobile()" class="fixed inset-0 bg-slate-950/75 z-[95] hidden md:hidden backdrop-blur-sm transition-opacity"></div>
 
     <!-- ========================================================================= -->
-    <!-- NOVA FICHA CADASTRAL DO GESTOR (AMPLIADA) -->
+    <!-- MENU LATERAL (COM DESTAQUE FORTE NO MOBILE E NO PC) -->
     <!-- ========================================================================= -->
-    <div id="modalPerfil" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden flex justify-center items-center z-[110] p-4 overflow-y-auto">
-        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto max-h-[95vh]">
+    <aside id="menu-lateral" class="fixed md:sticky left-0 top-0 w-72 md:w-64 bg-marinho text-white flex-col h-screen z-[100] transform -translate-x-full md:translate-x-0 transition-all duration-300 flex shrink-0 shadow-2xl md:shadow-none border-r-4 border-laranja md:border-r-0">
+        <div class="p-6 flex justify-between items-center shrink-0 border-b border-white/10 bg-black/15">
+            <div>
+                <h1 class="font-heading text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-laranja inline-block"></span> PENIEL
+                </h1>
+                <span class="text-xs font-sans font-semibold block text-blue-300 mt-0.5" id="label-unidade-menu">Unidade Matriz</span>
+            </div>
+            <button type="button" onclick="toggleMenuMobile()" class="md:hidden bg-white/10 hover:bg-red-500/30 text-white w-9 h-9 rounded-xl text-xl font-bold flex items-center justify-center transition">&times;</button>
+        </div>
+
+        <nav class="flex-1 px-3 space-y-1.5 mt-3 overflow-y-auto pb-6">
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-3 px-3">Geral</div>
+            <a href="index.html" class="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-laranja to-orange-500 rounded-xl font-bold text-white shadow-md">
+                <span>📈 Dashboard</span>
+                <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full">Ativo</span>
+            </a>
             
-            <div class="p-6 border-b border-slate-100 bg-marinho text-white flex justify-between items-center sticky top-0 z-10">
-                <div>
-                    <h3 class="font-bold text-xl font-heading flex items-center gap-2">👤 Ficha Cadastral do Gestor</h3>
-                    <p class="text-blue-200 text-xs mt-1">Informações completas e dados profissionais do administrador da unidade.</p>
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Captação</div>
+            <a href="painel.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 hover:text-white rounded-xl font-medium transition">📥 Leads Typebot</a>
+            
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Secretaria</div>
+            <a href="matriculas.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 hover:text-white rounded-xl font-medium transition">📝 Matrículas</a>
+            <a href="fichas.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 hover:text-white rounded-xl font-medium transition">👥 Fichas (Alunos/Pais)</a>
+            <a href="rematricula.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 hover:text-white rounded-xl font-medium transition">🔄 Rematrícula</a>
+
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Acadêmico</div>
+            <a href="calendario.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 hover:text-white rounded-xl font-medium transition">📅 Calendário e Equipe</a>
+            <a href="notas.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 hover:text-white rounded-xl font-medium transition">📊 Notas e Avaliações</a>
+
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Administrativo</div>
+            <a href="financeiro.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 hover:text-white rounded-xl font-medium transition">💰 Gestão Financeira</a>
+            <a href="configuracoes.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 hover:text-white rounded-xl font-medium transition">⚙️ Configurações / ADM</a>
+        </nav>
+        
+        <!-- Seletor de Paleta Rápido no Menu Mobile + Botão Sair -->
+        <div class="p-4 border-t border-white/10 bg-black/20 space-y-2.5 shrink-0">
+            <div class="flex items-center justify-between bg-white/10 px-3 py-2 rounded-xl">
+                <span class="text-xs font-bold text-blue-100">🎨 Cor do Tema / Menu</span>
+                <div class="flex items-center gap-1.5">
+                    <button type="button" onclick="mudarCorSessao('#003057')" class="w-5 h-5 rounded-full bg-[#003057] border-2 border-white"></button>
+                    <button type="button" onclick="mudarCorSessao('#1e1b4b')" class="w-5 h-5 rounded-full bg-[#1e1b4b] border border-white/50"></button>
+                    <button type="button" onclick="mudarCorSessao('#064e3b')" class="w-5 h-5 rounded-full bg-[#064e3b] border border-white/50"></button>
+                    <input type="color" id="seletorCorMenu" value="#003057" onchange="mudarCorSessao(this.value)" class="w-5 h-5 rounded cursor-pointer bg-transparent border-0">
                 </div>
-                <button onclick="fecharModalPerfil()" class="text-white hover:text-red-300 font-bold text-3xl leading-none transition">&times;</button>
+            </div>
+            <button type="button" onclick="sairDoSistema()" class="w-full flex items-center justify-center gap-2 bg-red-600/80 hover:bg-red-600 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition">
+                🚪 Sair do Sistema
+            </button>
+        </div>
+    </aside>
+
+    <!-- ========================================================================= -->
+    <!-- ÁREA PRINCIPAL DO DASHBOARD -->
+    <!-- ========================================================================= -->
+    <main class="flex-1 p-3 sm:p-5 md:p-8 flex flex-col gap-5 w-full max-w-full overflow-x-hidden">
+        
+        <!-- HEADER PRINCIPAL -->
+        <header class="flex flex-col xl:flex-row justify-between items-start xl:items-center bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm gap-4">
+            <div>
+                <div class="flex flex-wrap items-center gap-2 mb-1">
+                    <span class="bg-blue-100 text-marinho text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider" id="badge-unidade-atual">Unidade Matriz</span>
+                    <span class="text-xs text-green-600 font-bold flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-500 animate-ping"></span> Online</span>
+                </div>
+                <h2 class="font-heading text-xl sm:text-2xl md:text-3xl font-bold text-slate-800" id="saudacao-gestor">Olá, Abraão Lucas</h2>
+                <p class="text-xs text-slate-500">Painel de controle, turmas em tempo real, reuniões e portaria.</p>
             </div>
             
-            <div class="p-8 overflow-y-auto bg-slate-50/50 space-y-8">
-                
-                <!-- Seção 1: Dados Pessoais -->
-                <div>
-                    <h4 class="text-sm font-bold text-marinho uppercase tracking-wider mb-4 border-b border-slate-200 pb-2">1. Dados Pessoais</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Nome Completo</label>
-                            <input type="text" id="inputNomeGestor" value="Abraão Lucas" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 font-bold text-slate-800">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Data de Nascimento</label>
-                            <input type="date" value="1980-10-15" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">CPF</label>
-                            <input type="text" value="000.000.000-00" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">RG / Órgão Emissor</label>
-                            <input type="text" value="00.000.000-0 DETRAN/RJ" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Estado Civil</label>
-                            <select class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 bg-white">
-                                <option>Casado(a)</option>
-                                <option>Solteiro(a)</option>
-                                <option>Divorciado(a)</option>
-                            </select>
-                        </div>
-                    </div>
+            <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 w-full xl:w-auto">
+                <div class="flex items-center justify-center gap-1.5 bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-xs font-bold text-slate-700">
+                    <span>📅</span><span id="data-topo">--/--/----</span>
                 </div>
-
-                <!-- Seção 2: Contato e Endereço -->
-                <div>
-                    <h4 class="text-sm font-bold text-marinho uppercase tracking-wider mb-4 border-b border-slate-200 pb-2">2. Contato e Endereço</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">E-mail Principal (Login)</label>
-                            <input type="email" id="inputEmailGestor" value="abraao@peniel.com" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Telefone / WhatsApp</label>
-                            <input type="text" id="inputTelGestor" value="(21) 99999-9999" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-5">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1">CEP</label>
-                                <input type="text" value="20000-000" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
-                            </div>
-                            <div class="md:col-span-2">
-                                <label class="block text-xs font-bold text-slate-700 mb-1">Endereço Completo</label>
-                                <input type="text" value="Rua Principal, 123, Centro, Rio de Janeiro - RJ" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
-                            </div>
-                        </div>
-                    </div>
+                <div class="flex items-center justify-center gap-1.5 bg-slate-50 border border-slate-200 px-2.5 py-2 rounded-xl">
+                    <span class="text-sm">🏫</span>
+                    <select id="seletorUnidade" onchange="mudarUnidade()" class="bg-transparent text-xs font-bold text-slate-700 focus:outline-none cursor-pointer w-full">
+                        <option value="Matriz">Unidade Matriz</option>
+                        <option value="Filial Botafogo">Filial Botafogo</option>
+                        <option value="Filial Barra">Filial Barra</option>
+                    </select>
                 </div>
-
-                <!-- Seção 3: Dados Profissionais -->
-                <div>
-                    <h4 class="text-sm font-bold text-marinho uppercase tracking-wider mb-4 border-b border-slate-200 pb-2">3. Dados Profissionais</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Cargo Atual</label>
-                            <input type="text" value="Gestor Geral / Diretor" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold text-slate-700 bg-slate-100 focus:outline-none" readonly>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Data de Admissão / Início</label>
-                            <input type="date" value="2025-08-01" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Unidade Base (Lotação)</label>
-                            <select class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 bg-white">
-                                <option>Peniel • Matriz (Rio de Janeiro)</option>
-                                <option>Peniel • Filial Botafogo</option>
-                                <option>Peniel • Filial Barra da Tijuca</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-            
-            <!-- Footer com Botões de Voltar e Salvar -->
-            <div class="p-5 border-t border-slate-200 bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-                <button onclick="fecharModalPerfil()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg text-sm transition flex items-center gap-2 w-full sm:w-auto justify-center">
-                    &larr; Voltar ao Dashboard
+                <button type="button" onclick="abrirModalPerfil()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5">
+                    👤 <span id="nomeGestorBtn" class="truncate">Abraão Lucas</span>
                 </button>
-                <div class="flex gap-3 w-full sm:w-auto">
-                    <button onclick="fecharModalPerfil()" class="flex-1 sm:flex-none px-5 py-2.5 text-slate-600 font-bold hover:bg-slate-100 rounded-lg text-sm transition">
+                <button type="button" onclick="ativarSistemaSonoro()" id="btn-ativar-som" class="bg-laranja hover:bg-orange-600 text-white px-3 py-2 rounded-xl text-xs font-bold shadow-sm transition flex items-center justify-center gap-1">
+                    🔊 Alertas
+                </button>
+                <button type="button" onclick="sairDoSistema()" class="col-span-2 sm:col-span-1 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-3 py-2 rounded-xl text-xs font-bold shadow-sm transition flex items-center justify-center gap-1">
+                    🚪 Sair
+                </button>
+            </div>
+        </header>
+
+        <!-- BANNER DE ALERTA VISUAL DA PORTARIA -->
+        <div id="alerta-visual" class="hidden bg-red-600 text-white p-4 rounded-2xl shadow-lg flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-2 border-red-300">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl sm:text-3xl">🚨</span>
+                <div>
+                    <h4 class="font-bold text-sm sm:text-base">Atenção! Nova Solicitação de Saída na Portaria</h4>
+                    <p class="text-red-100 text-xs">A aluna <strong>Isabela Mendes (2º Ano B)</strong> aguarda conferência e liberação.</p>
+                </div>
+            </div>
+            <div class="flex gap-2 w-full sm:w-auto">
+                <button type="button" onclick="abrirModalDetalhesPortaria('isabela')" class="flex-1 sm:flex-none bg-white text-red-700 px-4 py-2 rounded-xl font-bold hover:bg-red-50 transition shadow-sm text-xs whitespace-nowrap">
+                    🔍 Ver Detalhes Agora
+                </button>
+                <button type="button" onclick="verificarLiberacaoPendentes()" class="bg-red-800 text-white px-3 py-2 rounded-xl font-bold hover:bg-red-900 transition text-xs whitespace-nowrap">
+                    Ir ao Card &darr;
+                </button>
+            </div>
+        </div>
+
+        <!-- KPIS DE ACESSO RÁPIDO (2 COLUNAS NO MOBILE, 4 NO PC) -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <a href="matriculas.html" class="block bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm border-l-4 border-l-blue-500 hover:-translate-y-0.5 hover:shadow-md transition-all group">
+                <div class="flex justify-between items-start"><h3 class="text-slate-500 text-[10px] sm:text-xs font-bold uppercase tracking-wider">Alunos na Escola</h3><span class="text-blue-500 text-sm">↗</span></div>
+                <div class="text-2xl sm:text-3xl font-black text-slate-800 mt-1">342 <span class="text-xs font-semibold text-green-600 block sm:inline">de 350</span></div>
+            </a>
+            <a href="notas.html" class="block bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm border-l-4 border-l-orange-500 hover:-translate-y-0.5 hover:shadow-md transition-all group">
+                <div class="flex justify-between items-start"><h3 class="text-slate-500 text-[10px] sm:text-xs font-bold uppercase tracking-wider">Faltas Hoje</h3><span class="text-orange-500 text-sm">↗</span></div>
+                <div class="text-2xl sm:text-3xl font-black text-slate-800 mt-1">8 <span class="text-xs font-semibold text-slate-400 block sm:inline">alunos</span></div>
+            </a>
+            <a href="financeiro.html" class="block bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm border-l-4 border-l-red-500 hover:-translate-y-0.5 hover:shadow-md transition-all group">
+                <div class="flex justify-between items-start"><h3 class="text-slate-500 text-[10px] sm:text-xs font-bold uppercase tracking-wider">Inadimplência</h3><span class="text-red-500 text-sm">↗</span></div>
+                <div class="text-2xl sm:text-3xl font-black text-slate-800 mt-1">12% <span class="text-xs font-semibold text-red-500 block sm:inline">Atenção</span></div>
+            </a>
+            <a href="rematricula.html" class="block bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm border-l-4 border-l-purple-500 hover:-translate-y-0.5 hover:shadow-md transition-all group">
+                <div class="flex justify-between items-start"><h3 class="text-slate-500 text-[10px] sm:text-xs font-bold uppercase tracking-wider">Retenção 2027</h3><span class="text-purple-500 text-sm">↗</span></div>
+                <div class="text-2xl sm:text-3xl font-black text-slate-800 mt-1">65% <span class="text-xs font-semibold text-green-600 block sm:inline">Na meta</span></div>
+            </a>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- PAINEL DE SALAS E AULAS (HORÁRIOS EM TEMPO REAL E CORES DINÂMICAS) -->
+        <!-- ========================================================================= -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-5 border-b border-slate-100 pb-4 gap-3">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h3 class="font-bold text-slate-800 text-base sm:text-lg">📡 Painel de Salas e Aulas (Tempo Real)</h3>
+                        <span id="badge-contagem-salas" class="bg-green-100 text-green-800 px-2.5 py-0.5 rounded-full text-xs font-bold border border-green-200">--</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-0.5">As cores e os horários das turmas mudam automaticamente conforme o relógio ou clique no status para alterar.</p>
+                </div>
+
+                <!-- Relógio Ao Vivo + Simulador de Turno -->
+                <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+                    <div class="bg-slate-900 text-white px-3.5 py-2 rounded-xl text-xs font-mono font-bold flex items-center gap-2 shadow-sm">
+                        <span class="w-2 h-2 rounded-full bg-green-400 animate-ping"></span>
+                        <span>Agora:</span>
+                        <span id="relogio-tempo-real" class="text-amber-300 text-sm">--:--:--</span>
+                    </div>
+
+                    <select id="seletorModoHorario" onchange="atualizarSalasTempoReal()" class="flex-1 sm:flex-none bg-slate-50 border border-slate-300 text-slate-700 text-xs font-bold rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-marinho">
+                        <option value="auto">⏱️ Sincronizar com Relógio Atual</option>
+                        <option value="manha_aula">☀️ Simular Manhã: Em Aula (08:30)</option>
+                        <option value="manha_intervalo">☕ Simular Recreio Manhã (09:55)</option>
+                        <option value="tarde_aula">🌤️ Simular Tarde: Em Aula (14:30)</option>
+                        <option value="encerrado">🌙 Simular Fim de Expediente (18:30)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Grid Dinâmico de Salas Renderizado via JS -->
+            <div id="grid-salas-tempo-real" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                <!-- Preenchido em tempo real pelo motor JS -->
+            </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- LAYOUT INFERIOR (REUNIÕES COM OK, GRÁFICOS E PORTARIA COM DETALHES) -->
+        <!-- ========================================================================= -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Coluna Esquerda: Reuniões Interativas + Gráficos -->
+            <div class="lg:col-span-5 flex flex-col gap-6">
+                
+                <!-- CARD DE REUNIÕES COM BOTÃO OK DE CONFIRMAÇÃO -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1.5 h-full bg-blue-600"></div>
+                    <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-100">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-sm sm:text-base flex items-center gap-2">🤝 Reuniões & Pautas Internas</h3>
+                            <p class="text-[11px] text-slate-500">Toque em <strong>Confirmar OK</strong> para validar presença.</p>
+                        </div>
+                        <span id="badge-reunioes-status" class="bg-blue-100 text-blue-800 text-[11px] font-bold px-2.5 py-1 rounded-full">0/3 OK</span>
+                    </div>
+
+                    <ul id="lista-reunioes" class="space-y-3 mb-4">
+                        <!-- Renderizado via JS -->
+                    </ul>
+
+                    <!-- Adicionar rápida pauta/reunião interna -->
+                    <div class="flex gap-2 pt-2 border-t border-slate-100">
+                        <input type="text" id="inputNovaReuniao" placeholder="Nova reunião ou aviso interno..." class="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <button type="button" onclick="adicionarReuniaoRapida()" class="bg-marinho hover:bg-blue-900 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0">
+                            + Incluir
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Gráficos Responsivos Lado a Lado no Tablet/Mobile -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center">
+                        <h3 class="font-bold text-slate-700 mb-3 text-center text-xs uppercase tracking-wider">Frequência Diária</h3>
+                        <div class="w-36 h-36 relative"><canvas id="graficoFrequencia"></canvas></div>
+                    </div>
+                    
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center">
+                        <h3 class="font-bold text-slate-700 mb-3 text-center text-xs uppercase tracking-wider">Saúde Financeira</h3>
+                        <div class="w-36 h-36 relative"><canvas id="graficoFinanceiro"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coluna Direita: Bloco de Notas + Central de Liberações (Portaria) -->
+            <div class="lg:col-span-7 flex flex-col gap-6">
+                
+                <!-- Bloco de Anotações -->
+                <div class="bg-amber-50 rounded-2xl border border-amber-200 shadow-sm p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold text-amber-900 text-xs sm:text-sm flex items-center gap-2">📌 Bloco de Anotações Rápidas (Diretoria)</h3>
+                        <button type="button" onclick="salvarAnotacao()" class="text-xs bg-amber-200 text-amber-900 px-3 py-1.5 rounded-lg font-bold hover:bg-amber-300 transition shadow-sm">💾 Salvar Nota</button>
+                    </div>
+                    <textarea id="campo-anotacao" class="w-full bg-white/70 rounded-xl border border-amber-200/80 focus:outline-none focus:ring-2 focus:ring-amber-400 p-2.5 text-xs sm:text-sm text-amber-950 resize-none font-medium" rows="2" placeholder="Digite observações internas do turno..."></textarea>
+                </div>
+
+                <!-- ========================================================================= -->
+                <!-- CENTRAL DE LIBERAÇÕES DE SAÍDA E PORTARIA (CARDS 100% FUNCIONAIS) -->
+                <!-- ========================================================================= -->
+                <div id="central-liberacoes" class="bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col flex-1 scroll-mt-20 overflow-hidden">
+                    <div class="p-4 border-b border-slate-100 bg-slate-50 flex flex-wrap justify-between items-center gap-2">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-sm sm:text-base">🛂 Central de Liberações de Saída e Portaria</h3>
+                            <p class="text-[11px] text-slate-500">Toque em <strong>Ver Detalhes Completos</strong> em qualquer card para abrir a ficha da portaria.</p>
+                        </div>
+                        <span class="bg-orange-100 text-laranja text-xs font-bold px-2.5 py-1 rounded-full">Monitoramento Ativo</span>
+                    </div>
+                    
+                    <div class="p-4 sm:p-6 bg-slate-50/40 flex-1">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="container-cards-portaria">
+                            
+                            <!-- CARD 1: AGUARDANDO LIBERAÇÃO EM VERMELHO (ISABELA MENDES) -->
+                            <div id="card-portaria-isabela" class="border-2 border-red-400 bg-red-50/90 rounded-2xl p-4 shadow-md transition-all duration-300 flex flex-col justify-between">
+                                <!-- Preenchido via JS para suportar atualização de estado -->
+                            </div>
+
+                            <!-- CARD 2: LIBERAÇÃO MAIS CEDO REALIZADA (DAVI LUCAS) -->
+                            <div id="card-portaria-davi" class="border border-slate-200 bg-white rounded-2xl p-4 shadow-sm hover:border-blue-300 transition-all duration-300 flex flex-col justify-between">
+                                <!-- Preenchido via JS -->
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ========================================================================= -->
+    <!-- MODAL NOVO: PRONTUÁRIO DETALHADO DE SAÍDA / LIBERAÇÃO NA PORTARIA -->
+    <!-- (Resolve o clique do card vermelho pendente e do card de saída mais cedo) -->
+    <!-- ========================================================================= -->
+    <div id="modalDetalhesPortaria" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[140] p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto max-h-[95vh]">
+            
+            <!-- Cabeçalho Dinâmico (Vermelho se Pendente, Verde/Marinho se Liberado) -->
+            <div id="header-modal-portaria" class="p-5 bg-red-600 text-white flex justify-between items-start gap-3">
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl" id="icone-modal-portaria">🚨</span>
+                    <div>
+                        <span id="badge-modal-portaria" class="text-[10px] font-bold uppercase tracking-widest bg-white/20 px-2.5 py-0.5 rounded-full">Aguardando Autorização</span>
+                        <h3 class="font-bold text-lg sm:text-xl font-heading mt-1" id="titulo-modal-portaria">Ficha de Liberação na Portaria</h3>
+                    </div>
+                </div>
+                <button type="button" onclick="fecharModalDetalhesPortaria()" class="text-white hover:text-red-200 font-bold text-3xl leading-none">&times;</button>
+            </div>
+
+            <div class="p-5 sm:p-6 overflow-y-auto bg-slate-50 space-y-5">
+                
+                <!-- Bloco 1: Informações do Aluno e Motivo da Saída Antecipada -->
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center border-b border-slate-100 pb-3 mb-3 gap-2">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase text-slate-400">Estudante</span>
+                            <h4 class="font-extrabold text-slate-800 text-base sm:text-lg" id="det-portaria-aluno">--</h4>
+                            <p class="text-xs text-slate-500 font-medium" id="det-portaria-turma">--</p>
+                        </div>
+                        <div class="sm:text-right">
+                            <span class="text-[10px] font-bold uppercase text-slate-400 block">Horário da Solicitação / Saída</span>
+                            <span class="font-mono font-bold text-sm text-marinho bg-blue-50 px-2.5 py-1 rounded-lg inline-block mt-0.5" id="det-portaria-horario">--</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div class="bg-amber-50 border border-amber-200/80 p-3 rounded-lg">
+                            <span class="font-bold text-amber-900 uppercase text-[10px] block mb-0.5">📋 Motivo da Saída Mais Cedo:</span>
+                            <p class="font-semibold text-amber-950" id="det-portaria-motivo">--</p>
+                        </div>
+                        <div class="bg-slate-50 border border-slate-200 p-3 rounded-lg">
+                            <span class="font-bold text-slate-500 uppercase text-[10px] block mb-0.5">📲 Meio de Autorização dos Pais:</span>
+                            <p class="font-semibold text-slate-800" id="det-portaria-origem">--</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bloco 2: Carteira de Identidade (RG) e Biometria do Responsável pela Retirada -->
+                <div class="bg-gradient-to-br from-emerald-50 via-teal-50 to-green-100 border-2 border-emerald-300 rounded-xl p-4 shadow-inner">
+                    <div class="flex flex-wrap justify-between items-center border-b border-emerald-200 pb-2 mb-3 gap-2">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-950">🪪 Documento do Responsável na Portaria</span>
+                        <span class="bg-green-600 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm">✓ IDENTIDADE E FOTO VALIDADAS</span>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-4 items-center">
+                        <div class="w-20 h-24 bg-white border-2 border-emerald-400 rounded-xl flex flex-col items-center justify-center text-3xl shrink-0 shadow-sm" id="det-portaria-avatar">
+                            🧑🏽‍💼
+                            <span class="text-[9px] font-bold text-slate-400 mt-1">FOTO 3x4</span>
+                        </div>
+                        <div class="space-y-1.5 text-xs flex-1 w-full text-center sm:text-left">
+                            <div>
+                                <span class="text-[10px] text-emerald-800 font-bold uppercase block">Nome Completo do Portador:</span>
+                                <p class="font-black text-slate-900 text-sm sm:text-base" id="det-portaria-resp-nome">--</p>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 pt-1">
+                                <div class="bg-white/60 p-2 rounded-lg">
+                                    <span class="text-[10px] text-emerald-800 font-bold uppercase block">RG / Órgão:</span>
+                                    <p class="font-mono font-bold text-slate-800" id="det-portaria-resp-rg">--</p>
+                                </div>
+                                <div class="bg-white/60 p-2 rounded-lg">
+                                    <span class="text-[10px] text-emerald-800 font-bold uppercase block">CPF:</span>
+                                    <p class="font-mono font-bold text-slate-800" id="det-portaria-resp-cpf">--</p>
+                                </div>
+                            </div>
+                            <div class="pt-1">
+                                <span class="text-[10px] text-emerald-800 font-bold uppercase block">Parentesco / Vínculo Autorizado:</span>
+                                <p class="font-bold text-marinho" id="det-portaria-resp-vinculo">--</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bloco 3: Auditoria da Portaria e Observações -->
+                <div class="bg-white p-4 rounded-xl border border-slate-200 text-xs space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-slate-500 uppercase text-[10px]">👮 Agente de Portaria Responsável:</span>
+                        <span class="font-bold text-slate-800" id="det-portaria-porteiro">--</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-slate-500 uppercase text-[10px]">🔐 Protocolo de Segurança:</span>
+                        <span class="font-mono text-slate-600" id="det-portaria-protocolo">--</span>
+                    </div>
+                    <div class="pt-2 border-t border-slate-100">
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Observação Interna da Secretaria/Portaria:</label>
+                        <input type="text" id="det-portaria-obs-input" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Adicionar observação ao registro...">
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Rodapé de Ações do Modal da Portaria -->
+            <div class="p-4 border-t border-slate-200 bg-white flex flex-col sm:flex-row justify-between items-center gap-2 shrink-0">
+                <button type="button" onclick="window.print()" class="w-full sm:w-auto px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition">
+                    🖨️ Imprimir Comprovante
+                </button>
+                <div class="flex gap-2 w-full sm:w-auto">
+                    <button type="button" onclick="fecharModalDetalhesPortaria()" class="flex-1 sm:flex-none px-4 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-xl text-xs transition">
                         Fechar
                     </button>
-                    <button onclick="salvarPerfilGestor()" class="flex-1 sm:flex-none bg-marinho hover:bg-blue-900 text-white px-6 py-2.5 rounded-lg font-bold text-sm shadow-sm transition">
-                        💾 Salvar Ficha
+                    <button type="button" id="btn-modal-confirmar-saida" onclick="confirmarSaidaEstudante(); fecharModalDetalhesPortaria();" class="flex-1 sm:flex-none px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-xs shadow-md transition">
+                        ✅ Autorizar e Liberar Saída Agora
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- ========================================================================= -->
+    <!-- MODAL: FICHA CADASTRAL DO GESTOR -->
+    <!-- ========================================================================= -->
+    <div id="modalPerfil" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden flex justify-center items-center z-[140] p-4 overflow-y-auto">
+        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto max-h-[95vh]">
+            <div class="p-5 sm:p-6 border-b border-slate-100 bg-marinho text-white flex justify-between items-center sticky top-0 z-10">
+                <div>
+                    <h3 class="font-bold text-lg sm:text-xl font-heading flex items-center gap-2">👤 Ficha Cadastral do Gestor</h3>
+                    <p class="text-blue-200 text-xs mt-0.5">Informações completas do administrador da unidade.</p>
+                </div>
+                <button type="button" onclick="fecharModalPerfil()" class="text-white hover:text-red-300 font-bold text-3xl leading-none transition">&times;</button>
+            </div>
+            
+            <div class="p-5 sm:p-8 overflow-y-auto bg-slate-50/50 space-y-6">
+                <div>
+                    <h4 class="text-xs font-bold text-marinho uppercase tracking-wider mb-3 border-b border-slate-200 pb-1.5">1. Dados Pessoais e Contato</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Nome Completo</label>
+                            <input type="text" id="inputNomeGestor" value="Abraão Lucas" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm font-bold text-slate-800">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Cargo</label>
+                            <input type="text" value="Diretor / Gestor Master" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm bg-slate-100 font-semibold" readonly>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">E-mail Principal</label>
+                            <input type="email" id="inputEmailGestor" value="abraao@peniel.com" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">WhatsApp</label>
+                            <input type="text" id="inputTelGestor" value="(21) 99999-9999" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Unidade Base</label>
+                            <input type="text" value="Peniel • Matriz RJ" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-4 border-t border-slate-200 bg-white flex justify-end gap-3">
+                <button type="button" onclick="fecharModalPerfil()" class="px-5 py-2.5 text-slate-600 font-bold hover:bg-slate-100 rounded-xl text-xs transition">Fechar</button>
+                <button type="button" onclick="salvarPerfilGestor()" class="bg-marinho hover:bg-blue-900 text-white px-6 py-2.5 rounded-xl font-bold text-xs shadow-sm transition">💾 Salvar Ficha</button>
+            </div>
+        </div>
+    </div>
 
-    <!-- Modal: Estatísticas da Turma -->
-    <div id="modalEstatisticasTurma" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm hidden flex justify-center items-center z-[110] p-4">
+    <!-- ========================================================================= -->
+    <!-- MODAL: ESTATÍSTICAS DETALHADAS DA TURMA -->
+    <!-- ========================================================================= -->
+    <div id="modalEstatisticasTurma" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm hidden flex justify-center items-center z-[140] p-4">
         <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl flex flex-col overflow-hidden max-h-[95vh]">
             <div class="p-5 border-b border-slate-100 bg-marinho text-white flex justify-between items-center">
                 <div>
                     <h3 class="font-bold text-lg font-heading">📊 Relatório Detalhado da Turma</h3>
-                    <p class="text-blue-200 text-sm" id="tituloModalTurma">Turma Selecionada</p>
+                    <p class="text-blue-200 text-xs sm:text-sm" id="tituloModalTurma">Turma Selecionada</p>
                 </div>
-                <button onclick="fecharEstatisticasTurma()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
+                <button type="button" onclick="fecharEstatisticasTurma()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
             </div>
             <div class="flex border-b border-slate-200 bg-slate-50 px-2 pt-2 overflow-x-auto hide-scrollbar">
-                <button onclick="mudarAbaTurma('diario')" id="aba-diario" class="px-5 py-3 text-sm font-bold border-b-2 border-marinho text-marinho whitespace-nowrap">Diário (Hoje)</button>
-                <button onclick="mudarAbaTurma('mensal')" id="aba-mensal" class="px-5 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap">Mensal</button>
-                <button onclick="mudarAbaTurma('trimestral')" id="aba-trimestral" class="px-5 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap">Trimestral</button>
-                <button onclick="mudarAbaTurma('semestral')" id="aba-semestral" class="px-5 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap">Semestral</button>
-                <button onclick="mudarAbaTurma('anual')" id="aba-anual" class="px-5 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap">Anual (Histórico)</button>
+                <button type="button" onclick="mudarAbaTurma('diario')" id="aba-diario" class="px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-marinho text-marinho whitespace-nowrap">Diário (Hoje)</button>
+                <button type="button" onclick="mudarAbaTurma('mensal')" id="aba-mensal" class="px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap">Mensal</button>
+                <button type="button" onclick="mudarAbaTurma('trimestral')" id="aba-trimestral" class="px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap">Trimestral</button>
+                <button type="button" onclick="mudarAbaTurma('anual')" id="aba-anual" class="px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap">Anual (Meta 280 pts)</button>
             </div>
-            <div class="p-6 overflow-y-auto bg-slate-50/50 flex-1">
-                <div id="conteudo-diario" class="space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm border-l-4 border-l-blue-500"><p class="text-[11px] font-bold text-slate-500 uppercase">Frequência de Hoje</p><p class="text-2xl font-black text-slate-800">98%</p></div>
-                        <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm border-l-4 border-l-orange-500"><p class="text-[11px] font-bold text-slate-500 uppercase">Conteúdo do Dia</p><p class="text-lg font-bold text-slate-800 mt-1 leading-tight">Ciclo da Água (Cap. 4)</p></div>
-                        <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm border-l-4 border-l-green-500"><p class="text-[11px] font-bold text-slate-500 uppercase">Comportamento</p><p class="text-2xl font-black text-slate-800">Excelente</p></div>
-                    </div>
+            <div class="p-5 sm:p-6 overflow-y-auto bg-slate-50/50 flex-1">
+                <div id="conteudo-diario" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm border-l-4 border-l-blue-500"><p class="text-[11px] font-bold text-slate-500 uppercase">Frequência de Hoje</p><p class="text-2xl font-black text-slate-800">98% <span class="text-xs font-normal text-green-600">(28/29)</span></p></div>
+                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm border-l-4 border-l-orange-500"><p class="text-[11px] font-bold text-slate-500 uppercase">Conteúdo do Dia</p><p class="text-sm font-bold text-slate-800 mt-1">Ciclo da Água e Produção Textual</p></div>
+                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm border-l-4 border-l-green-500"><p class="text-[11px] font-bold text-slate-500 uppercase">Entrega de Tarefas</p><p class="text-2xl font-black text-slate-800">95%</p></div>
                 </div>
-                <div id="conteudo-mensal" class="space-y-6 hidden">
-                    <h4 class="font-bold text-slate-700">Resumo do Mês Vigente</h4>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Média de Provas Parciais</p><p class="text-xl font-bold text-marinho">8.2</p></div>
-                        <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Alunos Inadimplentes na Turma</p><p class="text-xl font-bold text-red-600">3 Alunos</p></div>
-                    </div>
+                <div id="conteudo-mensal" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Média Parcial</p><p class="text-2xl font-black text-marinho mt-1">8.2 <span class="text-xs font-normal text-green-600">(Meta ≥ 7.0)</span></p></div>
+                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Incentivo à Leitura</p><p class="text-2xl font-black text-blue-600 mt-1">3.4 livros</p></div>
+                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Inadimplência</p><p class="text-2xl font-black text-red-600 mt-1">2 Alunos</p></div>
                 </div>
-                <div id="conteudo-trimestral" class="hidden"><p class="text-slate-500">Dados consolidados do Trimestre...</p></div>
-                <div id="conteudo-semestral" class="hidden"><p class="text-slate-500">Histórico Semestral...</p></div>
-                <div id="conteudo-anual" class="hidden"><p class="text-slate-500">Visão Anual e Retenção...</p></div>
+                <div id="conteudo-trimestral" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Acima da Média (≥ 7,0)</p><p class="text-2xl font-black text-green-600 mt-1">25 Alunos</p></div>
+                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Em Recuperação (< 7,0)</p><p class="text-2xl font-black text-orange-600 mt-1">4 Alunos</p></div>
+                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Alerta de Faltas (> 25%)</p><p class="text-2xl font-black text-red-600 mt-1">1 Aluno</p></div>
+                </div>
+                <div id="conteudo-anual" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Pontuação Acumulada Média</p><p class="text-2xl font-black text-marinho mt-1">235 / 280 pts</p></div>
+                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Renovação 2027</p><p class="text-2xl font-black text-green-600 mt-1">78% Confirmados</p></div>
+                </div>
             </div>
-            <div class="p-4 border-t border-slate-100 bg-white flex justify-end">
-                <button onclick="fecharEstatisticasTurma()" class="bg-slate-800 hover:bg-slate-900 text-white px-5 py-2.5 rounded-lg font-bold text-sm shadow-sm transition">Fechar Relatório</button>
+            <div class="p-4 border-t border-slate-100 bg-white flex justify-end gap-2">
+                <a href="notas.html" class="bg-blue-50 hover:bg-blue-100 text-marinho border border-blue-200 px-4 py-2 rounded-xl font-bold text-xs transition">Ir ao Diário</a>
+                <button type="button" onclick="fecharEstatisticasTurma()" class="bg-slate-800 hover:bg-slate-900 text-white px-5 py-2 rounded-xl font-bold text-xs transition">Fechar</button>
             </div>
         </div>
     </div>
 
-
     <!-- ========================================================================= -->
-    <!-- SCRIPTS GERAIS DO DASHBOARD E INTERATIVIDADE DE LIBERAÇÃO -->
+    <!-- MOTOR JAVASCRIPT COMPLETO -->
     <!-- ========================================================================= -->
     <script>
-        // Função de controle do Menu Mobile Nativo
+        // 1. MENU MOBILE E CORES DE PALETA
         function toggleMenuMobile() {
             const menu = document.getElementById('menu-lateral');
             const overlay = document.getElementById('overlay-mobile');
@@ -455,17 +538,451 @@
             overlay.classList.toggle('hidden');
         }
 
+        function mudarCorSessao(cor) {
+            const menuLat = document.getElementById('menu-lateral');
+            const barraMobile = document.getElementById('barra-topo-mobile');
+            if (menuLat) menuLat.style.backgroundColor = cor;
+            if (barraMobile) barraMobile.style.backgroundColor = cor;
+            const inputMenu = document.getElementById('seletorCorMenu');
+            if (inputMenu) inputMenu.value = cor;
+            localStorage.setItem('peniel_cor_sessao', cor);
+        }
+
+        function sairDoSistema() {
+            if(confirm("Deseja encerrar sua sessão no sistema Peniel?")) {
+                window.location.href = 'configuracoes.html';
+            }
+        }
+
+        // 2. BANCO DE DADOS DAS SALAS EM TEMPO REAL
+        const salasEscola = [
+            { id: 'sala1', turma: '3º Ano A (Fundamental)', turno: 'Manhã (08h às 12h)', sala: 'Sala 02', materia: 'Ciências', prof: 'Prof. Leandro', statusManual: null },
+            { id: 'sala2', turma: '2º Ano B (Fundamental)', turno: 'Tarde (13h30 às 17h30)', sala: 'Sala 04', materia: 'Português', prof: 'Prof. Mariana', statusManual: null },
+            { id: 'sala3', turma: 'Pré II (Infantil)', turno: 'Semi-Integral (07h às 15h)', sala: 'Espaço Kids', materia: 'Musicalização', prof: 'Tia Ana', statusManual: null },
+            { id: 'sala4', turma: 'Turma Integral Peniel', turno: 'Integral (07h às 17h30)', sala: 'Lab. Robótica', materia: 'Robótica & Xadrez', prof: 'Prof. Roberto', statusManual: null }
+        ];
+
+        const estilosStatusSala = {
+            'EM_AULA': {
+                borda: 'border-green-300 bg-green-50/50',
+                faixa: 'bg-green-500',
+                badge: 'bg-green-100 text-green-800 border border-green-300',
+                dot: 'bg-green-500 animate-ping',
+                texto: 'Em Aula Agora'
+            },
+            'INTERVALO': {
+                borda: 'border-amber-300 bg-amber-50/60',
+                faixa: 'bg-amber-500',
+                badge: 'bg-amber-100 text-amber-800 border border-amber-300',
+                dot: 'bg-amber-500 animate-pulse',
+                texto: '☕ Recreio / Intervalo'
+            },
+            'AGUARDANDO': {
+                borda: 'border-blue-200 bg-blue-50/40',
+                faixa: 'bg-blue-500',
+                badge: 'bg-blue-100 text-blue-800 border border-blue-200',
+                dot: 'bg-blue-500',
+                texto: '⏳ Aguardando Turno'
+            },
+            'ENCERRADO': {
+                borda: 'border-slate-200 bg-slate-100/70 opacity-80',
+                faixa: 'bg-slate-400',
+                badge: 'bg-slate-200 text-slate-700 border border-slate-300',
+                dot: 'bg-slate-500',
+                texto: '✅ Turno Encerrado'
+            }
+        };
+
+        function obterBlocoHorarioAtual(modo, horaDecimal) {
+            if (modo === 'manha_aula') return '08:20 - 09:10 (2º Tempo Matutino)';
+            if (modo === 'manha_intervalo') return '09:50 - 10:15 (Recreio Matutino)';
+            if (modo === 'tarde_aula') return '14:20 - 15:10 (2º Tempo Vespertino)';
+            if (modo === 'encerrado') return '18:00 - Salas Higienizadas e Fechadas';
+
+            if (horaDecimal >= 7 && horaDecimal < 9.8) return 'Bloco Atual: 08:00 às 09:50';
+            if (horaDecimal >= 9.8 && horaDecimal < 10.25) return 'Recreio: 09:50 às 10:15';
+            if (horaDecimal >= 10.25 && horaDecimal < 12) return 'Bloco Atual: 10:15 às 12:00';
+            if (horaDecimal >= 12 && horaDecimal < 13.5) return 'Almoço / Troca: 12:00 às 13:30';
+            if (horaDecimal >= 13.5 && horaDecimal < 15.5) return 'Bloco Atual: 13:30 às 15:30';
+            if (horaDecimal >= 15.5 && horaDecimal < 15.8) return 'Recreio Tarde: 15:30 às 15:50';
+            if (horaDecimal >= 15.8 && horaDecimal <= 17.5) return 'Bloco Final: 15:50 às 17:30';
+            return 'Fora do Horário de Aulas (07h às 17h30)';
+        }
+
+        function calcularStatusSala(salaObj, modo, horaDecimal) {
+            if (salaObj.statusManual) return salaObj.statusManual;
+            if (modo === 'manha_aula') return salaObj.id === 'sala2' ? 'AGUARDANDO' : 'EM_AULA';
+            if (modo === 'manha_intervalo') return salaObj.id === 'sala2' ? 'AGUARDANDO' : 'INTERVALO';
+            if (modo === 'tarde_aula') return salaObj.id === 'sala1' ? 'ENCERRADO' : 'EM_AULA';
+            if (modo === 'encerrado') return 'ENCERRADO';
+
+            // Cálculo automático pela hora real do relógio
+            if (horaDecimal < 7 || horaDecimal > 17.5) return 'ENCERRADO';
+            if ((horaDecimal >= 9.8 && horaDecimal <= 10.25) || (horaDecimal >= 15.5 && horaDecimal <= 15.8)) return 'INTERVALO';
+            if (salaObj.id === 'sala1') return horaDecimal <= 12 ? 'EM_AULA' : 'ENCERRADO';
+            if (salaObj.id === 'sala2') return horaDecimal < 13.5 ? 'AGUARDANDO' : 'EM_AULA';
+            if (salaObj.id === 'sala3') return horaDecimal <= 15 ? 'EM_AULA' : 'ENCERRADO';
+            return 'EM_AULA';
+        }
+
+        function alternarStatusManualSala(index) {
+            const ordem = ['EM_AULA', 'INTERVALO', 'AGUARDANDO', 'ENCERRADO'];
+            const atual = salasEscola[index].statusManual || 'EM_AULA';
+            const proxIndex = (ordem.indexOf(atual) + 1) % ordem.length;
+            salasEscola[index].statusManual = ordem[proxIndex];
+            atualizarSalasTempoReal();
+        }
+
+        function atualizarSalasTempoReal() {
+            const agora = new Date();
+            const horaStr = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const horaCurta = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            
+            document.getElementById('relogio-tempo-real').innerText = horaStr;
+            const relMobile = document.getElementById('relogio-mobile');
+            if (relMobile) relMobile.innerText = horaCurta;
+
+            const horaDecimal = agora.getHours() + (agora.getMinutes() / 60);
+            const modo = document.getElementById('seletorModoHorario').value;
+            const textoBloco = obterBlocoHorarioAtual(modo, horaDecimal);
+
+            const grid = document.getElementById('grid-salas-tempo-real');
+            grid.innerHTML = '';
+            let ativasCount = 0;
+
+            salasEscola.forEach((s, idx) => {
+                const stKey = calcularStatusSala(s, modo, horaDecimal);
+                if (stKey === 'EM_AULA' || stKey === 'INTERVALO') ativasCount++;
+                const cfg = estilosStatusSala[stKey];
+
+                const card = document.createElement('div');
+                card.className = `border-2 ${cfg.borda} rounded-2xl p-4 shadow-sm relative overflow-hidden transition-all duration-300 flex flex-col justify-between`;
+                card.innerHTML = `
+                    <div class="absolute top-0 left-0 w-1.5 h-full ${cfg.faixa}"></div>
+                    <div>
+                        <div class="flex justify-between items-start gap-2 mb-2">
+                            <button type="button" onclick="alternarStatusManualSala(${idx})" title="Clique para mudar o status manualmente" class="${cfg.badge} text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 cursor-pointer hover:opacity-80 transition">
+                                <span class="w-2 h-2 rounded-full ${cfg.dot}"></span>
+                                ${cfg.texto} ↻
+                            </button>
+                            <span class="text-[11px] font-bold text-slate-600 bg-white border border-slate-200 px-2 py-0.5 rounded-lg">${s.sala}</span>
+                        </div>
+                        <h4 class="font-extrabold text-slate-800 text-sm sm:text-base mt-2">${s.turma}</h4>
+                        <p class="text-xs font-semibold text-marinho mt-0.5">📘 ${s.materia} • ${s.prof}</p>
+                        <div class="mt-3 bg-white/80 border border-slate-200/80 rounded-xl p-2 text-[11px] text-slate-600 space-y-0.5">
+                            <p class="font-bold text-slate-700">🕒 ${s.turno}</p>
+                            <p class="text-[10px] text-slate-500 font-mono">${textoBloco}</p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="abrirEstatisticasTurma('${s.turma}')" class="mt-3 w-full bg-white hover:bg-marinho hover:text-white border border-slate-200 text-marinho text-xs font-bold py-2 rounded-xl transition shadow-sm">
+                        📊 Ver Dados da Turma
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+
+            const badgeSalas = document.getElementById('badge-contagem-salas');
+            badgeSalas.innerText = `${ativasCount} de 4 Salas em Atividade`;
+            badgeSalas.className = ativasCount > 0 
+                ? 'bg-green-100 text-green-800 px-2.5 py-0.5 rounded-full text-xs font-bold border border-green-200'
+                : 'bg-slate-200 text-slate-700 px-2.5 py-0.5 rounded-full text-xs font-bold border border-slate-300';
+        }
+
+        // 3. SISTEMA DE REUNIÕES INTERATIVAS (COM BOTÃO OK DE PRESENÇA)
+        let listaReunioes = JSON.parse(localStorage.getItem('peniel_reunioes_ok')) || [
+            { id: 1, titulo: 'Atendimento Pais: Davi Lucas', horario: '14:30 • Coordenação', confirmada: false },
+            { id: 2, titulo: 'Conselho de Classe (3º Bimestre)', horario: '17:00 • Sala dos Professores', confirmada: true },
+            { id: 3, titulo: 'Alinhamento Interno: Portaria & Turnos', horario: '18:00 • Diretoria', confirmada: false }
+        ];
+
+        function renderizarReunioes() {
+            const ul = document.getElementById('lista-reunioes');
+            ul.innerHTML = '';
+            let confirmadas = 0;
+
+            listaReunioes.forEach((r, idx) => {
+                if (r.confirmada) confirmadas++;
+                const li = document.createElement('li');
+                li.className = r.confirmada
+                    ? 'p-3 rounded-xl border border-green-200 bg-green-50/70 flex justify-between items-center gap-2 transition-all'
+                    : 'p-3 rounded-xl border border-slate-200 bg-slate-50/70 flex justify-between items-center gap-2 transition-all';
+
+                li.innerHTML = `
+                    <div class="min-w-0 flex-1">
+                        <p class="text-xs font-bold ${r.confirmada ? 'text-green-900 line-through' : 'text-slate-800'} truncate">${r.titulo}</p>
+                        <p class="text-[11px] ${r.confirmada ? 'text-green-700 font-semibold' : 'text-slate-500'}">${r.horario}</p>
+                    </div>
+                    <button type="button" onclick="alternarOkReuniao(${idx})" class="${r.confirmada ? 'bg-green-600 text-white' : 'bg-white border border-slate-300 text-slate-700 hover:bg-blue-50 hover:border-blue-300'} px-3 py-1.5 rounded-xl text-[11px] font-bold shadow-sm transition shrink-0">
+                        ${r.confirmada ? '✓ Presença OK' : 'Confirmar OK'}
+                    </button>
+                `;
+                ul.appendChild(li);
+            });
+
+            document.getElementById('badge-reunioes-status').innerText = `${confirmadas}/${listaReunioes.length} OK`;
+            localStorage.setItem('peniel_reunioes_ok', JSON.stringify(listaReunioes));
+        }
+
+        function alternarOkReuniao(index) {
+            listaReunioes[index].confirmada = !listaReunioes[index].confirmada;
+            renderizarReunioes();
+        }
+
+        function adicionarReuniaoRapida() {
+            const input = document.getElementById('inputNovaReuniao');
+            const texto = input.value.trim();
+            if (!texto) return;
+            const horaAgora = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            listaReunioes.push({ id: Date.now(), titulo: texto, horario: `Criado às ${horaAgora} • Interno`, confirmada: false });
+            input.value = '';
+            renderizarReunioes();
+        }
+
+        // 4. CENTRAL DE LIBERAÇÕES E PORTARIA (DETALHES COMPLETOS NOS 2 CARDS)
+        let dadosPortaria = {
+            isabela: {
+                chave: 'isabela',
+                aluno: 'Isabela Mendes',
+                turma: '2º Ano B - Vespertino (Sala 04)',
+                status: 'PENDENTE',
+                horario: 'Hoje às 15:40 (Aguardando na Portaria)',
+                motivo: 'Consulta odontológica agendada pela família (Saída antecipada).',
+                origemAutorizacao: 'App dos Pais Peniel (Token #88492 assinado por Mariana Mendes)',
+                respNome: 'Roberto Souza',
+                respVinculo: 'Tio Materno (Cadastrado na Ficha de Autorizados)',
+                respRg: '12.345.678-9 DETRAN/RJ',
+                respCpf: '111.222.333-44',
+                avatar: '🧑🏽‍💼',
+                porteiro: 'Carlos Eduardo (Portaria Principal)',
+                protocolo: 'PRT-2026-9941A',
+                observacao: 'Responsável apresentou documento original com foto na guarita.'
+            },
+            davi: {
+                chave: 'davi',
+                aluno: 'Davi Lucas',
+                turma: '3º Ano A - Matutino (Sala 02)',
+                status: 'LIBERADO',
+                horario: 'Hoje às 11:30 (Saída Mais Cedo Confirmada)',
+                motivo: 'Retirada 30 min mais cedo para exame médico de rotina.',
+                origemAutorizacao: 'Solicitação via Secretaria / WhatsApp Oficial validado pelo Pai (Carlos Lucas)',
+                respNome: 'Maria Silva',
+                respVinculo: 'Avó Materna (Autorizada Permanente no Prontuário)',
+                respRg: '08.999.888-2 DETRAN/RJ',
+                respCpf: '555.444.333-22',
+                avatar: '👵🏻',
+                porteiro: 'Carlos Eduardo (Portaria Principal)',
+                protocolo: 'PRT-2026-9918B',
+                observacao: 'Aluno entregue à avó com mochila e caderno de comunicados assinado.'
+            }
+        };
+
+        let chavePortariaAberta = null;
+
+        function renderizarCardsPortaria() {
+            const cardIsa = document.getElementById('card-portaria-isabela');
+            const isa = dadosPortaria.isabela;
+
+            if (isa.status === 'PENDENTE') {
+                cardIsa.className = "border-2 border-red-500 bg-red-50/95 rounded-2xl p-4 shadow-md transition-all duration-300 flex flex-col justify-between";
+                cardIsa.innerHTML = `
+                    <div onclick="abrirModalDetalhesPortaria('isabela')" class="cursor-pointer group">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-[11px] font-bold bg-red-600 text-white px-2.5 py-1 rounded-lg animate-pulse shadow-sm">🚨 Aguardando Liberação</span>
+                            <span class="text-xs text-red-600 font-bold group-hover:underline">Ver Detalhes &rarr;</span>
+                        </div>
+                        <h4 class="font-extrabold text-base text-slate-900">${isa.aluno}</h4>
+                        <p class="text-xs text-slate-600 mb-3">${isa.turma}</p>
+                        
+                        <div class="bg-white p-3 rounded-xl border border-red-200 mb-3 shadow-sm space-y-1">
+                            <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">Quem veio buscar:</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs sm:text-sm font-bold text-slate-900">${isa.respNome} (Tio)</span>
+                                <span class="text-[10px] bg-green-100 text-green-800 font-bold px-2 py-0.5 rounded border border-green-200">✓ RG OK</span>
+                            </div>
+                            <p class="text-[11px] text-amber-800 font-medium pt-1 border-t border-slate-100">📋 ${isa.motivo}</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 pt-1">
+                        <button type="button" onclick="confirmarSaidaEstudante()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2.5 px-2 rounded-xl shadow-sm transition">
+                            ✅ Autorizar Saída
+                        </button>
+                        <button type="button" onclick="abrirModalDetalhesPortaria('isabela')" class="bg-white border border-red-300 text-red-700 hover:bg-red-100 text-xs font-bold py-2.5 px-2 rounded-xl transition shadow-sm">
+                            🔍 Ver Detalhes / RG
+                        </button>
+                    </div>
+                `;
+            } else {
+                cardIsa.className = "border border-green-300 bg-green-50/60 rounded-2xl p-4 shadow-sm transition-all duration-300 flex flex-col justify-between";
+                cardIsa.innerHTML = `
+                    <div onclick="abrirModalDetalhesPortaria('isabela')" class="cursor-pointer group">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-[11px] font-bold bg-green-600 text-white px-2.5 py-1 rounded-lg">✅ Saída Liberada</span>
+                            <span class="text-xs text-green-700 font-bold group-hover:underline">Ver Ficha &rarr;</span>
+                        </div>
+                        <h4 class="font-extrabold text-base text-slate-900">${isa.aluno}</h4>
+                        <p class="text-xs text-slate-600 mb-3">${isa.turma}</p>
+                        <div class="bg-white p-3 rounded-xl border border-green-200 mb-3 space-y-1">
+                            <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">Retirada confirmada com:</p>
+                            <p class="text-xs sm:text-sm font-bold text-slate-900">${isa.respNome} (Tio)</p>
+                            <p class="text-[11px] text-slate-500">🕒 ${isa.horario}</p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="abrirModalDetalhesPortaria('isabela')" class="w-full bg-white hover:bg-green-100 text-green-800 border border-green-300 text-xs font-bold py-2.5 rounded-xl transition shadow-sm">
+                        📋 Ver Detalhes da Liberação
+                    </button>
+                `;
+            }
+
+            // Renderiza Card 2: Davi Lucas (Saída Mais Cedo)
+            const cardDavi = document.getElementById('card-portaria-davi');
+            const davi = dadosPortaria.davi;
+            cardDavi.innerHTML = `
+                <div onclick="abrirModalDetalhesPortaria('davi')" class="cursor-pointer group">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[11px] font-bold bg-blue-100 text-marinho px-2.5 py-1 rounded-lg border border-blue-200">🕒 Saiu Mais Cedo (11:30)</span>
+                        <span class="text-xs text-blue-600 font-bold group-hover:underline">Ver Detalhes &rarr;</span>
+                    </div>
+                    <h4 class="font-extrabold text-base text-slate-900">${davi.aluno}</h4>
+                    <p class="text-xs text-slate-600 mb-3">${davi.turma}</p>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 mb-3 space-y-1">
+                        <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">Saiu acompanhado de:</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs sm:text-sm font-bold text-slate-900">${davi.respNome} (Avó)</span>
+                            <span class="text-[10px] bg-slate-200 text-slate-700 font-bold px-2 py-0.5 rounded">Protocolo OK</span>
+                        </div>
+                        <p class="text-[11px] text-slate-600 pt-1 border-t border-slate-200/70">📋 ${davi.motivo}</p>
+                    </div>
+                </div>
+                <button type="button" onclick="abrirModalDetalhesPortaria('davi')" class="w-full bg-marinho/10 hover:bg-marinho hover:text-white text-marinho border border-marinho/20 text-xs font-bold py-2.5 rounded-xl transition shadow-sm">
+                    🔍 Ver Detalhes da Saída Antecipada
+                </button>
+            `;
+        }
+
+        function abrirModalDetalhesPortaria(chave) {
+            const info = dadosPortaria[chave];
+            if (!info) return;
+            chavePortariaAberta = chave;
+
+            const header = document.getElementById('header-modal-portaria');
+            const badge = document.getElementById('badge-modal-portaria');
+            const icone = document.getElementById('icone-modal-portaria');
+            const btnConfirmar = document.getElementById('btn-modal-confirmar-saida');
+
+            if (info.status === 'PENDENTE') {
+                header.className = "p-5 bg-red-600 text-white flex justify-between items-start gap-3";
+                badge.innerText = "🚨 Pendente na Portaria";
+                icone.innerText = "🚨";
+                btnConfirmar.classList.remove('hidden');
+            } else {
+                header.className = "p-5 bg-marinho text-white flex justify-between items-start gap-3";
+                badge.innerText = "✅ Saída Registrada e Auditada";
+                icone.innerText = "🛂";
+                btnConfirmar.classList.add('hidden');
+            }
+
+            document.getElementById('det-portaria-aluno').innerText = info.aluno;
+            document.getElementById('det-portaria-turma').innerText = info.turma;
+            document.getElementById('det-portaria-horario').innerText = info.horario;
+            document.getElementById('det-portaria-motivo').innerText = info.motivo;
+            document.getElementById('det-portaria-origem').innerText = info.origemAutorizacao;
+            document.getElementById('det-portaria-resp-nome').innerText = info.respNome;
+            document.getElementById('det-portaria-resp-vinculo').innerText = info.respVinculo;
+            document.getElementById('det-portaria-resp-rg').innerText = info.respRg;
+            document.getElementById('det-portaria-resp-cpf').innerText = info.respCpf;
+            document.getElementById('det-portaria-avatar').innerHTML = `${info.avatar}<span class="text-[9px] font-bold text-slate-400 mt-1">FOTO 3x4</span>`;
+            document.getElementById('det-portaria-porteiro').innerText = info.porteiro;
+            document.getElementById('det-portaria-protocolo').innerText = info.protocolo;
+            document.getElementById('det-portaria-obs-input').value = info.observacao;
+
+            document.getElementById('modalDetalhesPortaria').classList.remove('hidden');
+        }
+
+        function fecharModalDetalhesPortaria() {
+            if (chavePortariaAberta && dadosPortaria[chavePortariaAberta]) {
+                dadosPortaria[chavePortariaAberta].observacao = document.getElementById('det-portaria-obs-input').value;
+            }
+            document.getElementById('modalDetalhesPortaria').classList.add('hidden');
+        }
+
+        function confirmarSaidaEstudante() {
+            const horaConfirmacao = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            dadosPortaria.isabela.status = 'LIBERADO';
+            dadosPortaria.isabela.horario = `Liberada hoje às ${horaConfirmacao}`;
+            document.getElementById('alerta-visual').classList.add('hidden');
+            renderizarCardsPortaria();
+            alert('✅ Saída de Isabela Mendes autorizada e registrada com sucesso na portaria!');
+        }
+
+        function verificarLiberacaoPendentes() {
+            document.getElementById('alerta-visual').classList.add('hidden');
+            const central = document.getElementById('central-liberacoes');
+            const cardIsa = document.getElementById('card-portaria-isabela');
+            central.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => { cardIsa.classList.add('ring-4', 'ring-red-400'); }, 300);
+            setTimeout(() => { cardIsa.classList.remove('ring-4', 'ring-red-400'); }, 2200);
+        }
+
+        // 5. DEMAIS FUNÇÕES DO DASHBOARD
+        function mudarUnidade() {
+            const u = document.getElementById('seletorUnidade').value;
+            localStorage.setItem('peniel_unidade', u);
+            document.getElementById('badge-unidade-atual').innerText = `Unidade ${u}`;
+            document.getElementById('label-unidade-menu').innerText = `Unidade ${u}`;
+            const lblMob = document.getElementById('label-unidade-mobile');
+            if (lblMob) lblMob.innerText = `Unidade ${u}`;
+        }
+
+        function abrirModalPerfil() { document.getElementById('modalPerfil').classList.remove('hidden'); }
+        function fecharModalPerfil() { document.getElementById('modalPerfil').classList.add('hidden'); }
+        
+        function salvarPerfilGestor() {
+            const n = document.getElementById('inputNomeGestor').value.trim();
+            if(!n) return;
+            localStorage.setItem('peniel_nome_gestor', n);
+            document.getElementById('saudacao-gestor').innerText = `Olá, ${n}`;
+            document.getElementById('nomeGestorBtn').innerText = n;
+            fecharModalPerfil();
+        }
+
+        function salvarAnotacao() {
+            localStorage.setItem('anotacaoSecretaria', document.getElementById('campo-anotacao').value);
+            alert('📌 Nota salva no navegador!');
+        }
+
+        function ativarSistemaSonoro() {
+            document.getElementById('btn-ativar-som').classList.add('hidden');
+            document.getElementById('som-alerta').play().catch(() => {});
+            alert("🔊 Alertas sonoros da portaria ativados!");
+        }
+
+        function abrirEstatisticasTurma(nomeTurma) {
+            document.getElementById('tituloModalTurma').innerText = nomeTurma;
+            document.getElementById('modalEstatisticasTurma').classList.remove('hidden');
+            mudarAbaTurma('diario');
+        }
+        function fecharEstatisticasTurma() { document.getElementById('modalEstatisticasTurma').classList.add('hidden'); }
+        
+        function mudarAbaTurma(aba) {
+            ['diario', 'mensal', 'trimestral', 'anual'].forEach(a => {
+                document.getElementById(`conteudo-${a}`).classList.add('hidden');
+                const btn = document.getElementById(`aba-${a}`);
+                btn.classList.remove('border-marinho', 'text-marinho');
+                btn.classList.add('border-transparent', 'text-slate-500');
+            });
+            document.getElementById(`conteudo-${aba}`).classList.remove('hidden');
+            const btnAtivo = document.getElementById(`aba-${aba}`);
+            btnAtivo.classList.remove('border-transparent', 'text-slate-500');
+            btnAtivo.classList.add('border-marinho', 'text-marinho');
+        }
+
+        // INICIALIZAÇÃO GERAL
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('data-topo').innerText = new Date().toLocaleDateString('pt-BR');
 
-            const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
-            document.getElementById('seletorUnidade').value = unidade;
-            document.getElementById('badge-unidade-atual').innerText = `Unidade ${unidade}`;
-            document.getElementById('label-unidade-menu').innerText = `Unidade ${unidade}`;
-
-            const cor = localStorage.getItem('peniel_cor_sessao') || '#003057';
-            document.getElementById('seletorCor').value = cor;
-            document.getElementById('menu-lateral').style.backgroundColor = cor;
+            const corSalva = localStorage.getItem('peniel_cor_sessao') || '#003057';
+            mudarCorSessao(corSalva);
 
             const nome = localStorage.getItem('peniel_nome_gestor');
             if(nome) {
@@ -477,151 +994,35 @@
             if(localStorage.getItem('anotacaoSecretaria')) { 
                 document.getElementById('campo-anotacao').value = localStorage.getItem('anotacaoSecretaria'); 
             }
-        });
 
-        function mudarUnidade() {
-            const u = document.getElementById('seletorUnidade').value;
-            localStorage.setItem('peniel_unidade', u);
-            document.getElementById('badge-unidade-atual').innerText = `Unidade ${u}`;
-            document.getElementById('label-unidade-menu').innerText = `Unidade ${u}`;
-            alert(`🏫 Unidade alterada para: ${u}`);
-        }
-        function mudarCorSessao(cor) {
-            document.getElementById('menu-lateral').style.backgroundColor = cor;
-            localStorage.setItem('peniel_cor_sessao', cor);
-        }
-        function abrirModalPerfil() { document.getElementById('modalPerfil').classList.remove('hidden'); }
-        function fecharModalPerfil() { document.getElementById('modalPerfil').classList.add('hidden'); }
-        function salvarPerfilGestor() {
-            const n = document.getElementById('inputNomeGestor').value.trim();
-            if(!n) return;
-            localStorage.setItem('peniel_nome_gestor', n);
-            document.getElementById('saudacao-gestor').innerText = `Olá, ${n}`;
-            document.getElementById('nomeGestorBtn').innerText = n;
-            fecharModalPerfil();
-            alert('✅ Ficha Cadastral atualizada com sucesso!');
-        }
+            // Inicia Relógio e Salas em Tempo Real
+            atualizarSalasTempoReal();
+            setInterval(atualizarSalasTempoReal, 1000);
 
-        const chartOptions = { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } } };
-        new Chart(document.getElementById('graficoFrequencia').getContext('2d'), {
-            type: 'doughnut',
-            data: { labels: ['Presentes', 'Faltas', 'Atestados'], datasets: [{ data: [342, 6, 2], backgroundColor: ['#10B981', '#EF4444', '#F59E0B'], borderWidth: 0 }] },
-            options: { ...chartOptions, cutout: '65%' }
-        });
-        new Chart(document.getElementById('graficoFinanceiro').getContext('2d'), {
-            type: 'pie',
-            data: { labels: ['Pago', 'Atraso', 'Acordos'], datasets: [{ data: [85, 12, 3], backgroundColor: ['#3B82F6', '#EF4444', '#8B5CF6'], borderWidth: 0 }] },
-            options: chartOptions
-        });
-        function salvarAnotacao() {
-            localStorage.setItem('anotacaoSecretaria', document.getElementById('campo-anotacao').value);
-            alert('Lembrete salvo!');
-        }
+            // Inicia Reuniões e Portaria
+            renderizarReunioes();
+            renderizarCardsPortaria();
 
-        function ativarSistemaSonoro() {
-            document.getElementById('btn-ativar-som').classList.add('hidden');
-            document.getElementById('som-alerta').play().catch(() => {});
-            alert("✅ Alertas ativados!");
-        }
-
-        setTimeout(() => { document.getElementById('alerta-visual').classList.remove('hidden'); }, 3000);
-
-        function verificarLiberacaoPendentes() {
-            document.getElementById('alerta-visual').classList.add('hidden');
-            const central = document.getElementById('central-liberacoes');
-            const cardPendente = document.getElementById('card-liberacao-pendente');
-            
-            central.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            
-            setTimeout(() => { cardPendente.classList.add('ring-4', 'ring-red-400', 'scale-105', 'z-10'); }, 400);
-            setTimeout(() => { cardPendente.classList.remove('ring-4', 'ring-red-400', 'scale-105', 'z-10'); }, 2000);
-        }
-
-        function confirmarSaidaEstudante(btn) {
-            const card = document.getElementById('card-liberacao-pendente');
-            card.className = "border border-green-200 bg-green-50/40 rounded-xl p-4 shadow-sm transition-all duration-500";
-            card.innerHTML = `
-                <div class="flex justify-between items-center mb-3">
-                    <span class="text-xs font-bold bg-green-100 text-green-700 px-2 py-1 rounded">Liberado</span>
-                    <span class="text-xs text-slate-400 font-medium">Agora</span>
-                </div>
-                <h4 class="font-bold text-base text-slate-800">Isabela Mendes</h4>
-                <p class="text-xs text-slate-500 mb-3">2º Ano B - Vespertino</p>
-                <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
-                    <p class="text-[11px] uppercase tracking-wide font-semibold text-slate-500 mb-1">Autorizado e saiu com:</p>
-                    <p class="text-sm font-bold text-slate-900">Tio: Roberto Souza</p>
-                </div>
-            `;
-            alert('✅ Saída de Isabela Mendes confirmada na portaria com segurança!');
-        }
-
-        function abrirEstatisticasTurma(nomeTurma) {
-            document.getElementById('tituloModalTurma').innerText = nomeTurma;
-            document.getElementById('modalEstatisticasTurma').classList.remove('hidden');
-            mudarAbaTurma('diario');
-        }
-        function fecharEstatisticasTurma() { document.getElementById('modalEstatisticasTurma').classList.add('hidden'); }
-        function mudarAbaTurma(aba) {
-            ['diario', 'mensal', 'trimestral', 'semestral', 'anual'].forEach(a => {
-                document.getElementById(`conteudo-${a}`).classList.add('hidden');
-                const btn = document.getElementById(`aba-${a}`);
-                btn.classList.remove('border-marinho', 'text-marinho');
-                btn.classList.add('border-transparent', 'text-slate-500');
+            // Gráficos Chart.js
+            const chartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } } };
+            new Chart(document.getElementById('graficoFrequencia').getContext('2d'), {
+                type: 'doughnut',
+                data: { labels: ['Presentes', 'Faltas', 'Atestados'], datasets: [{ data: [342, 6, 2], backgroundColor: ['#10B981', '#EF4444', '#F59E0B'], borderWidth: 0 }] },
+                options: { ...chartOptions, cutout: '65%' }
             });
-            document.getElementById(`conteudo-${aba}`).classList.remove('hidden');
-            const btnAtivo = document.getElementById(`aba-${aba}`);
-            btnAtivo.classList.remove('border-transparent', 'text-slate-500');
-            btnAtivo.classList.add('border-marinho', 'text-marinho');
-        }
-    </script>
+            new Chart(document.getElementById('graficoFinanceiro').getContext('2d'), {
+                type: 'pie',
+                data: { labels: ['Pago', 'Atraso', 'Acordos'], datasets: [{ data: [85, 12, 3], backgroundColor: ['#3B82F6', '#EF4444', '#8B5CF6'], borderWidth: 0 }] },
+                options: chartOptions
+            });
 
-    <!-- BLOCO GLOBAL DE CONTROLE DO MODO GESTOR MASTER -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('modo_gestor') === '1') { localStorage.setItem('peniel_modo_gestor', 'ativo'); }
-
-            if (localStorage.getItem('peniel_modo_gestor') === 'ativo') {
-                const menuLateral = document.querySelector('aside');
-                if (menuLateral) { menuLateral.remove(); }
-
-                const containerPrincipal = document.querySelector('.flex.h-screen');
-                if (containerPrincipal) { containerPrincipal.classList.remove('overflow-hidden'); }
-
-                const main = document.querySelector('main');
-                if (main && !document.getElementById('barraExecutivaMaster')) {
-                    const barraGestor = document.createElement('div');
-                    barraGestor.id = 'barraExecutivaMaster';
-                    barraGestor.className = 'bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl mb-6 flex flex-col sm:flex-row justify-between items-center border-2 border-blue-500/40 z-50 gap-4';
-                    barraGestor.innerHTML = `
-                        <div class="flex items-center gap-3 text-xs font-bold text-blue-300">
-                            <span class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></span>
-                            <span>Modo Gestor Master Ativo (Tela Cheia)</span>
-                        </div>
-                        <div class="flex items-center gap-2 w-full sm:w-auto">
-                            <button type="button" onclick="window.location.assign('calendario.html');" class="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer">
-                                &larr; Voltar à Timeline
-                            </button>
-                            <button type="button" onclick="window.location.assign('index.html');" class="flex-1 sm:flex-none bg-slate-700 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer">
-                                🧭 Dashboard
-                            </button>
-                            <button type="button" onclick="sairModoGestorGlobal()" class="flex-1 sm:flex-none bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer">
-                                🔒 Bloquear Painel
-                            </button>
-                        </div>
-                    `;
-                    main.prepend(barraGestor);
+            // Mostra alerta da portaria após 2.5 segundos
+            setTimeout(() => {
+                if (dadosPortaria.isabela.status === 'PENDENTE') {
+                    document.getElementById('alerta-visual').classList.remove('hidden');
                 }
-            }
+            }, 2500);
         });
-
-        function sairModoGestorGlobal() {
-            if(confirm("Deseja encerrar a sessão Master e bloquear o painel executivo?")) {
-                localStorage.removeItem('peniel_modo_gestor');
-                window.location.href = 'configuracoes.html';
-            }
-        }
     </script>
-    
 </body>
 </html>
