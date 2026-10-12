@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timeline de Colaboradores | Peniel Christian School</title>
+    <title>Calendário e Equipe | Peniel Christian School</title>
     
+    <!-- Bibliotecas Necessárias -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
-    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+    
     <script>
         tailwind.config = {
             theme: {
@@ -21,22 +22,28 @@
     </script>
     
     <style>
+        /* Ajustes do Calendário para Celular e Computador */
         .fc-theme-standard .fc-scrollgrid { border-color: #e2e8f0; border-radius: 0.5rem; overflow: hidden; }
-        .fc-button-primary { background-color: #003057 !important; border-color: #003057 !important; }
+        .fc-button-primary { background-color: #003057 !important; border-color: #003057 !important; text-transform: capitalize !important; }
         .fc-button-primary:hover { background-color: #002240 !important; }
         .fc-button-active { background-color: #E85D04 !important; border-color: #E85D04 !important; }
-        .fc-today-button { text-transform: capitalize; }
-        .fc-toolbar-title { font-family: 'Montserrat', sans-serif; font-weight: 700; color: #1e293b; }
+        .fc-toolbar-title { font-family: 'Montserrat', sans-serif; font-weight: 700; color: #1e293b; font-size: 1.25rem !important; }
         .fc-day-today { background-color: #f0f9ff !important; }
+        
+        /* Otimização para iPhone */
+        @media (max-width: 768px) {
+            .fc-toolbar { flex-direction: column; gap: 12px; }
+            .fc-toolbar-title { font-size: 1.1rem !important; }
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
 
-    <div class="flex h-screen overflow-hidden">
+    <div class="flex h-screen overflow-hidden relative">
         
-        <!-- Menu Lateral -->
-        <aside class="w-64 bg-marinho text-white flex flex-col hidden md:flex">
-            <div class="p-6">
+        <!-- Menu Lateral (Com suporte automático a Mobile e Desktop) -->
+        <aside id="menu-lateral" class="w-64 bg-marinho text-white flex flex-col hidden md:flex h-full transition-transform duration-300 shrink-0 z-[100]">
+            <div class="p-6 flex justify-between items-center">
                 <h1 class="font-heading text-2xl font-bold tracking-tight">PENIEL <span class="text-sm font-sans font-normal block text-blue-300">Sistema Interno</span></h1>
             </div>
             <nav class="flex-1 px-2 space-y-1 mt-2 overflow-y-auto pb-6">
@@ -62,140 +69,102 @@
         </aside>
 
         <!-- Área Principal -->
-        <main class="flex-1 overflow-y-auto p-6 md:p-8 flex flex-col gap-6">
+        <main id="area-principal" class="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col gap-6 w-full">
             
-            <header class="flex justify-between items-center">
+            <!-- Header -->
+            <header id="main-header" class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-5 rounded-2xl border border-slate-200 shadow-sm gap-4">
                 <div>
-                    <h2 class="font-heading text-3xl font-bold text-slate-800">Timeline de Colaboradores e Calendário</h2>
-                    <p class="text-slate-500">Status ao vivo da equipe docente e agendamento escolar.</p>
+                    <h2 class="font-heading text-2xl md:text-3xl font-bold text-slate-800">Timeline e Calendário</h2>
+                    <p class="text-slate-500 text-sm">Status ao vivo da equipe docente e agendamento escolar.</p>
                 </div>
-                <div class="bg-white px-4 py-2 rounded-lg border border-slate-200 shadow-sm text-sm font-bold text-slate-700 flex items-center gap-2">
-                    <span>🕒</span> Horário: 09:30
+                <div class="bg-slate-50 px-4 py-2 rounded-lg border border-slate-200 shadow-sm text-sm font-bold text-slate-700 flex items-center gap-2 w-full md:w-auto justify-center">
+                    <span>🕒</span> Hoje
                 </div>
             </header>
 
             <!-- TIMELINE DE COLABORADORES (Status Ao Vivo) -->
-            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                <div class="flex justify-between items-center mb-5">
+            <div class="bg-white p-5 md:p-6 rounded-xl border border-slate-200 shadow-sm">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 gap-3 border-b border-slate-100 pb-4">
                     <div>
                         <h3 class="font-bold text-slate-800 text-base">👨‍🏫 Status da Equipe e Professores (Ao Vivo)</h3>
-                        <p class="text-xs text-slate-500">Acompanhamento de alocação, aulas em andamento e intervalos no turno atual.</p>
                     </div>
-                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5">
+                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-[10px] md:text-xs font-bold flex items-center gap-1.5 whitespace-nowrap">
                         <span class="w-2 h-2 rounded-full bg-green-500 animate-ping"></span> Sistema Sincronizado
                     </span>
                 </div>
 
                 <!-- Grid de Colaboradores -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    
-                    <!-- Colaborador 1: Em Aula -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                    <!-- Colaborador 1 -->
                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 relative overflow-hidden">
                         <div class="absolute top-0 left-0 w-1.5 h-full bg-green-500"></div>
                         <div class="flex justify-between items-start mb-3">
-                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center font-bold text-marinho text-sm">
-                                CL
-                            </div>
-                            <span class="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1">
-                                <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> Em Aula
-                            </span>
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center font-bold text-marinho text-sm">CL</div>
+                            <span class="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1">Em Aula</span>
                         </div>
                         <h4 class="font-bold text-slate-800 text-sm">Prof. Carlos Lucas</h4>
                         <p class="text-xs text-slate-500 mb-3">Matemática</p>
-                        
-                        <div class="bg-white p-2.5 rounded border border-slate-100 text-xs">
-                            <p class="text-slate-400 font-medium">Turma Atual:</p>
-                            <p class="font-bold text-slate-700">3º Ano A (Lab. 02)</p>
-                            <p class="text-[10px] text-slate-400 mt-1">Até 09:50</p>
-                        </div>
                     </div>
 
-                    <!-- Colaborador 2: Em Aula -->
+                    <!-- Colaborador 2 -->
                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 relative overflow-hidden">
                         <div class="absolute top-0 left-0 w-1.5 h-full bg-green-500"></div>
                         <div class="flex justify-between items-start mb-3">
-                            <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center font-bold text-purple-800 text-sm">
-                                MM
-                            </div>
-                            <span class="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1">
-                                <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> Em Aula
-                            </span>
+                            <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center font-bold text-purple-800 text-sm">MM</div>
+                            <span class="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1">Em Aula</span>
                         </div>
                         <h4 class="font-bold text-slate-800 text-sm">Prof. Mariana Mendes</h4>
                         <p class="text-xs text-slate-500 mb-3">Português</p>
-                        
-                        <div class="bg-white p-2.5 rounded border border-slate-100 text-xs">
-                            <p class="text-slate-400 font-medium">Turma Atual:</p>
-                            <p class="font-bold text-slate-700">2º Ano B (Sala 04)</p>
-                            <p class="text-[10px] text-slate-400 mt-1">Até 09:50</p>
-                        </div>
                     </div>
 
-                    <!-- Colaborador 3: Intervalo / Descanso -->
+                    <!-- Colaborador 3 -->
                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 relative overflow-hidden">
                         <div class="absolute top-0 left-0 w-1.5 h-full bg-amber-500"></div>
                         <div class="flex justify-between items-start mb-3">
-                            <div class="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center font-bold text-amber-800 text-sm">
-                                AA
-                            </div>
-                            <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded">
-                                ☕ Intervalo
-                            </span>
+                            <div class="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center font-bold text-amber-800 text-sm">AA</div>
+                            <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded">☕ Intervalo</span>
                         </div>
                         <h4 class="font-bold text-slate-800 text-sm">Prof. Amanda</h4>
                         <p class="text-xs text-slate-500 mb-3">História / Geografia</p>
-                        
-                        <div class="bg-white p-2.5 rounded border border-slate-100 text-xs">
-                            <p class="text-slate-400 font-medium">Próxima Aula:</p>
-                            <p class="font-bold text-slate-700">3º Ano A (10:00)</p>
-                            <p class="text-[10px] text-amber-600 mt-1">Retorna em 12 minutos</p>
-                        </div>
                     </div>
 
-                    <!-- Colaborador 4: Reunião / Coordenação -->
+                    <!-- Colaborador 4 -->
                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 relative overflow-hidden">
                         <div class="absolute top-0 left-0 w-1.5 h-full bg-blue-500"></div>
                         <div class="flex justify-between items-start mb-3">
-                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center font-bold text-blue-800 text-sm">
-                                JS
-                            </div>
-                            <span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded">
-                                🤝 Em Reunião
-                            </span>
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center font-bold text-blue-800 text-sm">JS</div>
+                            <span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded">🤝 Em Reunião</span>
                         </div>
                         <h4 class="font-bold text-slate-800 text-sm">Juliana Santos</h4>
-                        <p class="text-xs text-slate-500 mb-3">Coordenação Pedagógica</p>
-                        
-                        <div class="bg-white p-2.5 rounded border border-slate-100 text-xs">
-                            <p class="text-slate-400 font-medium">Atividade:</p>
-                            <p class="font-bold text-slate-700">Atendimento a Pais</p>
-                            <p class="text-[10px] text-blue-600 mt-1">Sala da Coordenação</p>
-                        </div>
+                        <p class="text-xs text-slate-500 mb-3">Coordenação</p>
                     </div>
-
                 </div>
             </div>
 
-            <!-- CALENDÁRIO MENSAL (FullCalendar para ver meses, semanas e dias) -->
-            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex-1">
-                <div class="flex justify-between items-center mb-4">
-                    <div>
-                        <h3 class="font-bold text-slate-800 text-lg">📅 Calendário Escolar (Meses e Eventos)</h3>
-                        <p class="text-xs text-slate-500">Clique em qualquer dia para agendar reuniões, provas ou conselhos de classe.</p>
-                    </div>
+            <!-- CALENDÁRIO MENSAL -->
+            <div class="bg-white p-4 md:p-6 rounded-xl border border-slate-200 shadow-sm flex-1 flex flex-col min-h-[500px]">
+                <div class="mb-4">
+                    <h3 class="font-bold text-slate-800 text-lg">📅 Calendário Escolar Oficial (2026/2027)</h3>
+                    <p class="text-xs text-slate-500">Clique nos dias para gerenciar eventos.</p>
                 </div>
                 
-                <div id="calendario-escolar"></div>
+                <!-- O Calendário vai renderizar exatamente dentro desta div sem quebrar -->
+                <div id="calendario-escolar" class="w-full flex-1"></div>
             </div>
 
         </main>
     </div>
 
-    <!-- Script de Inicialização do Calendário -->
+    <!-- ========================================================================= -->
+    <!-- SCRIPTS DO SISTEMA -->
+    <!-- ========================================================================= -->
+    
+    <!-- 1. Script do Calendário com os Feriados Oficiais -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendario-escolar');
             
+            // Regras Oficiais Injetadas no Banco do LocalStorage
             var eventosSalvos = JSON.parse(localStorage.getItem('eventosPeniel')) || [
                 // Outubro
                 { title: 'Feriado: Dia das Crianças', start: '2026-10-12', color: '#EF4444' },
@@ -211,20 +180,20 @@
                 { title: 'Festa de Encerramento (Natal / Formatura)', start: '2026-12-19', color: '#8B5CF6' }
             ];
 
+            // Renderiza o Calendário de forma responsiva
             var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
+                initialView: window.innerWidth < 768 ? 'listMonth' : 'dayGridMonth', // List no iPhone, Grade no PC
                 locale: 'pt-br',
-                height: 600,
+                height: '100%',
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    right: window.innerWidth < 768 ? '' : 'dayGridMonth,timeGridWeek'
                 },
                 buttonText: {
                     today: 'Hoje',
                     month: 'Mês',
-                    week: 'Semana',
-                    day: 'Dia'
+                    week: 'Semana'
                 },
                 events: eventosSalvos,
                 editable: true,
@@ -255,64 +224,97 @@
                         });
                         localStorage.setItem('eventosPeniel', JSON.stringify(eventosSalvos));
                     }
-                },
-                
-                eventDrop: function(info) {
-                    eventosSalvos = eventosSalvos.map(function(e) {
-                        if (e.title === info.event.title) {
-                            e.start = info.event.startStr;
-                            if (info.event.endStr) { e.end = info.event.endStr; }
-                        }
-                        return e;
-                    });
-                    localStorage.setItem('eventosPeniel', JSON.stringify(eventosSalvos));
                 }
             });
 
             calendar.render();
+            
+            // Recalcula o layout caso o usuário vire a tela do celular
+            window.addEventListener('resize', function() {
+                if(window.innerWidth < 768 && calendar.view.type !== 'listMonth') {
+                    calendar.changeView('listMonth');
+                } else if (window.innerWidth >= 768 && calendar.view.type === 'listMonth') {
+                    calendar.changeView('dayGridMonth');
+                }
+            });
         });
     </script>
 
-    <!-- BLOCO GLOBAL DE CONTROLE DO MODO GESTOR MASTER -->
+    <!-- 2. Script do Menu Mobile Inteligente (Evita quebrar o layout) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuLateral = document.getElementById('menu-lateral');
+            const header = document.getElementById('main-header');
+            
+            if (menuLateral && header) {
+                // Prepara classes para modo Mobile
+                menuLateral.classList.remove('hidden'); 
+                menuLateral.classList.add(
+                    'fixed', 'left-0', 'top-0', 'w-64', 'h-full', 'z-[110]', 
+                    'transform', '-translate-x-full', 'transition-transform', 'duration-300',
+                    'md:relative', 'md:translate-x-0'
+                );
+
+                // Cria o Overlay escuro
+                const overlay = document.createElement('div');
+                overlay.className = 'fixed inset-0 bg-slate-900/60 z-[105] hidden backdrop-blur-sm md:hidden transition-opacity';
+                document.body.appendChild(overlay);
+
+                // Lógica de Abrir/Fechar
+                const toggleMenu = () => {
+                    const estaFechado = menuLateral.classList.contains('-translate-x-full');
+                    if(estaFechado) {
+                        menuLateral.classList.remove('-translate-x-full');
+                        overlay.classList.remove('hidden');
+                    } else {
+                        menuLateral.classList.add('-translate-x-full');
+                        overlay.classList.add('hidden');
+                    }
+                };
+
+                overlay.onclick = toggleMenu;
+
+                // Adiciona o Botão no Header com segurança
+                const btnMobile = document.createElement('button');
+                btnMobile.className = 'md:hidden bg-marinho text-white px-4 py-2 rounded-lg font-bold text-sm shadow-sm flex items-center justify-center gap-2 mb-2 w-full sm:w-auto active:scale-95 transition';
+                btnMobile.innerHTML = '<span>☰</span> Menu do Sistema';
+                btnMobile.onclick = toggleMenu;
+
+                // Insere logo no topo da área principal, ANTES do header para não quebrar o flex
+                const mainArea = document.getElementById('area-principal');
+                mainArea.insertBefore(btnMobile, header);
+            }
+        });
+    </script>
+
+    <!-- 3. Controle do Modo Gestor Master -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('modo_gestor') === '1') {
-                localStorage.setItem('peniel_modo_gestor', 'ativo');
-            }
+            if (urlParams.get('modo_gestor') === '1') { localStorage.setItem('peniel_modo_gestor', 'ativo'); }
 
-            // Se o modo gestor estiver ativo em qualquer tela do sistema:
             if (localStorage.getItem('peniel_modo_gestor') === 'ativo') {
-                
-                // 1. Remove ou oculta completamente qualquer menu lateral existente na tela
-                const menuLateral = document.querySelector('aside');
-                if (menuLateral) {
-                    menuLateral.remove(); // Remove o elemento do DOM para liberar 100% da tela
-                }
-
-                // 2. Garante que o layout principal ocupe a largura total (sem espaço reservado para menu)
+                const menuLateral = document.getElementById('menu-lateral');
+                if (menuLateral) { menuLateral.remove(); }
                 const containerPrincipal = document.querySelector('.flex.h-screen');
-                if (containerPrincipal) {
-                    containerPrincipal.classList.remove('overflow-hidden');
-                }
-
-                // 3. Adiciona a Barra Executiva Superior com o botão de retorno e opção de sair/bloquear
-                const main = document.querySelector('main');
+                if (containerPrincipal) { containerPrincipal.classList.remove('overflow-hidden'); }
+                const main = document.getElementById('area-principal');
+                
                 if (main && !document.getElementById('barraExecutivaMaster')) {
                     const barraGestor = document.createElement('div');
                     barraGestor.id = 'barraExecutivaMaster';
-                    barraGestor.className = 'bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl mb-4 flex justify-between items-center border-2 border-blue-500/40 z-50';
+                    barraGestor.className = 'bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl mb-4 flex flex-col md:flex-row justify-between items-center border-2 border-blue-500/40 z-[90] gap-4 w-full';
                     barraGestor.innerHTML = `
                         <div class="flex items-center gap-3 text-xs font-bold text-blue-300">
                             <span class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></span>
                             <span>Modo Gestor Master Ativo (Tela Cheia Executiva)</span>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <a href="configuracoes.html?modo_gestor=1" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
-                                &larr; Voltar à Central de Bordo
+                        <div class="flex items-center gap-2 w-full md:w-auto">
+                            <a href="configuracoes.html?modo_gestor=1" class="flex-1 md:flex-none bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition text-center shadow-sm whitespace-nowrap">
+                                &larr; Voltar à Central
                             </a>
-                            <button onclick="sairModoGestorGlobal()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-xl text-xs font-bold transition shadow-sm">
-                                🔒 Sair do Modo Gestor
+                            <button onclick="sairModoGestorGlobal()" class="flex-1 md:flex-none bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-xl text-xs font-bold transition shadow-sm whitespace-nowrap">
+                                🔒 Sair e Bloquear
                             </button>
                         </div>
                     `;
@@ -327,57 +329,6 @@
                 window.location.href = 'configuracoes.html';
             }
         }
-    </script>
-    <!-- ======================================================= -->
-    <!-- SCRIPT DO MENU MOBILE (IPHONE / ANDROID) -->
-    <!-- ======================================================= -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const menuLateral = document.querySelector('aside');
-            const header = document.querySelector('header');
-            
-            // Verifica se a tela tem menu lateral e se não está no modo Gestor Tela Cheia
-            if (menuLateral && header && !document.getElementById('btnMobile')) {
-                
-                // 1. Adapta as classes do Tailwind para o menu deslizar no celular
-                menuLateral.classList.remove('hidden'); // Remove o bloqueio original
-                menuLateral.classList.add(
-                    'fixed', 'left-0', 'top-0', 'h-full', 'z-[100]', 
-                    'transform', '-translate-x-full', 'transition-transform', 'duration-300',
-                    'md:relative', 'md:translate-x-0' // Mantém fixo no Computador
-                );
-
-                // 2. Cria o Fundo Escuro (Overlay) para a tela do iPhone
-                const overlay = document.createElement('div');
-                overlay.className = 'fixed inset-0 bg-slate-900/60 z-[90] hidden backdrop-blur-sm md:hidden transition-opacity';
-                document.body.appendChild(overlay);
-
-                // 3. Função para Abrir e Fechar o menu
-                const toggleMenu = () => {
-                    const estaFechado = menuLateral.classList.contains('-translate-x-full');
-                    if(estaFechado) {
-                        menuLateral.classList.remove('-translate-x-full');
-                        overlay.classList.remove('hidden');
-                    } else {
-                        menuLateral.classList.add('-translate-x-full');
-                        overlay.classList.add('hidden');
-                    }
-                };
-
-                // Fechar menu ao clicar no fundo escuro
-                overlay.onclick = toggleMenu;
-
-                // 4. Cria o Botão "Hambúrguer" no Header (Só aparece no celular)
-                const btnMobile = document.createElement('button');
-                btnMobile.id = 'btnMobile';
-                btnMobile.className = 'md:hidden w-full sm:w-auto bg-marinho text-white px-4 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-md mb-4 sm:mb-0 transition active:scale-95';
-                btnMobile.innerHTML = '☰ Abrir Menu do Sistema';
-                btnMobile.onclick = toggleMenu;
-
-                // Insere o botão no topo do Header
-                header.insertBefore(btnMobile, header.firstChild);
-            }
-        });
     </script>
 </body>
 </html>
