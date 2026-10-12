@@ -13,11 +13,14 @@
     </script>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
+    
+    <!-- Overlay do Menu Mobile -->
+    <div id="overlay-mobile" onclick="toggleMenuMobile()" class="fixed inset-0 bg-slate-900/60 z-[90] hidden md:hidden backdrop-blur-sm transition-opacity"></div>
 
-    <div class="flex h-screen overflow-hidden">
+    <div class="flex h-screen overflow-hidden relative">
         
         <!-- Menu Lateral Interno -->
-        <aside id="menu-lateral" class="w-64 bg-marinho text-white flex flex-col hidden md:flex transition-all">
+        <aside id="menu-lateral" class="fixed md:relative left-0 top-0 w-64 bg-marinho text-white flex-col h-full z-[100] transform -translate-x-full md:translate-x-0 transition-transform duration-300 flex shrink-0">
             <div class="p-6">
                 <h1 class="font-heading text-2xl font-bold tracking-tight">PENIEL <span class="text-sm font-sans font-normal block text-blue-300">Sistema Interno</span></h1>
             </div>
@@ -25,12 +28,16 @@
                 <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-4 px-4">Geral</div>
                 <a href="index.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📈 Dashboard</a>
                 
+                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Captação</div>
+                <a href="painel.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📥 Leads Typebot</a>
+
                 <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Secretaria</div>
                 <a href="matriculas.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📝 Matrículas</a>
                 <a href="fichas.html" class="block px-4 py-2.5 bg-blue-900 rounded-lg font-medium text-white shadow-inner">👥 Fichas (Alunos/Pais)</a>
                 <a href="rematricula.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">🔄 Rematrícula</a>
 
                 <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Acadêmico & ADM</div>
+                <a href="calendario.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📅 Calendário e Equipe</a>
                 <a href="notas.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📊 Notas e Avaliações</a>
                 <a href="financeiro.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">💰 Gestão Financeira</a>
                 <a href="configuracoes.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">⚙️ Configurações / ADM</a>
@@ -38,14 +45,19 @@
         </aside>
 
         <!-- Área Principal -->
-        <main class="flex-1 overflow-y-auto p-6 md:p-8 flex flex-col gap-6 relative">
-            
-            <header class="flex justify-between items-center bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                <div>
-                    <h2 class="font-heading text-2xl font-bold text-slate-800">Prontuário e Fichas Cadastrais</h2>
-                    <p class="text-xs text-slate-500">Acesse anamnese médica, histórico escolar e edite a documentação dos alunos.</p>
+        <main class="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col gap-6 w-full">
+            <header class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-5 rounded-2xl border border-slate-200 shadow-sm gap-4">
+                <div class="flex items-center gap-3 w-full md:w-auto">
+                    <!-- Botão Mobile Nativo -->
+                    <button onclick="toggleMenuMobile()" class="md:hidden bg-slate-100 text-marinho p-2.5 rounded-lg text-xl hover:bg-slate-200 transition active:scale-95 shadow-sm">
+                        ☰
+                    </button>
+                    <div>
+                        <h2 class="font-heading text-2xl font-bold text-slate-800">Prontuário e Fichas Cadastrais</h2>
+                        <p class="text-xs text-slate-500">Acesse anamnese médica, histórico escolar e edite a documentação dos alunos.</p>
+                    </div>
                 </div>
-                <div class="relative w-72">
+                <div class="relative w-full md:w-72">
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔍</span>
                     <input type="text" placeholder="Buscar aluno por nome ou CPF..." class="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
                 </div>
@@ -57,29 +69,34 @@
                     <thead class="bg-slate-50 text-slate-500 border-b border-slate-200 uppercase text-[11px] font-bold tracking-wider">
                         <tr>
                             <th class="px-6 py-4">Aluno</th>
-                            <th class="px-6 py-4">Turma Atual</th>
-                            <th class="px-6 py-4">Responsável Financeiro</th>
-                            <th class="px-6 py-4">Status da Ficha</th>
+                            <th class="px-6 py-4 hidden md:table-cell">Turma Atual</th>
+                            <th class="px-6 py-4 hidden sm:table-cell">Status da Ficha</th>
                             <th class="px-6 py-4 text-right">Ação</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         <tr class="hover:bg-slate-50 transition">
                             <td class="px-6 py-4 font-bold text-slate-800">Davi Lucas <span class="block text-[10px] text-slate-400 font-mono font-normal">RA: 2027001</span></td>
-                            <td class="px-6 py-4 text-slate-600 font-medium">3º Ano A - Matutino</td>
-                            <td class="px-6 py-4 text-slate-600">Carlos Lucas</td>
-                            <td class="px-6 py-4"><span class="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded">100% Completa</span></td>
+                            <td class="px-6 py-4 text-slate-600 font-medium hidden md:table-cell">3º Ano A - Matutino</td>
+                            <td class="px-6 py-4 hidden sm:table-cell"><span class="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded">100% Completa</span></td>
                             <td class="px-6 py-4 text-right">
-                                <button onclick="abrirFichaCompleta('Davi Lucas')" class="bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 px-3 py-1.5 rounded font-bold text-xs transition">Abrir Prontuário</button>
+                                <button onclick="abrirFichaCompleta('2027001')" class="bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 px-3 py-1.5 rounded font-bold text-xs transition whitespace-nowrap">Abrir Prontuário</button>
                             </td>
                         </tr>
                         <tr class="hover:bg-slate-50 transition">
                             <td class="px-6 py-4 font-bold text-slate-800">Isabela Mendes <span class="block text-[10px] text-slate-400 font-mono font-normal">RA: 2027002</span></td>
-                            <td class="px-6 py-4 text-slate-600 font-medium">2º Ano B - Vespertino</td>
-                            <td class="px-6 py-4 text-slate-600">Mariana Mendes</td>
-                            <td class="px-6 py-4"><span class="bg-orange-100 text-orange-700 text-xs font-bold px-2 py-1 rounded">Pendente Vacinação</span></td>
+                            <td class="px-6 py-4 text-slate-600 font-medium hidden md:table-cell">2º Ano B - Vespertino</td>
+                            <td class="px-6 py-4 hidden sm:table-cell"><span class="bg-orange-100 text-orange-700 text-xs font-bold px-2 py-1 rounded">Pendente Vacinação</span></td>
                             <td class="px-6 py-4 text-right">
-                                <button onclick="abrirFichaCompleta('Isabela Mendes')" class="bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 px-3 py-1.5 rounded font-bold text-xs transition">Abrir Prontuário</button>
+                                <button onclick="abrirFichaCompleta('2027002')" class="bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 px-3 py-1.5 rounded font-bold text-xs transition whitespace-nowrap">Abrir Prontuário</button>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="px-6 py-4 font-bold text-slate-800">Pedro Souza <span class="block text-[10px] text-slate-400 font-mono font-normal">RA: 2027089</span></td>
+                            <td class="px-6 py-4 text-slate-600 font-medium hidden md:table-cell">Pré II - Matutino</td>
+                            <td class="px-6 py-4 hidden sm:table-cell"><span class="bg-orange-100 text-orange-700 text-xs font-bold px-2 py-1 rounded">Pendente Docs</span></td>
+                            <td class="px-6 py-4 text-right">
+                                <button onclick="abrirFichaCompleta('2027089')" class="bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 px-3 py-1.5 rounded font-bold text-xs transition whitespace-nowrap">Abrir Prontuário</button>
                             </td>
                         </tr>
                     </tbody>
@@ -89,33 +106,33 @@
     </div>
 
     <!-- MODAL: FICHA COMPLETA DO ALUNO -->
-    <div id="modalFichaAluno" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden flex justify-center items-center z-[80] p-4">
-        <div class="bg-white w-full max-w-5xl rounded-2xl shadow-2xl flex flex-col overflow-hidden h-[90vh]">
+    <div id="modalFichaAluno" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden flex justify-center items-center z-[120] p-4">
+        <div class="bg-white w-full max-w-5xl rounded-2xl shadow-2xl flex flex-col overflow-hidden h-[95vh] md:h-[90vh]">
             
-            <div class="p-6 bg-marinho text-white flex justify-between items-start shrink-0">
+            <div class="p-4 md:p-6 bg-marinho text-white flex justify-between items-start shrink-0">
                 <div class="flex items-center gap-4">
-                    <div class="w-16 h-16 bg-slate-200 rounded-full border-2 border-white text-3xl flex items-center justify-center overflow-hidden">👦🏻</div>
+                    <div class="w-12 h-12 md:w-16 md:h-16 bg-slate-200 rounded-full border-2 border-white text-3xl flex items-center justify-center overflow-hidden">👦🏻</div>
                     <div>
-                        <h3 class="font-bold text-2xl font-heading" id="nomeFichaAluno">Davi Lucas</h3>
-                        <p class="text-blue-200 text-sm">RA: 2027001 • 3º Ano A - Matutino</p>
+                        <h3 class="font-bold text-xl md:text-2xl font-heading" id="nomeFichaAluno">--</h3>
+                        <p class="text-blue-200 text-xs md:text-sm" id="subFichaAluno">--</p>
                     </div>
                 </div>
                 <button onclick="fecharFichaCompleta()" class="text-white hover:text-red-300 font-bold text-3xl leading-none transition">&times;</button>
             </div>
 
-            <div class="flex border-b border-slate-200 bg-slate-50 px-4 pt-3 shrink-0 overflow-x-auto">
-                <button onclick="mudarAbaFicha('pessoais')" id="btn-pessoais" class="px-6 py-3 text-sm font-bold border-b-2 border-marinho text-marinho uppercase tracking-wider transition-colors">Dados Pessoais</button>
-                <button onclick="mudarAbaFicha('anamnese')" id="btn-anamnese" class="px-6 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 uppercase tracking-wider transition-colors">⚕️ Anamnese Médica</button>
-                <button onclick="mudarAbaFicha('historico')" id="btn-historico" class="px-6 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 uppercase tracking-wider transition-colors">🎓 Histórico Escolar</button>
-                <button onclick="mudarAbaFicha('documentacao')" id="btn-documentacao" class="px-6 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 uppercase tracking-wider transition-colors">📄 Documentação</button>
+            <div class="flex border-b border-slate-200 bg-slate-50 px-2 md:px-4 pt-3 shrink-0 overflow-x-auto hide-scrollbar">
+                <button onclick="mudarAbaFicha('pessoais')" id="btn-pessoais" class="px-4 md:px-6 py-3 text-xs md:text-sm font-bold border-b-2 border-marinho text-marinho uppercase tracking-wider transition-colors whitespace-nowrap">Dados Pessoais</button>
+                <button onclick="mudarAbaFicha('anamnese')" id="btn-anamnese" class="px-4 md:px-6 py-3 text-xs md:text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 uppercase tracking-wider transition-colors whitespace-nowrap">⚕️ Anamnese Médica</button>
+                <button onclick="mudarAbaFicha('historico')" id="btn-historico" class="px-4 md:px-6 py-3 text-xs md:text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 uppercase tracking-wider transition-colors whitespace-nowrap">🎓 Histórico Escolar</button>
+                <button onclick="mudarAbaFicha('documentacao')" id="btn-documentacao" class="px-4 md:px-6 py-3 text-xs md:text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 uppercase tracking-wider transition-colors whitespace-nowrap">📄 Documentação</button>
             </div>
 
-            <div class="p-8 overflow-y-auto bg-slate-50/50 flex-1">
+            <div class="p-4 md:p-8 overflow-y-auto bg-slate-50/50 flex-1">
                 
                 <!-- 1. Aba: Dados Pessoais -->
                 <div id="aba-pessoais" class="space-y-6">
                     <div class="flex justify-between items-center border-b border-slate-200 pb-2">
-                        <h4 class="text-lg font-bold text-slate-800">Informações Cadastrais</h4>
+                        <h4 class="text-base md:text-lg font-bold text-slate-800">Informações Cadastrais</h4>
                         <button id="btn-editar-pessoais" onclick="habilitarEdicaoPessoais()" class="text-xs bg-blue-50 text-blue-600 border border-blue-200 px-3 py-1.5 rounded-lg font-bold hover:bg-blue-100 transition flex items-center gap-1 shadow-sm">
                             ✏️ Editar Dados
                         </button>
@@ -124,23 +141,23 @@
                     <!-- MODO VISUALIZAÇÃO -->
                     <div id="visualizacao-pessoais" class="space-y-6 block">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div><label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Data de Nascimento</label><p id="view-nasc" class="font-semibold text-slate-800 text-sm">12/05/2018 (8 anos)</p></div>
-                            <div><label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Naturalidade</label><p id="view-nat" class="font-semibold text-slate-800 text-sm">Rio de Janeiro - RJ</p></div>
-                            <div><label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">CPF do Aluno</label><p id="view-cpf" class="font-semibold text-slate-800 text-sm">111.222.333-44</p></div>
+                            <div><label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Data de Nascimento</label><p id="view-nasc" class="font-semibold text-slate-800 text-sm">--</p></div>
+                            <div><label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Naturalidade</label><p id="view-nat" class="font-semibold text-slate-800 text-sm">--</p></div>
+                            <div><label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">CPF do Aluno</label><p id="view-cpf" class="font-semibold text-slate-800 text-sm">--</p></div>
                         </div>
                         
-                        <h4 class="text-lg font-bold text-slate-800 border-b pb-2 mt-6">Responsáveis Familiares</h4>
+                        <h4 class="text-base md:text-lg font-bold text-slate-800 border-b pb-2 mt-6">Responsáveis Familiares</h4>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-5 border border-slate-200 rounded-xl shadow-sm">
                             <div>
                                 <p class="font-bold text-marinho uppercase tracking-wider text-[10px] mb-1">Pai / Responsável Financeiro</p>
-                                <p id="view-pai-nome" class="font-bold text-slate-800 text-lg">Carlos Lucas</p>
-                                <p id="view-pai-tel" class="text-sm text-slate-600 mt-1">📱 (21) 99999-1111</p>
-                                <p id="view-pai-email" class="text-sm text-slate-600">✉️ carlos.lucas@email.com</p>
+                                <p id="view-pai-nome" class="font-bold text-slate-800 text-lg">--</p>
+                                <p id="view-pai-tel" class="text-sm text-slate-600 mt-1">--</p>
+                                <p id="view-pai-email" class="text-sm text-slate-600">--</p>
                             </div>
                             <div>
                                 <p class="font-bold text-marinho uppercase tracking-wider text-[10px] mb-1">Mãe / Autorizada</p>
-                                <p id="view-mae-nome" class="font-bold text-slate-800 text-lg">Ana Carolina Lucas</p>
-                                <p id="view-mae-tel" class="text-sm text-slate-600 mt-1">📱 (21) 98888-2222</p>
+                                <p id="view-mae-nome" class="font-bold text-slate-800 text-lg">--</p>
+                                <p id="view-mae-tel" class="text-sm text-slate-600 mt-1">--</p>
                             </div>
                         </div>
                     </div>
@@ -154,15 +171,15 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 mb-1">Data de Nascimento</label>
-                                <input type="date" id="edit-nasc" value="2018-05-12" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 shadow-sm bg-white">
+                                <input type="date" id="edit-nasc" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 shadow-sm bg-white">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 mb-1">Naturalidade</label>
-                                <input type="text" id="edit-nat" value="Rio de Janeiro - RJ" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 shadow-sm bg-white">
+                                <input type="text" id="edit-nat" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 shadow-sm bg-white">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 mb-1">CPF do Aluno</label>
-                                <input type="text" id="edit-cpf" value="111.222.333-44" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 shadow-sm bg-white">
+                                <input type="text" id="edit-cpf" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 shadow-sm bg-white">
                             </div>
                         </div>
 
@@ -170,15 +187,15 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div class="md:col-span-1">
                                 <label class="block text-xs font-bold text-slate-700 mb-1">Nome Completo</label>
-                                <input type="text" id="edit-pai-nome" value="Carlos Lucas" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 shadow-sm bg-white">
+                                <input type="text" id="edit-pai-nome" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 shadow-sm bg-white">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 mb-1">Telefone / WhatsApp</label>
-                                <input type="text" id="edit-pai-tel" value="(21) 99999-1111" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 shadow-sm bg-white">
+                                <input type="text" id="edit-pai-tel" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 shadow-sm bg-white">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 mb-1">E-mail</label>
-                                <input type="email" id="edit-pai-email" value="carlos.lucas@email.com" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 shadow-sm bg-white">
+                                <input type="email" id="edit-pai-email" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 shadow-sm bg-white">
                             </div>
                         </div>
 
@@ -186,11 +203,11 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div class="md:col-span-2">
                                 <label class="block text-xs font-bold text-slate-700 mb-1">Nome Completo</label>
-                                <input type="text" id="edit-mae-nome" value="Ana Carolina Lucas" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 shadow-sm bg-white">
+                                <input type="text" id="edit-mae-nome" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 shadow-sm bg-white">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 mb-1">Telefone / WhatsApp</label>
-                                <input type="text" id="edit-mae-tel" value="(21) 98888-2222" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 shadow-sm bg-white">
+                                <input type="text" id="edit-mae-tel" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 shadow-sm bg-white">
                             </div>
                         </div>
 
@@ -207,34 +224,34 @@
                 <div id="aba-anamnese" class="hidden space-y-6 animate-fade-in">
                     <div class="flex justify-between items-center border-b pb-2">
                         <h4 class="text-lg font-bold text-red-600 flex items-center gap-2">⚕️ Prontuário de Saúde (Anamnese)</h4>
-                        <span class="bg-red-100 text-red-700 text-xs font-bold px-3 py-1 rounded-full">Atualizado há 2 meses</span>
+                        <span class="bg-red-100 text-red-700 text-[10px] md:text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap">Atualizado há 2 meses</span>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm">
                             <label class="block text-xs font-bold text-slate-500 uppercase">Tipo Sanguíneo</label>
-                            <p class="text-3xl font-black text-red-600 mt-1">O+</p>
+                            <p class="text-3xl font-black text-red-600 mt-1" id="anamnese-sangue">O+</p>
                         </div>
                         <div class="bg-white p-4 border border-red-200 rounded-xl shadow-sm bg-red-50">
                             <label class="block text-xs font-bold text-red-800 uppercase">Alergias Severas</label>
-                            <p class="text-base font-bold text-red-700 mt-1">Amedoim e Corante Amarelo</p>
+                            <p class="text-base font-bold text-red-700 mt-1" id="anamnese-alergia">Amendoim e Corante Amarelo</p>
                         </div>
                         <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm">
                             <label class="block text-xs font-bold text-slate-500 uppercase">Medicação Contínua</label>
-                            <p class="text-base font-bold text-slate-800 mt-1">Não utiliza</p>
+                            <p class="text-base font-bold text-slate-800 mt-1" id="anamnese-medicacao">Não utiliza</p>
                         </div>
                     </div>
 
                     <div class="bg-white p-5 border border-slate-200 rounded-xl shadow-sm mt-4">
                         <h5 class="font-bold text-slate-700 mb-3">Observações Clínicas e Emergência</h5>
-                        <p class="text-sm text-slate-600 mb-4">A criança possui rinite alérgica sensível a poeira e giz. Em caso de emergência, ligar primeiramente para a mãe. Plano de saúde conveniado: Unimed Rio (Cartão: 1234.5678.90).</p>
+                        <p class="text-sm text-slate-600 mb-4" id="anamnese-obs">A criança possui rinite alérgica sensível a poeira e giz. Em caso de emergência, ligar primeiramente para a mãe. Plano de saúde conveniado: Unimed Rio (Cartão: 1234.5678.90).</p>
                         
                         <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                             <div>
                                 <p class="text-xs font-bold text-slate-500 uppercase">Contato de Emergência Secundário</p>
-                                <p class="font-bold text-slate-800 mt-1">Avó: Maria Silva • (21) 97777-3333</p>
+                                <p class="font-bold text-slate-800 mt-1" id="anamnese-emergencia">Avó: Maria Silva • (21) 97777-3333</p>
                             </div>
-                            <button class="bg-red-100 text-red-600 border border-red-200 px-4 py-2 rounded-lg font-bold text-xs hover:bg-red-200 transition shadow-sm w-full sm:w-auto">
+                            <button class="bg-red-100 text-red-600 border border-red-200 px-4 py-2 rounded-lg font-bold text-xs hover:bg-red-200 transition shadow-sm w-full sm:w-auto whitespace-nowrap">
                                 ☎️ Ligar Agora
                             </button>
                         </div>
@@ -248,13 +265,13 @@
                         <div class="relative pl-6">
                             <div class="absolute -left-[9px] top-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-sm"></div>
                             <p class="text-xs font-bold text-blue-600 bg-blue-50 inline-block px-2 py-0.5 rounded">Ano Atual (2026)</p>
-                            <h5 class="font-bold text-slate-800 text-base mt-1">3º Ano do Ensino Fundamental I</h5>
-                            <p class="text-sm text-slate-500 mt-1">Peniel Christian School • Sem ocorrências pedagógicas graves. Ótimo rendimento em matemática.</p>
+                            <h5 class="font-bold text-slate-800 text-base mt-1" id="hist-atual-turma">3º Ano do Ensino Fundamental I</h5>
+                            <p class="text-sm text-slate-500 mt-1" id="hist-atual-obs">Peniel Christian School • Sem ocorrências pedagógicas graves. Ótimo rendimento em matemática.</p>
                         </div>
                         <div class="relative pl-6">
                             <div class="absolute -left-[9px] top-1 w-4 h-4 bg-slate-300 rounded-full border-2 border-white shadow-sm"></div>
                             <p class="text-xs font-bold text-slate-500 bg-slate-100 inline-block px-2 py-0.5 rounded">2025</p>
-                            <h5 class="font-bold text-slate-800 text-base mt-1">2º Ano do Ensino Fundamental I</h5>
+                            <h5 class="font-bold text-slate-800 text-base mt-1" id="hist-passado-turma">2º Ano do Ensino Fundamental I</h5>
                             <p class="text-sm text-slate-500 mt-1">Peniel Christian School • Aprovado direto por média.</p>
                         </div>
                     </div>
@@ -262,13 +279,13 @@
 
                 <!-- 4. Aba: Documentação INTERATIVA -->
                 <div id="aba-documentacao" class="hidden space-y-6 animate-fade-in">
-                    <div class="flex justify-between items-center border-b pb-2">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-2 gap-3">
                         <h4 class="text-lg font-bold text-slate-800">📄 Arquivos e Documentos Digitalizados</h4>
                         
                         <!-- Campo oculto para simular o upload nativo de arquivo -->
                         <input type="file" id="uploadDocumento" class="hidden" accept=".pdf,image/*" onchange="concluirAnexoDocumento()">
                         
-                        <button onclick="acionarUpload('btn', 'Novo Documento')" class="bg-marinho hover:bg-blue-900 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-sm transition">
+                        <button onclick="acionarUpload('btn', 'Novo Documento')" class="bg-marinho hover:bg-blue-900 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-sm transition w-full sm:w-auto">
                             ➕ Anexar Documento
                         </button>
                     </div>
@@ -279,26 +296,26 @@
                         <!-- Doc 1 -->
                         <div id="card-foto" onclick="acionarUpload('card-foto', 'Foto 3x4')" class="bg-white border border-slate-200 rounded-xl p-5 text-center hover:border-blue-400 transition cursor-pointer shadow-sm group">
                             <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">📸</div>
-                            <h5 class="font-bold text-slate-700 text-sm">Foto 3x4</h5>
+                            <h5 class="font-bold text-slate-700 text-xs md:text-sm">Foto 3x4</h5>
                             <p class="badge-status text-[10px] text-green-700 font-bold bg-green-100 rounded-md mt-2 py-1">Validado</p>
                         </div>
                         <!-- Doc 2 -->
                         <div id="card-certidao" onclick="acionarUpload('card-certidao', 'Certidão de Nascimento')" class="bg-white border border-slate-200 rounded-xl p-5 text-center hover:border-blue-400 transition cursor-pointer shadow-sm group">
                             <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">📜</div>
-                            <h5 class="font-bold text-slate-700 text-sm">Certidão Nasc.</h5>
+                            <h5 class="font-bold text-slate-700 text-xs md:text-sm">Certidão Nasc.</h5>
                             <p class="badge-status text-[10px] text-green-700 font-bold bg-green-100 rounded-md mt-2 py-1">Validado</p>
                         </div>
                         <!-- Doc 3 -->
                         <div id="card-rg" onclick="acionarUpload('card-rg', 'RG ou CPF')" class="bg-white border border-slate-200 rounded-xl p-5 text-center hover:border-blue-400 transition cursor-pointer shadow-sm group">
                             <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">🪪</div>
-                            <h5 class="font-bold text-slate-700 text-sm">RG / CPF Pais</h5>
+                            <h5 class="font-bold text-slate-700 text-xs md:text-sm">RG / CPF Pais</h5>
                             <p class="badge-status text-[10px] text-green-700 font-bold bg-green-100 rounded-md mt-2 py-1">Validado</p>
                         </div>
                         <!-- Doc 4 (Pendente) -->
                         <div id="card-vacina" onclick="acionarUpload('card-vacina', 'Cartão de Vacina')" class="bg-orange-50 border border-orange-200 rounded-xl p-5 text-center hover:border-orange-400 transition cursor-pointer shadow-sm group">
                             <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">💉</div>
-                            <h5 class="nome-doc font-bold text-orange-800 text-sm">Cartão Vacina</h5>
-                            <p class="badge-status text-[10px] text-orange-700 font-bold bg-orange-200 rounded-md mt-2 py-1 animate-pulse">Pendente Atualização</p>
+                            <h5 class="nome-doc font-bold text-orange-800 text-xs md:text-sm">Cartão Vacina</h5>
+                            <p class="badge-status text-[10px] text-orange-700 font-bold bg-orange-200 rounded-md mt-2 py-1 animate-pulse" id="status-vacina">Pendente</p>
                         </div>
                     </div>
                 </div>
@@ -314,11 +331,94 @@
         </div>
     </div>
 
-    <!-- Scripts de Controle (Modo Edição, Abas e Upload de Documentos) -->
+    <!-- Scripts de Controle do Menu Mobile e Abas -->
     <script>
-        // Funções do Modal e Abas
-        function abrirFichaCompleta(nome) {
-            document.getElementById('nomeFichaAluno').innerText = nome;
+        // Menu Mobile Nativo
+        function toggleMenuMobile() {
+            const menu = document.getElementById('menu-lateral');
+            const overlay = document.getElementById('overlay-mobile');
+            menu.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        // =========================================================
+        // BANCO DE DADOS DINÂMICO PARA FICHAS E PRONTUÁRIOS
+        // (Isso impede que os dados se misturem ao clicar em alunos diferentes)
+        // =========================================================
+        const bdFichas = {
+            '2027001': {
+                nome: 'Davi Lucas', ra: '2027001', turma: '3º Ano A - Matutino', nasc: '15/04/2018 (8 anos)', nat: 'Rio de Janeiro - RJ', cpf: '111.222.333-44',
+                pai: 'Carlos Lucas', paiTel: '(21) 99999-1111', paiEmail: 'carlos.lucas@email.com', mae: 'Ana Carolina Lucas', maeTel: '(21) 98888-2222',
+                sangue: 'O+', alergia: 'Amendoim e Corante Amarelo', med: 'Não utiliza', obs: 'A criança possui rinite alérgica sensível a poeira e giz.', emerg: 'Avó: Maria Silva • (21) 97777-3333',
+                histAtual: '3º Ano do Ensino Fundamental I', histPassado: '2º Ano do Ensino Fundamental I', statusVacina: 'Validado'
+            },
+            '2027002': {
+                nome: 'Isabela Mendes', ra: '2027002', turma: '2º Ano B - Vespertino', nasc: '10/11/2019 (7 anos)', nat: 'Niterói - RJ', cpf: '222.333.444-55',
+                pai: 'Roberto Mendes', paiTel: '(21) 97777-0000', paiEmail: 'roberto@email.com', mae: 'Mariana Mendes', maeTel: '(21) 96666-3333',
+                sangue: 'A-', alergia: 'Nenhuma', med: 'Bombinha de Asma (Se necessário)', obs: 'Apresenta asma leve após esforço físico intenso.', emerg: 'Tio: Ricardo Mendes • (21) 95555-1111',
+                histAtual: '2º Ano do Ensino Fundamental I', histPassado: '1º Ano do Ensino Fundamental I', statusVacina: 'Pendente'
+            },
+            '2027089': {
+                nome: 'Pedro Souza', ra: '2027089', turma: 'Pré II - Matutino', nasc: '05/02/2021 (5 anos)', nat: 'São Gonçalo - RJ', cpf: '333.444.555-66',
+                pai: 'Roberto Souza', paiTel: '(21) 94444-2222', paiEmail: 'rsouza@email.com', mae: 'Camila Souza', maeTel: '(21) 93333-7777',
+                sangue: 'B+', alergia: 'Picada de Inseto', med: 'Não utiliza', obs: 'Criança muito ativa. Não pode comer doces após as 16h.', emerg: 'Avô: José Souza • (21) 91111-8888',
+                histAtual: 'Pré II - Educação Infantil', histPassado: 'Pré I - Educação Infantil', statusVacina: 'Pendente'
+            }
+        };
+
+        // Funções do Modal de Ficha Completa
+        function abrirFichaCompleta(ra) {
+            const aluno = bdFichas[ra];
+            if(!aluno) { alert("Dados do aluno não encontrados no banco."); return; }
+
+            // Popula os Cabeçalhos dinamicamente
+            document.getElementById('nomeFichaAluno').innerText = aluno.nome;
+            document.getElementById('subFichaAluno').innerText = `RA: ${aluno.ra} • ${aluno.turma}`;
+
+            // Aba: Pessoais
+            document.getElementById('view-nasc').innerText = aluno.nasc;
+            document.getElementById('view-nat').innerText = aluno.nat;
+            document.getElementById('view-cpf').innerText = aluno.cpf;
+            document.getElementById('view-pai-nome').innerText = aluno.pai;
+            document.getElementById('view-pai-tel').innerText = `📱 ${aluno.paiTel}`;
+            document.getElementById('view-pai-email').innerText = `✉️ ${aluno.paiEmail}`;
+            document.getElementById('view-mae-nome').innerText = aluno.mae;
+            document.getElementById('view-mae-tel').innerText = `📱 ${aluno.maeTel}`;
+
+            // Preenche os Inputs de Edição para estarem prontos caso a pessoa clique em Editar
+            document.getElementById('edit-nat').value = aluno.nat;
+            document.getElementById('edit-cpf').value = aluno.cpf;
+            document.getElementById('edit-pai-nome').value = aluno.pai;
+            document.getElementById('edit-pai-tel').value = aluno.paiTel;
+            document.getElementById('edit-pai-email').value = aluno.paiEmail;
+            document.getElementById('edit-mae-nome').value = aluno.mae;
+            document.getElementById('edit-mae-tel').value = aluno.maeTel;
+
+            // Aba: Anamnese
+            document.getElementById('anamnese-sangue').innerText = aluno.sangue;
+            document.getElementById('anamnese-alergia').innerText = aluno.alergia;
+            document.getElementById('anamnese-medicacao').innerText = aluno.med;
+            document.getElementById('anamnese-obs').innerText = aluno.obs;
+            document.getElementById('anamnese-emergencia').innerText = aluno.emerg;
+
+            // Aba: Histórico
+            document.getElementById('hist-atual-turma').innerText = aluno.histAtual;
+            document.getElementById('hist-passado-turma').innerText = aluno.histPassado;
+
+            // Documentos Pendentes
+            const badgeVacina = document.getElementById('status-vacina');
+            const cardVacina = document.getElementById('card-vacina');
+            if(aluno.statusVacina === 'Validado') {
+                cardVacina.className = 'bg-white border border-slate-200 rounded-xl p-5 text-center hover:border-blue-400 transition cursor-pointer shadow-sm group';
+                badgeVacina.className = 'badge-status text-[10px] text-green-700 font-bold bg-green-100 rounded-md mt-2 py-1';
+                badgeVacina.innerText = 'Validado';
+            } else {
+                cardVacina.className = 'bg-orange-50 border border-orange-200 rounded-xl p-5 text-center hover:border-orange-400 transition cursor-pointer shadow-sm group';
+                badgeVacina.className = 'badge-status text-[10px] text-orange-700 font-bold bg-orange-200 rounded-md mt-2 py-1 animate-pulse';
+                badgeVacina.innerText = 'Pendente';
+            }
+
+            // Exibe Modal
             document.getElementById('modalFichaAluno').classList.remove('hidden');
             mudarAbaFicha('pessoais');
             cancelarEdicaoPessoais();
@@ -364,41 +464,29 @@
             document.getElementById('view-mae-nome').innerText = document.getElementById('edit-mae-nome').value;
             document.getElementById('view-mae-tel').innerText = "📱 " + document.getElementById('edit-mae-tel').value;
 
-            const nascVal = document.getElementById('edit-nasc').value;
-            if(nascVal) {
-                const dataArr = nascVal.split('-');
-                document.getElementById('view-nasc').innerText = `${dataArr[2]}/${dataArr[1]}/${dataArr[0]} (8 anos)`;
-            }
-
             cancelarEdicaoPessoais();
             alert('✅ Dados pessoais e informações de contato atualizados com sucesso no sistema!');
         }
 
-        // =========================================================
-        // LÓGICA DE UPLOAD E ANEXO DE DOCUMENTOS
-        // =========================================================
+        // LÓGICA DE UPLOAD DE DOCUMENTOS
         let docSendoAnexadoId = '';
         let docSendoAnexadoNome = '';
 
         function acionarUpload(cardId, docNome) {
             docSendoAnexadoId = cardId;
             docSendoAnexadoNome = docNome;
-            // Dispara o clique no input file oculto
             document.getElementById('uploadDocumento').click();
         }
 
         function concluirAnexoDocumento() {
             const inputUpload = document.getElementById('uploadDocumento');
             
-            // Verifica se o usuário realmente selecionou um arquivo
             if (inputUpload.files && inputUpload.files.length > 0) {
                 const arquivoSelecionado = inputUpload.files[0].name;
 
-                // Se clicou em um card específico (e não no botão geral)
                 if(docSendoAnexadoId !== 'btn') {
                     const cardElement = document.getElementById(docSendoAnexadoId);
                     
-                    // Altera estilos se o card estava "pendente" (laranja)
                     if(cardElement.classList.contains('bg-orange-50')) {
                         cardElement.classList.remove('bg-orange-50', 'border-orange-200', 'hover:border-orange-400');
                         cardElement.classList.add('bg-white', 'border-slate-200', 'hover:border-blue-400');
@@ -410,7 +498,6 @@
                         }
                     }
 
-                    // Pinta o badge de azul indicando que foi recém anexado
                     const badge = cardElement.querySelector('.badge-status');
                     if(badge) {
                         badge.className = 'badge-status text-[10px] text-blue-700 font-bold bg-blue-100 rounded-md mt-2 py-1';
@@ -418,15 +505,14 @@
                     }
                 }
 
-                // Dispara o feedback visual para o usuário
                 alert(`✅ Upload Concluído!\nO arquivo "${arquivoSelecionado}" foi salvo no perfil como ${docSendoAnexadoNome}.`);
-                
-                // Limpa o input para permitir enviar o mesmo arquivo novamente se necessário
                 inputUpload.value = '';
             }
         }
+    </script>
 
-        // Bloco Global do Gestor
+    <!-- BLOCO GLOBAL DE CONTROLE DO MODO GESTOR MASTER -->
+    <script>
         document.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('modo_gestor') === '1') { localStorage.setItem('peniel_modo_gestor', 'ativo'); }
@@ -442,7 +528,7 @@
                 if (main && !document.getElementById('barraExecutivaMaster')) {
                     const barraGestor = document.createElement('div');
                     barraGestor.id = 'barraExecutivaMaster';
-                    barraGestor.className = 'bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl mb-6 flex justify-between items-center border-2 border-blue-500/40 z-50';
+                    barraGestor.className = 'bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl mb-6 flex flex-col md:flex-row justify-between items-center border-2 border-blue-500/40 z-[80] gap-4';
                     barraGestor.innerHTML = `
                         <div class="flex items-center gap-3 text-xs font-bold text-blue-300">
                             <span class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></span><span>Modo Gestor Master Ativo (Tela Cheia)</span>
@@ -453,58 +539,6 @@
                     `;
                     main.prepend(barraGestor);
                 }
-            }
-        });
-    </script>
-
-    <!-- ======================================================= -->
-    <!-- SCRIPT DO MENU MOBILE (IPHONE / ANDROID) -->
-    <!-- ======================================================= -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const menuLateral = document.querySelector('aside');
-            const header = document.querySelector('header');
-            
-            // Verifica se a tela tem menu lateral e se não está no modo Gestor Tela Cheia
-            if (menuLateral && header && !document.getElementById('btnMobile')) {
-                
-                // 1. Adapta as classes do Tailwind para o menu deslizar no celular
-                menuLateral.classList.remove('hidden'); // Remove o bloqueio original
-                menuLateral.classList.add(
-                    'fixed', 'left-0', 'top-0', 'h-full', 'z-[100]', 
-                    'transform', '-translate-x-full', 'transition-transform', 'duration-300',
-                    'md:relative', 'md:translate-x-0' // Mantém fixo no Computador
-                );
-
-                // 2. Cria o Fundo Escuro (Overlay) para a tela do iPhone
-                const overlay = document.createElement('div');
-                overlay.className = 'fixed inset-0 bg-slate-900/60 z-[90] hidden backdrop-blur-sm md:hidden transition-opacity';
-                document.body.appendChild(overlay);
-
-                // 3. Função para Abrir e Fechar o menu
-                const toggleMenu = () => {
-                    const estaFechado = menuLateral.classList.contains('-translate-x-full');
-                    if(estaFechado) {
-                        menuLateral.classList.remove('-translate-x-full');
-                        overlay.classList.remove('hidden');
-                    } else {
-                        menuLateral.classList.add('-translate-x-full');
-                        overlay.classList.add('hidden');
-                    }
-                };
-
-                // Fechar menu ao clicar no fundo escuro
-                overlay.onclick = toggleMenu;
-
-                // 4. Cria o Botão "Hambúrguer" no Header (Só aparece no celular)
-                const btnMobile = document.createElement('button');
-                btnMobile.id = 'btnMobile';
-                btnMobile.className = 'md:hidden w-full sm:w-auto bg-marinho text-white px-4 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-md mb-4 sm:mb-0 transition active:scale-95';
-                btnMobile.innerHTML = '☰ Abrir Menu do Sistema';
-                btnMobile.onclick = toggleMenu;
-
-                // Insere o botão no topo do Header
-                header.insertBefore(btnMobile, header.firstChild);
             }
         });
     </script>
