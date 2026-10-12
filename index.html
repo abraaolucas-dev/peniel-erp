@@ -25,10 +25,13 @@
         <source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" type="audio/ogg">
     </audio>
 
-    <div class="flex h-screen overflow-hidden">
+    <!-- Overlay do Menu Mobile -->
+    <div id="overlay-mobile" onclick="toggleMenuMobile()" class="fixed inset-0 bg-slate-900/60 z-[90] hidden md:hidden backdrop-blur-sm transition-opacity"></div>
+
+    <div class="flex h-screen overflow-hidden relative">
         
         <!-- Menu Lateral Interno -->
-        <aside id="menu-lateral" class="w-64 bg-marinho text-white flex flex-col hidden md:flex transition-colors duration-300">
+        <aside id="menu-lateral" class="fixed md:relative left-0 top-0 w-64 bg-marinho text-white flex-col h-full z-[100] transform -translate-x-full md:translate-x-0 transition-transform duration-300 flex shrink-0">
             <div class="p-6">
                 <h1 class="font-heading text-2xl font-bold tracking-tight">PENIEL <span class="text-sm font-sans font-normal block text-blue-300" id="label-unidade-menu">Unidade Matriz</span></h1>
             </div>
@@ -55,22 +58,28 @@
         </aside>
 
         <!-- Área Principal -->
-        <main class="flex-1 overflow-y-auto p-6 md:p-8 flex flex-col gap-6 relative">
+        <main class="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col gap-6 w-full">
             
             <!-- HEADER COM O PAINEL DE PERFIL E UNIDADES -->
-            <header class="flex flex-col lg:flex-row justify-between items-start lg:items-center bg-white p-5 rounded-2xl border border-slate-200 shadow-sm gap-4">
-                <div>
-                    <div class="flex items-center gap-2 mb-1">
-                        <span class="bg-blue-100 text-marinho text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider" id="badge-unidade-atual">Unidade Matriz</span>
-                        <span class="text-xs text-slate-400">Sessão Ativa</span>
+            <header class="flex flex-col xl:flex-row justify-between items-start xl:items-center bg-white p-5 rounded-2xl border border-slate-200 shadow-sm gap-4">
+                <div class="flex items-center gap-3 w-full xl:w-auto">
+                    <!-- Botão Mobile Nativo -->
+                    <button onclick="toggleMenuMobile()" class="md:hidden bg-slate-100 text-marinho p-2.5 rounded-lg text-xl hover:bg-slate-200 transition active:scale-95 shadow-sm">
+                        ☰
+                    </button>
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="bg-blue-100 text-marinho text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider" id="badge-unidade-atual">Unidade Matriz</span>
+                            <span class="text-xs text-slate-400">Sessão Ativa</span>
+                        </div>
+                        <h2 class="font-heading text-2xl md:text-3xl font-bold text-slate-800" id="saudacao-gestor">Olá, Abraão Lucas</h2>
+                        <p class="text-xs text-slate-500">Painel de controle, turmas em tempo real e visão geral.</p>
                     </div>
-                    <h2 class="font-heading text-2xl font-bold text-slate-800" id="saudacao-gestor">Olá, Abraão Lucas</h2>
-                    <p class="text-xs text-slate-500">Painel de controle, turmas em tempo real e visão geral.</p>
                 </div>
                 
-                <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+                <div class="flex flex-wrap items-center gap-3 w-full xl:w-auto">
                     <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700">
-                        <span>📅</span><span id="data-atual"></span>
+                        <span>📅</span><span id="data-topo">08/10/2026</span>
                     </div>
                     <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl">
                         <span class="text-sm">🏫</span>
@@ -109,7 +118,7 @@
             </div>
 
             <!-- KPIs -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                 <a href="matriculas.html" class="block bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-blue-500 hover:-translate-y-1 hover:shadow-md transition-all cursor-pointer group">
                     <div class="flex justify-between items-start"><h3 class="text-slate-500 text-xs font-semibold uppercase tracking-wider">Alunos na Escola</h3><span class="text-blue-500 text-lg opacity-0 group-hover:opacity-100 transition-opacity">↗</span></div>
                     <div class="text-3xl font-bold text-slate-800 mt-1">342 <span class="text-sm font-normal text-green-500">de 350</span></div>
@@ -215,7 +224,7 @@
                         <textarea id="campo-anotacao" class="w-full bg-transparent border-0 focus:ring-0 p-1 text-sm text-amber-900 resize-none font-medium" rows="2" placeholder="Anotações rápidas da diretoria..."></textarea>
                     </div>
 
-                    <!-- CENTRAL DE LIBERAÇÕES (Âncora de rolagem) -->
+                    <!-- CENTRAL DE LIBERAÇÕES -->
                     <div id="central-liberacoes" class="bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col h-full scroll-mt-20">
                         <div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-xl flex justify-between items-center">
                             <h3 class="font-bold text-slate-800">🛂 Central de Liberações de Saída e Portaria</h3>
@@ -279,7 +288,7 @@
     <!-- ========================================================================= -->
     <!-- NOVA FICHA CADASTRAL DO GESTOR (AMPLIADA) -->
     <!-- ========================================================================= -->
-    <div id="modalPerfil" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden flex justify-center items-center z-[60] p-4 overflow-y-auto">
+    <div id="modalPerfil" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden flex justify-center items-center z-[110] p-4 overflow-y-auto">
         <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto max-h-[95vh]">
             
             <div class="p-6 border-b border-slate-100 bg-marinho text-white flex justify-between items-center sticky top-0 z-10">
@@ -392,7 +401,7 @@
 
 
     <!-- Modal: Estatísticas da Turma -->
-    <div id="modalEstatisticasTurma" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm hidden flex justify-center items-center z-[70] p-4">
+    <div id="modalEstatisticasTurma" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm hidden flex justify-center items-center z-[110] p-4">
         <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl flex flex-col overflow-hidden max-h-[95vh]">
             <div class="p-5 border-b border-slate-100 bg-marinho text-white flex justify-between items-center">
                 <div>
@@ -438,14 +447,21 @@
     <!-- SCRIPTS GERAIS DO DASHBOARD E INTERATIVIDADE DE LIBERAÇÃO -->
     <!-- ========================================================================= -->
     <script>
+        // Função de controle do Menu Mobile Nativo
+        function toggleMenuMobile() {
+            const menu = document.getElementById('menu-lateral');
+            const overlay = document.getElementById('overlay-mobile');
+            menu.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('data-topo').innerText = new Date().toLocaleDateString('pt-BR');
+
             const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
             document.getElementById('seletorUnidade').value = unidade;
             document.getElementById('badge-unidade-atual').innerText = `Unidade ${unidade}`;
             document.getElementById('label-unidade-menu').innerText = `Unidade ${unidade}`;
-
-            // Preenchimento dinâmico da data atual
-            document.getElementById('data-atual').innerText = new Date().toLocaleDateString('pt-BR');
 
             const cor = localStorage.getItem('peniel_cor_sessao') || '#003057';
             document.getElementById('seletorCor').value = cor;
@@ -576,18 +592,21 @@
                 if (main && !document.getElementById('barraExecutivaMaster')) {
                     const barraGestor = document.createElement('div');
                     barraGestor.id = 'barraExecutivaMaster';
-                    barraGestor.className = 'bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl mb-6 flex justify-between items-center border-2 border-blue-500/40 z-50';
+                    barraGestor.className = 'bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl mb-6 flex flex-col sm:flex-row justify-between items-center border-2 border-blue-500/40 z-50 gap-4';
                     barraGestor.innerHTML = `
                         <div class="flex items-center gap-3 text-xs font-bold text-blue-300">
                             <span class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></span>
-                            <span>Modo Gestor Master Ativo (Tela Cheia Executiva)</span>
+                            <span>Modo Gestor Master Ativo (Tela Cheia)</span>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <a href="configuracoes.html?modo_gestor=1" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
-                                &larr; Voltar à Central de Bordo
-                            </a>
-                            <button onclick="sairModoGestorGlobal()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-xl text-xs font-bold transition shadow-sm">
-                                🔒 Sair e Bloquear
+                        <div class="flex items-center gap-2 w-full sm:w-auto">
+                            <button type="button" onclick="window.location.assign('calendario.html');" class="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer">
+                                &larr; Voltar à Timeline
+                            </button>
+                            <button type="button" onclick="window.location.assign('index.html');" class="flex-1 sm:flex-none bg-slate-700 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer">
+                                🧭 Dashboard
+                            </button>
+                            <button type="button" onclick="sairModoGestorGlobal()" class="flex-1 sm:flex-none bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer">
+                                🔒 Bloquear Painel
                             </button>
                         </div>
                     `;
@@ -602,58 +621,6 @@
                 window.location.href = 'configuracoes.html';
             }
         }
-    </script>
-
-    <!-- ======================================================= -->
-    <!-- SCRIPT DO MENU MOBILE (IPHONE / ANDROID) -->
-    <!-- ======================================================= -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const menuLateral = document.querySelector('aside');
-            const header = document.querySelector('header');
-            
-            // Verifica se a tela tem menu lateral e se não está no modo Gestor Tela Cheia
-            if (menuLateral && header && !document.getElementById('btnMobile')) {
-                
-                // 1. Adapta as classes do Tailwind para o menu deslizar no celular
-                menuLateral.classList.remove('hidden'); // Remove o bloqueio original
-                menuLateral.classList.add(
-                    'fixed', 'left-0', 'top-0', 'h-full', 'z-[100]', 
-                    'transform', '-translate-x-full', 'transition-transform', 'duration-300',
-                    'md:relative', 'md:translate-x-0' // Mantém fixo no Computador
-                );
-
-                // 2. Cria o Fundo Escuro (Overlay) para a tela do iPhone
-                const overlay = document.createElement('div');
-                overlay.className = 'fixed inset-0 bg-slate-900/60 z-[90] hidden backdrop-blur-sm md:hidden transition-opacity';
-                document.body.appendChild(overlay);
-
-                // 3. Função para Abrir e Fechar o menu
-                const toggleMenu = () => {
-                    const estaFechado = menuLateral.classList.contains('-translate-x-full');
-                    if(estaFechado) {
-                        menuLateral.classList.remove('-translate-x-full');
-                        overlay.classList.remove('hidden');
-                    } else {
-                        menuLateral.classList.add('-translate-x-full');
-                        overlay.classList.add('hidden');
-                    }
-                };
-
-                // Fechar menu ao clicar no fundo escuro
-                overlay.onclick = toggleMenu;
-
-                // 4. Cria o Botão "Hambúrguer" no Header (Só aparece no celular)
-                const btnMobile = document.createElement('button');
-                btnMobile.id = 'btnMobile';
-                btnMobile.className = 'md:hidden w-full sm:w-auto bg-marinho text-white px-4 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-md mb-4 sm:mb-0 transition active:scale-95';
-                btnMobile.innerHTML = '☰ Abrir Menu do Sistema';
-                btnMobile.onclick = toggleMenu;
-
-                // Insere o botão no topo do Header
-                header.insertBefore(btnMobile, header.firstChild);
-            }
-        });
     </script>
 </body>
 </html>
