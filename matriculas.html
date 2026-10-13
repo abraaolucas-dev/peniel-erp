@@ -79,9 +79,10 @@
                 <div>
                     <div class="flex items-center gap-2 mb-0.5">
                         <span class="bg-blue-100 text-marinho text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Gestão Acadêmica</span>
+                        <span id="badge-total-geral-escola" class="bg-slate-100 text-slate-700 text-[10px] font-bold px-2 py-0.5 rounded-full">Total Escola: -- alunos</span>
                     </div>
                     <h2 class="font-heading text-xl sm:text-2xl font-bold text-slate-800">Turmas, Matrículas e Avaliação por Ciclo</h2>
-                    <p class="text-xs text-slate-500">Controle de Maternal, Pré-Escola (com relatórios qualitativos e fotos) e Ensino Fundamental.</p>
+                    <p class="text-xs text-slate-500">Controle geral de alunos, turmas, relatórios qualitativos e notas.</p>
                 </div>
             </div>
             
@@ -90,13 +91,14 @@
             </button>
         </header>
 
-        <!-- ABAS DE NAVEGAÇÃO POR SEGMENTO / TURMA -->
+        <!-- ABAS DE NAVEGAÇÃO POR SEGMENTO / TURMA (COM "TODOS") -->
         <div class="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm overflow-x-auto hide-scrollbar flex gap-2">
-            <button type="button" onclick="mudarTurmaMatricula('maternal1')" id="btn-maternal1" class="px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-marinho text-white shadow-sm">🧸 Maternal 1 (2-3 anos)</button>
-            <button type="button" onclick="mudarTurmaMatricula('maternal2')" id="btn-maternal2" class="px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">🧸 Maternal 2 (3-4 anos)</button>
-            <button type="button" onclick="mudarTurmaMatricula('pre1')" id="btn-pre1" class="px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">🎨 Pré-Escola 1 (4 anos)</button>
-            <button type="button" onclick="mudarTurmaMatricula('pre2')" id="btn-pre2" class="px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">🎒 Pré-Escola 2 (5 anos)</button>
-            <button type="button" onclick="mudarTurmaMatricula('fundamental1')" id="btn-fundamental1" class="px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">📚 Fundamental (1º ao 5º Ano)</button>
+            <button type="button" onclick="mudarTurmaMatricula('todas')" id="btn-todas" class="px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">🌟 Todos (<span id="count-todas">0</span>)</button>
+            <button type="button" onclick="mudarTurmaMatricula('maternal1')" id="btn-maternal1" class="px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-marinho text-white shadow-sm">🧸 Maternal 1 (<span id="count-maternal1">0</span>)</button>
+            <button type="button" onclick="mudarTurmaMatricula('maternal2')" id="btn-maternal2" class="px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">🧸 Maternal 2 (<span id="count-maternal2">0</span>)</button>
+            <button type="button" onclick="mudarTurmaMatricula('pre1')" id="btn-pre1" class="px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">🎨 Pré-Escola 1 (<span id="count-pre1">0</span>)</button>
+            <button type="button" onclick="mudarTurmaMatricula('pre2')" id="btn-pre2" class="px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">🎒 Pré-Escola 2 (<span id="count-pre2">0</span>)</button>
+            <button type="button" onclick="mudarTurmaMatricula('fundamental1')" id="btn-fundamental1" class="px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">📚 Fundamental (<span id="count-fundamental1">0</span>)</button>
         </div>
 
         <!-- PAINEL DA TURMA SELECIONADA -->
@@ -105,7 +107,7 @@
             <div class="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/70 flex flex-wrap justify-between items-center gap-3">
                 <div>
                     <h3 class="font-bold text-slate-800 text-base" id="titulo-turma-atual">Maternal 1 — Unidade Matriz</h3>
-                    <p class="text-xs text-slate-500" id="sub-turma-atual">Modelo de avaliação: Relatório Descritivo de Desenvolvimento & Mural de Fotos</p>
+                    <p class="text-xs text-slate-500" id="sub-turma-atual">Relatório Descritivo de Desenvolvimento & Mural de Fotos</p>
                 </div>
                 <div class="relative w-full sm:w-64">
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔍</span>
@@ -118,7 +120,7 @@
                     <thead class="bg-slate-50 text-slate-500 border-b border-slate-200 uppercase text-[10px] tracking-wider font-bold">
                         <tr>
                             <th class="px-5 py-3.5">RA / Aluno</th>
-                            <th class="px-5 py-3.5">Responsável</th>
+                            <th class="px-5 py-3.5">Turma / Responsável</th>
                             <th class="px-5 py-3.5 text-center">Status</th>
                             <th class="px-5 py-3.5 text-right">Ações & Prontuário</th>
                         </tr>
@@ -282,7 +284,7 @@
         </div>
     </div>
 
-    <!-- SCRIPT DO MÓDULO DE MATRÍCULAS (UNIFICADO COM FICHAS) -->
+    <!-- SCRIPT DO MÓDULO DE MATRÍCULAS -->
     <script>
         function toggleMenuMobile() {
             const menu = document.getElementById('menu-lateral');
@@ -295,11 +297,11 @@
             if(confirm("Deseja encerrar sua sessão?")) { window.location.href = 'login.html'; }
         }
 
-        // MOTOR CENTRAL DE DADOS UNIFICADO (MATRÍCULAS + FICHAS)
+        // MOTOR CENTRAL UNIFICADO (COM SUPORTE A "TODOS")
         function obterBancoGeralAlunos() {
             let base = JSON.parse(localStorage.getItem('peniel_banco_fichas_detalhadas')) || {
                 '2027501': { ra: '2027501', nome: 'Helena Santos', turmaChave: 'maternal1', turma: 'Maternal 1', status: 'Ativo', nasc: '15/04/2023', nat: 'Rio de Janeiro - RJ', cpf: '000.111.222-33', pai: 'Camila Santos', paiTel: '(21) 98888-1111', paiEmail: 'camila@email.com', mae: 'Ana Santos', maeTel: '(21) 97777-2222', sangue: 'O+', alergia: 'Nenhuma', med: 'Não utiliza', obs: 'Excelente adaptação.', relatorio: 'Boa adaptação.', fotos: [], historico: [{ data: '12/02/2026', titulo: 'Adaptação', desc: 'Concluída com sucesso.' }] },
-                '2027001': { ra: '2027001', nome: 'Davi Lucas', turmaChave: 'fundamental1', turma: '3º Ano A', status: 'Ativo', nasc: '15/04/2018', nat: 'Rio de Janeiro - RJ', cpf: '111.222.333-44', pai: 'Carlos Lucas', paiTel: '(21) 99999-1111', paiEmail: 'carlos.lucas@email.com', mae: 'Ana Carolina Lucas', maeTel: '(21) 98888-2222', sangue: 'O+', alergia: 'Amendoim', med: 'Não utiliza', obs: 'Participativo.', relatorio: '', fotos: [], historico: [{ data: '10/03/2026', titulo: 'Início', desc: 'Matrícula renovada.' }] }
+                '2027001': { ra: '2027001', nome: 'Davi Lucas', turmaChave: 'fundamental1', turma: 'Ensino Fundamental', status: 'Ativo', nasc: '15/04/2018', nat: 'Rio de Janeiro - RJ', cpf: '111.222.333-44', pai: 'Carlos Lucas', paiTel: '(21) 99999-1111', paiEmail: 'carlos.lucas@email.com', mae: 'Ana Carolina Lucas', maeTel: '(21) 98888-2222', sangue: 'O+', alergia: 'Amendoim', med: 'Não utiliza', obs: 'Participativo.', relatorio: '', fotos: [], historico: [{ data: '10/03/2026', titulo: 'Início', desc: 'Matrícula renovada.' }] }
             };
             return base;
         }
@@ -308,9 +310,10 @@
             localStorage.setItem('peniel_banco_fichas_detalhadas', JSON.stringify(base));
         }
 
-        let turmaAtual = 'maternal1';
+        let turmaAtual = 'todas';
 
         const infoTurmas = {
+            todas: { titulo: 'Todos os Alunos Matriculados — Unidade Matriz', sub: 'Visão geral de todos os ciclos e turmas da escola' },
             maternal1: { titulo: 'Maternal 1 — Unidade Matriz', sub: 'Relatório Descritivo & Mural de Fotos' },
             maternal2: { titulo: 'Maternal 2 — Unidade Matriz', sub: 'Relatório Descritivo & Mural de Fotos' },
             pre1: { titulo: 'Pré-Escola 1 — Unidade Matriz', sub: 'Relatório Descritivo & Mural de Fotos' },
@@ -326,9 +329,31 @@
             fundamental1: 'Ensino Fundamental'
         };
 
+        function atualizarContagensEHeader() {
+            const base = obterBancoGeralAlunos();
+            let totalEscola = 0;
+            let contagens = { maternal1: 0, maternal2: 0, pre1: 0, pre2: 0, fundamental1: 0 };
+
+            for (let ra in base) {
+                totalEscola++;
+                const tc = base[ra].turmaChave;
+                if (contagens[tc] !== undefined) {
+                    contagens[tc]++;
+                }
+            }
+
+            document.getElementById('badge-total-geral-escola').innerText = `Total Escola: ${totalEscola} alunos`;
+            document.getElementById('count-todas').innerText = totalEscola;
+            document.getElementById('count-maternal1').innerText = contagens.maternal1;
+            document.getElementById('count-maternal2').innerText = contagens.maternal2;
+            document.getElementById('count-pre1').innerText = contagens.pre1;
+            document.getElementById('count-pre2').innerText = contagens.pre2;
+            document.getElementById('count-fundamental1').innerText = contagens.fundamental1;
+        }
+
         function mudarTurmaMatricula(turmaKey) {
             turmaAtual = turmaKey;
-            ['maternal1', 'maternal2', 'pre1', 'pre2', 'fundamental1'].forEach(k => {
+            ['todas', 'maternal1', 'maternal2', 'pre1', 'pre2', 'fundamental1'].forEach(k => {
                 const btn = document.getElementById(`btn-${k}`);
                 if (k === turmaKey) {
                     btn.className = 'px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-marinho text-white shadow-sm';
@@ -339,6 +364,7 @@
 
             document.getElementById('titulo-turma-atual').innerText = infoTurmas[turmaKey].titulo;
             document.getElementById('sub-turma-atual').innerText = infoTurmas[turmaKey].sub;
+            atualizarContagensEHeader();
             renderizarTabelaAlunos();
         }
 
@@ -350,14 +376,16 @@
             
             let filtrados = [];
             for (let ra in base) {
-                const a = base[ra];
-                if (a.turmaChave === turmaAtual && (a.nome.toLowerCase().includes(busca) || a.pai.toLowerCase().includes(busca))) {
-                    filtrados.push(a);
+                const aluno = base[ra];
+                const matchTurma = (turmaAtual === 'todas' || aluno.turmaChave === turmaAtual);
+                const matchBusca = (aluno.nome.toLowerCase().includes(busca) || aluno.pai.toLowerCase().includes(busca) || aluno.ra.toLowerCase().includes(busca));
+                if (matchTurma && matchBusca) {
+                    filtrados.push(aluno);
                 }
             }
 
             if (filtrados.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400 text-xs">Nenhum aluno cadastrado nesta turma.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400 text-xs">Nenhum aluno encontrado.</td></tr>`;
                 return;
             }
 
@@ -366,7 +394,7 @@
                 tr.className = "hover:bg-slate-50 transition";
                 
                 let botoesAcao = '';
-                if (turmaAtual === 'fundamental1') {
+                if (aluno.turmaChave === 'fundamental1') {
                     botoesAcao = `
                         <a href="notas.html" class="bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-bold text-xs transition">📊 Notas</a>
                         <button type="button" onclick="abrirModalEditarAluno('${aluno.ra}')" class="bg-slate-100 text-slate-700 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-bold text-xs transition">✏️ Editar</button>
@@ -383,7 +411,7 @@
                 tr.innerHTML = `
                     <td class="px-5 py-3.5">
                         <p class="font-bold text-slate-800 text-xs sm:text-sm">${aluno.nome}</p>
-                        <p class="text-[10px] text-slate-400 font-mono">RA: ${aluno.ra}</p>
+                        <p class="text-[10px] text-slate-400 font-mono">RA: ${aluno.ra} • <span class="text-blue-600 font-semibold">${aluno.turma}</span></p>
                     </td>
                     <td class="px-5 py-3.5">
                         <p class="font-semibold text-slate-700 text-xs">${aluno.pai}</p>
@@ -427,6 +455,7 @@
                 salvarBancoGeralAlunos(base);
             }
             fecharModalEditarAluno();
+            atualizarContagensEHeader();
             renderizarTabelaAlunos();
             alert('✅ Informações atualizadas com sucesso!');
         }
@@ -441,7 +470,7 @@
             if (!aluno) return;
             alunoEditandoRa = ra;
 
-            document.getElementById('badge-turma-modal').innerText = infoTurmas[turmaAtual].titulo.split('—')[0];
+            document.getElementById('badge-turma-modal').innerText = aluno.turma || 'Educação Infantil';
             document.getElementById('nome-aluno-modal').innerText = `Ficha: ${aluno.nome}`;
             document.getElementById('texto-relatorio-infantil').value = aluno.relatorio || '';
             fotosTemporarias = aluno.fotos ? [...aluno.fotos] : ['🎨 Atividade Lúdica'];
@@ -493,7 +522,7 @@
             alert('✅ Relatório e fotos salvos com sucesso!');
         }
 
-        // MATRÍCULA COMPLETA QUE CRIA NA HORA NO PRONTUÁRIO DE FICHAS
+        // MATRÍCULA COMPLETA
         function abrirModalNovaMatricula() { document.getElementById('modalNovaMatricula').classList.remove('hidden'); }
         function fecharModalNovaMatricula() { document.getElementById('modalNovaMatricula').classList.add('hidden'); }
 
@@ -518,7 +547,6 @@
             const novoRa = '2027' + Math.floor(100 + Math.random() * 900);
             const base = obterBancoGeralAlunos();
 
-            // Cria o registro unificado que abastece TANTO as Matrículas quanto as Fichas
             base[novoRa] = {
                 ra: novoRa,
                 nome: nomeAluno,
@@ -545,7 +573,6 @@
             salvarBancoGeralAlunos(base);
             fecharModalNovaMatricula();
 
-            // Limpa formulário
             document.getElementById('matAlunoNome').value = '';
             document.getElementById('matAlunoNasc').value = '';
             document.getElementById('matRespNome').value = '';
@@ -559,7 +586,7 @@
             alert(`✅ Matrícula Completa efetivada com sucesso!\nO aluno já está disponível na tela de Fichas e Prontuários (RA: ${novoRa}).`);
         }
 
-        document.addEventListener('DOMContentLoaded', () => { mudarTurmaMatricula('maternal1'); });
+        document.addEventListener('DOMContentLoaded', () => { mudarTurmaMatricula('todas'); });
     </script>
 </body>
 </html>
