@@ -2,10 +2,10 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matrículas | Peniel Christian School</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gestão de Matrículas e Acompanhamento | Peniel Christian School</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -16,372 +16,420 @@
             }
         }
     </script>
+    <style>
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col md:flex-row overflow-x-hidden">
 
-    <div class="flex h-screen overflow-hidden">
+    <!-- Overlay Mobile -->
+    <div id="overlay-mobile" onclick="toggleMenuMobile()" class="fixed inset-0 bg-slate-950/75 z-[95] hidden md:hidden backdrop-blur-sm transition-opacity"></div>
+
+    <!-- Menu Lateral -->
+    <aside id="menu-lateral" class="fixed md:sticky left-0 top-0 w-72 md:w-64 bg-marinho text-white flex-col h-screen z-[100] transform -translate-x-full md:translate-x-0 transition-all duration-300 flex shrink-0 shadow-2xl md:shadow-none border-r-4 border-laranja md:border-r-0">
+        <div class="p-6 flex justify-between items-center shrink-0 border-b border-white/10 bg-black/15">
+            <div>
+                <h1 class="font-heading text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-laranja inline-block"></span> PENIEL
+                </h1>
+                <span class="text-xs font-sans font-semibold block text-blue-300 mt-0.5">Unidade Matriz</span>
+            </div>
+            <button type="button" onclick="toggleMenuMobile()" class="md:hidden bg-white/10 hover:bg-red-500/30 text-white w-9 h-9 rounded-xl text-xl font-bold flex items-center justify-center transition">&times;</button>
+        </div>
+
+        <nav class="flex-1 px-3 space-y-1.5 mt-3 overflow-y-auto pb-6">
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-3 px-3">Geral</div>
+            <a href="index.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">📈 Dashboard</a>
+            
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Captação</div>
+            <a href="painel.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">📥 Leads Typebot</a>
+            
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Secretaria</div>
+            <a href="matriculas.html" class="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-laranja to-orange-500 rounded-xl font-bold text-white shadow-md">
+                <span>📝 Matrículas & Turmas</span>
+                <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full">Ativo</span>
+            </a>
+            <a href="fichas.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">👥 Fichas (Alunos/Pais)</a>
+            <a href="rematricula.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">🔄 Rematrícula</a>
+
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Acadêmico</div>
+            <a href="calendario.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">📅 Calendário e Equipe</a>
+            <a href="notas.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">📊 Notas e Avaliações</a>
+
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Administrativo</div>
+            <a href="financeiro.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">💰 Gestão Financeira</a>
+            <a href="configuracoes.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">⚙️ Configurações / ADM</a>
+        </nav>
         
-        <!-- Menu Lateral Interno -->
-        <aside class="w-64 bg-marinho text-white flex flex-col hidden md:flex">
-            <div class="p-6">
-                <h1 class="font-heading text-2xl font-bold tracking-tight">PENIEL <span class="text-sm font-sans font-normal block text-blue-300">Sistema Interno</span></h1>
-            </div>
-            <nav class="flex-1 px-2 space-y-1 mt-2 overflow-y-auto pb-6">
-                
-                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-4 px-4">Geral</div>
-                <a href="index.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📈 Dashboard</a>
-                
-                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Captação</div>
-                <a href="painel.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📥 Leads Typebot</a>
-                
-                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Secretaria</div>
-                <!-- Matrículas está ATIVO -->
-                <a href="matriculas.html" class="block px-4 py-2.5 bg-blue-900 rounded-lg font-medium text-white shadow-inner">📝 Matrículas</a>
-                <a href="fichas.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">👥 Fichas (Alunos/Pais)</a>
-                <a href="rematricula.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">🔄 Rematrícula</a>
+        <div class="p-4 border-t border-white/10 bg-black/20 shrink-0">
+            <button type="button" onclick="sairDoSistema()" class="w-full flex items-center justify-center gap-2 bg-red-600/80 hover:bg-red-600 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition">
+                🚪 Sair do Sistema
+            </button>
+        </div>
+    </aside>
 
-                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Acadêmico</div>
-                <a href="calendario.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📅 Calendário Escolar</a>
-                <a href="notas.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📊 Notas e Avaliações</a>
-
-                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Administrativo</div>
-                <a href="financeiro.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">💰 Gestão Financeira</a>
-                <a href="configuracoes.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">⚙️ Configurações</a>
-            </nav>
-        </aside>
-
-        <!-- Área Principal -->
-        <main class="flex-1 overflow-y-auto p-6 md:p-8">
-            
-            <!-- Header e Ações -->
-            <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+    <!-- Área Principal -->
+    <main class="flex-1 p-3 sm:p-5 md:p-8 flex flex-col gap-5 w-full max-w-full overflow-x-hidden">
+        
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm gap-4">
+            <div class="flex items-center gap-3">
+                <button type="button" onclick="toggleMenuMobile()" class="md:hidden bg-slate-100 text-marinho p-2.5 rounded-lg text-xl hover:bg-slate-200 transition active:scale-95 shadow-sm">☰</button>
                 <div>
-                    <h2 class="font-heading text-3xl font-bold text-slate-800">Gestão de Matrículas</h2>
-                    <p class="text-slate-500">Controle de alunos ativos, turmas e novos registros.</p>
+                    <div class="flex items-center gap-2 mb-0.5">
+                        <span class="bg-blue-100 text-marinho text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Gestão Acadêmica</span>
+                    </div>
+                    <h2 class="font-heading text-xl sm:text-2xl font-bold text-slate-800">Turmas, Matrículas e Avaliação por Ciclo</h2>
+                    <p class="text-xs text-slate-500">Controle de Maternal, Pré-Escola (com relatórios qualitativos e fotos) e Ensino Fundamental.</p>
                 </div>
+            </div>
+            
+            <button type="button" onclick="abrirModalNovaMatricula()" class="bg-laranja hover:bg-orange-600 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition flex items-center gap-1.5 whitespace-nowrap">
+                ➕ Nova Matrícula
+            </button>
+        </header>
+
+        <!-- ABAS DE NAVEGAÇÃO POR SEGMENTO / TURMA -->
+        <div class="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm overflow-x-auto hide-scrollbar flex gap-2">
+            <button type="button" onclick="mudarTurmaMatricula('maternal1')" id="btn-maternal1" class="px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-marinho text-white shadow-sm">🧸 Maternal 1 (2-3 anos)</button>
+            <button type="button" onclick="mudarTurmaMatricula('maternal2')" id="btn-maternal2" class="px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">🧸 Maternal 2 (3-4 anos)</button>
+            <button type="button" onclick="mudarTurmaMatricula('pre1')" id="btn-pre1" class="px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">🎨 Pré-Escola 1 (4 anos)</button>
+            <button type="button" onclick="mudarTurmaMatricula('pre2')" id="btn-pre2" class="px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">🎒 Pré-Escola 2 (5 anos)</button>
+            <button type="button" onclick="mudarTurmaMatricula('fundamental1')" id="btn-fundamental1" class="px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">📚 Fundamental (1º ao 5º Ano)</button>
+        </div>
+
+        <!-- PAINEL DA TURMA SELECIONADA -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col flex-1">
+            
+            <div class="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/70 flex flex-wrap justify-between items-center gap-3">
+                <div>
+                    <h3 class="font-bold text-slate-800 text-base" id="titulo-turma-atual">Maternal 1 — Unidade Matriz</h3>
+                    <p class="text-xs text-slate-500" id="sub-turma-atual">Modelo de avaliação: Relatório Descritivo de Desenvolvimento & Mural de Fotos</p>
+                </div>
+                <div class="relative w-full sm:w-64">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔍</span>
+                    <input type="text" id="buscaMatricula" onkeyup="filtrarAlunosTurma()" placeholder="Filtrar aluno..." class="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
+                </div>
+            </div>
+
+            <div class="overflow-x-auto flex-1">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-slate-50 text-slate-500 border-b border-slate-200 uppercase text-[10px] tracking-wider font-bold">
+                        <tr>
+                            <th class="px-5 py-3.5">RA / Aluno</th>
+                            <th class="px-5 py-3.5">Responsável</th>
+                            <th class="px-5 py-3.5 text-center">Status</th>
+                            <th class="px-5 py-3.5 text-right" id="th-acao-turma">Ações Pedagógicas</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-alunos-turma" class="divide-y divide-slate-100">
+                        <!-- Renderizado via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- ========================================================================= -->
+    <!-- MODAL 1: AVALIAÇÃO DA EDUCAÇÃO INFANTIL (RELATÓRIO + FOTOS PARA OS PAIS) -->
+    <!-- ========================================================================= -->
+    <div id="modalAvaliacaoInfantil" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[130] p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto max-h-[95vh]">
+            <div class="p-5 bg-marinho text-white flex justify-between items-center shrink-0">
+                <div>
+                    <span class="text-[10px] font-bold bg-laranja text-white px-2 py-0.5 rounded uppercase" id="badge-turma-modal">Educação Infantil</span>
+                    <h3 class="font-bold text-lg font-heading mt-1" id="nome-aluno-modal">Ficha de Acompanhamento: --</h3>
+                </div>
+                <button type="button" onclick="fecharModalAvaliacaoInfantil()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
+            </div>
+
+            <div class="p-6 overflow-y-auto bg-slate-50 space-y-5 flex-1">
                 
-                <div class="flex items-center gap-3 w-full md:w-auto">
-                    <!-- Barra de Pesquisa -->
-                    <div class="relative w-full md:w-64">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔍</span>
-                        <input type="text" placeholder="Buscar aluno ou RA..." class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm text-sm">
+                <!-- Bloco de Parecer Descritivo -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                    <div class="flex justify-between items-center">
+                        <h4 class="font-bold text-slate-800 text-sm flex items-center gap-1.5">📝 Relatório Qualitativo de Desenvolvimento</h4>
+                        <span class="text-[11px] text-slate-400">Visível no App dos Pais</span>
                     </div>
+                    <p class="text-xs text-slate-500">Descreva os avanços cognitivos, motores e sociais da criança neste trimestre.</p>
+                    <textarea id="texto-relatorio-infantil" rows="4" class="w-full border border-slate-200 rounded-xl p-3 text-xs focus:ring-2 focus:ring-marinho focus:outline-none" placeholder="Ex: A criança demonstra excelente interação nas brincadeiras coletivas, curiosidade nas atividades de coordenação motora fina..."></textarea>
+                </div>
+
+                <!-- Bloco de Envio de Fotos em Aula para os Pais Acompanharem -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                    <div class="flex justify-between items-center">
+                        <h4 class="font-bold text-slate-800 text-sm flex items-center gap-1.5">📸 Mural de Fotos em Aula (App dos Pais)</h4>
+                        <input type="file" id="inputFotoAula" class="hidden" accept="image/*" onchange="adicionarFotoMural()">
+                        <button type="button" onclick="document.getElementById('inputFotoAula').click()" class="bg-blue-50 text-blue-700 border border-blue-200 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-100 transition shadow-sm">
+                            + Enviar Nova Foto
+                        </button>
+                    </div>
+                    <p class="text-xs text-slate-500">Envie registros fotográficos das atividades lúdicas e pedagógicas do dia.</p>
                     
-                    <!-- Botão Nova Matrícula -->
-                    <button type="button" onclick="abrirModal()" class="bg-laranja hover:bg-orange-600 text-white px-5 py-2.5 rounded-lg font-bold shadow-sm transition flex items-center gap-2 whitespace-nowrap">
-                        ➕ Nova Matrícula
-                    </button>
-                </div>
-            </header>
-
-            <!-- Filtros rápidos -->
-            <div class="flex gap-2 mb-6 overflow-x-auto pb-2">
-                <button type="button" class="bg-blue-900 text-white px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap shadow-sm">Todos (342)</button>
-                <button type="button" class="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap">Ensino Infantil (120)</button>
-                <button type="button" class="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap">Ensino Fundamental I (150)</button>
-                <button type="button" class="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap">Pendentes (5)</button>
-            </div>
-
-            <!-- Tabela de Alunos -->
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm" id="tabelaMatriculas">
-                        <thead class="bg-slate-50 text-slate-500 border-b border-slate-200 uppercase text-xs tracking-wider">
-                            <tr>
-                                <th class="px-6 py-4 font-semibold">RA</th>
-                                <th class="px-6 py-4 font-semibold">Aluno(a)</th>
-                                <th class="px-6 py-4 font-semibold">Turma</th>
-                                <th class="px-6 py-4 font-semibold">Responsável</th>
-                                <th class="px-6 py-4 font-semibold">Status</th>
-                                <th class="px-6 py-4 font-semibold text-right">Ação</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100">
-                            
-                            <!-- Linha 1 -->
-                            <tr class="hover:bg-slate-50 transition">
-                                <td class="px-6 py-4 text-slate-500 font-mono text-xs">2027001</td>
-                                <td class="px-6 py-4 font-bold text-slate-800">
-                                    Davi Lucas
-                                    <span class="block text-xs text-slate-400 font-normal">Nasc: 15/04/2018 (8 anos)</span>
-                                </td>
-                                <td class="px-6 py-4 text-slate-600">3º Ano A<br><span class="text-xs bg-slate-100 px-2 py-0.5 rounded">Matutino</span></td>
-                                <td class="px-6 py-4 text-slate-600">Carlos Lucas <br><span class="text-xs text-slate-400">(Pai)</span></td>
-                                <td class="px-6 py-4">
-                                    <span class="bg-green-100 text-green-700 py-1 px-2.5 rounded-full text-xs font-bold">Ativo</span>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <a href="fichas.html" class="text-blue-600 hover:text-blue-800 font-semibold text-xs border border-blue-200 hover:bg-blue-50 px-3 py-1.5 rounded transition">Ver Ficha</a>
-                                </td>
-                            </tr>
-
-                            <!-- Linha 2 -->
-                            <tr class="hover:bg-slate-50 transition">
-                                <td class="px-6 py-4 text-slate-500 font-mono text-xs">2027002</td>
-                                <td class="px-6 py-4 font-bold text-slate-800">
-                                    Isabela Mendes
-                                    <span class="block text-xs text-slate-400 font-normal">Nasc: 10/11/2019 (7 anos)</span>
-                                </td>
-                                <td class="px-6 py-4 text-slate-600">2º Ano B<br><span class="text-xs bg-slate-100 px-2 py-0.5 rounded">Vespertino</span></td>
-                                <td class="px-6 py-4 text-slate-600">Mariana Mendes <br><span class="text-xs text-slate-400">(Mãe)</span></td>
-                                <td class="px-6 py-4">
-                                    <span class="bg-green-100 text-green-700 py-1 px-2.5 rounded-full text-xs font-bold">Ativo</span>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <a href="fichas.html" class="text-blue-600 hover:text-blue-800 font-semibold text-xs border border-blue-200 hover:bg-blue-50 px-3 py-1.5 rounded transition">Ver Ficha</a>
-                                </td>
-                            </tr>
-
-                            <!-- Linha 3 (Pendente) -->
-                            <tr class="hover:bg-slate-50 transition">
-                                <td class="px-6 py-4 text-slate-500 font-mono text-xs">2027089</td>
-                                <td class="px-6 py-4 font-bold text-slate-800">
-                                    Pedro Souza
-                                    <span class="block text-xs text-slate-400 font-normal">Nasc: 05/02/2021 (5 anos)</span>
-                                </td>
-                                <td class="px-6 py-4 text-slate-600">Pré II<br><span class="text-xs bg-slate-100 px-2 py-0.5 rounded">Matutino</span></td>
-                                <td class="px-6 py-4 text-slate-600">Roberto Souza <br><span class="text-xs text-slate-400">(Pai)</span></td>
-                                <td class="px-6 py-4">
-                                    <span class="bg-orange-100 text-orange-700 py-1 px-2.5 rounded-full text-xs font-bold">Pendente Docs</span>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <a href="fichas.html" class="text-blue-600 hover:text-blue-800 font-semibold text-xs border border-blue-200 hover:bg-blue-50 px-3 py-1.5 rounded transition">Ver Ficha</a>
-                                </td>
-                            </tr>
-
-                        </tbody>
-                    </table>
-                </div>
-                <div class="p-4 border-t border-slate-200 text-sm text-slate-500 text-center bg-slate-50">
-                    Mostrando matrículas recentes e ativas do sistema.
-                </div>
-            </div>
-
-        </main>
-    </div>
-
-    <!-- MODAL DE NOVA MATRÍCULA -->
-    <div id="modalNovaMatricula" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center z-50">
-        <div class="bg-white w-full max-w-2xl rounded-2xl shadow-xl flex flex-col max-h-[90vh]">
-            
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50 rounded-t-2xl">
-                <h3 class="font-bold text-xl text-slate-800 font-heading">Formulário de Nova Matrícula</h3>
-                <button type="button" onclick="fecharModal()" class="text-slate-400 hover:text-red-500 text-2xl font-bold leading-none">&times;</button>
-            </div>
-            
-            <div class="p-6 overflow-y-auto">
-                <form id="formMatricula" class="space-y-4">
-                    <h4 class="font-bold text-sm text-blue-600 uppercase tracking-wider mb-2 border-b pb-1">1. Dados do Aluno</h4>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="col-span-2">
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Nome Completo do Aluno</label>
-                            <input type="text" id="novoNomeAluno" placeholder="Ex: João da Silva" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Data de Nascimento</label>
-                            <input type="date" id="novaDataNasc" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Turma Pretendida</label>
-                            <select id="novaTurma" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
-                                <option value="">Selecione...</option>
-                                <option value="Maternal I">Maternal I</option>
-                                <option value="Pré II">Pré II</option>
-                                <option value="1º Ano - Fundamental I">1º Ano - Fundamental I</option>
-                                <option value="3º Ano - Fundamental I">3º Ano - Fundamental I</option>
-                            </select>
-                        </div>
+                    <div id="mural-fotos-container" class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                        <!-- Fotos inseridas dinamicamente -->
                     </div>
+                </div>
 
-                    <h4 class="font-bold text-sm text-blue-600 uppercase tracking-wider mt-6 mb-2 border-b pb-1">2. Dados do Responsável</h4>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="col-span-2">
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Nome do Responsável Financeiro</label>
-                            <input type="text" id="novoNomeResp" placeholder="Ex: Maria da Silva" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">CPF</label>
-                            <input type="text" placeholder="000.000.000-00" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">WhatsApp</label>
-                            <input type="text" placeholder="(21) 90000-0000" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        </div>
-                    </div>
-                </form>
             </div>
-            
-            <div class="p-6 border-t border-slate-100 bg-slate-50 rounded-b-2xl flex justify-end gap-3">
-                <button type="button" onclick="fecharModal()" class="px-5 py-2.5 text-slate-600 font-bold hover:bg-slate-200 rounded-lg transition text-sm">Cancelar</button>
-                <button type="button" onclick="salvarMatricula()" class="bg-marinho hover:bg-blue-900 text-white px-6 py-2.5 rounded-lg font-bold shadow-sm transition text-sm">Salvar Matrícula</button>
+
+            <div class="p-4 border-t border-slate-200 bg-white flex justify-end gap-2 shrink-0">
+                <button type="button" onclick="fecharModalAvaliacaoInfantil()" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs">Cancelar</button>
+                <button type="button" onclick="salvarAvaliacaoInfantil()" class="px-5 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-xs shadow-md transition">✅ Salvar e Publicar no App</button>
             </div>
-            
         </div>
     </div>
 
+    <!-- MODAL 2: NOVA MATRÍCULA -->
+    <div id="modalNovaMatricula" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[130] p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto">
+            <div class="p-5 bg-marinho text-white flex justify-between items-center">
+                <h3 class="font-bold text-base font-heading">➕ Cadastrar Nova Matrícula</h3>
+                <button type="button" onclick="fecharModalNovaMatricula()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
+            </div>
+            <div class="p-6 space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Nome Completo do Aluno</label>
+                    <input type="text" id="novaMatriculaNome" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold" placeholder="Ex: Lucas Gabriel">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Segmento / Turma</label>
+                        <select id="novaMatriculaTurma" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs bg-white">
+                            <option value="maternal1">Maternal 1</option>
+                            <option value="maternal2">Maternal 2</option>
+                            <option value="pre1">Pré-Escola 1</option>
+                            <option value="pre2">Pré-Escola 2</option>
+                            <option value="fundamental1">Fundamental (1º ao 5º)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Telefone Responsável</label>
+                        <input type="text" id="novaMatriculaTel" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono" placeholder="(21) 90000-0000">
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2">
+                <button type="button" onclick="fecharModalNovaMatricula()" class="px-4 py-2 bg-white border border-slate-300 text-slate-600 font-bold rounded-xl text-xs">Cancelar</button>
+                <button type="button" onclick="salvarNovaMatricula()" class="bg-laranja hover:bg-orange-600 text-white px-5 py-2 rounded-xl font-bold text-xs shadow-sm">💾 Efetivar Matrícula</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT DO MÓDULO DE MATRÍCULAS -->
     <script>
-        // Lógica de Abertura do Modal
-        function abrirModal() {
-            document.getElementById('modalNovaMatricula').classList.remove('hidden');
+        function toggleMenuMobile() {
+            const menu = document.getElementById('menu-lateral');
+            const overlay = document.getElementById('overlay-mobile');
+            menu.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
         }
 
-        function fecharModal() {
-            document.getElementById('modalNovaMatricula').classList.add('hidden');
-            document.getElementById('formMatricula').reset();
+        function sairDoSistema() {
+            if(confirm("Deseja encerrar sua sessão?")) {
+                window.location.href = 'login.html';
+            }
         }
 
-        // Lógica para Salvar e Adicionar a Matrícula à Tabela
-        function salvarMatricula() {
-            const nomeAluno = document.getElementById('novoNomeAluno').value.trim();
-            const dataNasc = document.getElementById('novaDataNasc').value;
-            const turma = document.getElementById('novaTurma').value;
-            const nomeResp = document.getElementById('novoNomeResp').value.trim();
+        // BANCO DE DADOS DE ALUNOS POR TURMA
+        let bancoTurmas = JSON.parse(localStorage.getItem('peniel_banco_matriculas')) || {
+            maternal1: [
+                { ra: '2027501', nome: 'Helena Santos', resp: 'Camila Santos (Mãe)', tel: '(21) 98888-1111', status: 'Ativo', relatorio: 'Demonstra excelente adaptação e carinho nas atividades com massinha.', fotos: ['🎨 Pintura com Guache', '🧸 Hora do Conto'] },
+                { ra: '2027502', nome: 'Noah Oliveira', resp: 'Bruno Oliveira (Pai)', tel: '(21) 97777-2222', status: 'Ativo', relatorio: 'Participativo nas rodas de música e interação com os colegas.', fotos: ['🎵 Roda Musical'] }
+            ],
+            maternal2: [
+                { ra: '2027503', nome: 'Alice Martins', resp: 'Juliana Martins', tel: '(21) 96666-3333', status: 'Ativo', relatorio: 'Desenvolvendo ótima autonomia ao guardar os brinquedos.', fotos: ['🧩 Montando Blocos'] }
+            ],
+            pre1: [
+                { ra: '2027504', nome: 'Bernardo Lima', resp: 'Renata Lima', tel: '(21) 95555-4444', status: 'Ativo', relatorio: 'Iniciando o reconhecimento das vogais com facilidade e entusiasmo.', fotos: ['📚 Contação de Histórias'] }
+            ],
+            pre2: [
+                { ra: '2027505', nome: 'Valentina Costa', resp: 'Marcos Costa', tel: '(21) 94444-5555', status: 'Ativo', relatorio: 'Excelente coordenação motora no traçado das letras e números.', fotos: ['✏️ Atividade de Traçado'] }
+            ],
+            fundamental1: [
+                { ra: '2027001', nome: 'Davi Lucas (3º Ano)', resp: 'Carlos Lucas', tel: '(21) 99999-1111', status: 'Ativo' },
+                { ra: '2027002', nome: 'Isabela Mendes (2º Ano)', resp: 'Mariana Mendes', tel: '(21) 97777-0000', status: 'Ativo' },
+                { ra: '2027089', nome: 'Pedro Souza (1º Ano)', resp: 'Roberto Souza', tel: '(21) 94444-2222', status: 'Pendente Doc' }
+            ]
+        };
 
-            // Validação simples
-            if (!nomeAluno || !turma) {
-                alert("Por favor, preencha o Nome do Aluno e selecione uma Turma para prosseguir.");
+        let turmaAtual = 'maternal1';
+        let alunoEditandoRa = null;
+
+        const infoTurmas = {
+            maternal1: { titulo: 'Maternal 1 — Unidade Matriz', sub: 'Modelo de avaliação: Relatório Descritivo de Desenvolvimento & Mural de Fotos' },
+            maternal2: { titulo: 'Maternal 2 — Unidade Matriz', sub: 'Modelo de avaliação: Relatório Descritivo de Desenvolvimento & Mural de Fotos' },
+            pre1: { titulo: 'Pré-Escola 1 — Unidade Matriz', sub: 'Modelo de avaliação: Relatório Descritivo de Desenvolvimento & Mural de Fotos' },
+            pre2: { titulo: 'Pré-Escola 2 — Unidade Matriz', sub: 'Modelo de avaliação: Relatório Descritivo de Desenvolvimento & Mural de Fotos' },
+            fundamental1: { titulo: 'Ensino Fundamental (1º ao 5º Ano) — Matriz', sub: 'Modelo de avaliação: Sistema de Notas (Pesos N1, N2, N3) e Média 7.0' }
+        };
+
+        function mudarTurmaMatricula(turmaKey) {
+            turmaAtual = turmaKey;
+            
+            // Atualiza botões
+            ['maternal1', 'maternal2', 'pre1', 'pre2', 'fundamental1'].forEach(k => {
+                const btn = document.getElementById(`btn-${k}`);
+                if (k === turmaKey) {
+                    btn.className = 'px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-marinho text-white shadow-sm';
+                } else {
+                    btn.className = 'px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200';
+                }
+            });
+
+            document.getElementById('titulo-turma-atual').innerText = infoTurmas[turmaKey].titulo;
+            document.getElementById('sub-turma-atual').innerText = infoTurmas[turmaKey].sub;
+
+            const thAcao = document.getElementById('th-acao-turma');
+            if (turmaKey === 'fundamental1') {
+                thAcao.innerText = 'Boletim / Notas';
+            } else {
+                thAcao.innerText = 'Relatório & Fotos (App Pais)';
+            }
+
+            renderizarTabelaAlunos();
+        }
+
+        function renderizarTabelaAlunos() {
+            const tbody = document.getElementById('tabela-alunos-turma');
+            tbody.innerHTML = '';
+            const lista = bancoTurmas[turmaAtual] || [];
+            const busca = document.getElementById('buscaMatricula').value.toLowerCase();
+
+            const filtrados = lista.filter(a => a.nome.toLowerCase().includes(busca) || a.resp.toLowerCase().includes(busca));
+
+            if (filtrados.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400 text-xs">Nenhum aluno encontrado nesta turma.</td></tr>`;
                 return;
             }
 
-            // Gerar um RA aleatório
-            const novoRa = "2027" + Math.floor(Math.random() * 900 + 100);
-
-            // Formatar a data para exibição
-            let dataFormatada = "--/--/----";
-            if(dataNasc) {
-                const partes = dataNasc.split('-');
-                dataFormatada = `${partes[2]}/${partes[1]}/${partes[0]}`;
-            }
-
-            // Selecionar o corpo da tabela e criar a nova linha
-            const tbody = document.querySelector('#tabelaMatriculas tbody');
-            const tr = document.createElement('tr');
-            tr.className = "hover:bg-slate-50 transition bg-green-50/30"; // Fundo levemente verde para destacar a nova inserção
-            tr.innerHTML = `
-                <td class="px-6 py-4 text-slate-500 font-mono text-xs">${novoRa}</td>
-                <td class="px-6 py-4 font-bold text-slate-800">
-                    ${nomeAluno}
-                    <span class="block text-xs text-slate-400 font-normal">Nasc: ${dataFormatada}</span>
-                </td>
-                <td class="px-6 py-4 text-slate-600">${turma}</td>
-                <td class="px-6 py-4 text-slate-600">${nomeResp || 'Não informado'}<br><span class="text-xs text-slate-400">(Resp)</span></td>
-                <td class="px-6 py-4">
-                    <span class="bg-blue-100 text-blue-700 py-1 px-2.5 rounded-full text-xs font-bold">Novo</span>
-                </td>
-                <td class="px-6 py-4 text-right">
-                    <a href="fichas.html" class="text-blue-600 hover:text-blue-800 font-semibold text-xs border border-blue-200 hover:bg-blue-50 px-3 py-1.5 rounded transition">Ver Ficha</a>
-                </td>
-            `;
-
-            // Inserir no topo da tabela
-            tbody.prepend(tr);
-
-            // Fechar modal e notificar
-            fecharModal();
-            alert(`✅ Matrícula de ${nomeAluno} guardada com sucesso com o RA ${novoRa}!`);
-        }
-    </script>
-
-    <!-- BLOCO GLOBAL DE CONTROLE DO MODO GESTOR MASTER -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('modo_gestor') === '1') {
-                localStorage.setItem('peniel_modo_gestor', 'ativo');
-            }
-
-            if (localStorage.getItem('peniel_modo_gestor') === 'ativo') {
-                const menuLateral = document.querySelector('aside');
-                if (menuLateral) {
-                    menuLateral.remove(); 
-                }
-
-                const containerPrincipal = document.querySelector('.flex.h-screen');
-                if (containerPrincipal) {
-                    containerPrincipal.classList.remove('overflow-hidden');
-                }
-
-                const main = document.querySelector('main');
-                if (main && !document.getElementById('barraExecutivaMaster')) {
-                    const barraGestor = document.createElement('div');
-                    barraGestor.id = 'barraExecutivaMaster';
-                    barraGestor.className = 'bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl mb-4 flex justify-between items-center border-2 border-blue-500/40 z-50';
-                    barraGestor.innerHTML = `
-                        <div class="flex items-center gap-3 text-xs font-bold text-blue-300">
-                            <span class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></span>
-                            <span>Modo Gestor Master Ativo (Tela Cheia Executiva)</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <button type="button" onclick="window.location.assign('configuracoes.html?modo_gestor=1')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer">
-                                &larr; Voltar à Central de Bordo
-                            </button>
-                            <button type="button" onclick="sairModoGestorGlobal()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer">
-                                🔒 Sair do Modo Gestor
-                            </button>
-                        </div>
-                    `;
-                    main.prepend(barraGestor);
-                }
-            }
-        });
-
-        function sairModoGestorGlobal() {
-            if(confirm("Deseja realmente encerrar a sessão de Gestor Master e bloquear o painel?")) {
-                localStorage.removeItem('peniel_modo_gestor');
-                window.location.href = 'configuracoes.html';
-            }
-        }
-    </script>
-
-    <!-- ======================================================= -->
-    <!-- SCRIPT DO MENU MOBILE (IPHONE / ANDROID) -->
-    <!-- ======================================================= -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const menuLateral = document.querySelector('aside');
-            const header = document.querySelector('header');
-            
-            // Verifica se a tela tem menu lateral e se não está no modo Gestor Tela Cheia
-            if (menuLateral && header && !document.getElementById('btnMobile')) {
+            filtrados.forEach(aluno => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition";
                 
-                // 1. Adapta as classes do Tailwind para o menu deslizar no celular
-                menuLateral.classList.remove('hidden'); // Remove o bloqueio original
-                menuLateral.classList.add(
-                    'fixed', 'left-0', 'top-0', 'h-full', 'z-[100]', 
-                    'transform', '-translate-x-full', 'transition-transform', 'duration-300',
-                    'md:relative', 'md:translate-x-0' // Mantém fixo no Computador
-                );
+                let botaoAcao = '';
+                if (turmaAtual === 'fundamental1') {
+                    botaoAcao = `<a href="notas.html" class="bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-bold text-xs transition">📊 Lançar Notas</a>`;
+                } else {
+                    botaoAcao = `<button type="button" onclick="abrirModalInfantil('${aluno.ra}')" class="bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 px-3 py-1.5 rounded-lg font-bold text-xs transition">📝 Relatório & Fotos</button>`;
+                }
 
-                // 2. Cria o Fundo Escuro (Overlay) para a tela do iPhone
-                const overlay = document.createElement('div');
-                overlay.className = 'fixed inset-0 bg-slate-900/60 z-[90] hidden backdrop-blur-sm md:hidden transition-opacity';
-                document.body.appendChild(overlay);
+                tr.innerHTML = `
+                    <td class="px-5 py-3.5">
+                        <p class="font-bold text-slate-800 text-xs sm:text-sm">${aluno.nome}</p>
+                        <p class="text-[10px] text-slate-400 font-mono">RA: ${aluno.ra}</p>
+                    </td>
+                    <td class="px-5 py-3.5">
+                        <p class="font-semibold text-slate-700 text-xs">${aluno.resp}</p>
+                        <p class="text-[10px] text-slate-400 font-mono">${aluno.tel}</p>
+                    </td>
+                    <td class="px-5 py-3.5 text-center">
+                        <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-bold">${aluno.status}</span>
+                    </td>
+                    <td class="px-5 py-3.5 text-right whitespace-nowrap">
+                        ${botaoAcao}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
 
-                // 3. Função para Abrir e Fechar o menu
-                const toggleMenu = () => {
-                    const estaFechado = menuLateral.classList.contains('-translate-x-full');
-                    if(estaFechado) {
-                        menuLateral.classList.remove('-translate-x-full');
-                        overlay.classList.remove('hidden');
-                    } else {
-                        menuLateral.classList.add('-translate-x-full');
-                        overlay.classList.add('hidden');
-                    }
-                };
+        function filtrarAlunosTurma() {
+            renderizarTabelaAlunos();
+        }
 
-                // Fechar menu ao clicar no fundo escuro
-                overlay.onclick = toggleMenu;
+        // MODAL DE AVALIAÇÃO DA EDUCAÇÃO INFANTIL
+        let fotosTemporarias = [];
 
-                // 4. Cria o Botão "Hambúrguer" no Header (Só aparece no celular)
-                const btnMobile = document.createElement('button');
-                btnMobile.id = 'btnMobile';
-                btnMobile.className = 'md:hidden w-full sm:w-auto bg-marinho text-white px-4 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-md mb-4 sm:mb-0 transition active:scale-95';
-                btnMobile.innerHTML = '☰ Abrir Menu do Sistema';
-                btnMobile.onclick = toggleMenu;
+        function abrirModalInfantil(ra) {
+            const aluno = bancoTurmas[turmaAtual].find(a => a.ra === ra);
+            if (!aluno) return;
+            alunoEditandoRa = ra;
 
-                // Insere o botão no topo do Header
-                header.insertBefore(btnMobile, header.firstChild);
+            document.getElementById('badge-turma-modal').innerText = infoTurmas[turmaAtual].titulo.split('—')[0];
+            document.getElementById('nome-aluno-modal').innerText = `Ficha de Acompanhamento: ${aluno.nome}`;
+            document.getElementById('texto-relatorio-infantil').value = aluno.relatorio || '';
+            
+            fotosTemporarias = aluno.fotos ? [...aluno.fotos] : ['🎨 Atividade Lúdica'];
+            renderizarMuralFotos();
+
+            document.getElementById('modalAvaliacaoInfantil').classList.remove('hidden');
+        }
+
+        function fecharModalAvaliacaoInfantil() {
+            document.getElementById('modalAvaliacaoInfantil').classList.add('hidden');
+        }
+
+        function renderizarMuralFotos() {
+            const container = document.getElementById('mural-fotos-container');
+            container.innerHTML = '';
+            fotosTemporarias.forEach((f, idx) => {
+                const box = document.createElement('div');
+                box.className = 'bg-slate-100 border border-slate-200 rounded-xl p-3 text-center relative group flex flex-col items-center justify-center h-24';
+                box.innerHTML = `
+                    <span class="text-2xl mb-1">🖼️</span>
+                    <span class="text-[10px] font-bold text-slate-700 truncate w-full">${f}</span>
+                    <button type="button" onclick="removerFotoMural(${idx})" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 text-[10px] font-bold flex items-center justify-center opacity-0 group-hover:opacity-100 transition">&times;</button>
+                `;
+                container.appendChild(box);
+            });
+        }
+
+        function adicionarFotoMural() {
+            const input = document.getElementById('inputFotoAula');
+            if (input.files && input.files[0]) {
+                const nomeArq = input.files[0].name;
+                fotosTemporarias.push(nomeArq);
+                renderizarMuralFotos();
+                input.value = '';
             }
+        }
+
+        function removerFotoMural(idx) {
+            fotosTemporarias.splice(idx, 1);
+            renderizarMuralFotos();
+        }
+
+        function salvarAvaliacaoInfantil() {
+            const rel = document.getElementById('texto-relatorio-infantil').value;
+            const aluno = bancoTurmas[turmaAtual].find(a => a.ra === alunoEditandoRa);
+            if (aluno) {
+                aluno.relatorio = rel;
+                aluno.fotos = [...fotosTemporarias];
+                localStorage.setItem('peniel_banco_matriculas', JSON.stringify(bancoTurmas));
+            }
+            fecharModalAvaliacaoInfantil();
+            alert('✅ Relatório descritivo e fotos publicados com sucesso para os pais acompanharem no App!');
+        }
+
+        // NOVA MATRÍCULA
+        function abrirModalNovaMatricula() { document.getElementById('modalNovaMatricula').classList.remove('hidden'); }
+        function fecharModalNovaMatricula() { document.getElementById('modalNovaMatricula').classList.add('hidden'); }
+
+        function salvarNovaMatricula() {
+            const nome = document.getElementById('novaMatriculaNome').value.trim();
+            const turmaKey = document.getElementById('novaMatriculaTurma').value;
+            const tel = document.getElementById('novaMatriculaTel').value.trim() || '(21) 90000-0000';
+            
+            if (!nome) { alert('Digite o nome do aluno.'); return; }
+
+            const novoRa = '2027' + Math.floor(100 + Math.random() * 900);
+            if (!bancoTurmas[turmaKey]) bancoTurmas[turmaKey] = [];
+
+            bancoTurmas[turmaKey].push({
+                ra: novoRa, nome: nome, resp: 'Responsável Legal', tel: tel, status: 'Ativo', relatorio: 'Matrícula recém efetuada.', fotos: []
+            });
+
+            localStorage.setItem('peniel_banco_matriculas', JSON.stringify(bancoTurmas));
+            fecharModalNovaMatricula();
+            document.getElementById('novaMatriculaNome').value = '';
+            mudarTurmaMatricula(turmaKey);
+            alert(`✅ Matrícula de ${nome} efetivada com sucesso! (RA: ${novoRa})`);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            mudarTurmaMatricula('maternal1');
         });
     </script>
 </body>
