@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Login | Peniel Christian School</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { marinho: '#003057', laranja: '#E85D04' },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], heading: ['Montserrat', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-marinho to-blue-950 min-h-screen flex items-center justify-center p-4 antialiased">
+
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden border border-white/20">
+        
+        <!-- Cabeçalho da Escola -->
+        <div class="bg-marinho p-8 text-center relative overflow-hidden border-b-4 border-laranja">
+            <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-3 border border-white/20 text-3xl shadow-inner">
+                📖
+            </div>
+            <h1 class="font-heading text-2xl font-extrabold text-white tracking-tight">PENIEL</h1>
+            <p class="text-blue-200 text-xs font-medium uppercase tracking-widest mt-1">Christian School • Sistema Interno</p>
+        </div>
+
+        <!-- Formulário de Acesso -->
+        <form onsubmit="realizarLogin(event)" class="p-6 sm:p-8 space-y-5">
+            
+            <div>
+                <h2 class="font-heading text-lg font-bold text-slate-800">Acesso Restrito</h2>
+                <p class="text-xs text-slate-500">Entre com suas credenciais administrativas ou docentes.</p>
+            </div>
+
+            <!-- Mensagem de erro oculta -->
+            <div id="msg-erro-login" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-xs font-bold">
+                ❌ E-mail ou senha incorretos. Tente novamente.
+            </div>
+
+            <!-- Seletor Rápido de Perfil -->
+            <div class="grid grid-cols-2 gap-2 bg-slate-100 p-1 rounded-xl border border-slate-200">
+                <button type="button" id="tab-gestor" onclick="selecionarPerfilLogin('gestor')" class="py-2 text-xs font-bold rounded-lg bg-white text-marinho shadow-sm transition">
+                    👔 Gestão / Secretaria
+                </button>
+                <button type="button" id="tab-prof" onclick="selecionarPerfilLogin('professor')" class="py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-800 transition">
+                    👨‍🏫 Portal Professor
+                </button>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1.5">E-mail ou Usuário</label>
+                <input type="text" id="loginUsuario" value="abraao@peniel.com" required placeholder="seuemail@peniel.com" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-marinho font-medium">
+            </div>
+
+            <div>
+                <div class="flex justify-between items-center mb-1.5">
+                    <label class="block text-xs font-bold text-slate-700">Senha de Acesso</label>
+                    <button type="button" onclick="alert('Para redefinir ou usar o acesso Master, utilize a senha padrão: peniel2027')" class="text-[11px] font-bold text-blue-600 hover:underline">Esqueceu a senha?</button>
+                </div>
+                <div class="relative">
+                    <input type="password" id="loginSenha" value="peniel2027" required placeholder="••••••••" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-marinho font-mono">
+                    <button type="button" onclick="mostrarOcultarSenha()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 text-sm">
+                        👁️
+                    </button>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-1.5">Senha padrão administrativa: <span class="font-mono font-bold text-slate-600">peniel2027</span></p>
+            </div>
+
+            <div class="flex items-center justify-between text-xs">
+                <label class="flex items-center gap-2 text-slate-600 font-medium cursor-pointer">
+                    <input type="checkbox" checked class="w-4 h-4 accent-marinho rounded"> Manter conectado
+                </label>
+                <span class="text-slate-400 font-medium">Ano Letivo 2026/2027</span>
+            </div>
+
+            <button type="submit" class="w-full bg-laranja hover:bg-orange-600 text-white font-bold py-3.5 rounded-xl text-sm shadow-lg transition active:scale-[0.99] flex items-center justify-center gap-2">
+                <span>🔐 Entrar no Sistema</span>
+            </button>
+        </form>
+
+        <div class="bg-slate-50 px-6 py-4 border-t border-slate-100 text-center">
+            <p class="text-[11px] text-slate-400 font-medium">Peniel Christian School • Ambiente Seguro</p>
+        </div>
+    </div>
+
+    <script>
+        let perfilSelecionado = 'gestor';
+
+        function selecionarPerfilLogin(perfil) {
+            perfilSelecionado = perfil;
+            const btnGestor = document.getElementById('tab-gestor');
+            const btnProf = document.getElementById('tab-prof');
+            const inputUser = document.getElementById('loginUsuario');
+
+            if (perfil === 'gestor') {
+                btnGestor.className = 'py-2 text-xs font-bold rounded-lg bg-white text-marinho shadow-sm transition';
+                btnProf.className = 'py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-800 transition';
+                inputUser.value = 'abraao@peniel.com';
+            } else {
+                btnProf.className = 'py-2 text-xs font-bold rounded-lg bg-white text-marinho shadow-sm transition';
+                btnGestor.className = 'py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-800 transition';
+                inputUser.value = 'professor@peniel.com';
+            }
+        }
+
+        function mostrarOcultarSenha() {
+            const input = document.getElementById('loginSenha');
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        function realizarLogin(event) {
+            event.preventDefault();
+            const usuario = document.getElementById('loginUsuario').value.trim();
+            const senha = document.getElementById('loginSenha').value.trim();
+            const msgErro = document.getElementById('msg-erro-login');
+
+            if (senha === 'peniel2027' || senha === '123456') {
+                msgErro.classList.add('hidden');
+                localStorage.setItem('peniel_sessao_ativa', 'sim');
+                
+                // Se entrou como professor, leva direto para o Diário de Classe; se gestor, vai para o Dashboard
+                if (perfilSelecionado === 'professor') {
+                    window.location.href = 'notas.html';
+                } else {
+                    window.location.href = 'index.html';
+                }
+            } else {
+                msgErro.classList.remove('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
