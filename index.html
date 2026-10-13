@@ -549,8 +549,10 @@
         }
 
         function sairDoSistema() {
-            if(confirm("Deseja encerrar sua sessão no sistema Peniel?")) {
-                window.location.href = 'configuracoes.html';
+            if(confirm("Deseja encerrar sua sessão e voltar para a tela inicial de Login?")) {
+                localStorage.removeItem('peniel_modo_gestor');
+                localStorage.removeItem('peniel_sessao_ativa');
+                window.location.href = 'login.html';
             }
         }
 
