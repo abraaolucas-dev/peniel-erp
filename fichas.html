@@ -81,6 +81,16 @@
             </div>
         </header>
 
+        <!-- ABAS DE SELEÇÃO (CHOICES) POR TURMA -->
+        <div class="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm overflow-x-auto hide-scrollbar flex gap-2">
+            <button type="button" onclick="mudarTurmaFichas('todas')" id="btn-todas" class="px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-marinho text-white shadow-sm">🌟 Todos os Alunos</button>
+            <button type="button" onclick="mudarTurmaFichas('maternal1')" id="btn-maternal1" class="px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">🧸 Maternal 1</button>
+            <button type="button" onclick="mudarTurmaFichas('maternal2')" id="btn-maternal2" class="px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">🧸 Maternal 2</button>
+            <button type="button" onclick="mudarTurmaFichas('pre1')" id="btn-pre1" class="px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">🎨 Pré-Escola 1</button>
+            <button type="button" onclick="mudarTurmaFichas('pre2')" id="btn-pre2" class="px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">🎒 Pré-Escola 2</button>
+            <button type="button" onclick="mudarTurmaFichas('fundamental1')" id="btn-fundamental1" class="px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">📚 Fundamental (1º ao 5º)</button>
+        </div>
+
         <!-- Tabela Geral de Alunos para Prontuário -->
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col flex-1">
             <div class="overflow-x-auto flex-1">
@@ -200,7 +210,7 @@
                     </div>
                 </div>
 
-                <!-- 2. Aba: Anamnese Médica (Visualização Direta) -->
+                <!-- 2. Aba: Anamnese Médica -->
                 <div id="aba-anamnese" class="hidden space-y-6 animate-fade-in">
                     <div class="flex justify-between items-center border-b pb-2">
                         <h4 class="text-lg font-bold text-red-600 flex items-center gap-2">⚕️ Prontuário de Saúde (Anamnese)</h4>
@@ -220,7 +230,7 @@
                     </div>
                 </div>
 
-                <!-- 3. Aba: Histórico Escolar (Alimentado ao Longo do Ano) -->
+                <!-- 3. Aba: Histórico Escolar -->
                 <div id="aba-historico" class="hidden space-y-6 animate-fade-in text-xs">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-2 gap-2">
                         <h4 class="text-base md:text-lg font-bold text-slate-800">🎓 Trajetória e Ocorrências Pedagógicas</h4>
@@ -255,7 +265,7 @@
         </div>
     </div>
 
-    <!-- MODAL: ADICIONAR OCORRÊNCIA NO HISTÓRICO ESCOLAR -->
+    <!-- MODAL: ADICIONAR OCORRÊNCIA NO HISTÓRICO -->
     <div id="modalNovaOcorrencia" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[140] p-3 sm:p-4">
         <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto">
             <div class="p-5 bg-marinho text-white flex justify-between items-center">
@@ -292,32 +302,27 @@
             if(confirm("Deseja encerrar sua sessão?")) { window.location.href = 'login.html'; }
         }
 
-        // BANCO DE DADOS GERAL DE ALUNOS COM SUPORTE A LOCALSTORAGE
+        let filtroTurmaFichas = 'todas';
+
+        function mudarTurmaFichas(turmaKey) {
+            filtroTurmaFichas = turmaKey;
+            ['todas', 'maternal1', 'maternal2', 'pre1', 'pre2', 'fundamental1'].forEach(k => {
+                const btn = document.getElementById(`btn-${k}`);
+                if (k === turmaKey) {
+                    btn.className = 'px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-marinho text-white shadow-sm';
+                } else {
+                    btn.className = 'px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200';
+                }
+            });
+            renderizarListaFichas();
+        }
+
+        // BANCO DE DADOS GERAL DE ALUNOS COM SUPORTE A LOCALSTORAGE E TURMAS
         function obterBancoGeralAlunos() {
             let base = JSON.parse(localStorage.getItem('peniel_banco_fichas_detalhadas')) || {
-                '2027001': {
-                    ra: '2027001', nome: 'Davi Lucas', turma: '3º Ano A', status: 'Ativo',
-                    nasc: '15/04/2018', nat: 'Rio de Janeiro - RJ', cpf: '111.222.333-44',
-                    pai: 'Carlos Lucas', paiTel: '(21) 99999-1111', paiEmail: 'carlos.lucas@email.com',
-                    mae: 'Ana Carolina Lucas', maeTel: '(21) 98888-2222',
-                    sangue: 'O+', alergia: 'Nenhuma', med: 'Não utiliza',
-                    obs: 'Aluno participativo e atento nas aulas de matemática.',
-                    historico: [
-                        { data: '10/03/2026', titulo: 'Início do Ano Letivo', desc: 'Matrícula renovada e alocado no 3º Ano A.' },
-                        { data: '15/05/2026', titulo: 'Conselho de Classe Parcial', desc: 'Rendimento excelente em todas as matérias.' }
-                    ]
-                },
-                '2027002': {
-                    ra: '2027002', nome: 'Isabela Mendes', turma: '2º Ano B', status: 'Ativo',
-                    nasc: '10/11/2019', nat: 'Niterói - RJ', cpf: '222.333.444-55',
-                    pai: 'Roberto Mendes', paiTel: '(21) 97777-0000', paiEmail: 'roberto@email.com',
-                    mae: 'Mariana Mendes', maeTel: '(21) 96666-3333',
-                    sangue: 'A-', alergia: 'Corante Amarelo', med: 'Bombinha de Asma',
-                    obs: 'Apresenta asma leve após esforço físico intenso.',
-                    historico: [
-                        { data: '12/02/2026', titulo: 'Avaliação Inicial de Leitura', desc: 'Fluência verbal dentro da média esperada para a idade.' }
-                    ]
-                }
+                '2027501': { ra: '2027501', nome: 'Helena Santos', turmaChave: 'maternal1', turma: 'Maternal 1', status: 'Ativo', nasc: '15/04/2023', nat: 'Rio de Janeiro - RJ', cpf: '000.111.222-33', pai: 'Camila Santos', paiTel: '(21) 98888-1111', paiEmail: 'camila@email.com', mae: 'Ana Santos', maeTel: '(21) 97777-2222', sangue: 'O+', alergia: 'Nenhuma', med: 'Não utiliza', obs: 'Excelente adaptação.', historico: [{ data: '12/02/2026', titulo: 'Adaptação Concluída', desc: 'Entrou na turminha sem chorar.' }] },
+                '2027001': { ra: '2027001', nome: 'Davi Lucas', turmaChave: 'fundamental1', turma: '3º Ano A', status: 'Ativo', nasc: '15/04/2018', nat: 'Rio de Janeiro - RJ', cpf: '111.222.333-44', pai: 'Carlos Lucas', paiTel: '(21) 99999-1111', paiEmail: 'carlos.lucas@email.com', mae: 'Ana Carolina Lucas', maeTel: '(21) 98888-2222', sangue: 'O+', alergia: 'Amendoim', med: 'Não utiliza', obs: 'Participativo nas aulas.', historico: [{ data: '10/03/2026', titulo: 'Início do Ano Letivo', desc: 'Alocado no 3º Ano A.' }] },
+                '2027002': { ra: '2027002', nome: 'Isabela Mendes', turmaChave: 'fundamental1', turma: '2º Ano B', status: 'Ativo', nasc: '10/11/2019', nat: 'Niterói - RJ', cpf: '222.333.444-55', pai: 'Roberto Mendes', paiTel: '(21) 97777-0000', paiEmail: 'roberto@email.com', mae: 'Mariana Mendes', maeTel: '(21) 96666-3333', sangue: 'A-', alergia: 'Corante Amarelo', med: 'Bombinha de Asma', obs: 'Asma leve após esforço físico.', historico: [{ data: '12/02/2026', titulo: 'Avaliação Inicial', desc: 'Fluência verbal ótima.' }] }
             };
             return base;
         }
@@ -335,13 +340,15 @@
             let filtrados = [];
             for (let ra in base) {
                 const a = base[ra];
-                if (a.nome.toLowerCase().includes(busca) || a.ra.toLowerCase().includes(busca)) {
+                const matchTurma = (filtroTurmaFichas === 'todas' || a.turmaChave === filtroTurmaFichas);
+                const matchBusca = (a.nome.toLowerCase().includes(busca) || a.ra.toLowerCase().includes(busca));
+                if (matchTurma && matchBusca) {
                     filtrados.push(a);
                 }
             }
 
             if (filtrados.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400 text-xs">Nenhum aluno encontrado.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400 text-xs">Nenhum aluno encontrado nesta turma.</td></tr>`;
                 return;
             }
 
