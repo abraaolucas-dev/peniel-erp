@@ -204,7 +204,7 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- MODAL 3: NOVA MATRÍCULA COMPLETA (ALUNO + RESPONSÁVEL + SAÚDE) -->
+    <!-- MODAL 3: NOVA MATRÍCULA COMPLETA -->
     <!-- ========================================================================= -->
     <div id="modalNovaMatricula" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[130] p-3 sm:p-4 overflow-y-auto">
         <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto max-h-[95vh]">
@@ -214,8 +214,6 @@
             </div>
 
             <div class="p-6 overflow-y-auto bg-slate-50 space-y-5 text-xs flex-1">
-                
-                <!-- Seção 1: Aluno -->
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
                     <h4 class="font-bold text-marinho uppercase tracking-wider border-b pb-1">1. Informações do Aluno</h4>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -240,7 +238,6 @@
                     </div>
                 </div>
 
-                <!-- Seção 2: Responsável -->
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
                     <h4 class="font-bold text-marinho uppercase tracking-wider border-b pb-1">2. Dados do Responsável / Financeiro</h4>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -263,7 +260,6 @@
                     </div>
                 </div>
 
-                <!-- Seção 3: Saúde Básica -->
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
                     <h4 class="font-bold text-red-700 uppercase tracking-wider border-b pb-1">3. Saúde e Anamnese Inicial</h4>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -277,7 +273,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
 
             <div class="p-4 border-t border-slate-100 bg-white flex justify-end gap-2 shrink-0">
@@ -287,7 +282,7 @@
         </div>
     </div>
 
-    <!-- SCRIPT DO MÓDULO DE MATRÍCULAS -->
+    <!-- SCRIPT DO MÓDULO DE MATRÍCULAS (UNIFICADO COM FICHAS) -->
     <script>
         function toggleMenuMobile() {
             const menu = document.getElementById('menu-lateral');
@@ -297,33 +292,23 @@
         }
 
         function sairDoSistema() {
-            if(confirm("Deseja encerrar sua sessão?")) {
-                window.location.href = 'login.html';
-            }
+            if(confirm("Deseja encerrar sua sessão?")) { window.location.href = 'login.html'; }
         }
 
-        // BANCO DE DADOS DE ALUNOS POR TURMA (SINCRONIZADO COM FICHAS)
-        let bancoTurmas = JSON.parse(localStorage.getItem('peniel_banco_matriculas')) || {
-            maternal1: [
-                { ra: '2027501', nome: 'Helena Santos', resp: 'Camila Santos (Mãe)', tel: '(21) 98888-1111', status: 'Ativo', relatorio: 'Demonstra excelente adaptação nas atividades com massinha.', fotos: ['🎨 Pintura com Guache', '🧸 Hora do Conto'], nasc: '15/04/2023', nat: 'Rio de Janeiro - RJ', cpf: '000.111.222-33', pai: 'Camila Santos', paiTel: '(21) 98888-1111', paiEmail: 'camila@email.com', mae: 'Ana Santos', maeTel: '(21) 97777-2222', sangue: 'O+', alergia: 'Nenhuma', med: 'Não utiliza', obs: 'Excelente adaptação.', historico: [{ data: '12/02/2026', titulo: 'Adaptação Concluída', desc: 'Entrou na turminha sem chorar.' }] }
-            ],
-            maternal2: [
-                { ra: '2027503', nome: 'Alice Martins', resp: 'Juliana Martins', tel: '(21) 96666-3333', status: 'Ativo', relatorio: 'Desenvolvendo ótima autonomia.', fotos: ['🧩 Blocos'], nasc: '10/05/2022', nat: 'Niterói - RJ', cpf: '111.222.333-44', pai: 'Juliana Martins', paiTel: '(21) 96666-3333', paiEmail: 'juliana@email.com', mae: 'Maria Martins', maeTel: '(21) 95555-1111', sangue: 'A+', alergia: 'Nenhuma', med: 'Não utiliza', obs: 'Criança comunicativa.', historico: [] }
-            ],
-            pre1: [
-                { ra: '2027504', nome: 'Bernardo Lima', resp: 'Renata Lima', tel: '(21) 95555-4444', status: 'Ativo', relatorio: 'Reconhecendo vogais com facilidade.', fotos: ['📚 Histórias'], nasc: '20/08/2021', nat: 'Rio de Janeiro - RJ', cpf: '222.333.444-55', pai: 'Renata Lima', paiTel: '(21) 95555-4444', paiEmail: 'renata@email.com', mae: 'Carla Lima', maeTel: '(21) 94444-2222', sangue: 'B+', alergia: 'Nenhuma', med: 'Não utiliza', obs: 'Muito focado.', historico: [] }
-            ],
-            pre2: [
-                { ra: '2027505', nome: 'Valentina Costa', resp: 'Marcos Costa', tel: '(21) 94444-5555', status: 'Ativo', relatorio: 'Excelente coordenação motora no traçado.', fotos: ['✏️ Traçado'], nasc: '02/12/2020', nat: 'Rio de Janeiro - RJ', cpf: '333.444.555-66', pai: 'Marcos Costa', paiTel: '(21) 94444-5555', paiEmail: 'marcos@email.com', mae: 'Beatriz Costa', maeTel: '(21) 93333-1111', sangue: 'AB+', alergia: 'Nenhuma', med: 'Não utiliza', obs: 'Liderança natural com os colegas.', historico: [] }
-            ],
-            fundamental1: [
-                { ra: '2027001', nome: 'Davi Lucas', resp: 'Carlos Lucas', tel: '(21) 99999-1111', status: 'Ativo', turmaOrigem: '3º Ano A', nasc: '15/04/2018', nat: 'Rio de Janeiro - RJ', cpf: '111.222.333-44', pai: 'Carlos Lucas', paiTel: '(21) 99999-1111', paiEmail: 'carlos.lucas@email.com', mae: 'Ana Carolina Lucas', maeTel: '(21) 98888-2222', sangue: 'O+', alergia: 'Amendoim', med: 'Não utiliza', obs: 'Participativo.', historico: [{ data: '10/03/2026', titulo: 'Início', desc: 'Matrícula renovada.' }] },
-                { ra: '2027002', nome: 'Isabela Mendes', resp: 'Mariana Mendes', tel: '(21) 97777-0000', status: 'Ativo', turmaOrigem: '2º Ano B', nasc: '10/11/2019', nat: 'Niterói - RJ', cpf: '222.333.444-55', pai: 'Roberto Mendes', paiTel: '(21) 97777-0000', paiEmail: 'roberto@email.com', mae: 'Mariana Mendes', maeTel: '(21) 96666-3333', sangue: 'A-', alergia: 'Corante', med: 'Bombinha', obs: 'Asma leve.', historico: [] }
-            ]
-        };
+        // MOTOR CENTRAL DE DADOS UNIFICADO (MATRÍCULAS + FICHAS)
+        function obterBancoGeralAlunos() {
+            let base = JSON.parse(localStorage.getItem('peniel_banco_fichas_detalhadas')) || {
+                '2027501': { ra: '2027501', nome: 'Helena Santos', turmaChave: 'maternal1', turma: 'Maternal 1', status: 'Ativo', nasc: '15/04/2023', nat: 'Rio de Janeiro - RJ', cpf: '000.111.222-33', pai: 'Camila Santos', paiTel: '(21) 98888-1111', paiEmail: 'camila@email.com', mae: 'Ana Santos', maeTel: '(21) 97777-2222', sangue: 'O+', alergia: 'Nenhuma', med: 'Não utiliza', obs: 'Excelente adaptação.', relatorio: 'Boa adaptação.', fotos: [], historico: [{ data: '12/02/2026', titulo: 'Adaptação', desc: 'Concluída com sucesso.' }] },
+                '2027001': { ra: '2027001', nome: 'Davi Lucas', turmaChave: 'fundamental1', turma: '3º Ano A', status: 'Ativo', nasc: '15/04/2018', nat: 'Rio de Janeiro - RJ', cpf: '111.222.333-44', pai: 'Carlos Lucas', paiTel: '(21) 99999-1111', paiEmail: 'carlos.lucas@email.com', mae: 'Ana Carolina Lucas', maeTel: '(21) 98888-2222', sangue: 'O+', alergia: 'Amendoim', med: 'Não utiliza', obs: 'Participativo.', relatorio: '', fotos: [], historico: [{ data: '10/03/2026', titulo: 'Início', desc: 'Matrícula renovada.' }] }
+            };
+            return base;
+        }
+
+        function salvarBancoGeralAlunos(base) {
+            localStorage.setItem('peniel_banco_fichas_detalhadas', JSON.stringify(base));
+        }
 
         let turmaAtual = 'maternal1';
-        let alunoEditandoRa = null;
 
         const infoTurmas = {
             maternal1: { titulo: 'Maternal 1 — Unidade Matriz', sub: 'Relatório Descritivo & Mural de Fotos' },
@@ -331,6 +316,14 @@
             pre1: { titulo: 'Pré-Escola 1 — Unidade Matriz', sub: 'Relatório Descritivo & Mural de Fotos' },
             pre2: { titulo: 'Pré-Escola 2 — Unidade Matriz', sub: 'Relatório Descritivo & Mural de Fotos' },
             fundamental1: { titulo: 'Ensino Fundamental (1º ao 5º Ano) — Matriz', sub: 'Sistema de Notas e Média 7.0' }
+        };
+
+        const chaveParaNomeTurma = {
+            maternal1: 'Maternal 1',
+            maternal2: 'Maternal 2',
+            pre1: 'Pré-Escola 1',
+            pre2: 'Pré-Escola 2',
+            fundamental1: 'Ensino Fundamental'
         };
 
         function mudarTurmaMatricula(turmaKey) {
@@ -352,12 +345,19 @@
         function renderizarTabelaAlunos() {
             const tbody = document.getElementById('tabela-alunos-turma');
             tbody.innerHTML = '';
-            const lista = bancoTurmas[turmaAtual] || [];
+            const base = obterBancoGeralAlunos();
             const busca = document.getElementById('buscaMatricula').value.toLowerCase();
-            const filtrados = lista.filter(a => a.nome.toLowerCase().includes(busca) || a.resp.toLowerCase().includes(busca));
+            
+            let filtrados = [];
+            for (let ra in base) {
+                const a = base[ra];
+                if (a.turmaChave === turmaAtual && (a.nome.toLowerCase().includes(busca) || a.pai.toLowerCase().includes(busca))) {
+                    filtrados.push(a);
+                }
+            }
 
             if (filtrados.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400 text-xs">Nenhum aluno encontrado.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400 text-xs">Nenhum aluno cadastrado nesta turma.</td></tr>`;
                 return;
             }
 
@@ -386,8 +386,8 @@
                         <p class="text-[10px] text-slate-400 font-mono">RA: ${aluno.ra}</p>
                     </td>
                     <td class="px-5 py-3.5">
-                        <p class="font-semibold text-slate-700 text-xs">${aluno.resp}</p>
-                        <p class="text-[10px] text-slate-400 font-mono">${aluno.tel}</p>
+                        <p class="font-semibold text-slate-700 text-xs">${aluno.pai}</p>
+                        <p class="text-[10px] text-slate-400 font-mono">${aluno.paiTel}</p>
                     </td>
                     <td class="px-5 py-3.5 text-center">
                         <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-bold">${aluno.status}</span>
@@ -404,17 +404,14 @@
 
         // EDITAR ALUNO RÁPIDO
         function abrirModalEditarAluno(ra) {
-            let alunoEncontrado = null;
-            for (let t in bancoTurmas) {
-                const achado = bancoTurmas[t].find(a => a.ra === ra);
-                if (achado) { alunoEncontrado = achado; break; }
-            }
-            if (!alunoEncontrado) return;
+            const base = obterBancoGeralAlunos();
+            const aluno = base[ra];
+            if (!aluno) return;
 
-            document.getElementById('editAlunoRa').value = alunoEncontrado.ra;
-            document.getElementById('editAlunoNome').value = alunoEncontrado.nome;
-            document.getElementById('editAlunoResp').value = alunoEncontrado.resp;
-            document.getElementById('editAlunoTel').value = alunoEncontrado.tel;
+            document.getElementById('editAlunoRa').value = aluno.ra;
+            document.getElementById('editAlunoNome').value = aluno.nome;
+            document.getElementById('editAlunoResp').value = aluno.pai;
+            document.getElementById('editAlunoTel').value = aluno.paiTel;
             document.getElementById('modalEditarAluno').classList.remove('hidden');
         }
 
@@ -422,33 +419,25 @@
 
         function salvarEdicaoAluno() {
             const ra = document.getElementById('editAlunoRa').value;
-            const novoNome = document.getElementById('editAlunoNome').value.trim();
-            const novaResp = document.getElementById('editAlunoResp').value.trim();
-            const novoTel = document.getElementById('editAlunoTel').value.trim();
-
-            if (!novoNome) { alert('O nome não pode estar vazio.'); return; }
-
-            for (let t in bancoTurmas) {
-                const idx = bancoTurmas[t].findIndex(a => a.ra === ra);
-                if (idx !== -1) {
-                    bancoTurmas[t][idx].nome = novoNome;
-                    bancoTurmas[t][idx].resp = novaResp;
-                    bancoTurmas[t][idx].tel = novoTel;
-                    break;
-                }
+            const base = obterBancoGeralAlunos();
+            if (base[ra]) {
+                base[ra].nome = document.getElementById('editAlunoNome').value.trim();
+                base[ra].pai = document.getElementById('editAlunoResp').value.trim();
+                base[ra].paiTel = document.getElementById('editAlunoTel').value.trim();
+                salvarBancoGeralAlunos(base);
             }
-
-            localStorage.setItem('peniel_banco_matriculas', JSON.stringify(bancoTurmas));
             fecharModalEditarAluno();
             renderizarTabelaAlunos();
             alert('✅ Informações atualizadas com sucesso!');
         }
 
         // AVALIAÇÃO INFANTIL
+        let alunoEditandoRa = null;
         let fotosTemporarias = [];
 
         function abrirModalInfantil(ra) {
-            const aluno = bancoTurmas[turmaAtual].find(a => a.ra === ra);
+            const base = obterBancoGeralAlunos();
+            const aluno = base[ra];
             if (!aluno) return;
             alunoEditandoRa = ra;
 
@@ -494,29 +483,29 @@
 
         function salvarAvaliacaoInfantil() {
             const rel = document.getElementById('texto-relatorio-infantil').value;
-            const aluno = bancoTurmas[turmaAtual].find(a => a.ra === alunoEditandoRa);
-            if (aluno) {
-                aluno.relatorio = rel;
-                aluno.fotos = [...fotosTemporarias];
-                localStorage.setItem('peniel_banco_matriculas', JSON.stringify(bancoTurmas));
+            const base = obterBancoGeralAlunos();
+            if (base[alunoEditandoRa]) {
+                base[alunoEditandoRa].relatorio = rel;
+                base[alunoEditandoRa].fotos = [...fotosTemporarias];
+                salvarBancoGeralAlunos(base);
             }
             fecharModalAvaliacaoInfantil();
             alert('✅ Relatório e fotos salvos com sucesso!');
         }
 
-        // MATRÍCULA COMPLETA
+        // MATRÍCULA COMPLETA QUE CRIA NA HORA NO PRONTUÁRIO DE FICHAS
         function abrirModalNovaMatricula() { document.getElementById('modalNovaMatricula').classList.remove('hidden'); }
         function fecharModalNovaMatricula() { document.getElementById('modalNovaMatricula').classList.add('hidden'); }
 
         function salvarMatriculaCompleta() {
             const nomeAluno = document.getElementById('matAlunoNome').value.trim();
-            const nascAluno = document.getElementById('matAlunoNasc').value.trim() || '01/01/2020';
+            const nascAluno = document.getElementById('matAlunoNasc').value.trim() || '01/01/2021';
             const turmaKey = document.getElementById('matTurmaKey').value;
             
             const nomeResp = document.getElementById('matRespNome').value.trim();
             const cpfResp = document.getElementById('matRespCpf').value.trim() || '000.000.000-00';
             const telResp = document.getElementById('matRespTel').value.trim() || '(21) 90000-0000';
-            const emailResp = document.getElementById('matRespEmail').value.trim() || 'resp@email.com';
+            const emailResp = document.getElementById('matRespEmail').value.trim() || 'responsavel@email.com';
 
             const sangue = document.getElementById('matSangue').value.trim() || 'O+';
             const alergia = document.getElementById('matAlergia').value.trim() || 'Nenhuma';
@@ -527,60 +516,36 @@
             }
 
             const novoRa = '2027' + Math.floor(100 + Math.random() * 900);
-            if (!bancoTurmas[turmaKey]) bancoTurmas[turmaKey] = [];
+            const base = obterBancoGeralAlunos();
 
-            // Insere no banco local unificado
-            bancoTurmas[turmaKey].push({
-                ra: novoRa,
-                nome: nomeAluno,
-                resp: nomeResp,
-                tel: telResp,
-                status: 'Ativo',
-                nasc: nascAluno,
-                nat: 'Rio de Janeiro - RJ',
-                cpf: cpfResp,
-                pai: nomeResp,
-                paiTel: telResp,
-                paiEmail: emailResp,
-                mae: 'Co-responsável / Mãe',
-                maeTel: telResp,
-                sangue: sangue,
-                alergia: alergia,
-                med: 'Não utiliza',
-                obs: 'Matrícula recente efetivada pelo sistema.',
-                historico: [{ data: new Date().toLocaleDateString('pt-BR'), titulo: 'Efetivação de Matrícula', desc: 'Cadastro completo realizado na secretaria.' }],
-                relatorio: 'Matrícula recente iniciada.',
-                fotos: []
-            });
-
-            // Salva também no banco geral de fichas para sincronizar com fichas.html
-            let bancoFichas = JSON.parse(localStorage.getItem('peniel_banco_fichas_detalhadas')) || {};
-            bancoFichas[novoRa] = {
+            // Cria o registro unificado que abastece TANTO as Matrículas quanto as Fichas
+            base[novoRa] = {
                 ra: novoRa,
                 nome: nomeAluno,
                 turmaChave: turmaKey,
-                turma: document.getElementById('matTurmaKey').options[document.getElementById('matTurmaKey').selectedIndex].text,
+                turma: chaveParaNomeTurma[turmaKey] || 'Turma Regular',
                 status: 'Ativo',
                 nasc: nascAluno,
                 nat: 'Rio de Janeiro - RJ',
-                cpf: cpfResp,
+                cpf: '000.000.000-00',
                 pai: nomeResp,
                 paiTel: telResp,
                 paiEmail: emailResp,
-                mae: 'Co-responsável / Mãe',
+                mae: 'Co-responsável',
                 maeTel: telResp,
                 sangue: sangue,
                 alergia: alergia,
                 med: 'Não utiliza',
-                obs: 'Matrícula recente efetivada.',
-                historico: [{ data: new Date().toLocaleDateString('pt-BR'), titulo: 'Matrícula Realizada', desc: 'Cadastro completo.' }]
+                obs: 'Matrícula recente efetivada pela secretaria.',
+                relatorio: 'Matrícula recente iniciada.',
+                fotos: [],
+                historico: [{ data: new Date().toLocaleDateString('pt-BR'), titulo: 'Efetivação de Matrícula', desc: 'Cadastro completo realizado.' }]
             };
-            localStorage.setItem('peniel_banco_fichas_detalhadas', JSON.stringify(bancoFichas));
 
-            localStorage.setItem('peniel_banco_matriculas', JSON.stringify(bancoTurmas));
+            salvarBancoGeralAlunos(base);
             fecharModalNovaMatricula();
 
-            // Limpa campos
+            // Limpa formulário
             document.getElementById('matAlunoNome').value = '';
             document.getElementById('matAlunoNasc').value = '';
             document.getElementById('matRespNome').value = '';
@@ -591,7 +556,7 @@
             document.getElementById('matAlergia').value = '';
 
             mudarTurmaMatricula(turmaKey);
-            alert(`✅ Matrícula Completa efetivada com sucesso!\nRA gerado: ${novoRa}`);
+            alert(`✅ Matrícula Completa efetivada com sucesso!\nO aluno já está disponível na tela de Fichas e Prontuários (RA: ${novoRa}).`);
         }
 
         document.addEventListener('DOMContentLoaded', () => { mudarTurmaMatricula('maternal1'); });
