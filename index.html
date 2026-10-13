@@ -30,7 +30,7 @@
     </audio>
 
     <!-- ========================================================================= -->
-    <!-- BARRA DE TOPO EXCLUSIVA MOBILE (DESTAQUE DE PALETA IGUAL AO PC) -->
+    <!-- BARRA DE TOPO EXCLUSIVA MOBILE -->
     <!-- ========================================================================= -->
     <div id="barra-topo-mobile" class="md:hidden bg-marinho text-white px-4 py-3.5 flex justify-between items-center shadow-lg sticky top-0 z-[80] border-b border-white/10 transition-colors duration-300">
         <div class="flex items-center gap-3">
@@ -54,7 +54,7 @@
     <div id="overlay-mobile" onclick="toggleMenuMobile()" class="fixed inset-0 bg-slate-950/75 z-[95] hidden md:hidden backdrop-blur-sm transition-opacity"></div>
 
     <!-- ========================================================================= -->
-    <!-- MENU LATERAL (COM DESTAQUE FORTE NO MOBILE E NO PC) -->
+    <!-- MENU LATERAL -->
     <!-- ========================================================================= -->
     <aside id="menu-lateral" class="fixed md:sticky left-0 top-0 w-72 md:w-64 bg-marinho text-white flex-col h-screen z-[100] transform -translate-x-full md:translate-x-0 transition-all duration-300 flex shrink-0 shadow-2xl md:shadow-none border-r-4 border-laranja md:border-r-0">
         <div class="p-6 flex justify-between items-center shrink-0 border-b border-white/10 bg-black/15">
@@ -91,10 +91,10 @@
             <a href="configuracoes.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 hover:text-white rounded-xl font-medium transition">⚙️ Configurações / ADM</a>
         </nav>
         
-        <!-- Seletor de Paleta Rápido no Menu Mobile + Botão Sair -->
+        <!-- Rodapé do Menu com Cores e Sair -->
         <div class="p-4 border-t border-white/10 bg-black/20 space-y-2.5 shrink-0">
             <div class="flex items-center justify-between bg-white/10 px-3 py-2 rounded-xl">
-                <span class="text-xs font-bold text-blue-100">🎨 Cor do Tema / Menu</span>
+                <span class="text-xs font-bold text-blue-100">🎨 Cor do Tema</span>
                 <div class="flex items-center gap-1.5">
                     <button type="button" onclick="mudarCorSessao('#003057')" class="w-5 h-5 rounded-full bg-[#003057] border-2 border-white"></button>
                     <button type="button" onclick="mudarCorSessao('#1e1b4b')" class="w-5 h-5 rounded-full bg-[#1e1b4b] border border-white/50"></button>
@@ -109,7 +109,7 @@
     </aside>
 
     <!-- ========================================================================= -->
-    <!-- ÁREA PRINCIPAL DO DASHBOARD -->
+    <!-- ÁREA PRINCIPAL -->
     <!-- ========================================================================= -->
     <main class="flex-1 p-3 sm:p-5 md:p-8 flex flex-col gap-5 w-full max-w-full overflow-x-hidden">
         
@@ -148,7 +148,7 @@
             </div>
         </header>
 
-        <!-- BANNER DE ALERTA VISUAL DA PORTARIA -->
+        <!-- BANNER DE ALERTA VISUAL -->
         <div id="alerta-visual" class="hidden bg-red-600 text-white p-4 rounded-2xl shadow-lg flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-2 border-red-300">
             <div class="flex items-center gap-3">
                 <span class="text-2xl sm:text-3xl">🚨</span>
@@ -167,7 +167,7 @@
             </div>
         </div>
 
-        <!-- KPIS DE ACESSO RÁPIDO (2 COLUNAS NO MOBILE, 4 NO PC) -->
+        <!-- KPIS -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <a href="matriculas.html" class="block bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm border-l-4 border-l-blue-500 hover:-translate-y-0.5 hover:shadow-md transition-all group">
                 <div class="flex justify-between items-start"><h3 class="text-slate-500 text-[10px] sm:text-xs font-bold uppercase tracking-wider">Alunos na Escola</h3><span class="text-blue-500 text-sm">↗</span></div>
@@ -187,9 +187,7 @@
             </a>
         </div>
 
-        <!-- ========================================================================= -->
-        <!-- PAINEL DE SALAS E AULAS (HORÁRIOS EM TEMPO REAL E CORES DINÂMICAS) -->
-        <!-- ========================================================================= -->
+        <!-- PAINEL DE SALAS E AULAS (TEMPO REAL) -->
         <div class="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm">
             <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-5 border-b border-slate-100 pb-4 gap-3">
                 <div>
@@ -197,10 +195,9 @@
                         <h3 class="font-bold text-slate-800 text-base sm:text-lg">📡 Painel de Salas e Aulas (Tempo Real)</h3>
                         <span id="badge-contagem-salas" class="bg-green-100 text-green-800 px-2.5 py-0.5 rounded-full text-xs font-bold border border-green-200">--</span>
                     </div>
-                    <p class="text-xs text-slate-500 mt-0.5">As cores e os horários das turmas mudam automaticamente conforme o relógio ou clique no status para alterar.</p>
+                    <p class="text-xs text-slate-500 mt-0.5">As cores mudam automaticamente pelo relógio ou clique no selo para testar os status.</p>
                 </div>
 
-                <!-- Relógio Ao Vivo + Simulador de Turno -->
                 <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
                     <div class="bg-slate-900 text-white px-3.5 py-2 rounded-xl text-xs font-mono font-bold flex items-center gap-2 shadow-sm">
                         <span class="w-2 h-2 rounded-full bg-green-400 animate-ping"></span>
@@ -218,21 +215,17 @@
                 </div>
             </div>
 
-            <!-- Grid Dinâmico de Salas Renderizado via JS -->
             <div id="grid-salas-tempo-real" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-                <!-- Preenchido em tempo real pelo motor JS -->
+                <!-- Renderizado via JS -->
             </div>
         </div>
 
-        <!-- ========================================================================= -->
-        <!-- LAYOUT INFERIOR (REUNIÕES COM OK, GRÁFICOS E PORTARIA COM DETALHES) -->
-        <!-- ========================================================================= -->
+        <!-- LAYOUT INFERIOR -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
-            <!-- Coluna Esquerda: Reuniões Interativas + Gráficos -->
+            <!-- Coluna Esquerda: Reuniões + Gráficos -->
             <div class="lg:col-span-5 flex flex-col gap-6">
                 
-                <!-- CARD DE REUNIÕES COM BOTÃO OK DE CONFIRMAÇÃO -->
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-1.5 h-full bg-blue-600"></div>
                     <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-100">
@@ -247,7 +240,6 @@
                         <!-- Renderizado via JS -->
                     </ul>
 
-                    <!-- Adicionar rápida pauta/reunião interna -->
                     <div class="flex gap-2 pt-2 border-t border-slate-100">
                         <input type="text" id="inputNovaReuniao" placeholder="Nova reunião ou aviso interno..." class="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <button type="button" onclick="adicionarReuniaoRapida()" class="bg-marinho hover:bg-blue-900 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0">
@@ -256,7 +248,6 @@
                     </div>
                 </div>
 
-                <!-- Gráficos Responsivos Lado a Lado no Tablet/Mobile -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center">
                         <h3 class="font-bold text-slate-700 mb-3 text-center text-xs uppercase tracking-wider">Frequência Diária</h3>
@@ -270,10 +261,9 @@
                 </div>
             </div>
 
-            <!-- Coluna Direita: Bloco de Notas + Central de Liberações (Portaria) -->
+            <!-- Coluna Direita: Anotações + Central de Liberações (Portaria) -->
             <div class="lg:col-span-7 flex flex-col gap-6">
                 
-                <!-- Bloco de Anotações -->
                 <div class="bg-amber-50 rounded-2xl border border-amber-200 shadow-sm p-4">
                     <div class="flex justify-between items-center mb-2">
                         <h3 class="font-bold text-amber-900 text-xs sm:text-sm flex items-center gap-2">📌 Bloco de Anotações Rápidas (Diretoria)</h3>
@@ -282,31 +272,19 @@
                     <textarea id="campo-anotacao" class="w-full bg-white/70 rounded-xl border border-amber-200/80 focus:outline-none focus:ring-2 focus:ring-amber-400 p-2.5 text-xs sm:text-sm text-amber-950 resize-none font-medium" rows="2" placeholder="Digite observações internas do turno..."></textarea>
                 </div>
 
-                <!-- ========================================================================= -->
-                <!-- CENTRAL DE LIBERAÇÕES DE SAÍDA E PORTARIA (CARDS 100% FUNCIONAIS) -->
-                <!-- ========================================================================= -->
+                <!-- CENTRAL DE LIBERAÇÕES -->
                 <div id="central-liberacoes" class="bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col flex-1 scroll-mt-20 overflow-hidden">
                     <div class="p-4 border-b border-slate-100 bg-slate-50 flex flex-wrap justify-between items-center gap-2">
                         <div>
                             <h3 class="font-bold text-slate-800 text-sm sm:text-base">🛂 Central de Liberações de Saída e Portaria</h3>
-                            <p class="text-[11px] text-slate-500">Toque em <strong>Ver Detalhes Completos</strong> em qualquer card para abrir a ficha da portaria.</p>
+                            <p class="text-[11px] text-slate-500">Toque em qualquer card para ver a ficha detalhada e o documento do responsável.</p>
                         </div>
                         <span class="bg-orange-100 text-laranja text-xs font-bold px-2.5 py-1 rounded-full">Monitoramento Ativo</span>
                     </div>
                     
                     <div class="p-4 sm:p-6 bg-slate-50/40 flex-1">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="container-cards-portaria">
-                            
-                            <!-- CARD 1: AGUARDANDO LIBERAÇÃO EM VERMELHO (ISABELA MENDES) -->
-                            <div id="card-portaria-isabela" class="border-2 border-red-400 bg-red-50/90 rounded-2xl p-4 shadow-md transition-all duration-300 flex flex-col justify-between">
-                                <!-- Preenchido via JS para suportar atualização de estado -->
-                            </div>
-
-                            <!-- CARD 2: LIBERAÇÃO MAIS CEDO REALIZADA (DAVI LUCAS) -->
-                            <div id="card-portaria-davi" class="border border-slate-200 bg-white rounded-2xl p-4 shadow-sm hover:border-blue-300 transition-all duration-300 flex flex-col justify-between">
-                                <!-- Preenchido via JS -->
-                            </div>
-
+                            <!-- Renderizado via JS -->
                         </div>
                     </div>
                 </div>
@@ -317,13 +295,12 @@
     </main>
 
     <!-- ========================================================================= -->
-    <!-- MODAL NOVO: PRONTUÁRIO DETALHADO DE SAÍDA / LIBERAÇÃO NA PORTARIA -->
-    <!-- (Resolve o clique do card vermelho pendente e do card de saída mais cedo) -->
+    <!-- MODAIS DO SISTEMA -->
     <!-- ========================================================================= -->
+
+    <!-- MODAL DETALHES PORTARIA -->
     <div id="modalDetalhesPortaria" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[140] p-3 sm:p-4 overflow-y-auto">
         <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto max-h-[95vh]">
-            
-            <!-- Cabeçalho Dinâmico (Vermelho se Pendente, Verde/Marinho se Liberado) -->
             <div id="header-modal-portaria" class="p-5 bg-red-600 text-white flex justify-between items-start gap-3">
                 <div class="flex items-center gap-3">
                     <span class="text-3xl" id="icone-modal-portaria">🚨</span>
@@ -336,8 +313,6 @@
             </div>
 
             <div class="p-5 sm:p-6 overflow-y-auto bg-slate-50 space-y-5">
-                
-                <!-- Bloco 1: Informações do Aluno e Motivo da Saída Antecipada -->
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
                     <div class="flex flex-col sm:flex-row justify-between sm:items-center border-b border-slate-100 pb-3 mb-3 gap-2">
                         <div>
@@ -346,42 +321,39 @@
                             <p class="text-xs text-slate-500 font-medium" id="det-portaria-turma">--</p>
                         </div>
                         <div class="sm:text-right">
-                            <span class="text-[10px] font-bold uppercase text-slate-400 block">Horário da Solicitação / Saída</span>
+                            <span class="text-[10px] font-bold uppercase text-slate-400 block">Horário da Solicitação</span>
                             <span class="font-mono font-bold text-sm text-marinho bg-blue-50 px-2.5 py-1 rounded-lg inline-block mt-0.5" id="det-portaria-horario">--</span>
                         </div>
                     </div>
-
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                         <div class="bg-amber-50 border border-amber-200/80 p-3 rounded-lg">
-                            <span class="font-bold text-amber-900 uppercase text-[10px] block mb-0.5">📋 Motivo da Saída Mais Cedo:</span>
+                            <span class="font-bold text-amber-900 uppercase text-[10px] block mb-0.5">📋 Motivo da Saída:</span>
                             <p class="font-semibold text-amber-950" id="det-portaria-motivo">--</p>
                         </div>
                         <div class="bg-slate-50 border border-slate-200 p-3 rounded-lg">
-                            <span class="font-bold text-slate-500 uppercase text-[10px] block mb-0.5">📲 Meio de Autorização dos Pais:</span>
+                            <span class="font-bold text-slate-500 uppercase text-[10px] block mb-0.5">📲 Autorização:</span>
                             <p class="font-semibold text-slate-800" id="det-portaria-origem">--</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Bloco 2: Carteira de Identidade (RG) e Biometria do Responsável pela Retirada -->
                 <div class="bg-gradient-to-br from-emerald-50 via-teal-50 to-green-100 border-2 border-emerald-300 rounded-xl p-4 shadow-inner">
-                    <div class="flex flex-wrap justify-between items-center border-b border-emerald-200 pb-2 mb-3 gap-2">
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-950">🪪 Documento do Responsável na Portaria</span>
-                        <span class="bg-green-600 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm">✓ IDENTIDADE E FOTO VALIDADAS</span>
+                    <div class="flex justify-between items-center border-b border-emerald-200 pb-2 mb-3">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-950">🪪 Documento do Responsável</span>
+                        <span class="bg-green-600 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm">✓ VALIDADE OK</span>
                     </div>
                     <div class="flex flex-col sm:flex-row gap-4 items-center">
                         <div class="w-20 h-24 bg-white border-2 border-emerald-400 rounded-xl flex flex-col items-center justify-center text-3xl shrink-0 shadow-sm" id="det-portaria-avatar">
                             🧑🏽‍💼
-                            <span class="text-[9px] font-bold text-slate-400 mt-1">FOTO 3x4</span>
                         </div>
                         <div class="space-y-1.5 text-xs flex-1 w-full text-center sm:text-left">
                             <div>
-                                <span class="text-[10px] text-emerald-800 font-bold uppercase block">Nome Completo do Portador:</span>
+                                <span class="text-[10px] text-emerald-800 font-bold uppercase block">Nome do Portador:</span>
                                 <p class="font-black text-slate-900 text-sm sm:text-base" id="det-portaria-resp-nome">--</p>
                             </div>
                             <div class="grid grid-cols-2 gap-2 pt-1">
                                 <div class="bg-white/60 p-2 rounded-lg">
-                                    <span class="text-[10px] text-emerald-800 font-bold uppercase block">RG / Órgão:</span>
+                                    <span class="text-[10px] text-emerald-800 font-bold uppercase block">RG:</span>
                                     <p class="font-mono font-bold text-slate-800" id="det-portaria-resp-rg">--</p>
                                 </div>
                                 <div class="bg-white/60 p-2 rounded-lg">
@@ -390,147 +362,95 @@
                                 </div>
                             </div>
                             <div class="pt-1">
-                                <span class="text-[10px] text-emerald-800 font-bold uppercase block">Parentesco / Vínculo Autorizado:</span>
+                                <span class="text-[10px] text-emerald-800 font-bold uppercase block">Vínculo:</span>
                                 <p class="font-bold text-marinho" id="det-portaria-resp-vinculo">--</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Bloco 3: Auditoria da Portaria e Observações -->
                 <div class="bg-white p-4 rounded-xl border border-slate-200 text-xs space-y-2">
-                    <div class="flex justify-between items-center">
-                        <span class="font-bold text-slate-500 uppercase text-[10px]">👮 Agente de Portaria Responsável:</span>
-                        <span class="font-bold text-slate-800" id="det-portaria-porteiro">--</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="font-bold text-slate-500 uppercase text-[10px]">🔐 Protocolo de Segurança:</span>
-                        <span class="font-mono text-slate-600" id="det-portaria-protocolo">--</span>
-                    </div>
+                    <div class="flex justify-between items-center"><span class="font-bold text-slate-500 uppercase text-[10px]">Agente:</span><span class="font-bold text-slate-800" id="det-portaria-porteiro">--</span></div>
+                    <div class="flex justify-between items-center"><span class="font-bold text-slate-500 uppercase text-[10px]">Protocolo:</span><span class="font-mono text-slate-600" id="det-portaria-protocolo">--</span></div>
                     <div class="pt-2 border-t border-slate-100">
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Observação Interna da Secretaria/Portaria:</label>
-                        <input type="text" id="det-portaria-obs-input" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Adicionar observação ao registro...">
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Observação da Portaria:</label>
+                        <input type="text" id="det-portaria-obs-input" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                 </div>
-
             </div>
 
-            <!-- Rodapé de Ações do Modal da Portaria -->
-            <div class="p-4 border-t border-slate-200 bg-white flex flex-col sm:flex-row justify-between items-center gap-2 shrink-0">
-                <button type="button" onclick="window.print()" class="w-full sm:w-auto px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition">
-                    🖨️ Imprimir Comprovante
-                </button>
-                <div class="flex gap-2 w-full sm:w-auto">
-                    <button type="button" onclick="fecharModalDetalhesPortaria()" class="flex-1 sm:flex-none px-4 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-xl text-xs transition">
-                        Fechar
-                    </button>
-                    <button type="button" id="btn-modal-confirmar-saida" onclick="confirmarSaidaEstudante(); fecharModalDetalhesPortaria();" class="flex-1 sm:flex-none px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-xs shadow-md transition">
-                        ✅ Autorizar e Liberar Saída Agora
-                    </button>
-                </div>
+            <div class="p-4 border-t border-slate-200 bg-white flex justify-end gap-2 shrink-0">
+                <button type="button" onclick="fecharModalDetalhesPortaria()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-xl text-xs transition">Fechar</button>
+                <button type="button" id="btn-modal-confirmar-saida" onclick="confirmarSaidaEstudante(); fecharModalDetalhesPortaria();" class="px-5 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-xs shadow-md transition">✅ Autorizar e Liberar Saída</button>
             </div>
         </div>
     </div>
 
-    <!-- ========================================================================= -->
-    <!-- MODAL: FICHA CADASTRAL DO GESTOR -->
-    <!-- ========================================================================= -->
-    <div id="modalPerfil" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden flex justify-center items-center z-[140] p-4 overflow-y-auto">
-        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto max-h-[95vh]">
-            <div class="p-5 sm:p-6 border-b border-slate-100 bg-marinho text-white flex justify-between items-center sticky top-0 z-10">
-                <div>
-                    <h3 class="font-bold text-lg sm:text-xl font-heading flex items-center gap-2">👤 Ficha Cadastral do Gestor</h3>
-                    <p class="text-blue-200 text-xs mt-0.5">Informações completas do administrador da unidade.</p>
-                </div>
-                <button type="button" onclick="fecharModalPerfil()" class="text-white hover:text-red-300 font-bold text-3xl leading-none transition">&times;</button>
+    <!-- MODAL PERFIL DO GESTOR -->
+    <div id="modalPerfil" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[140] p-4 overflow-y-auto">
+        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto max-h-[95vh]">
+            <div class="p-5 bg-marinho text-white flex justify-between items-center">
+                <h3 class="font-bold text-base font-heading">👤 Ficha Cadastral do Gestor</h3>
+                <button type="button" onclick="fecharModalPerfil()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
             </div>
-            
-            <div class="p-5 sm:p-8 overflow-y-auto bg-slate-50/50 space-y-6">
+            <div class="p-6 space-y-4">
                 <div>
-                    <h4 class="text-xs font-bold text-marinho uppercase tracking-wider mb-3 border-b border-slate-200 pb-1.5">1. Dados Pessoais e Contato</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Nome Completo</label>
-                            <input type="text" id="inputNomeGestor" value="Abraão Lucas" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm font-bold text-slate-800">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Cargo</label>
-                            <input type="text" value="Diretor / Gestor Master" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm bg-slate-100 font-semibold" readonly>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">E-mail Principal</label>
-                            <input type="email" id="inputEmailGestor" value="abraao@peniel.com" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm font-mono">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">WhatsApp</label>
-                            <input type="text" id="inputTelGestor" value="(21) 99999-9999" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Unidade Base</label>
-                            <input type="text" value="Peniel • Matriz RJ" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm">
-                        </div>
-                    </div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Nome Completo</label>
+                    <input type="text" id="inputNomeGestor" value="Abraão Lucas" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-bold">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">E-mail</label>
+                    <input type="email" id="inputEmailGestor" value="abraao@peniel.com" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-mono">
                 </div>
             </div>
-            
-            <div class="p-4 border-t border-slate-200 bg-white flex justify-end gap-3">
-                <button type="button" onclick="fecharModalPerfil()" class="px-5 py-2.5 text-slate-600 font-bold hover:bg-slate-100 rounded-xl text-xs transition">Fechar</button>
-                <button type="button" onclick="salvarPerfilGestor()" class="bg-marinho hover:bg-blue-900 text-white px-6 py-2.5 rounded-xl font-bold text-xs shadow-sm transition">💾 Salvar Ficha</button>
+            <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2">
+                <button type="button" onclick="fecharModalPerfil()" class="px-4 py-2 bg-white border border-slate-300 text-slate-600 font-bold rounded-xl text-xs">Cancelar</button>
+                <button type="button" onclick="salvarPerfilGestor()" class="bg-marinho text-white px-5 py-2 rounded-xl font-bold text-xs shadow-sm">Salvar</button>
             </div>
         </div>
     </div>
 
-    <!-- ========================================================================= -->
-    <!-- MODAL: ESTATÍSTICAS DETALHADAS DA TURMA -->
-    <!-- ========================================================================= -->
-    <div id="modalEstatisticasTurma" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm hidden flex justify-center items-center z-[140] p-4">
-        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl flex flex-col overflow-hidden max-h-[95vh]">
+    <!-- MODAL RELATÓRIO DA TURMA -->
+    <div id="modalEstatisticasTurma" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm hidden flex justify-center items-center z-[140] p-4">
+        <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl flex flex-col overflow-hidden max-h-[95vh]">
             <div class="p-5 border-b border-slate-100 bg-marinho text-white flex justify-between items-center">
                 <div>
-                    <h3 class="font-bold text-lg font-heading">📊 Relatório Detalhado da Turma</h3>
-                    <p class="text-blue-200 text-xs sm:text-sm" id="tituloModalTurma">Turma Selecionada</p>
+                    <h3 class="font-bold text-base font-heading">📊 Relatório Detalhado da Turma</h3>
+                    <p class="text-blue-200 text-xs" id="tituloModalTurma">--</p>
                 </div>
                 <button type="button" onclick="fecharEstatisticasTurma()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
             </div>
             <div class="flex border-b border-slate-200 bg-slate-50 px-2 pt-2 overflow-x-auto hide-scrollbar">
-                <button type="button" onclick="mudarAbaTurma('diario')" id="aba-diario" class="px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-marinho text-marinho whitespace-nowrap">Diário (Hoje)</button>
-                <button type="button" onclick="mudarAbaTurma('mensal')" id="aba-mensal" class="px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap">Mensal</button>
-                <button type="button" onclick="mudarAbaTurma('trimestral')" id="aba-trimestral" class="px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap">Trimestral</button>
-                <button type="button" onclick="mudarAbaTurma('anual')" id="aba-anual" class="px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap">Anual (Meta 280 pts)</button>
+                <button type="button" onclick="mudarAbaTurma('diario')" id="aba-diario" class="px-4 py-2.5 text-xs font-bold border-b-2 border-marinho text-marinho whitespace-nowrap">Diário (Hoje)</button>
+                <button type="button" onclick="mudarAbaTurma('mensal')" id="aba-mensal" class="px-4 py-2.5 text-xs font-bold border-b-2 border-transparent text-slate-500 whitespace-nowrap">Mensal</button>
+                <button type="button" onclick="mudarAbaTurma('anual')" id="aba-anual" class="px-4 py-2.5 text-xs font-bold border-b-2 border-transparent text-slate-500 whitespace-nowrap">Anual (Meta 280 pts)</button>
             </div>
-            <div class="p-5 sm:p-6 overflow-y-auto bg-slate-50/50 flex-1">
-                <div id="conteudo-diario" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm border-l-4 border-l-blue-500"><p class="text-[11px] font-bold text-slate-500 uppercase">Frequência de Hoje</p><p class="text-2xl font-black text-slate-800">98% <span class="text-xs font-normal text-green-600">(28/29)</span></p></div>
-                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm border-l-4 border-l-orange-500"><p class="text-[11px] font-bold text-slate-500 uppercase">Conteúdo do Dia</p><p class="text-sm font-bold text-slate-800 mt-1">Ciclo da Água e Produção Textual</p></div>
-                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm border-l-4 border-l-green-500"><p class="text-[11px] font-bold text-slate-500 uppercase">Entrega de Tarefas</p><p class="text-2xl font-black text-slate-800">95%</p></div>
+            <div class="p-6 overflow-y-auto bg-slate-50/50 flex-1">
+                <div id="conteudo-diario" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm border-l-4 border-l-blue-500"><p class="text-[11px] font-bold text-slate-500 uppercase">Frequência</p><p class="text-2xl font-black text-slate-800">98%</p></div>
+                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm border-l-4 border-l-orange-500"><p class="text-[11px] font-bold text-slate-500 uppercase">Conteúdo</p><p class="text-sm font-bold text-slate-800 mt-1">Ciclo da Água</p></div>
+                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm border-l-4 border-l-green-500"><p class="text-[11px] font-bold text-slate-500 uppercase">Tarefas</p><p class="text-2xl font-black text-slate-800">95%</p></div>
                 </div>
-                <div id="conteudo-mensal" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Média Parcial</p><p class="text-2xl font-black text-marinho mt-1">8.2 <span class="text-xs font-normal text-green-600">(Meta ≥ 7.0)</span></p></div>
-                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Incentivo à Leitura</p><p class="text-2xl font-black text-blue-600 mt-1">3.4 livros</p></div>
+                <div id="conteudo-mensal" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Média Parcial</p><p class="text-2xl font-black text-marinho mt-1">8.2 (Meta ≥ 7.0)</p></div>
                     <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Inadimplência</p><p class="text-2xl font-black text-red-600 mt-1">2 Alunos</p></div>
                 </div>
-                <div id="conteudo-trimestral" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Acima da Média (≥ 7,0)</p><p class="text-2xl font-black text-green-600 mt-1">25 Alunos</p></div>
-                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Em Recuperação (< 7,0)</p><p class="text-2xl font-black text-orange-600 mt-1">4 Alunos</p></div>
-                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Alerta de Faltas (> 25%)</p><p class="text-2xl font-black text-red-600 mt-1">1 Aluno</p></div>
-                </div>
-                <div id="conteudo-anual" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Pontuação Acumulada Média</p><p class="text-2xl font-black text-marinho mt-1">235 / 280 pts</p></div>
+                <div id="conteudo-anual" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Média Acumulada</p><p class="text-2xl font-black text-marinho mt-1">235 / 280 pts</p></div>
                     <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Renovação 2027</p><p class="text-2xl font-black text-green-600 mt-1">78% Confirmados</p></div>
                 </div>
             </div>
             <div class="p-4 border-t border-slate-100 bg-white flex justify-end gap-2">
-                <a href="notas.html" class="bg-blue-50 hover:bg-blue-100 text-marinho border border-blue-200 px-4 py-2 rounded-xl font-bold text-xs transition">Ir ao Diário</a>
-                <button type="button" onclick="fecharEstatisticasTurma()" class="bg-slate-800 hover:bg-slate-900 text-white px-5 py-2 rounded-xl font-bold text-xs transition">Fechar</button>
+                <a href="notas.html" class="bg-blue-50 text-marinho border border-blue-200 px-4 py-2 rounded-xl font-bold text-xs">Ir ao Diário</a>
+                <button type="button" onclick="fecharEstatisticasTurma()" class="bg-slate-800 text-white px-5 py-2 rounded-xl font-bold text-xs">Fechar</button>
             </div>
         </div>
     </div>
 
     <!-- ========================================================================= -->
-    <!-- MOTOR JAVASCRIPT COMPLETO -->
+    <!-- MOTOR JAVASCRIPT -->
     <!-- ========================================================================= -->
     <script>
-        // 1. MENU MOBILE E CORES DE PALETA
         function toggleMenuMobile() {
             const menu = document.getElementById('menu-lateral');
             const overlay = document.getElementById('overlay-mobile');
@@ -548,6 +468,7 @@
             localStorage.setItem('peniel_cor_sessao', cor);
         }
 
+        // REDIRECIONA PARA A TELA DE LOGIN CORRETA
         function sairDoSistema() {
             if(confirm("Deseja encerrar sua sessão e voltar para a tela inicial de Login?")) {
                 localStorage.removeItem('peniel_modo_gestor');
@@ -556,7 +477,7 @@
             }
         }
 
-        // 2. BANCO DE DADOS DAS SALAS EM TEMPO REAL
+        // SALAS EM TEMPO REAL
         const salasEscola = [
             { id: 'sala1', turma: '3º Ano A (Fundamental)', turno: 'Manhã (08h às 12h)', sala: 'Sala 02', materia: 'Ciências', prof: 'Prof. Leandro', statusManual: null },
             { id: 'sala2', turma: '2º Ano B (Fundamental)', turno: 'Tarde (13h30 às 17h30)', sala: 'Sala 04', materia: 'Português', prof: 'Prof. Mariana', statusManual: null },
@@ -565,51 +486,11 @@
         ];
 
         const estilosStatusSala = {
-            'EM_AULA': {
-                borda: 'border-green-300 bg-green-50/50',
-                faixa: 'bg-green-500',
-                badge: 'bg-green-100 text-green-800 border border-green-300',
-                dot: 'bg-green-500 animate-ping',
-                texto: 'Em Aula Agora'
-            },
-            'INTERVALO': {
-                borda: 'border-amber-300 bg-amber-50/60',
-                faixa: 'bg-amber-500',
-                badge: 'bg-amber-100 text-amber-800 border border-amber-300',
-                dot: 'bg-amber-500 animate-pulse',
-                texto: '☕ Recreio / Intervalo'
-            },
-            'AGUARDANDO': {
-                borda: 'border-blue-200 bg-blue-50/40',
-                faixa: 'bg-blue-500',
-                badge: 'bg-blue-100 text-blue-800 border border-blue-200',
-                dot: 'bg-blue-500',
-                texto: '⏳ Aguardando Turno'
-            },
-            'ENCERRADO': {
-                borda: 'border-slate-200 bg-slate-100/70 opacity-80',
-                faixa: 'bg-slate-400',
-                badge: 'bg-slate-200 text-slate-700 border border-slate-300',
-                dot: 'bg-slate-500',
-                texto: '✅ Turno Encerrado'
-            }
+            'EM_AULA': { borda: 'border-green-300 bg-green-50/50', faixa: 'bg-green-500', badge: 'bg-green-100 text-green-800 border border-green-300', dot: 'bg-green-500 animate-ping', texto: 'Em Aula Agora' },
+            'INTERVALO': { borda: 'border-amber-300 bg-amber-50/60', faixa: 'bg-amber-500', badge: 'bg-amber-100 text-amber-800 border border-amber-300', dot: 'bg-amber-500 animate-pulse', texto: '☕ Recreio' },
+            'AGUARDANDO': { borda: 'border-blue-200 bg-blue-50/40', faixa: 'bg-blue-500', badge: 'bg-blue-100 text-blue-800 border border-blue-200', dot: 'bg-blue-500', texto: '⏳ Aguardando' },
+            'ENCERRADO': { borda: 'border-slate-200 bg-slate-100/70 opacity-80', faixa: 'bg-slate-400', badge: 'bg-slate-200 text-slate-700 border border-slate-300', dot: 'bg-slate-500', texto: '✅ Encerrado' }
         };
-
-        function obterBlocoHorarioAtual(modo, horaDecimal) {
-            if (modo === 'manha_aula') return '08:20 - 09:10 (2º Tempo Matutino)';
-            if (modo === 'manha_intervalo') return '09:50 - 10:15 (Recreio Matutino)';
-            if (modo === 'tarde_aula') return '14:20 - 15:10 (2º Tempo Vespertino)';
-            if (modo === 'encerrado') return '18:00 - Salas Higienizadas e Fechadas';
-
-            if (horaDecimal >= 7 && horaDecimal < 9.8) return 'Bloco Atual: 08:00 às 09:50';
-            if (horaDecimal >= 9.8 && horaDecimal < 10.25) return 'Recreio: 09:50 às 10:15';
-            if (horaDecimal >= 10.25 && horaDecimal < 12) return 'Bloco Atual: 10:15 às 12:00';
-            if (horaDecimal >= 12 && horaDecimal < 13.5) return 'Almoço / Troca: 12:00 às 13:30';
-            if (horaDecimal >= 13.5 && horaDecimal < 15.5) return 'Bloco Atual: 13:30 às 15:30';
-            if (horaDecimal >= 15.5 && horaDecimal < 15.8) return 'Recreio Tarde: 15:30 às 15:50';
-            if (horaDecimal >= 15.8 && horaDecimal <= 17.5) return 'Bloco Final: 15:50 às 17:30';
-            return 'Fora do Horário de Aulas (07h às 17h30)';
-        }
 
         function calcularStatusSala(salaObj, modo, horaDecimal) {
             if (salaObj.statusManual) return salaObj.statusManual;
@@ -618,7 +499,6 @@
             if (modo === 'tarde_aula') return salaObj.id === 'sala1' ? 'ENCERRADO' : 'EM_AULA';
             if (modo === 'encerrado') return 'ENCERRADO';
 
-            // Cálculo automático pela hora real do relógio
             if (horaDecimal < 7 || horaDecimal > 17.5) return 'ENCERRADO';
             if ((horaDecimal >= 9.8 && horaDecimal <= 10.25) || (horaDecimal >= 15.5 && horaDecimal <= 15.8)) return 'INTERVALO';
             if (salaObj.id === 'sala1') return horaDecimal <= 12 ? 'EM_AULA' : 'ENCERRADO';
@@ -641,12 +521,11 @@
             const horaCurta = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
             
             document.getElementById('relogio-tempo-real').innerText = horaStr;
-            const relMobile = document.getElementById('relogio-mobile');
-            if (relMobile) relMobile.innerText = horaCurta;
+            const relMob = document.getElementById('relogio-mobile');
+            if (relMob) relMob.innerText = horaCurta;
 
             const horaDecimal = agora.getHours() + (agora.getMinutes() / 60);
             const modo = document.getElementById('seletorModoHorario').value;
-            const textoBloco = obterBlocoHorarioAtual(modo, horaDecimal);
 
             const grid = document.getElementById('grid-salas-tempo-real');
             grid.innerHTML = '';
@@ -663,7 +542,7 @@
                     <div class="absolute top-0 left-0 w-1.5 h-full ${cfg.faixa}"></div>
                     <div>
                         <div class="flex justify-between items-start gap-2 mb-2">
-                            <button type="button" onclick="alternarStatusManualSala(${idx})" title="Clique para mudar o status manualmente" class="${cfg.badge} text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 cursor-pointer hover:opacity-80 transition">
+                            <button type="button" onclick="alternarStatusManualSala(${idx})" title="Clique para alternar status" class="${cfg.badge} text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 cursor-pointer hover:opacity-80 transition">
                                 <span class="w-2 h-2 rounded-full ${cfg.dot}"></span>
                                 ${cfg.texto} ↻
                             </button>
@@ -673,7 +552,6 @@
                         <p class="text-xs font-semibold text-marinho mt-0.5">📘 ${s.materia} • ${s.prof}</p>
                         <div class="mt-3 bg-white/80 border border-slate-200/80 rounded-xl p-2 text-[11px] text-slate-600 space-y-0.5">
                             <p class="font-bold text-slate-700">🕒 ${s.turno}</p>
-                            <p class="text-[10px] text-slate-500 font-mono">${textoBloco}</p>
                         </div>
                     </div>
                     <button type="button" onclick="abrirEstatisticasTurma('${s.turma}')" class="mt-3 w-full bg-white hover:bg-marinho hover:text-white border border-slate-200 text-marinho text-xs font-bold py-2 rounded-xl transition shadow-sm">
@@ -683,18 +561,14 @@
                 grid.appendChild(card);
             });
 
-            const badgeSalas = document.getElementById('badge-contagem-salas');
-            badgeSalas.innerText = `${ativasCount} de 4 Salas em Atividade`;
-            badgeSalas.className = ativasCount > 0 
-                ? 'bg-green-100 text-green-800 px-2.5 py-0.5 rounded-full text-xs font-bold border border-green-200'
-                : 'bg-slate-200 text-slate-700 px-2.5 py-0.5 rounded-full text-xs font-bold border border-slate-300';
+            document.getElementById('badge-contagem-salas').innerText = `${ativasCount} de 4 Salas`;
         }
 
-        // 3. SISTEMA DE REUNIÕES INTERATIVAS (COM BOTÃO OK DE PRESENÇA)
+        // REUNIÕES COM BOTÃO OK
         let listaReunioes = JSON.parse(localStorage.getItem('peniel_reunioes_ok')) || [
             { id: 1, titulo: 'Atendimento Pais: Davi Lucas', horario: '14:30 • Coordenação', confirmada: false },
-            { id: 2, titulo: 'Conselho de Classe (3º Bimestre)', horario: '17:00 • Sala dos Professores', confirmada: true },
-            { id: 3, titulo: 'Alinhamento Interno: Portaria & Turnos', horario: '18:00 • Diretoria', confirmada: false }
+            { id: 2, titulo: 'Conselho de Classe (3º Bimestre)', horario: '17:00 • Sala Professores', confirmada: true },
+            { id: 3, titulo: 'Alinhamento: Portaria & Turnos', horario: '18:00 • Diretoria', confirmada: false }
         ];
 
         function renderizarReunioes() {
@@ -706,27 +580,26 @@
                 if (r.confirmada) confirmadas++;
                 const li = document.createElement('li');
                 li.className = r.confirmada
-                    ? 'p-3 rounded-xl border border-green-200 bg-green-50/70 flex justify-between items-center gap-2 transition-all'
-                    : 'p-3 rounded-xl border border-slate-200 bg-slate-50/70 flex justify-between items-center gap-2 transition-all';
+                    ? 'p-3 rounded-xl border border-green-200 bg-green-50/70 flex justify-between items-center gap-2'
+                    : 'p-3 rounded-xl border border-slate-200 bg-slate-50/70 flex justify-between items-center gap-2';
 
                 li.innerHTML = `
                     <div class="min-w-0 flex-1">
                         <p class="text-xs font-bold ${r.confirmada ? 'text-green-900 line-through' : 'text-slate-800'} truncate">${r.titulo}</p>
                         <p class="text-[11px] ${r.confirmada ? 'text-green-700 font-semibold' : 'text-slate-500'}">${r.horario}</p>
                     </div>
-                    <button type="button" onclick="alternarOkReuniao(${idx})" class="${r.confirmada ? 'bg-green-600 text-white' : 'bg-white border border-slate-300 text-slate-700 hover:bg-blue-50 hover:border-blue-300'} px-3 py-1.5 rounded-xl text-[11px] font-bold shadow-sm transition shrink-0">
+                    <button type="button" onclick="alternarOkReuniao(${idx})" class="${r.confirmada ? 'bg-green-600 text-white' : 'bg-white border border-slate-300 text-slate-700 hover:bg-blue-50'} px-3 py-1.5 rounded-xl text-[11px] font-bold shadow-sm transition shrink-0">
                         ${r.confirmada ? '✓ Presença OK' : 'Confirmar OK'}
                     </button>
                 `;
                 ul.appendChild(li);
             });
-
             document.getElementById('badge-reunioes-status').innerText = `${confirmadas}/${listaReunioes.length} OK`;
             localStorage.setItem('peniel_reunioes_ok', JSON.stringify(listaReunioes));
         }
 
-        function alternarOkReuniao(index) {
-            listaReunioes[index].confirmada = !listaReunioes[index].confirmada;
+        function alternarOkReuniao(idx) {
+            listaReunioes[idx].confirmada = !listaReunioes[idx].confirmada;
             renderizarReunioes();
         }
 
@@ -734,131 +607,77 @@
             const input = document.getElementById('inputNovaReuniao');
             const texto = input.value.trim();
             if (!texto) return;
-            const horaAgora = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-            listaReunioes.push({ id: Date.now(), titulo: texto, horario: `Criado às ${horaAgora} • Interno`, confirmada: false });
+            listaReunioes.push({ id: Date.now(), titulo: texto, horario: 'Incluído hoje • Interno', confirmada: false });
             input.value = '';
             renderizarReunioes();
         }
 
-        // 4. CENTRAL DE LIBERAÇÕES E PORTARIA (DETALHES COMPLETOS NOS 2 CARDS)
+        // PORTARIA E CARDS
         let dadosPortaria = {
             isabela: {
-                chave: 'isabela',
-                aluno: 'Isabela Mendes',
-                turma: '2º Ano B - Vespertino (Sala 04)',
-                status: 'PENDENTE',
-                horario: 'Hoje às 15:40 (Aguardando na Portaria)',
-                motivo: 'Consulta odontológica agendada pela família (Saída antecipada).',
-                origemAutorizacao: 'App dos Pais Peniel (Token #88492 assinado por Mariana Mendes)',
-                respNome: 'Roberto Souza',
-                respVinculo: 'Tio Materno (Cadastrado na Ficha de Autorizados)',
-                respRg: '12.345.678-9 DETRAN/RJ',
-                respCpf: '111.222.333-44',
-                avatar: '🧑🏽‍💼',
-                porteiro: 'Carlos Eduardo (Portaria Principal)',
-                protocolo: 'PRT-2026-9941A',
-                observacao: 'Responsável apresentou documento original com foto na guarita.'
+                aluno: 'Isabela Mendes', turma: '2º Ano B - Vespertino (Sala 04)', status: 'PENDENTE',
+                horario: 'Hoje às 15:40 (Aguardando na Portaria)', motivo: 'Consulta odontológica agendada pela família.',
+                origemAutorizacao: 'App dos Pais Peniel (Token #88492 assinado por Mariana)',
+                respNome: 'Roberto Souza', respVinculo: 'Tio Materno (Autorizado)', respRg: '12.345.678-9', respCpf: '111.222.333-44', avatar: '🧑🏽‍💼',
+                porteiro: 'Carlos Eduardo', protocolo: 'PRT-2026-9941A', observacao: 'Documento original verificado.'
             },
             davi: {
-                chave: 'davi',
-                aluno: 'Davi Lucas',
-                turma: '3º Ano A - Matutino (Sala 02)',
-                status: 'LIBERADO',
-                horario: 'Hoje às 11:30 (Saída Mais Cedo Confirmada)',
-                motivo: 'Retirada 30 min mais cedo para exame médico de rotina.',
-                origemAutorizacao: 'Solicitação via Secretaria / WhatsApp Oficial validado pelo Pai (Carlos Lucas)',
-                respNome: 'Maria Silva',
-                respVinculo: 'Avó Materna (Autorizada Permanente no Prontuário)',
-                respRg: '08.999.888-2 DETRAN/RJ',
-                respCpf: '555.444.333-22',
-                avatar: '👵🏻',
-                porteiro: 'Carlos Eduardo (Portaria Principal)',
-                protocolo: 'PRT-2026-9918B',
-                observacao: 'Aluno entregue à avó com mochila e caderno de comunicados assinado.'
+                aluno: 'Davi Lucas', turma: '3º Ano A - Matutino (Sala 02)', status: 'LIBERADO',
+                horario: 'Hoje às 11:30 (Saída Mais Cedo)', motivo: 'Exame médico de rotina.',
+                origemAutorizacao: 'Solicitação via Secretaria / WhatsApp do Pai',
+                respNome: 'Maria Silva', respVinculo: 'Avó Materna (Autorizada)', respRg: '08.999.888-2', respCpf: '555.444.333-22', avatar: '👵🏻',
+                porteiro: 'Carlos Eduardo', protocolo: 'PRT-2026-9918B', observacao: 'Aluno entregue à avó.'
             }
         };
 
         let chavePortariaAberta = null;
 
         function renderizarCardsPortaria() {
-            const cardIsa = document.getElementById('card-portaria-isabela');
+            const cardIsa = document.getElementById('container-cards-portaria');
             const isa = dadosPortaria.isabela;
-
-            if (isa.status === 'PENDENTE') {
-                cardIsa.className = "border-2 border-red-500 bg-red-50/95 rounded-2xl p-4 shadow-md transition-all duration-300 flex flex-col justify-between";
-                cardIsa.innerHTML = `
-                    <div onclick="abrirModalDetalhesPortaria('isabela')" class="cursor-pointer group">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-[11px] font-bold bg-red-600 text-white px-2.5 py-1 rounded-lg animate-pulse shadow-sm">🚨 Aguardando Liberação</span>
-                            <span class="text-xs text-red-600 font-bold group-hover:underline">Ver Detalhes &rarr;</span>
-                        </div>
-                        <h4 class="font-extrabold text-base text-slate-900">${isa.aluno}</h4>
-                        <p class="text-xs text-slate-600 mb-3">${isa.turma}</p>
-                        
-                        <div class="bg-white p-3 rounded-xl border border-red-200 mb-3 shadow-sm space-y-1">
-                            <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">Quem veio buscar:</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-xs sm:text-sm font-bold text-slate-900">${isa.respNome} (Tio)</span>
-                                <span class="text-[10px] bg-green-100 text-green-800 font-bold px-2 py-0.5 rounded border border-green-200">✓ RG OK</span>
-                            </div>
-                            <p class="text-[11px] text-amber-800 font-medium pt-1 border-t border-slate-100">📋 ${isa.motivo}</p>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2 pt-1">
-                        <button type="button" onclick="confirmarSaidaEstudante()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2.5 px-2 rounded-xl shadow-sm transition">
-                            ✅ Autorizar Saída
-                        </button>
-                        <button type="button" onclick="abrirModalDetalhesPortaria('isabela')" class="bg-white border border-red-300 text-red-700 hover:bg-red-100 text-xs font-bold py-2.5 px-2 rounded-xl transition shadow-sm">
-                            🔍 Ver Detalhes / RG
-                        </button>
-                    </div>
-                `;
-            } else {
-                cardIsa.className = "border border-green-300 bg-green-50/60 rounded-2xl p-4 shadow-sm transition-all duration-300 flex flex-col justify-between";
-                cardIsa.innerHTML = `
-                    <div onclick="abrirModalDetalhesPortaria('isabela')" class="cursor-pointer group">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-[11px] font-bold bg-green-600 text-white px-2.5 py-1 rounded-lg">✅ Saída Liberada</span>
-                            <span class="text-xs text-green-700 font-bold group-hover:underline">Ver Ficha &rarr;</span>
-                        </div>
-                        <h4 class="font-extrabold text-base text-slate-900">${isa.aluno}</h4>
-                        <p class="text-xs text-slate-600 mb-3">${isa.turma}</p>
-                        <div class="bg-white p-3 rounded-xl border border-green-200 mb-3 space-y-1">
-                            <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">Retirada confirmada com:</p>
-                            <p class="text-xs sm:text-sm font-bold text-slate-900">${isa.respNome} (Tio)</p>
-                            <p class="text-[11px] text-slate-500">🕒 ${isa.horario}</p>
-                        </div>
-                    </div>
-                    <button type="button" onclick="abrirModalDetalhesPortaria('isabela')" class="w-full bg-white hover:bg-green-100 text-green-800 border border-green-300 text-xs font-bold py-2.5 rounded-xl transition shadow-sm">
-                        📋 Ver Detalhes da Liberação
-                    </button>
-                `;
-            }
-
-            // Renderiza Card 2: Davi Lucas (Saída Mais Cedo)
-            const cardDavi = document.getElementById('card-portaria-davi');
             const davi = dadosPortaria.davi;
-            cardDavi.innerHTML = `
-                <div onclick="abrirModalDetalhesPortaria('davi')" class="cursor-pointer group">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-[11px] font-bold bg-blue-100 text-marinho px-2.5 py-1 rounded-lg border border-blue-200">🕒 Saiu Mais Cedo (11:30)</span>
-                        <span class="text-xs text-blue-600 font-bold group-hover:underline">Ver Detalhes &rarr;</span>
-                    </div>
-                    <h4 class="font-extrabold text-base text-slate-900">${davi.aluno}</h4>
-                    <p class="text-xs text-slate-600 mb-3">${davi.turma}</p>
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 mb-3 space-y-1">
-                        <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">Saiu acompanhado de:</p>
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs sm:text-sm font-bold text-slate-900">${davi.respNome} (Avó)</span>
-                            <span class="text-[10px] bg-slate-200 text-slate-700 font-bold px-2 py-0.5 rounded">Protocolo OK</span>
+
+            cardIsa.innerHTML = `
+                <div class="border-2 ${isa.status === 'PENDENTE' ? 'border-red-500 bg-red-50/95' : 'border-green-300 bg-green-50/60'} rounded-2xl p-4 shadow-md flex flex-col justify-between">
+                    <div onclick="abrirModalDetalhesPortaria('isabela')" class="cursor-pointer group">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-[11px] font-bold ${isa.status === 'PENDENTE' ? 'bg-red-600 text-white animate-pulse' : 'bg-green-600 text-white'} px-2.5 py-1 rounded-lg">
+                                ${isa.status === 'PENDENTE' ? '🚨 Aguardando Liberação' : '✅ Saída Liberada'}
+                            </span>
+                            <span class="text-xs font-bold text-blue-600 group-hover:underline">Detalhes &rarr;</span>
                         </div>
-                        <p class="text-[11px] text-slate-600 pt-1 border-t border-slate-200/70">📋 ${davi.motivo}</p>
+                        <h4 class="font-extrabold text-base text-slate-900">${isa.aluno}</h4>
+                        <p class="text-xs text-slate-600 mb-3">${isa.turma}</p>
+                        <div class="bg-white p-3 rounded-xl border mb-3 shadow-sm space-y-1">
+                            <p class="text-[10px] uppercase font-bold text-slate-400">Responsável:</p>
+                            <p class="text-xs sm:text-sm font-bold text-slate-900">${isa.respNome} (${isa.respVinculo})</p>
+                            <p class="text-[11px] text-amber-800 font-medium">📋 ${isa.motivo}</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        ${isa.status === 'PENDENTE' ? `<button type="button" onclick="confirmarSaidaEstudante()" class="flex-1 bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2.5 rounded-xl shadow-sm transition">✅ Autorizar Saída</button>` : ''}
+                        <button type="button" onclick="abrirModalDetalhesPortaria('isabela')" class="flex-1 bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs font-bold py-2.5 rounded-xl transition shadow-sm">🔍 Ver Ficha & RG</button>
                     </div>
                 </div>
-                <button type="button" onclick="abrirModalDetalhesPortaria('davi')" class="w-full bg-marinho/10 hover:bg-marinho hover:text-white text-marinho border border-marinho/20 text-xs font-bold py-2.5 rounded-xl transition shadow-sm">
-                    🔍 Ver Detalhes da Saída Antecipada
-                </button>
+
+                <div class="border border-slate-200 bg-white rounded-2xl p-4 shadow-sm flex flex-col justify-between hover:border-blue-300 transition">
+                    <div onclick="abrirModalDetalhesPortaria('davi')" class="cursor-pointer group">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-[11px] font-bold bg-blue-100 text-marinho px-2.5 py-1 rounded-lg border border-blue-200">🕒 Saiu Mais Cedo (11:30)</span>
+                            <span class="text-xs font-bold text-blue-600 group-hover:underline">Detalhes &rarr;</span>
+                        </div>
+                        <h4 class="font-extrabold text-base text-slate-900">${davi.aluno}</h4>
+                        <p class="text-xs text-slate-600 mb-3">${davi.turma}</p>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 mb-3 space-y-1">
+                            <p class="text-[10px] uppercase font-bold text-slate-400">Acompanhante:</p>
+                            <p class="text-xs sm:text-sm font-bold text-slate-900">${davi.respNome} (${davi.respVinculo})</p>
+                            <p class="text-[11px] text-slate-600">📋 ${davi.motivo}</p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="abrirModalDetalhesPortaria('davi')" class="w-full bg-marinho/10 hover:bg-marinho hover:text-white text-marinho border border-marinho/20 text-xs font-bold py-2.5 rounded-xl transition shadow-sm">
+                        🔍 Ver Detalhes da Saída
+                    </button>
+                </div>
             `;
         }
 
@@ -866,23 +685,6 @@
             const info = dadosPortaria[chave];
             if (!info) return;
             chavePortariaAberta = chave;
-
-            const header = document.getElementById('header-modal-portaria');
-            const badge = document.getElementById('badge-modal-portaria');
-            const icone = document.getElementById('icone-modal-portaria');
-            const btnConfirmar = document.getElementById('btn-modal-confirmar-saida');
-
-            if (info.status === 'PENDENTE') {
-                header.className = "p-5 bg-red-600 text-white flex justify-between items-start gap-3";
-                badge.innerText = "🚨 Pendente na Portaria";
-                icone.innerText = "🚨";
-                btnConfirmar.classList.remove('hidden');
-            } else {
-                header.className = "p-5 bg-marinho text-white flex justify-between items-start gap-3";
-                badge.innerText = "✅ Saída Registrada e Auditada";
-                icone.innerText = "🛂";
-                btnConfirmar.classList.add('hidden');
-            }
 
             document.getElementById('det-portaria-aluno').innerText = info.aluno;
             document.getElementById('det-portaria-turma').innerText = info.turma;
@@ -893,10 +695,14 @@
             document.getElementById('det-portaria-resp-vinculo').innerText = info.respVinculo;
             document.getElementById('det-portaria-resp-rg').innerText = info.respRg;
             document.getElementById('det-portaria-resp-cpf').innerText = info.respCpf;
-            document.getElementById('det-portaria-avatar').innerHTML = `${info.avatar}<span class="text-[9px] font-bold text-slate-400 mt-1">FOTO 3x4</span>`;
+            document.getElementById('det-portaria-avatar').innerHTML = `${info.avatar}`;
             document.getElementById('det-portaria-porteiro').innerText = info.porteiro;
             document.getElementById('det-portaria-protocolo').innerText = info.protocolo;
             document.getElementById('det-portaria-obs-input').value = info.observacao;
+
+            const btnConfirmar = document.getElementById('btn-modal-confirmar-saida');
+            if (info.status === 'PENDENTE') btnConfirmar.classList.remove('hidden');
+            else btnConfirmar.classList.add('hidden');
 
             document.getElementById('modalDetalhesPortaria').classList.remove('hidden');
         }
@@ -909,24 +715,18 @@
         }
 
         function confirmarSaidaEstudante() {
-            const horaConfirmacao = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
             dadosPortaria.isabela.status = 'LIBERADO';
-            dadosPortaria.isabela.horario = `Liberada hoje às ${horaConfirmacao}`;
+            dadosPortaria.isabela.horario = `Liberada agora às ${new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}`;
             document.getElementById('alerta-visual').classList.add('hidden');
             renderizarCardsPortaria();
-            alert('✅ Saída de Isabela Mendes autorizada e registrada com sucesso na portaria!');
+            alert('✅ Saída de Isabela Mendes autorizada e registrada na portaria com sucesso!');
         }
 
         function verificarLiberacaoPendentes() {
             document.getElementById('alerta-visual').classList.add('hidden');
-            const central = document.getElementById('central-liberacoes');
-            const cardIsa = document.getElementById('card-portaria-isabela');
-            central.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            setTimeout(() => { cardIsa.classList.add('ring-4', 'ring-red-400'); }, 300);
-            setTimeout(() => { cardIsa.classList.remove('ring-4', 'ring-red-400'); }, 2200);
+            document.getElementById('central-liberacoes').scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
-        // 5. DEMAIS FUNÇÕES DO DASHBOARD
         function mudarUnidade() {
             const u = document.getElementById('seletorUnidade').value;
             localStorage.setItem('peniel_unidade', u);
@@ -938,7 +738,6 @@
 
         function abrirModalPerfil() { document.getElementById('modalPerfil').classList.remove('hidden'); }
         function fecharModalPerfil() { document.getElementById('modalPerfil').classList.add('hidden'); }
-        
         function salvarPerfilGestor() {
             const n = document.getElementById('inputNomeGestor').value.trim();
             if(!n) return;
@@ -946,43 +745,34 @@
             document.getElementById('saudacao-gestor').innerText = `Olá, ${n}`;
             document.getElementById('nomeGestorBtn').innerText = n;
             fecharModalPerfil();
+            alert('✅ Perfil atualizado!');
         }
-
         function salvarAnotacao() {
             localStorage.setItem('anotacaoSecretaria', document.getElementById('campo-anotacao').value);
-            alert('📌 Nota salva no navegador!');
+            alert('📌 Nota salva!');
         }
-
         function ativarSistemaSonoro() {
             document.getElementById('btn-ativar-som').classList.add('hidden');
             document.getElementById('som-alerta').play().catch(() => {});
-            alert("🔊 Alertas sonoros da portaria ativados!");
+            alert("🔊 Alertas ativados!");
         }
-
-        function abrirEstatisticasTurma(nomeTurma) {
-            document.getElementById('tituloModalTurma').innerText = nomeTurma;
+        function abrirEstatisticasTurma(nome) {
+            document.getElementById('tituloModalTurma').innerText = nome;
             document.getElementById('modalEstatisticasTurma').classList.remove('hidden');
             mudarAbaTurma('diario');
         }
         function fecharEstatisticasTurma() { document.getElementById('modalEstatisticasTurma').classList.add('hidden'); }
-        
         function mudarAbaTurma(aba) {
-            ['diario', 'mensal', 'trimestral', 'anual'].forEach(a => {
+            ['diario', 'mensal', 'anual'].forEach(a => {
                 document.getElementById(`conteudo-${a}`).classList.add('hidden');
-                const btn = document.getElementById(`aba-${a}`);
-                btn.classList.remove('border-marinho', 'text-marinho');
-                btn.classList.add('border-transparent', 'text-slate-500');
+                document.getElementById(`aba-${a}`).className = 'px-4 py-2.5 text-xs font-bold border-b-2 border-transparent text-slate-500 whitespace-nowrap';
             });
             document.getElementById(`conteudo-${aba}`).classList.remove('hidden');
-            const btnAtivo = document.getElementById(`aba-${aba}`);
-            btnAtivo.classList.remove('border-transparent', 'text-slate-500');
-            btnAtivo.classList.add('border-marinho', 'text-marinho');
+            document.getElementById(`aba-${aba}`).className = 'px-4 py-2.5 text-xs font-bold border-b-2 border-marinho text-marinho whitespace-nowrap';
         }
 
-        // INICIALIZAÇÃO GERAL
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('data-topo').innerText = new Date().toLocaleDateString('pt-BR');
-
             const corSalva = localStorage.getItem('peniel_cor_sessao') || '#003057';
             mudarCorSessao(corSalva);
 
@@ -997,28 +787,23 @@
                 document.getElementById('campo-anotacao').value = localStorage.getItem('anotacaoSecretaria'); 
             }
 
-            // Inicia Relógio e Salas em Tempo Real
             atualizarSalasTempoReal();
             setInterval(atualizarSalasTempoReal, 1000);
-
-            // Inicia Reuniões e Portaria
             renderizarReunioes();
             renderizarCardsPortaria();
 
-            // Gráficos Chart.js
-            const chartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } } };
+            const chartOpts = { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, font: { size: 9 } } } } };
             new Chart(document.getElementById('graficoFrequencia').getContext('2d'), {
                 type: 'doughnut',
-                data: { labels: ['Presentes', 'Faltas', 'Atestados'], datasets: [{ data: [342, 6, 2], backgroundColor: ['#10B981', '#EF4444', '#F59E0B'], borderWidth: 0 }] },
-                options: { ...chartOptions, cutout: '65%' }
+                data: { labels: ['Presentes', 'Faltas', 'Atestado'], datasets: [{ data: [342, 6, 2], backgroundColor: ['#10B981', '#EF4444', '#F59E0B'], borderWidth: 0 }] },
+                options: { ...chartOpts, cutout: '65%' }
             });
             new Chart(document.getElementById('graficoFinanceiro').getContext('2d'), {
                 type: 'pie',
-                data: { labels: ['Pago', 'Atraso', 'Acordos'], datasets: [{ data: [85, 12, 3], backgroundColor: ['#3B82F6', '#EF4444', '#8B5CF6'], borderWidth: 0 }] },
-                options: chartOptions
+                data: { labels: ['Pago', 'Atraso', 'Acordo'], datasets: [{ data: [85, 12, 3], backgroundColor: ['#3B82F6', '#EF4444', '#8B5CF6'], borderWidth: 0 }] },
+                options: chartOpts
             });
 
-            // Mostra alerta da portaria após 2.5 segundos
             setTimeout(() => {
                 if (dadosPortaria.isabela.status === 'PENDENTE') {
                     document.getElementById('alerta-visual').classList.remove('hidden');
