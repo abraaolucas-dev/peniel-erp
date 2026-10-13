@@ -120,7 +120,7 @@
                             <th class="px-5 py-3.5">RA / Aluno</th>
                             <th class="px-5 py-3.5">Responsável</th>
                             <th class="px-5 py-3.5 text-center">Status</th>
-                            <th class="px-5 py-3.5 text-right" id="th-acao-turma">Ações Pedagógicas</th>
+                            <th class="px-5 py-3.5 text-right">Ações & Prontuário</th>
                         </tr>
                     </thead>
                     <tbody id="tabela-alunos-turma" class="divide-y divide-slate-100">
@@ -132,7 +132,7 @@
     </main>
 
     <!-- ========================================================================= -->
-    <!-- MODAL 1: AVALIAÇÃO DA EDUCAÇÃO INFANTIL (RELATÓRIO + FOTOS PARA OS PAIS) -->
+    <!-- MODAL 1: AVALIAÇÃO DA EDUCAÇÃO INFANTIL (RELATÓRIO + FOTOS) -->
     <!-- ========================================================================= -->
     <div id="modalAvaliacaoInfantil" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[130] p-3 sm:p-4 overflow-y-auto">
         <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto max-h-[95vh]">
@@ -145,18 +145,14 @@
             </div>
 
             <div class="p-6 overflow-y-auto bg-slate-50 space-y-5 flex-1">
-                
-                <!-- Bloco de Parecer Descritivo -->
                 <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
                     <div class="flex justify-between items-center">
                         <h4 class="font-bold text-slate-800 text-sm flex items-center gap-1.5">📝 Relatório Qualitativo de Desenvolvimento</h4>
                         <span class="text-[11px] text-slate-400">Visível no App dos Pais</span>
                     </div>
-                    <p class="text-xs text-slate-500">Descreva os avanços cognitivos, motores e sociais da criança neste trimestre.</p>
-                    <textarea id="texto-relatorio-infantil" rows="4" class="w-full border border-slate-200 rounded-xl p-3 text-xs focus:ring-2 focus:ring-marinho focus:outline-none" placeholder="Ex: A criança demonstra excelente interação nas brincadeiras coletivas, curiosidade nas atividades de coordenação motora fina..."></textarea>
+                    <textarea id="texto-relatorio-infantil" rows="4" class="w-full border border-slate-200 rounded-xl p-3 text-xs focus:ring-2 focus:ring-marinho focus:outline-none" placeholder="Descreva os avanços..."></textarea>
                 </div>
 
-                <!-- Bloco de Envio de Fotos em Aula para os Pais Acompanharem -->
                 <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
                     <div class="flex justify-between items-center">
                         <h4 class="font-bold text-slate-800 text-sm flex items-center gap-1.5">📸 Mural de Fotos em Aula (App dos Pais)</h4>
@@ -165,23 +161,51 @@
                             + Enviar Nova Foto
                         </button>
                     </div>
-                    <p class="text-xs text-slate-500">Envie registros fotográficos das atividades lúdicas e pedagógicas do dia.</p>
-                    
-                    <div id="mural-fotos-container" class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-                        <!-- Fotos inseridas dinamicamente -->
-                    </div>
+                    <div id="mural-fotos-container" class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2"></div>
                 </div>
-
             </div>
 
             <div class="p-4 border-t border-slate-200 bg-white flex justify-end gap-2 shrink-0">
                 <button type="button" onclick="fecharModalAvaliacaoInfantil()" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs">Cancelar</button>
-                <button type="button" onclick="salvarAvaliacaoInfantil()" class="px-5 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-xs shadow-md transition">✅ Salvar e Publicar no App</button>
+                <button type="button" onclick="salvarAvaliacaoInfantil()" class="px-5 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-xs shadow-md transition">✅ Salvar e Publicar</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL 2: NOVA MATRÍCULA -->
+    <!-- ========================================================================= -->
+    <!-- MODAL 2: EDITAR INFORMAÇÕES DO ALUNO -->
+    <!-- ========================================================================= -->
+    <div id="modalEditarAluno" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[130] p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto">
+            <div class="p-5 bg-marinho text-white flex justify-between items-center">
+                <h3 class="font-bold text-base font-heading">✏️ Editar Dados do Aluno</h3>
+                <button type="button" onclick="fecharModalEditarAluno()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
+            </div>
+            <div class="p-6 space-y-4 text-xs">
+                <input type="hidden" id="editAlunoRa">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Nome Completo do Aluno</label>
+                    <input type="text" id="editAlunoNome" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Nome do Responsável</label>
+                    <input type="text" id="editAlunoResp" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Telefone / WhatsApp</label>
+                    <input type="text" id="editAlunoTel" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono">
+                </div>
+            </div>
+            <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2">
+                <button type="button" onclick="fecharModalEditarAluno()" class="px-4 py-2 bg-white border border-slate-300 text-slate-600 font-bold rounded-xl text-xs">Cancelar</button>
+                <button type="button" onclick="salvarEdicaoAluno()" class="bg-marinho text-white px-5 py-2 rounded-xl font-bold text-xs shadow-sm">💾 Salvar Alterações</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- MODAL 3: NOVA MATRÍCULA -->
+    <!-- ========================================================================= -->
     <div id="modalNovaMatricula" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[130] p-3 sm:p-4 overflow-y-auto">
         <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto">
             <div class="p-5 bg-marinho text-white flex justify-between items-center">
@@ -235,17 +259,17 @@
         // BANCO DE DADOS DE ALUNOS POR TURMA
         let bancoTurmas = JSON.parse(localStorage.getItem('peniel_banco_matriculas')) || {
             maternal1: [
-                { ra: '2027501', nome: 'Helena Santos', resp: 'Camila Santos (Mãe)', tel: '(21) 98888-1111', status: 'Ativo', relatorio: 'Demonstra excelente adaptação e carinho nas atividades com massinha.', fotos: ['🎨 Pintura com Guache', '🧸 Hora do Conto'] },
-                { ra: '2027502', nome: 'Noah Oliveira', resp: 'Bruno Oliveira (Pai)', tel: '(21) 97777-2222', status: 'Ativo', relatorio: 'Participativo nas rodas de música e interação com os colegas.', fotos: ['🎵 Roda Musical'] }
+                { ra: '2027501', nome: 'Helena Santos', resp: 'Camila Santos (Mãe)', tel: '(21) 98888-1111', status: 'Ativo', relatorio: 'Demonstra excelente adaptação nas atividades com massinha.', fotos: ['🎨 Pintura com Guache', '🧸 Hora do Conto'] },
+                { ra: '2027502', nome: 'Noah Oliveira', resp: 'Bruno Oliveira (Pai)', tel: '(21) 97777-2222', status: 'Ativo', relatorio: 'Participativo nas rodas de música.', fotos: ['🎵 Roda Musical'] }
             ],
             maternal2: [
-                { ra: '2027503', nome: 'Alice Martins', resp: 'Juliana Martins', tel: '(21) 96666-3333', status: 'Ativo', relatorio: 'Desenvolvendo ótima autonomia ao guardar os brinquedos.', fotos: ['🧩 Montando Blocos'] }
+                { ra: '2027503', nome: 'Alice Martins', resp: 'Juliana Martins', tel: '(21) 96666-3333', status: 'Ativo', relatorio: 'Desenvolvendo ótima autonomia.', fotos: ['🧩 Blocos'] }
             ],
             pre1: [
-                { ra: '2027504', nome: 'Bernardo Lima', resp: 'Renata Lima', tel: '(21) 95555-4444', status: 'Ativo', relatorio: 'Iniciando o reconhecimento das vogais com facilidade e entusiasmo.', fotos: ['📚 Contação de Histórias'] }
+                { ra: '2027504', nome: 'Bernardo Lima', resp: 'Renata Lima', tel: '(21) 95555-4444', status: 'Ativo', relatorio: 'Reconhecendo vogais com facilidade.', fotos: ['📚 Histórias'] }
             ],
             pre2: [
-                { ra: '2027505', nome: 'Valentina Costa', resp: 'Marcos Costa', tel: '(21) 94444-5555', status: 'Ativo', relatorio: 'Excelente coordenação motora no traçado das letras e números.', fotos: ['✏️ Atividade de Traçado'] }
+                { ra: '2027505', nome: 'Valentina Costa', resp: 'Marcos Costa', tel: '(21) 94444-5555', status: 'Ativo', relatorio: 'Excelente coordenação motora no traçado.', fotos: ['✏️ Traçado'] }
             ],
             fundamental1: [
                 { ra: '2027001', nome: 'Davi Lucas (3º Ano)', resp: 'Carlos Lucas', tel: '(21) 99999-1111', status: 'Ativo' },
@@ -258,17 +282,15 @@
         let alunoEditandoRa = null;
 
         const infoTurmas = {
-            maternal1: { titulo: 'Maternal 1 — Unidade Matriz', sub: 'Modelo de avaliação: Relatório Descritivo de Desenvolvimento & Mural de Fotos' },
-            maternal2: { titulo: 'Maternal 2 — Unidade Matriz', sub: 'Modelo de avaliação: Relatório Descritivo de Desenvolvimento & Mural de Fotos' },
-            pre1: { titulo: 'Pré-Escola 1 — Unidade Matriz', sub: 'Modelo de avaliação: Relatório Descritivo de Desenvolvimento & Mural de Fotos' },
-            pre2: { titulo: 'Pré-Escola 2 — Unidade Matriz', sub: 'Modelo de avaliação: Relatório Descritivo de Desenvolvimento & Mural de Fotos' },
-            fundamental1: { titulo: 'Ensino Fundamental (1º ao 5º Ano) — Matriz', sub: 'Modelo de avaliação: Sistema de Notas (Pesos N1, N2, N3) e Média 7.0' }
+            maternal1: { titulo: 'Maternal 1 — Unidade Matriz', sub: 'Relatório Descritivo & Mural de Fotos' },
+            maternal2: { titulo: 'Maternal 2 — Unidade Matriz', sub: 'Relatório Descritivo & Mural de Fotos' },
+            pre1: { titulo: 'Pré-Escola 1 — Unidade Matriz', sub: 'Relatório Descritivo & Mural de Fotos' },
+            pre2: { titulo: 'Pré-Escola 2 — Unidade Matriz', sub: 'Relatório Descritivo & Mural de Fotos' },
+            fundamental1: { titulo: 'Ensino Fundamental (1º ao 5º Ano) — Matriz', sub: 'Sistema de Notas e Média 7.0' }
         };
 
         function mudarTurmaMatricula(turmaKey) {
             turmaAtual = turmaKey;
-            
-            // Atualiza botões
             ['maternal1', 'maternal2', 'pre1', 'pre2', 'fundamental1'].forEach(k => {
                 const btn = document.getElementById(`btn-${k}`);
                 if (k === turmaKey) {
@@ -280,14 +302,6 @@
 
             document.getElementById('titulo-turma-atual').innerText = infoTurmas[turmaKey].titulo;
             document.getElementById('sub-turma-atual').innerText = infoTurmas[turmaKey].sub;
-
-            const thAcao = document.getElementById('th-acao-turma');
-            if (turmaKey === 'fundamental1') {
-                thAcao.innerText = 'Boletim / Notas';
-            } else {
-                thAcao.innerText = 'Relatório & Fotos (App Pais)';
-            }
-
             renderizarTabelaAlunos();
         }
 
@@ -296,11 +310,10 @@
             tbody.innerHTML = '';
             const lista = bancoTurmas[turmaAtual] || [];
             const busca = document.getElementById('buscaMatricula').value.toLowerCase();
-
             const filtrados = lista.filter(a => a.nome.toLowerCase().includes(busca) || a.resp.toLowerCase().includes(busca));
 
             if (filtrados.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400 text-xs">Nenhum aluno encontrado nesta turma.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400 text-xs">Nenhum aluno encontrado.</td></tr>`;
                 return;
             }
 
@@ -308,11 +321,19 @@
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition";
                 
-                let botaoAcao = '';
+                let botoesAcao = '';
                 if (turmaAtual === 'fundamental1') {
-                    botaoAcao = `<a href="notas.html" class="bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-bold text-xs transition">📊 Lançar Notas</a>`;
+                    botoesAcao = `
+                        <a href="notas.html" class="bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-bold text-xs transition">📊 Notas</a>
+                        <button type="button" onclick="abrirModalEditarAluno('${aluno.ra}')" class="bg-slate-100 text-slate-700 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-bold text-xs transition">✏️ Editar</button>
+                        <a href="fichas.html?ra=${aluno.ra}" class="bg-marinho text-white hover:bg-blue-900 px-3 py-1.5 rounded-lg font-bold text-xs transition">👥 Ficha</a>
+                    `;
                 } else {
-                    botaoAcao = `<button type="button" onclick="abrirModalInfantil('${aluno.ra}')" class="bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 px-3 py-1.5 rounded-lg font-bold text-xs transition">📝 Relatório & Fotos</button>`;
+                    botoesAcao = `
+                        <button type="button" onclick="abrirModalInfantil('${aluno.ra}')" class="bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 px-3 py-1.5 rounded-lg font-bold text-xs transition">📝 Relatório</button>
+                        <button type="button" onclick="abrirModalEditarAluno('${aluno.ra}')" class="bg-slate-100 text-slate-700 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-bold text-xs transition">✏️ Editar</button>
+                        <a href="fichas.html?ra=${aluno.ra}" class="bg-marinho text-white hover:bg-blue-900 px-3 py-1.5 rounded-lg font-bold text-xs transition">👥 Ficha</a>
+                    `;
                 }
 
                 tr.innerHTML = `
@@ -327,19 +348,59 @@
                     <td class="px-5 py-3.5 text-center">
                         <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-bold">${aluno.status}</span>
                     </td>
-                    <td class="px-5 py-3.5 text-right whitespace-nowrap">
-                        ${botaoAcao}
+                    <td class="px-5 py-3.5 text-right whitespace-nowrap space-x-1">
+                        ${botoesAcao}
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        function filtrarAlunosTurma() {
-            renderizarTabelaAlunos();
+        function filtrarAlunosTurma() { renderizarTabelaAlunos(); }
+
+        // EDITAR ALUNO
+        function abrirModalEditarAluno(ra) {
+            let alunoEncontrado = null;
+            for (let t in bancoTurmas) {
+                const achado = bancoTurmas[t].find(a => a.ra === ra);
+                if (achado) { alunoEncontrado = achado; break; }
+            }
+            if (!alunoEncontrado) return;
+
+            document.getElementById('editAlunoRa').value = alunoEncontrado.ra;
+            document.getElementById('editAlunoNome').value = alunoEncontrado.nome;
+            document.getElementById('editAlunoResp').value = alunoEncontrado.resp;
+            document.getElementById('editAlunoTel').value = alunoEncontrado.tel;
+            document.getElementById('modalEditarAluno').classList.remove('hidden');
         }
 
-        // MODAL DE AVALIAÇÃO DA EDUCAÇÃO INFANTIL
+        function fecharModalEditarAluno() { document.getElementById('modalEditarAluno').classList.add('hidden'); }
+
+        function salvarEdicaoAluno() {
+            const ra = document.getElementById('editAlunoRa').value;
+            const novoNome = document.getElementById('editAlunoNome').value.trim();
+            const novaResp = document.getElementById('editAlunoResp').value.trim();
+            const novoTel = document.getElementById('editAlunoTel').value.trim();
+
+            if (!novoNome) { alert('O nome não pode estar vazio.'); return; }
+
+            for (let t in bancoTurmas) {
+                const idx = bancoTurmas[t].findIndex(a => a.ra === ra);
+                if (idx !== -1) {
+                    bancoTurmas[t][idx].nome = novoNome;
+                    bancoTurmas[t][idx].resp = novaResp;
+                    bancoTurmas[t][idx].tel = novoTel;
+                    break;
+                }
+            }
+
+            localStorage.setItem('peniel_banco_matriculas', JSON.stringify(bancoTurmas));
+            fecharModalEditarAluno();
+            renderizarTabelaAlunos();
+            alert('✅ Informações do aluno atualizadas com sucesso!');
+        }
+
+        // AVALIAÇÃO INFANTIL
         let fotosTemporarias = [];
 
         function abrirModalInfantil(ra) {
@@ -348,18 +409,15 @@
             alunoEditandoRa = ra;
 
             document.getElementById('badge-turma-modal').innerText = infoTurmas[turmaAtual].titulo.split('—')[0];
-            document.getElementById('nome-aluno-modal').innerText = `Ficha de Acompanhamento: ${aluno.nome}`;
+            document.getElementById('nome-aluno-modal').innerText = `Ficha: ${aluno.nome}`;
             document.getElementById('texto-relatorio-infantil').value = aluno.relatorio || '';
-            
             fotosTemporarias = aluno.fotos ? [...aluno.fotos] : ['🎨 Atividade Lúdica'];
             renderizarMuralFotos();
 
             document.getElementById('modalAvaliacaoInfantil').classList.remove('hidden');
         }
 
-        function fecharModalAvaliacaoInfantil() {
-            document.getElementById('modalAvaliacaoInfantil').classList.add('hidden');
-        }
+        function fecharModalAvaliacaoInfantil() { document.getElementById('modalAvaliacaoInfantil').classList.add('hidden'); }
 
         function renderizarMuralFotos() {
             const container = document.getElementById('mural-fotos-container');
@@ -379,8 +437,7 @@
         function adicionarFotoMural() {
             const input = document.getElementById('inputFotoAula');
             if (input.files && input.files[0]) {
-                const nomeArq = input.files[0].name;
-                fotosTemporarias.push(nomeArq);
+                fotosTemporarias.push(input.files[0].name);
                 renderizarMuralFotos();
                 input.value = '';
             }
@@ -400,7 +457,7 @@
                 localStorage.setItem('peniel_banco_matriculas', JSON.stringify(bancoTurmas));
             }
             fecharModalAvaliacaoInfantil();
-            alert('✅ Relatório descritivo e fotos publicados com sucesso para os pais acompanharem no App!');
+            alert('✅ Relatório e fotos salvos com sucesso!');
         }
 
         // NOVA MATRÍCULA
@@ -417,20 +474,15 @@
             const novoRa = '2027' + Math.floor(100 + Math.random() * 900);
             if (!bancoTurmas[turmaKey]) bancoTurmas[turmaKey] = [];
 
-            bancoTurmas[turmaKey].push({
-                ra: novoRa, nome: nome, resp: 'Responsável Legal', tel: tel, status: 'Ativo', relatorio: 'Matrícula recém efetuada.', fotos: []
-            });
-
+            bancoTurmas[turmaKey].push({ ra: novoRa, nome: nome, resp: 'Responsável Legal', tel: tel, status: 'Ativo', relatorio: 'Matrícula recente.', fotos: [] });
             localStorage.setItem('peniel_banco_matriculas', JSON.stringify(bancoTurmas));
             fecharModalNovaMatricula();
             document.getElementById('novaMatriculaNome').value = '';
             mudarTurmaMatricula(turmaKey);
-            alert(`✅ Matrícula de ${nome} efetivada com sucesso! (RA: ${novoRa})`);
+            alert(`✅ Matrícula efetivada com sucesso! (RA: ${novoRa})`);
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            mudarTurmaMatricula('maternal1');
-        });
+        document.addEventListener('DOMContentLoaded', () => { mudarTurmaMatricula('maternal1'); });
     </script>
 </body>
 </html>
