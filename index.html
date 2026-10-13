@@ -29,9 +29,7 @@
         <source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" type="audio/ogg">
     </audio>
 
-    <!-- ========================================================================= -->
     <!-- BARRA DE TOPO EXCLUSIVA MOBILE -->
-    <!-- ========================================================================= -->
     <div id="barra-topo-mobile" class="md:hidden bg-marinho text-white px-4 py-3.5 flex justify-between items-center shadow-lg sticky top-0 z-[80] border-b border-white/10 transition-colors duration-300">
         <div class="flex items-center gap-3">
             <button type="button" onclick="toggleMenuMobile()" class="bg-laranja hover:bg-orange-600 text-white px-3 py-2 rounded-xl font-bold text-sm flex items-center gap-1.5 shadow-md active:scale-95 transition">
@@ -53,9 +51,7 @@
     <!-- Overlay Escuro do Menu Mobile -->
     <div id="overlay-mobile" onclick="toggleMenuMobile()" class="fixed inset-0 bg-slate-950/75 z-[95] hidden md:hidden backdrop-blur-sm transition-opacity"></div>
 
-    <!-- ========================================================================= -->
     <!-- MENU LATERAL -->
-    <!-- ========================================================================= -->
     <aside id="menu-lateral" class="fixed md:sticky left-0 top-0 w-72 md:w-64 bg-marinho text-white flex-col h-screen z-[100] transform -translate-x-full md:translate-x-0 transition-all duration-300 flex shrink-0 shadow-2xl md:shadow-none border-r-4 border-laranja md:border-r-0">
         <div class="p-6 flex justify-between items-center shrink-0 border-b border-white/10 bg-black/15">
             <div>
@@ -91,7 +87,6 @@
             <a href="configuracoes.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 hover:text-white rounded-xl font-medium transition">⚙️ Configurações / ADM</a>
         </nav>
         
-        <!-- Rodapé do Menu com Cores e Sair -->
         <div class="p-4 border-t border-white/10 bg-black/20 space-y-2.5 shrink-0">
             <div class="flex items-center justify-between bg-white/10 px-3 py-2 rounded-xl">
                 <span class="text-xs font-bold text-blue-100">🎨 Cor do Tema</span>
@@ -108,12 +103,10 @@
         </div>
     </aside>
 
-    <!-- ========================================================================= -->
     <!-- ÁREA PRINCIPAL -->
-    <!-- ========================================================================= -->
     <main class="flex-1 p-3 sm:p-5 md:p-8 flex flex-col gap-5 w-full max-w-full overflow-x-hidden">
         
-        <!-- HEADER PRINCIPAL -->
+        <!-- HEADER COM UNIDADE INTERATIVA -->
         <header class="flex flex-col xl:flex-row justify-between items-start xl:items-center bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm gap-4">
             <div>
                 <div class="flex flex-wrap items-center gap-2 mb-1">
@@ -121,7 +114,7 @@
                     <span class="text-xs text-green-600 font-bold flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-500 animate-ping"></span> Online</span>
                 </div>
                 <h2 class="font-heading text-xl sm:text-2xl md:text-3xl font-bold text-slate-800" id="saudacao-gestor">Olá, Abraão Lucas</h2>
-                <p class="text-xs text-slate-500">Painel de controle, turmas em tempo real, reuniões e portaria.</p>
+                <p class="text-xs text-slate-500" id="subtitulo-unidade-header">Painel de controle, turmas em tempo real e visão geral da Matriz.</p>
             </div>
             
             <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 w-full xl:w-auto">
@@ -148,13 +141,13 @@
             </div>
         </header>
 
-        <!-- BANNER DE ALERTA VISUAL -->
+        <!-- BANNER DE ALERTA -->
         <div id="alerta-visual" class="hidden bg-red-600 text-white p-4 rounded-2xl shadow-lg flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-2 border-red-300">
             <div class="flex items-center gap-3">
                 <span class="text-2xl sm:text-3xl">🚨</span>
                 <div>
                     <h4 class="font-bold text-sm sm:text-base">Atenção! Nova Solicitação de Saída na Portaria</h4>
-                    <p class="text-red-100 text-xs">A aluna <strong>Isabela Mendes (2º Ano B)</strong> aguarda conferência e liberação.</p>
+                    <p class="text-red-100 text-xs" id="texto-alerta-unidade">A aluna <strong>Isabela Mendes (2º Ano B)</strong> aguarda conferência e liberação na Matriz.</p>
                 </div>
             </div>
             <div class="flex gap-2 w-full sm:w-auto">
@@ -167,27 +160,27 @@
             </div>
         </div>
 
-        <!-- KPIS -->
+        <!-- KPIS DINÂMICOS POR UNIDADE -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <a href="matriculas.html" class="block bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm border-l-4 border-l-blue-500 hover:-translate-y-0.5 hover:shadow-md transition-all group">
                 <div class="flex justify-between items-start"><h3 class="text-slate-500 text-[10px] sm:text-xs font-bold uppercase tracking-wider">Alunos na Escola</h3><span class="text-blue-500 text-sm">↗</span></div>
-                <div class="text-2xl sm:text-3xl font-black text-slate-800 mt-1">342 <span class="text-xs font-semibold text-green-600 block sm:inline">de 350</span></div>
+                <div class="text-2xl sm:text-3xl font-black text-slate-800 mt-1" id="kpi-alunos">342 <span class="text-xs font-semibold text-green-600 block sm:inline">de 350</span></div>
             </a>
             <a href="notas.html" class="block bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm border-l-4 border-l-orange-500 hover:-translate-y-0.5 hover:shadow-md transition-all group">
                 <div class="flex justify-between items-start"><h3 class="text-slate-500 text-[10px] sm:text-xs font-bold uppercase tracking-wider">Faltas Hoje</h3><span class="text-orange-500 text-sm">↗</span></div>
-                <div class="text-2xl sm:text-3xl font-black text-slate-800 mt-1">8 <span class="text-xs font-semibold text-slate-400 block sm:inline">alunos</span></div>
+                <div class="text-2xl sm:text-3xl font-black text-slate-800 mt-1" id="kpi-faltas">8 <span class="text-xs font-semibold text-slate-400 block sm:inline">alunos</span></div>
             </a>
             <a href="financeiro.html" class="block bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm border-l-4 border-l-red-500 hover:-translate-y-0.5 hover:shadow-md transition-all group">
                 <div class="flex justify-between items-start"><h3 class="text-slate-500 text-[10px] sm:text-xs font-bold uppercase tracking-wider">Inadimplência</h3><span class="text-red-500 text-sm">↗</span></div>
-                <div class="text-2xl sm:text-3xl font-black text-slate-800 mt-1">12% <span class="text-xs font-semibold text-red-500 block sm:inline">Atenção</span></div>
+                <div class="text-2xl sm:text-3xl font-black text-slate-800 mt-1" id="kpi-inadimplencia">12% <span class="text-xs font-semibold text-red-500 block sm:inline">Atenção</span></div>
             </a>
             <a href="rematricula.html" class="block bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm border-l-4 border-l-purple-500 hover:-translate-y-0.5 hover:shadow-md transition-all group">
                 <div class="flex justify-between items-start"><h3 class="text-slate-500 text-[10px] sm:text-xs font-bold uppercase tracking-wider">Retenção 2027</h3><span class="text-purple-500 text-sm">↗</span></div>
-                <div class="text-2xl sm:text-3xl font-black text-slate-800 mt-1">65% <span class="text-xs font-semibold text-green-600 block sm:inline">Na meta</span></div>
+                <div class="text-2xl sm:text-3xl font-black text-slate-800 mt-1" id="kpi-retencao">65% <span class="text-xs font-semibold text-green-600 block sm:inline">Na meta</span></div>
             </a>
         </div>
 
-        <!-- PAINEL DE SALAS E AULAS (TEMPO REAL) -->
+        <!-- PAINEL DE SALAS E AULAS -->
         <div class="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm">
             <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-5 border-b border-slate-100 pb-4 gap-3">
                 <div>
@@ -215,15 +208,12 @@
                 </div>
             </div>
 
-            <div id="grid-salas-tempo-real" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-                <!-- Renderizado via JS -->
-            </div>
+            <div id="grid-salas-tempo-real" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4"></div>
         </div>
 
         <!-- LAYOUT INFERIOR -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
-            <!-- Coluna Esquerda: Reuniões + Gráficos -->
             <div class="lg:col-span-5 flex flex-col gap-6">
                 
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
@@ -236,9 +226,7 @@
                         <span id="badge-reunioes-status" class="bg-blue-100 text-blue-800 text-[11px] font-bold px-2.5 py-1 rounded-full">0/3 OK</span>
                     </div>
 
-                    <ul id="lista-reunioes" class="space-y-3 mb-4">
-                        <!-- Renderizado via JS -->
-                    </ul>
+                    <ul id="lista-reunioes" class="space-y-3 mb-4"></ul>
 
                     <div class="flex gap-2 pt-2 border-t border-slate-100">
                         <input type="text" id="inputNovaReuniao" placeholder="Nova reunião ou aviso interno..." class="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -261,7 +249,6 @@
                 </div>
             </div>
 
-            <!-- Coluna Direita: Anotações + Central de Liberações (Portaria) -->
             <div class="lg:col-span-7 flex flex-col gap-6">
                 
                 <div class="bg-amber-50 rounded-2xl border border-amber-200 shadow-sm p-4">
@@ -272,7 +259,6 @@
                     <textarea id="campo-anotacao" class="w-full bg-white/70 rounded-xl border border-amber-200/80 focus:outline-none focus:ring-2 focus:ring-amber-400 p-2.5 text-xs sm:text-sm text-amber-950 resize-none font-medium" rows="2" placeholder="Digite observações internas do turno..."></textarea>
                 </div>
 
-                <!-- CENTRAL DE LIBERAÇÕES -->
                 <div id="central-liberacoes" class="bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col flex-1 scroll-mt-20 overflow-hidden">
                     <div class="p-4 border-b border-slate-100 bg-slate-50 flex flex-wrap justify-between items-center gap-2">
                         <div>
@@ -283,9 +269,7 @@
                     </div>
                     
                     <div class="p-4 sm:p-6 bg-slate-50/40 flex-1">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="container-cards-portaria">
-                            <!-- Renderizado via JS -->
-                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="container-cards-portaria"></div>
                     </div>
                 </div>
 
@@ -295,7 +279,7 @@
     </main>
 
     <!-- ========================================================================= -->
-    <!-- MODAIS DO SISTEMA -->
+    <!-- MODAIS DO SISTEMA (RELATÓRIO COMPLETO RESTAURADO) -->
     <!-- ========================================================================= -->
 
     <!-- MODAL DETALHES PORTARIA -->
@@ -410,39 +394,56 @@
         </div>
     </div>
 
-    <!-- MODAL RELATÓRIO DA TURMA -->
+    <!-- MODAL RELATÓRIO DA TURMA (COMPLETO RESTAURADO) -->
     <div id="modalEstatisticasTurma" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm hidden flex justify-center items-center z-[140] p-4">
-        <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl flex flex-col overflow-hidden max-h-[95vh]">
+        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl flex flex-col overflow-hidden max-h-[95vh]">
             <div class="p-5 border-b border-slate-100 bg-marinho text-white flex justify-between items-center">
                 <div>
-                    <h3 class="font-bold text-base font-heading">📊 Relatório Detalhado da Turma</h3>
-                    <p class="text-blue-200 text-xs" id="tituloModalTurma">--</p>
+                    <h3 class="font-bold text-lg font-heading">📊 Relatório Detalhado da Turma</h3>
+                    <p class="text-blue-200 text-xs sm:text-sm" id="tituloModalTurma">--</p>
                 </div>
                 <button type="button" onclick="fecharEstatisticasTurma()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
             </div>
             <div class="flex border-b border-slate-200 bg-slate-50 px-2 pt-2 overflow-x-auto hide-scrollbar">
-                <button type="button" onclick="mudarAbaTurma('diario')" id="aba-diario" class="px-4 py-2.5 text-xs font-bold border-b-2 border-marinho text-marinho whitespace-nowrap">Diário (Hoje)</button>
-                <button type="button" onclick="mudarAbaTurma('mensal')" id="aba-mensal" class="px-4 py-2.5 text-xs font-bold border-b-2 border-transparent text-slate-500 whitespace-nowrap">Mensal</button>
-                <button type="button" onclick="mudarAbaTurma('anual')" id="aba-anual" class="px-4 py-2.5 text-xs font-bold border-b-2 border-transparent text-slate-500 whitespace-nowrap">Anual (Meta 280 pts)</button>
+                <button type="button" onclick="mudarAbaTurma('diario')" id="aba-diario" class="px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-marinho text-marinho whitespace-nowrap">Diário (Hoje)</button>
+                <button type="button" onclick="mudarAbaTurma('mensal')" id="aba-mensal" class="px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-500 whitespace-nowrap">Mensal</button>
+                <button type="button" onclick="mudarAbaTurma('trimestral')" id="aba-trimestral" class="px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-500 whitespace-nowrap">Trimestral</button>
+                <button type="button" onclick="mudarAbaTurma('semestral')" id="aba-semestral" class="px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-500 whitespace-nowrap">Semestral</button>
+                <button type="button" onclick="mudarAbaTurma('anual')" id="aba-anual" class="px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-500 whitespace-nowrap">Anual (Meta 280 pts)</button>
             </div>
-            <div class="p-6 overflow-y-auto bg-slate-50/50 flex-1">
-                <div id="conteudo-diario" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm border-l-4 border-l-blue-500"><p class="text-[11px] font-bold text-slate-500 uppercase">Frequência</p><p class="text-2xl font-black text-slate-800">98%</p></div>
-                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm border-l-4 border-l-orange-500"><p class="text-[11px] font-bold text-slate-500 uppercase">Conteúdo</p><p class="text-sm font-bold text-slate-800 mt-1">Ciclo da Água</p></div>
-                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm border-l-4 border-l-green-500"><p class="text-[11px] font-bold text-slate-500 uppercase">Tarefas</p><p class="text-2xl font-black text-slate-800">95%</p></div>
+            <div class="p-6 overflow-y-auto bg-slate-50/50 flex-1 space-y-6">
+                <!-- Aba Diário -->
+                <div id="conteudo-diario" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm border-l-4 border-l-blue-500"><p class="text-[11px] font-bold text-slate-500 uppercase">Frequência de Hoje</p><p class="text-2xl font-black text-slate-800">98% <span class="text-xs font-normal text-green-600">(28/29 alunos)</span></p></div>
+                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm border-l-4 border-l-orange-500"><p class="text-[11px] font-bold text-slate-500 uppercase">Conteúdo do Dia</p><p class="text-sm font-bold text-slate-800 mt-1">Ciclo da Água e Produção Textual</p></div>
+                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm border-l-4 border-l-green-500"><p class="text-[11px] font-bold text-slate-500 uppercase">Entrega de Tarefas</p><p class="text-2xl font-black text-slate-800">95%</p></div>
                 </div>
-                <div id="conteudo-mensal" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Média Parcial</p><p class="text-2xl font-black text-marinho mt-1">8.2 (Meta ≥ 7.0)</p></div>
-                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Inadimplência</p><p class="text-2xl font-black text-red-600 mt-1">2 Alunos</p></div>
+                <!-- Aba Mensal -->
+                <div id="conteudo-mensal" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Média Parcial</p><p class="text-2xl font-black text-marinho mt-1">8.2 <span class="text-xs font-normal text-green-600">(Meta ≥ 7.0)</span></p></div>
+                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Incentivo Leitura</p><p class="text-2xl font-black text-blue-600 mt-1">3.4 livros</p></div>
+                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Inadimplência Turma</p><p class="text-2xl font-black text-red-600 mt-1">2 Alunos</p></div>
                 </div>
-                <div id="conteudo-anual" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Média Acumulada</p><p class="text-2xl font-black text-marinho mt-1">235 / 280 pts</p></div>
-                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Renovação 2027</p><p class="text-2xl font-black text-green-600 mt-1">78% Confirmados</p></div>
+                <!-- Aba Trimestral -->
+                <div id="conteudo-trimestral" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Acima da Média (≥ 7,0)</p><p class="text-2xl font-black text-green-600 mt-1">25 Alunos</p></div>
+                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Em Recuperação (< 7,0)</p><p class="text-2xl font-black text-orange-600 mt-1">4 Alunos</p></div>
+                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Alerta de Faltas (> 25%)</p><p class="text-2xl font-black text-red-600 mt-1">1 Aluno</p></div>
+                </div>
+                <!-- Aba Semestral -->
+                <div id="conteudo-semestral" class="hidden space-y-3 bg-white p-5 border border-slate-200 rounded-xl shadow-sm text-sm text-slate-600">
+                    <p>📈 <strong>Crescimento Pedagógico:</strong> A turma apresentou evolução de <strong>+14%</strong> nas notas em comparação ao semestre anterior.</p>
+                    <p>🤝 <strong>Participação das Famílias:</strong> 88% de presença nas reuniões escolares.</p>
+                </div>
+                <!-- Aba Anual -->
+                <div id="conteudo-anual" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Média Acumulada (Meta Peniel)</p><p class="text-2xl font-black text-marinho mt-1">235 / 280 pts</p></div>
+                    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm"><p class="text-xs font-bold text-slate-500">Intenção de Rematrícula 2027</p><p class="text-2xl font-black text-green-600 mt-1">78% Confirmados</p></div>
                 </div>
             </div>
-            <div class="p-4 border-t border-slate-100 bg-white flex justify-end gap-2">
-                <a href="notas.html" class="bg-blue-50 text-marinho border border-blue-200 px-4 py-2 rounded-xl font-bold text-xs">Ir ao Diário</a>
-                <button type="button" onclick="fecharEstatisticasTurma()" class="bg-slate-800 text-white px-5 py-2 rounded-xl font-bold text-xs">Fechar</button>
+            <div class="p-4 border-t border-slate-100 bg-white flex justify-end gap-2 shrink-0">
+                <a href="notas.html" class="bg-blue-50 text-marinho border border-blue-200 px-4 py-2 rounded-xl font-bold text-xs">Ir ao Diário de Classe</a>
+                <button type="button" onclick="fecharEstatisticasTurma()" class="bg-slate-800 text-white px-5 py-2 rounded-xl font-bold text-xs">Fechar Relatório</button>
             </div>
         </div>
     </div>
@@ -468,13 +469,58 @@
             localStorage.setItem('peniel_cor_sessao', cor);
         }
 
-        // REDIRECIONA PARA A TELA DE LOGIN CORRETA
         function sairDoSistema() {
             if(confirm("Deseja encerrar sua sessão e voltar para a tela inicial de Login?")) {
                 localStorage.removeItem('peniel_modo_gestor');
                 localStorage.removeItem('peniel_sessao_ativa');
                 window.location.href = 'login.html';
             }
+        }
+
+        // DADOS DAS UNIDADES (DINÂMICOS)
+        const bancoUnidades = {
+            'Matriz': {
+                nomeCompleto: 'Unidade Matriz (Rio de Janeiro)',
+                sub: 'Painel de controle, turmas em tempo real e visão geral da Matriz.',
+                alunos: '342 de 350', faltas: '8 alunos', inadimplencia: '12%', retencao: '65%',
+                alertaTexto: 'A aluna Isabela Mendes (2º Ano B) aguarda conferência e liberação na Matriz.'
+            },
+            'Filial Botafogo': {
+                nomeCompleto: 'Filial Botafogo',
+                sub: 'Gestão da unidade zona sul, turmas ativas e portaria integrada.',
+                alunos: '185 de 200', faltas: '3 alunos', inadimplencia: '8%', retencao: '72%',
+                alertaTexto: 'O aluno Pedro Henrique (1º Ano A) possui pedido de saída antecipada em Botafogo.'
+            },
+            'Filial Barra': {
+                nomeCompleto: 'Filial Barra da Tijuca',
+                sub: 'Monitoramento executivo da unidade Barra da Tijuca.',
+                alunos: '290 de 300', faltas: '5 alunos', inadimplencia: '9.5%', retencao: '80%',
+                alertaTexto: 'Aviso da coordenação: Reunião pedagógica iniciada na Barra.'
+            }
+        };
+
+        function mudarUnidade() {
+            const u = document.getElementById('seletorUnidade').value;
+            localStorage.setItem('peniel_unidade', u);
+            aplicarDadosUnidade(u);
+            alert(`🏫 Unidade alterada com sucesso para: ${u}`);
+        }
+
+        function aplicarDadosUnidade(uKey) {
+            const dados = bancoUnidades[uKey] || bancoUnidades['Matriz'];
+            document.getElementById('badge-unidade-atual').innerText = `Unidade ${uKey}`;
+            document.getElementById('label-unidade-menu').innerText = `Unidade ${uKey}`;
+            const lblMob = document.getElementById('label-unidade-mobile');
+            if (lblMob) lblMob.innerText = `Unidade ${uKey}`;
+
+            document.getElementById('subtitulo-unidade-header').innerText = dados.sub;
+            document.getElementById('kpi-alunos').innerHTML = `${dados.alunos} <span class="text-xs font-semibold text-green-600 block sm:inline">vagas</span>`;
+            document.getElementById('kpi-faltas').innerHTML = `${dados.faltas}`;
+            document.getElementById('kpi-inadimplencia').innerHTML = `${dados.inadimplencia} <span class="text-xs font-semibold text-red-500 block sm:inline">Atenção</span>`;
+            document.getElementById('kpi-retencao').innerHTML = `${dados.retencao} <span class="text-xs font-semibold text-green-600 block sm:inline">Na meta</span>`;
+            
+            const txtAlerta = document.getElementById('texto-alerta-unidade');
+            if (txtAlerta) txtAlerta.innerHTML = dados.alertaTexto;
         }
 
         // SALAS EM TEMPO REAL
@@ -655,8 +701,8 @@
                         </div>
                     </div>
                     <div class="flex gap-2">
-                        ${isa.status === 'PENDENTE' ? `<button type="button" onclick="confirmarSaidaEstudante()" class="flex-1 bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2.5 rounded-xl shadow-sm transition">✅ Autorizar Saída</button>` : ''}
-                        <button type="button" onclick="abrirModalDetalhesPortaria('isabela')" class="flex-1 bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs font-bold py-2.5 rounded-xl transition shadow-sm">🔍 Ver Ficha & RG</button>
+                        ${isa.status === 'PENDENTE' ? `<button type="button" onclick="confirmarSaidaEstudante()" class="flex-1 bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2.5 px-2 rounded-xl shadow-sm transition">✅ Autorizar Saída</button>` : ''}
+                        <button type="button" onclick="abrirModalDetalhesPortaria('isabela')" class="flex-1 bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs font-bold py-2.5 px-2 rounded-xl transition shadow-sm">🔍 Ver Ficha & RG</button>
                     </div>
                 </div>
 
@@ -727,15 +773,6 @@
             document.getElementById('central-liberacoes').scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
-        function mudarUnidade() {
-            const u = document.getElementById('seletorUnidade').value;
-            localStorage.setItem('peniel_unidade', u);
-            document.getElementById('badge-unidade-atual').innerText = `Unidade ${u}`;
-            document.getElementById('label-unidade-menu').innerText = `Unidade ${u}`;
-            const lblMob = document.getElementById('label-unidade-mobile');
-            if (lblMob) lblMob.innerText = `Unidade ${u}`;
-        }
-
         function abrirModalPerfil() { document.getElementById('modalPerfil').classList.remove('hidden'); }
         function fecharModalPerfil() { document.getElementById('modalPerfil').classList.add('hidden'); }
         function salvarPerfilGestor() {
@@ -762,19 +799,34 @@
             mudarAbaTurma('diario');
         }
         function fecharEstatisticasTurma() { document.getElementById('modalEstatisticasTurma').classList.add('hidden'); }
+        
         function mudarAbaTurma(aba) {
-            ['diario', 'mensal', 'anual'].forEach(a => {
-                document.getElementById(`conteudo-${a}`).classList.add('hidden');
-                document.getElementById(`aba-${a}`).className = 'px-4 py-2.5 text-xs font-bold border-b-2 border-transparent text-slate-500 whitespace-nowrap';
+            ['diario', 'mensal', 'trimestral', 'semestral', 'anual'].forEach(a => {
+                const el = document.getElementById(`conteudo-${a}`);
+                const btn = document.getElementById(`aba-${a}`);
+                if (el) el.classList.add('hidden');
+                if (btn) {
+                    btn.classList.remove('border-marinho', 'text-marinho');
+                    btn.classList.add('border-transparent', 'text-slate-500');
+                }
             });
-            document.getElementById(`conteudo-${aba}`).classList.remove('hidden');
-            document.getElementById(`aba-${aba}`).className = 'px-4 py-2.5 text-xs font-bold border-b-2 border-marinho text-marinho whitespace-nowrap';
+            const alvo = document.getElementById(`conteudo-${aba}`);
+            const btnAtivo = document.getElementById(`aba-${aba}`);
+            if (alvo) alvo.classList.remove('hidden');
+            if (btnAtivo) {
+                btnAtivo.classList.remove('border-transparent', 'text-slate-500');
+                btnAtivo.classList.add('border-marinho', 'text-marinho');
+            }
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('data-topo').innerText = new Date().toLocaleDateString('pt-BR');
             const corSalva = localStorage.getItem('peniel_cor_sessao') || '#003057';
             mudarCorSessao(corSalva);
+
+            const unidadeSalva = localStorage.getItem('peniel_unidade') || 'Matriz';
+            document.getElementById('seletorUnidade').value = unidadeSalva;
+            aplicarDadosUnidade(unidadeSalva);
 
             const nome = localStorage.getItem('peniel_nome_gestor');
             if(nome) {
