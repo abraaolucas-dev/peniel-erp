@@ -86,7 +86,7 @@
             </div>
             
             <button type="button" onclick="abrirModalNovaMatricula()" class="bg-laranja hover:bg-orange-600 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition flex items-center gap-1.5 whitespace-nowrap">
-                ➕ Nova Matrícula
+                ➕ Nova Matrícula Completa
             </button>
         </header>
 
@@ -132,7 +132,7 @@
     </main>
 
     <!-- ========================================================================= -->
-    <!-- MODAL 1: AVALIAÇÃO DA EDUCAÇÃO INFANTIL (RELATÓRIO + FOTOS) -->
+    <!-- MODAL 1: AVALIAÇÃO DA EDUCAÇÃO INFANTIL -->
     <!-- ========================================================================= -->
     <div id="modalAvaliacaoInfantil" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[130] p-3 sm:p-4 overflow-y-auto">
         <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto max-h-[95vh]">
@@ -204,39 +204,85 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- MODAL 3: NOVA MATRÍCULA -->
+    <!-- MODAL 3: NOVA MATRÍCULA COMPLETA (ALUNO + RESPONSÁVEL + SAÚDE) -->
     <!-- ========================================================================= -->
     <div id="modalNovaMatricula" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[130] p-3 sm:p-4 overflow-y-auto">
-        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto">
-            <div class="p-5 bg-marinho text-white flex justify-between items-center">
-                <h3 class="font-bold text-base font-heading">➕ Cadastrar Nova Matrícula</h3>
+        <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto max-h-[95vh]">
+            <div class="p-5 bg-marinho text-white flex justify-between items-center shrink-0">
+                <h3 class="font-bold text-base font-heading">➕ Ficha de Nova Matrícula Completa</h3>
                 <button type="button" onclick="fecharModalNovaMatricula()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
             </div>
-            <div class="p-6 space-y-4 text-xs">
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">Nome Completo do Aluno</label>
-                    <input type="text" id="novaMatriculaNome" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold" placeholder="Ex: Lucas Gabriel">
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Segmento / Turma</label>
-                        <select id="novaMatriculaTurma" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs bg-white">
-                            <option value="maternal1">Maternal 1</option>
-                            <option value="maternal2">Maternal 2</option>
-                            <option value="pre1">Pré-Escola 1</option>
-                            <option value="pre2">Pré-Escola 2</option>
-                            <option value="fundamental1">Fundamental (1º ao 5º)</option>
-                        </select>
+
+            <div class="p-6 overflow-y-auto bg-slate-50 space-y-5 text-xs flex-1">
+                
+                <!-- Seção 1: Aluno -->
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                    <h4 class="font-bold text-marinho uppercase tracking-wider border-b pb-1">1. Informações do Aluno</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="sm:col-span-2">
+                            <label class="block font-bold text-slate-700 mb-1">Nome Completo do Aluno</label>
+                            <input type="text" id="matAlunoNome" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold" placeholder="Ex: Lucas Gabriel da Silva">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Data de Nascimento</label>
+                            <input type="text" id="matAlunoNasc" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs" placeholder="DD/MM/AAAA">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Segmento / Turma</label>
+                            <select id="matTurmaKey" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs bg-white font-bold">
+                                <option value="maternal1">Maternal 1 (2-3 anos)</option>
+                                <option value="maternal2">Maternal 2 (3-4 anos)</option>
+                                <option value="pre1">Pré-Escola 1 (4 anos)</option>
+                                <option value="pre2">Pré-Escola 2 (5 anos)</option>
+                                <option value="fundamental1">Ensino Fundamental (1º ao 5º Ano)</option>
+                            </select>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Telefone Responsável</label>
-                        <input type="text" id="novaMatriculaTel" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono" placeholder="(21) 90000-0000">
+                </div>
+
+                <!-- Seção 2: Responsável -->
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                    <h4 class="font-bold text-marinho uppercase tracking-wider border-b pb-1">2. Dados do Responsável / Financeiro</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="sm:col-span-2">
+                            <label class="block font-bold text-slate-700 mb-1">Nome Completo do Responsável</label>
+                            <input type="text" id="matRespNome" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold" placeholder="Ex: Roberto da Silva">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">CPF do Responsável</label>
+                            <input type="text" id="matRespCpf" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs" placeholder="000.000.000-00">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Telefone / WhatsApp</label>
+                            <input type="text" id="matRespTel" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono" placeholder="(21) 90000-0000">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block font-bold text-slate-700 mb-1">E-mail de Contato</label>
+                            <input type="email" id="matRespEmail" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs" placeholder="responsavel@email.com">
+                        </div>
                     </div>
                 </div>
+
+                <!-- Seção 3: Saúde Básica -->
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                    <h4 class="font-bold text-red-700 uppercase tracking-wider border-b pb-1">3. Saúde e Anamnese Inicial</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Tipo Sanguíneo</label>
+                            <input type="text" id="matSangue" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono" placeholder="Ex: O+">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block font-bold text-slate-700 mb-1">Alergias Severas ou Restrições</label>
+                            <input type="text" id="matAlergia" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs" placeholder="Ex: Amendoim, lactose...">
+                        </div>
+                    </div>
+                </div>
+
             </div>
-            <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2">
+
+            <div class="p-4 border-t border-slate-100 bg-white flex justify-end gap-2 shrink-0">
                 <button type="button" onclick="fecharModalNovaMatricula()" class="px-4 py-2 bg-white border border-slate-300 text-slate-600 font-bold rounded-xl text-xs">Cancelar</button>
-                <button type="button" onclick="salvarNovaMatricula()" class="bg-laranja hover:bg-orange-600 text-white px-5 py-2 rounded-xl font-bold text-xs shadow-sm">💾 Efetivar Matrícula</button>
+                <button type="button" onclick="salvarMatriculaCompleta()" class="bg-laranja hover:bg-orange-600 text-white px-5 py-2 rounded-xl font-bold text-xs shadow-sm">💾 Concluir Matrícula Completa</button>
             </div>
         </div>
     </div>
@@ -256,25 +302,23 @@
             }
         }
 
-        // BANCO DE DADOS DE ALUNOS POR TURMA
+        // BANCO DE DADOS DE ALUNOS POR TURMA (SINCRONIZADO COM FICHAS)
         let bancoTurmas = JSON.parse(localStorage.getItem('peniel_banco_matriculas')) || {
             maternal1: [
-                { ra: '2027501', nome: 'Helena Santos', resp: 'Camila Santos (Mãe)', tel: '(21) 98888-1111', status: 'Ativo', relatorio: 'Demonstra excelente adaptação nas atividades com massinha.', fotos: ['🎨 Pintura com Guache', '🧸 Hora do Conto'] },
-                { ra: '2027502', nome: 'Noah Oliveira', resp: 'Bruno Oliveira (Pai)', tel: '(21) 97777-2222', status: 'Ativo', relatorio: 'Participativo nas rodas de música.', fotos: ['🎵 Roda Musical'] }
+                { ra: '2027501', nome: 'Helena Santos', resp: 'Camila Santos (Mãe)', tel: '(21) 98888-1111', status: 'Ativo', relatorio: 'Demonstra excelente adaptação nas atividades com massinha.', fotos: ['🎨 Pintura com Guache', '🧸 Hora do Conto'], nasc: '15/04/2023', nat: 'Rio de Janeiro - RJ', cpf: '000.111.222-33', pai: 'Camila Santos', paiTel: '(21) 98888-1111', paiEmail: 'camila@email.com', mae: 'Ana Santos', maeTel: '(21) 97777-2222', sangue: 'O+', alergia: 'Nenhuma', med: 'Não utiliza', obs: 'Excelente adaptação.', historico: [{ data: '12/02/2026', titulo: 'Adaptação Concluída', desc: 'Entrou na turminha sem chorar.' }] }
             ],
             maternal2: [
-                { ra: '2027503', nome: 'Alice Martins', resp: 'Juliana Martins', tel: '(21) 96666-3333', status: 'Ativo', relatorio: 'Desenvolvendo ótima autonomia.', fotos: ['🧩 Blocos'] }
+                { ra: '2027503', nome: 'Alice Martins', resp: 'Juliana Martins', tel: '(21) 96666-3333', status: 'Ativo', relatorio: 'Desenvolvendo ótima autonomia.', fotos: ['🧩 Blocos'], nasc: '10/05/2022', nat: 'Niterói - RJ', cpf: '111.222.333-44', pai: 'Juliana Martins', paiTel: '(21) 96666-3333', paiEmail: 'juliana@email.com', mae: 'Maria Martins', maeTel: '(21) 95555-1111', sangue: 'A+', alergia: 'Nenhuma', med: 'Não utiliza', obs: 'Criança comunicativa.', historico: [] }
             ],
             pre1: [
-                { ra: '2027504', nome: 'Bernardo Lima', resp: 'Renata Lima', tel: '(21) 95555-4444', status: 'Ativo', relatorio: 'Reconhecendo vogais com facilidade.', fotos: ['📚 Histórias'] }
+                { ra: '2027504', nome: 'Bernardo Lima', resp: 'Renata Lima', tel: '(21) 95555-4444', status: 'Ativo', relatorio: 'Reconhecendo vogais com facilidade.', fotos: ['📚 Histórias'], nasc: '20/08/2021', nat: 'Rio de Janeiro - RJ', cpf: '222.333.444-55', pai: 'Renata Lima', paiTel: '(21) 95555-4444', paiEmail: 'renata@email.com', mae: 'Carla Lima', maeTel: '(21) 94444-2222', sangue: 'B+', alergia: 'Nenhuma', med: 'Não utiliza', obs: 'Muito focado.', historico: [] }
             ],
             pre2: [
-                { ra: '2027505', nome: 'Valentina Costa', resp: 'Marcos Costa', tel: '(21) 94444-5555', status: 'Ativo', relatorio: 'Excelente coordenação motora no traçado.', fotos: ['✏️ Traçado'] }
+                { ra: '2027505', nome: 'Valentina Costa', resp: 'Marcos Costa', tel: '(21) 94444-5555', status: 'Ativo', relatorio: 'Excelente coordenação motora no traçado.', fotos: ['✏️ Traçado'], nasc: '02/12/2020', nat: 'Rio de Janeiro - RJ', cpf: '333.444.555-66', pai: 'Marcos Costa', paiTel: '(21) 94444-5555', paiEmail: 'marcos@email.com', mae: 'Beatriz Costa', maeTel: '(21) 93333-1111', sangue: 'AB+', alergia: 'Nenhuma', med: 'Não utiliza', obs: 'Liderança natural com os colegas.', historico: [] }
             ],
             fundamental1: [
-                { ra: '2027001', nome: 'Davi Lucas (3º Ano)', resp: 'Carlos Lucas', tel: '(21) 99999-1111', status: 'Ativo' },
-                { ra: '2027002', nome: 'Isabela Mendes (2º Ano)', resp: 'Mariana Mendes', tel: '(21) 97777-0000', status: 'Ativo' },
-                { ra: '2027089', nome: 'Pedro Souza (1º Ano)', resp: 'Roberto Souza', tel: '(21) 94444-2222', status: 'Pendente Doc' }
+                { ra: '2027001', nome: 'Davi Lucas', resp: 'Carlos Lucas', tel: '(21) 99999-1111', status: 'Ativo', turmaOrigem: '3º Ano A', nasc: '15/04/2018', nat: 'Rio de Janeiro - RJ', cpf: '111.222.333-44', pai: 'Carlos Lucas', paiTel: '(21) 99999-1111', paiEmail: 'carlos.lucas@email.com', mae: 'Ana Carolina Lucas', maeTel: '(21) 98888-2222', sangue: 'O+', alergia: 'Amendoim', med: 'Não utiliza', obs: 'Participativo.', historico: [{ data: '10/03/2026', titulo: 'Início', desc: 'Matrícula renovada.' }] },
+                { ra: '2027002', nome: 'Isabela Mendes', resp: 'Mariana Mendes', tel: '(21) 97777-0000', status: 'Ativo', turmaOrigem: '2º Ano B', nasc: '10/11/2019', nat: 'Niterói - RJ', cpf: '222.333.444-55', pai: 'Roberto Mendes', paiTel: '(21) 97777-0000', paiEmail: 'roberto@email.com', mae: 'Mariana Mendes', maeTel: '(21) 96666-3333', sangue: 'A-', alergia: 'Corante', med: 'Bombinha', obs: 'Asma leve.', historico: [] }
             ]
         };
 
@@ -358,7 +402,7 @@
 
         function filtrarAlunosTurma() { renderizarTabelaAlunos(); }
 
-        // EDITAR ALUNO
+        // EDITAR ALUNO RÁPIDO
         function abrirModalEditarAluno(ra) {
             let alunoEncontrado = null;
             for (let t in bancoTurmas) {
@@ -397,7 +441,7 @@
             localStorage.setItem('peniel_banco_matriculas', JSON.stringify(bancoTurmas));
             fecharModalEditarAluno();
             renderizarTabelaAlunos();
-            alert('✅ Informações do aluno atualizadas com sucesso!');
+            alert('✅ Informações atualizadas com sucesso!');
         }
 
         // AVALIAÇÃO INFANTIL
@@ -460,26 +504,94 @@
             alert('✅ Relatório e fotos salvos com sucesso!');
         }
 
-        // NOVA MATRÍCULA
+        // MATRÍCULA COMPLETA
         function abrirModalNovaMatricula() { document.getElementById('modalNovaMatricula').classList.remove('hidden'); }
         function fecharModalNovaMatricula() { document.getElementById('modalNovaMatricula').classList.add('hidden'); }
 
-        function salvarNovaMatricula() {
-            const nome = document.getElementById('novaMatriculaNome').value.trim();
-            const turmaKey = document.getElementById('novaMatriculaTurma').value;
-            const tel = document.getElementById('novaMatriculaTel').value.trim() || '(21) 90000-0000';
+        function salvarMatriculaCompleta() {
+            const nomeAluno = document.getElementById('matAlunoNome').value.trim();
+            const nascAluno = document.getElementById('matAlunoNasc').value.trim() || '01/01/2020';
+            const turmaKey = document.getElementById('matTurmaKey').value;
             
-            if (!nome) { alert('Digite o nome do aluno.'); return; }
+            const nomeResp = document.getElementById('matRespNome').value.trim();
+            const cpfResp = document.getElementById('matRespCpf').value.trim() || '000.000.000-00';
+            const telResp = document.getElementById('matRespTel').value.trim() || '(21) 90000-0000';
+            const emailResp = document.getElementById('matRespEmail').value.trim() || 'resp@email.com';
+
+            const sangue = document.getElementById('matSangue').value.trim() || 'O+';
+            const alergia = document.getElementById('matAlergia').value.trim() || 'Nenhuma';
+
+            if (!nomeAluno || !nomeResp) {
+                alert('Preencha pelo menos o Nome do Aluno e o Nome do Responsável.');
+                return;
+            }
 
             const novoRa = '2027' + Math.floor(100 + Math.random() * 900);
             if (!bancoTurmas[turmaKey]) bancoTurmas[turmaKey] = [];
 
-            bancoTurmas[turmaKey].push({ ra: novoRa, nome: nome, resp: 'Responsável Legal', tel: tel, status: 'Ativo', relatorio: 'Matrícula recente.', fotos: [] });
+            // Insere no banco local unificado
+            bancoTurmas[turmaKey].push({
+                ra: novoRa,
+                nome: nomeAluno,
+                resp: nomeResp,
+                tel: telResp,
+                status: 'Ativo',
+                nasc: nascAluno,
+                nat: 'Rio de Janeiro - RJ',
+                cpf: cpfResp,
+                pai: nomeResp,
+                paiTel: telResp,
+                paiEmail: emailResp,
+                mae: 'Co-responsável / Mãe',
+                maeTel: telResp,
+                sangue: sangue,
+                alergia: alergia,
+                med: 'Não utiliza',
+                obs: 'Matrícula recente efetivada pelo sistema.',
+                historico: [{ data: new Date().toLocaleDateString('pt-BR'), titulo: 'Efetivação de Matrícula', desc: 'Cadastro completo realizado na secretaria.' }],
+                relatorio: 'Matrícula recente iniciada.',
+                fotos: []
+            });
+
+            // Salva também no banco geral de fichas para sincronizar com fichas.html
+            let bancoFichas = JSON.parse(localStorage.getItem('peniel_banco_fichas_detalhadas')) || {};
+            bancoFichas[novoRa] = {
+                ra: novoRa,
+                nome: nomeAluno,
+                turmaChave: turmaKey,
+                turma: document.getElementById('matTurmaKey').options[document.getElementById('matTurmaKey').selectedIndex].text,
+                status: 'Ativo',
+                nasc: nascAluno,
+                nat: 'Rio de Janeiro - RJ',
+                cpf: cpfResp,
+                pai: nomeResp,
+                paiTel: telResp,
+                paiEmail: emailResp,
+                mae: 'Co-responsável / Mãe',
+                maeTel: telResp,
+                sangue: sangue,
+                alergia: alergia,
+                med: 'Não utiliza',
+                obs: 'Matrícula recente efetivada.',
+                historico: [{ data: new Date().toLocaleDateString('pt-BR'), titulo: 'Matrícula Realizada', desc: 'Cadastro completo.' }]
+            };
+            localStorage.setItem('peniel_banco_fichas_detalhadas', JSON.stringify(bancoFichas));
+
             localStorage.setItem('peniel_banco_matriculas', JSON.stringify(bancoTurmas));
             fecharModalNovaMatricula();
-            document.getElementById('novaMatriculaNome').value = '';
+
+            // Limpa campos
+            document.getElementById('matAlunoNome').value = '';
+            document.getElementById('matAlunoNasc').value = '';
+            document.getElementById('matRespNome').value = '';
+            document.getElementById('matRespCpf').value = '';
+            document.getElementById('matRespTel').value = '';
+            document.getElementById('matRespEmail').value = '';
+            document.getElementById('matSangue').value = '';
+            document.getElementById('matAlergia').value = '';
+
             mudarTurmaMatricula(turmaKey);
-            alert(`✅ Matrícula efetivada com sucesso! (RA: ${novoRa})`);
+            alert(`✅ Matrícula Completa efetivada com sucesso!\nRA gerado: ${novoRa}`);
         }
 
         document.addEventListener('DOMContentLoaded', () => { mudarTurmaMatricula('maternal1'); });
