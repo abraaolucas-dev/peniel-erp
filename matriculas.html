@@ -134,13 +134,13 @@
     </main>
 
     <!-- ========================================================================= -->
-    <!-- MODAL: BOLETIM E LANÇAMENTO DIRETO DE NOTAS (4 TRIMESTRES) -->
+    <!-- MODAL: BOLETIM ACADÊMICO ANUAL EDITÁVEL (4 TRIMESTRES) -->
     <!-- ========================================================================= -->
     <div id="modalBoletimAnual" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[140] p-3 sm:p-4 overflow-y-auto">
         <div class="bg-white w-full max-w-5xl rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto max-h-[95vh]">
             <div class="p-5 bg-marinho text-white flex justify-between items-center shrink-0">
                 <div>
-                    <span class="text-[10px] font-bold bg-laranja text-white px-2 py-0.5 rounded uppercase">Lançamento de Notas & Boletim Anual</span>
+                    <span class="text-[10px] font-bold bg-laranja text-white px-2 py-0.5 rounded uppercase">Boletim Acadêmico Anual (Editável)</span>
                     <h3 class="font-bold text-lg font-heading mt-1" id="boletim-nome-aluno">Desempenho Acadêmico: --</h3>
                 </div>
                 <button type="button" onclick="fecharModalBoletim()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
@@ -153,17 +153,16 @@
                         <p class="text-xs text-slate-500 mt-0.5">Ano Letivo: <strong class="text-slate-800">2027</strong></p>
                     </div>
                     <div class="text-right">
-                        <span id="boletim-status-geral" class="bg-green-100 text-green-800 px-3 py-1.5 rounded-xl text-xs font-bold">Aprovado por Média</span>
+                        <span id="boletim-status-geral" class="bg-slate-100 text-slate-700 px-3 py-1.5 rounded-xl text-xs font-bold">Digite as notas para calcular</span>
                     </div>
                 </div>
 
-                <!-- Tabela de Edição / Visualização das Notas por Trimestre -->
+                <!-- Tabela Editável de Notas por Período -->
                 <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                     <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
-                        <h4 class="font-bold text-slate-700 text-xs uppercase tracking-wider">Lançamento por Trimestre e Média Ponderada</h4>
-                        <span class="text-[11px] text-slate-500 font-medium">Digite as notas nos trimestres e salve</span>
+                        <h4 class="font-bold text-slate-700 text-xs uppercase tracking-wider">Notas por Disciplina e Período (1º ao 4º Trimestre)</h4>
+                        <span class="text-[11px] text-blue-600 font-semibold bg-blue-50 px-2.5 py-1 rounded-lg">✏️ Insira as notas diretamente nos campos</span>
                     </div>
-                    
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm">
                             <thead class="bg-slate-100 text-slate-600 border-b border-slate-200 uppercase text-[10px] font-bold tracking-wider">
@@ -178,7 +177,7 @@
                                 </tr>
                             </thead>
                             <tbody id="tabela-notas-anual" class="divide-y divide-slate-100 text-xs">
-                                <!-- Preenchido dinamicamente via JS -->
+                                <!-- Preenchido dinamicamente via JS com inputs editáveis -->
                             </tbody>
                         </table>
                     </div>
