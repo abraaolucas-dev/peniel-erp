@@ -134,10 +134,10 @@
     </main>
 
     <!-- ========================================================================= -->
-    <!-- NOVO MODAL: BOLETIM / NOTAS ANUAIS DO ALUNO SEPARADO POR PERÍODOS -->
+    <!-- MODAL: BOLETIM ANUAL COM 4 TRIMESTRES -->
     <!-- ========================================================================= -->
     <div id="modalBoletimAnual" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[140] p-3 sm:p-4 overflow-y-auto">
-        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto max-h-[95vh]">
+        <div class="bg-white w-full max-w-5xl rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto max-h-[95vh]">
             <div class="p-5 bg-marinho text-white flex justify-between items-center shrink-0">
                 <div>
                     <span class="text-[10px] font-bold bg-laranja text-white px-2 py-0.5 rounded uppercase">Boletim Escolar Anual</span>
@@ -157,21 +157,22 @@
                     </div>
                 </div>
 
-                <!-- Tabela de Notas por Período -->
+                <!-- Tabela de Notas com 4 Trimestres -->
                 <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                     <div class="p-4 bg-slate-50 border-b border-slate-200 font-bold text-slate-700 text-xs uppercase tracking-wider">
-                        Notas por Disciplina e Período Letivo
+                        Notas por Disciplina e Período (1º ao 4º Trimestre)
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm">
                             <thead class="bg-slate-100 text-slate-600 border-b border-slate-200 uppercase text-[10px] font-bold tracking-wider">
                                 <tr>
-                                    <th class="px-5 py-3">Disciplina</th>
-                                    <th class="px-5 py-3 text-center">1º Trimestre</th>
-                                    <th class="px-5 py-3 text-center">2º Trimestre</th>
-                                    <th class="px-5 py-3 text-center">3º Trimestre</th>
-                                    <th class="px-5 py-3 text-center">Média Anual</th>
-                                    <th class="px-5 py-3 text-right">Situação</th>
+                                    <th class="px-4 py-3">Disciplina</th>
+                                    <th class="px-3 py-3 text-center">1º Trim.</th>
+                                    <th class="px-3 py-3 text-center">2º Trim.</th>
+                                    <th class="px-3 py-3 text-center">3º Trim.</th>
+                                    <th class="px-3 py-3 text-center">4º Trim.</th>
+                                    <th class="px-4 py-3 text-center">Média Anual</th>
+                                    <th class="px-4 py-3 text-right">Situação</th>
                                 </tr>
                             </thead>
                             <tbody id="tabela-notas-anual" class="divide-y divide-slate-100 text-xs">
@@ -487,7 +488,7 @@
         function filtrarAlunosTurma() { renderizarTabelaAlunos(); }
 
         // =====================================================================
-        // LÓGICA DO BOLETIM ANUAL (NOTAS SEPARADAS POR PERÍODOS)
+        // LÓGICA DO BOLETIM ANUAL COM 4 TRIMESTRES
         // =====================================================================
         function abrirBoletimAnual(ra) {
             const baseAlunos = obterBancoGeralAlunos();
@@ -506,16 +507,18 @@
             let totalDisciplinasAvaliadas = 0;
 
             materias.forEach(materia => {
-                // Recupera notas dos trimestres T1, T2 e T3 salvas no sistema de notas
+                // Recupera notas dos 4 trimestres salvos no sistema de notas
                 const notaT1 = calcularMediaTrimestre(bancoNotas[`${ra}_${materia}_T1`]);
                 const notaT2 = calcularMediaTrimestre(bancoNotas[`${ra}_${materia}_T2`]);
                 const notaT3 = calcularMediaTrimestre(bancoNotas[`${ra}_${materia}_T3`]);
+                const notaT4 = calcularMediaTrimestre(bancoNotas[`${ra}_${materia}_T4`]);
 
                 let countTrimestres = 0;
                 let somaTrimestres = 0;
                 if (!isNaN(notaT1)) { somaTrimestres += notaT1; countTrimestres++; }
                 if (!isNaN(notaT2)) { somaTrimestres += notaT2; countTrimestres++; }
                 if (!isNaN(notaT3)) { somaTrimestres += notaT3; countTrimestres++; }
+                if (!isNaN(notaT4)) { somaTrimestres += notaT4; countTrimestres++; }
 
                 const mediaAnual = countTrimestres > 0 ? (somaTrimestres / countTrimestres).toFixed(1) : '--';
                 
@@ -536,12 +539,13 @@
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition";
                 tr.innerHTML = `
-                    <td class="px-5 py-3 font-bold text-slate-800">${materia}</td>
-                    <td class="px-5 py-3 text-center font-semibold text-slate-600">${!isNaN(notaT1) ? notaT1.toFixed(1) : '-'}</td>
-                    <td class="px-5 py-3 text-center font-semibold text-slate-600">${!isNaN(notaT2) ? notaT2.toFixed(1) : '-'}</td>
-                    <td class="px-5 py-3 text-center font-semibold text-slate-600">${!isNaN(notaT3) ? notaT3.toFixed(1) : '-'}</td>
-                    <td class="px-5 py-3 text-center font-black text-marinho">${mediaAnual}</td>
-                    <td class="px-5 py-3 text-right">${situacaoHtml}</td>
+                    <td class="px-4 py-3 font-bold text-slate-800">${materia}</td>
+                    <td class="px-3 py-3 text-center font-semibold text-slate-600">${!isNaN(notaT1) ? notaT1.toFixed(1) : '-'}</td>
+                    <td class="px-3 py-3 text-center font-semibold text-slate-600">${!isNaN(notaT2) ? notaT2.toFixed(1) : '-'}</td>
+                    <td class="px-3 py-3 text-center font-semibold text-slate-600">${!isNaN(notaT3) ? notaT3.toFixed(1) : '-'}</td>
+                    <td class="px-3 py-3 text-center font-semibold text-slate-600">${!isNaN(notaT4) ? notaT4.toFixed(1) : '-'}</td>
+                    <td class="px-4 py-3 text-center font-black text-marinho">${mediaAnual}</td>
+                    <td class="px-4 py-3 text-right">${situacaoHtml}</td>
                 `;
                 tbody.appendChild(tr);
             });
