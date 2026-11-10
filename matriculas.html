@@ -134,13 +134,13 @@
     </main>
 
     <!-- ========================================================================= -->
-    <!-- MODAL: BOLETIM ANUAL COM 4 TRIMESTRES -->
+    <!-- MODAL: BOLETIM E LANÇAMENTO DIRETO DE NOTAS (4 TRIMESTRES) -->
     <!-- ========================================================================= -->
     <div id="modalBoletimAnual" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[140] p-3 sm:p-4 overflow-y-auto">
         <div class="bg-white w-full max-w-5xl rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto max-h-[95vh]">
             <div class="p-5 bg-marinho text-white flex justify-between items-center shrink-0">
                 <div>
-                    <span class="text-[10px] font-bold bg-laranja text-white px-2 py-0.5 rounded uppercase">Boletim Escolar Anual</span>
+                    <span class="text-[10px] font-bold bg-laranja text-white px-2 py-0.5 rounded uppercase">Lançamento de Notas & Boletim Anual</span>
                     <h3 class="font-bold text-lg font-heading mt-1" id="boletim-nome-aluno">Desempenho Acadêmico: --</h3>
                 </div>
                 <button type="button" onclick="fecharModalBoletim()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
@@ -157,11 +157,13 @@
                     </div>
                 </div>
 
-                <!-- Tabela de Notas com 4 Trimestres -->
+                <!-- Tabela de Edição / Visualização das Notas por Trimestre -->
                 <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                    <div class="p-4 bg-slate-50 border-b border-slate-200 font-bold text-slate-700 text-xs uppercase tracking-wider">
-                        Notas por Disciplina e Período (1º ao 4º Trimestre)
+                    <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+                        <h4 class="font-bold text-slate-700 text-xs uppercase tracking-wider">Lançamento por Trimestre e Média Ponderada</h4>
+                        <span class="text-[11px] text-slate-500 font-medium">Digite as notas nos trimestres e salve</span>
                     </div>
+                    
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm">
                             <thead class="bg-slate-100 text-slate-600 border-b border-slate-200 uppercase text-[10px] font-bold tracking-wider">
@@ -184,8 +186,8 @@
             </div>
 
             <div class="p-4 border-t border-slate-200 bg-white flex justify-end gap-2 shrink-0">
-                <button type="button" onclick="fecharModalBoletim()" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs">Fechar</button>
-                <button type="button" onclick="window.print()" class="px-5 py-2 bg-marinho hover:bg-blue-900 text-white font-bold rounded-xl text-xs shadow-md transition">🖨️ Imprimir Boletim</button>
+                <button type="button" onclick="fecharModalBoletim()" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs">Cancelar</button>
+                <button type="button" onclick="salvarNotasBoletim()" class="px-5 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-xs shadow-md transition">💾 Salvar e Recalcular Média</button>
             </div>
         </div>
     </div>
@@ -368,6 +370,7 @@
         }
 
         let turmaAtual = 'todas';
+        let alunoEditandoNotasRa = null;
 
         const infoTurmas = {
             todas: { titulo: 'Todos os Alunos Matriculados — Unidade Matriz', sub: 'Visão geral de todos os ciclos e turmas da escola' },
@@ -488,9 +491,12 @@
         function filtrarAlunosTurma() { renderizarTabelaAlunos(); }
 
         // =====================================================================
-        // LÓGICA DO BOLETIM ANUAL COM 4 TRIMESTRES
+        // LÓGICA DO BOLETIM COM LANÇAMENTO DIRETO (4 TRIMESTRES)
         // =====================================================================
+        const materiasPadrao = ['Matemática', 'Português', 'Ciências', 'História', 'Geografia'];
+
         function abrirBoletimAnual(ra) {
+            alunoEditandoNotasRa = ra;
             const baseAlunos = obterBancoGeralAlunos();
             const aluno = baseAlunos[ra];
             if (!aluno) return;
@@ -498,27 +504,31 @@
             document.getElementById('boletim-nome-aluno').innerText = `Desempenho Acadêmico: ${aluno.nome}`;
             document.getElementById('boletim-ra').innerText = aluno.ra;
 
+            renderizarTabelaBoletimEditable(ra);
+            document.getElementById('modalBoletimAnual').classList.remove('hidden');
+        }
+
+        function renderizarTabelaBoletimEditable(ra) {
             const bancoNotas = JSON.parse(localStorage.getItem('peniel_banco_notas')) || {};
-            const materias = ['Matemática', 'Português', 'Ciências', 'História', 'Geografia'];
             const tbody = document.getElementById('tabela-notas-anual');
             tbody.innerHTML = '';
 
             let somaMediasAnuais = 0;
             let totalDisciplinasAvaliadas = 0;
 
-            materias.forEach(materia => {
-                // Recupera notas dos 4 trimestres salvos no sistema de notas
-                const notaT1 = calcularMediaTrimestre(bancoNotas[`${ra}_${materia}_T1`]);
-                const notaT2 = calcularMediaTrimestre(bancoNotas[`${ra}_${materia}_T2`]);
-                const notaT3 = calcularMediaTrimestre(bancoNotas[`${ra}_${materia}_T3`]);
-                const notaT4 = calcularMediaTrimestre(bancoNotas[`${ra}_${materia}_T4`]);
+            materiasPadrao.forEach(materia => {
+                const valT1 = extrairNotaTrimestre(bancoNotas[`${ra}_${materia}_T1`]);
+                const valT2 = extrairNotaTrimestre(bancoNotas[`${ra}_${materia}_T2`]);
+                const valT3 = extrairNotaTrimestre(bancoNotas[`${ra}_${materia}_T3`]);
+                const valT4 = extrairNotaTrimestre(bancoNotas[`${ra}_${materia}_T4`]);
 
                 let countTrimestres = 0;
                 let somaTrimestres = 0;
-                if (!isNaN(notaT1)) { somaTrimestres += notaT1; countTrimestres++; }
-                if (!isNaN(notaT2)) { somaTrimestres += notaT2; countTrimestres++; }
-                if (!isNaN(notaT3)) { somaTrimestres += notaT3; countTrimestres++; }
-                if (!isNaN(notaT4)) { somaTrimestres += notaT4; countTrimestres++; }
+                
+                if (valT1 !== '') { somaTrimestres += parseFloat(valT1); countTrimestres++; }
+                if (valT2 !== '') { somaTrimestres += parseFloat(valT2); countTrimestres++; }
+                if (valT3 !== '') { somaTrimestres += parseFloat(valT3); countTrimestres++; }
+                if (valT4 !== '') { somaTrimestres += parseFloat(valT4); countTrimestres++; }
 
                 const mediaAnual = countTrimestres > 0 ? (somaTrimestres / countTrimestres).toFixed(1) : '--';
                 
@@ -527,33 +537,43 @@
                     totalDisciplinasAvaliadas++;
                 }
 
-                let situacaoHtml = '<span class="bg-slate-100 text-slate-500 px-2.5 py-1 rounded font-bold">Aguardando</span>';
+                let situacaoHtml = '<span class="bg-slate-100 text-slate-500 px-2 py-0.5 rounded font-bold">Aguardando</span>';
                 if (mediaAnual !== '--') {
                     if (parseFloat(mediaAnual) >= 7.0) {
-                        situacaoHtml = '<span class="bg-green-100 text-green-700 px-2.5 py-1 rounded font-bold">Aprovado</span>';
+                        situacaoHtml = '<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded font-bold">Aprovado</span>';
                     } else {
-                        situacaoHtml = '<span class="bg-orange-100 text-orange-800 px-2.5 py-1 rounded font-bold">Recuperação</span>';
+                        situacaoHtml = '<span class="bg-orange-100 text-orange-800 px-2 py-0.5 rounded font-bold">Recuperação</span>';
                     }
                 }
+
+                const matKey = materia.toLowerCase().replace(/ç/g, 'c').replace(/á/g, 'a').replace(/ê/g, 'e');
 
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition";
                 tr.innerHTML = `
                     <td class="px-4 py-3 font-bold text-slate-800">${materia}</td>
-                    <td class="px-3 py-3 text-center font-semibold text-slate-600">${!isNaN(notaT1) ? notaT1.toFixed(1) : '-'}</td>
-                    <td class="px-3 py-3 text-center font-semibold text-slate-600">${!isNaN(notaT2) ? notaT2.toFixed(1) : '-'}</td>
-                    <td class="px-3 py-3 text-center font-semibold text-slate-600">${!isNaN(notaT3) ? notaT3.toFixed(1) : '-'}</td>
-                    <td class="px-3 py-3 text-center font-semibold text-slate-600">${!isNaN(notaT4) ? notaT4.toFixed(1) : '-'}</td>
-                    <td class="px-4 py-3 text-center font-black text-marinho">${mediaAnual}</td>
+                    <td class="px-3 py-3 text-center">
+                        <input type="number" step="0.1" min="0" max="10" id="input_${matKey}_T1" value="${valT1}" placeholder="0.0" class="w-16 border border-slate-300 rounded px-2 py-1 text-center font-bold text-xs focus:ring-2 focus:ring-marinho focus:outline-none">
+                    </td>
+                    <td class="px-3 py-3 text-center">
+                        <input type="number" step="0.1" min="0" max="10" id="input_${matKey}_T2" value="${valT2}" placeholder="0.0" class="w-16 border border-slate-300 rounded px-2 py-1 text-center font-bold text-xs focus:ring-2 focus:ring-marinho focus:outline-none">
+                    </td>
+                    <td class="px-3 py-3 text-center">
+                        <input type="number" step="0.1" min="0" max="10" id="input_${matKey}_T3" value="${valT3}" placeholder="0.0" class="w-16 border border-slate-300 rounded px-2 py-1 text-center font-bold text-xs focus:ring-2 focus:ring-marinho focus:outline-none">
+                    </td>
+                    <td class="px-3 py-3 text-center">
+                        <input type="number" step="0.1" min="0" max="10" id="input_${matKey}_T4" value="${valT4}" placeholder="0.0" class="w-16 border border-slate-300 rounded px-2 py-1 text-center font-bold text-xs focus:ring-2 focus:ring-marinho focus:outline-none">
+                    </td>
+                    <td class="px-4 py-3 text-center font-black text-marinho text-sm">${mediaAnual}</td>
                     <td class="px-4 py-3 text-right">${situacaoHtml}</td>
                 `;
                 tbody.appendChild(tr);
             });
 
-            // Status geral do boletim
+            // Atualiza status geral
+            const statusGeralEl = document.getElementById('boletim-status-geral');
             if (totalDisciplinasAvaliadas > 0) {
                 const mediaGeralAno = somaMediasAnuais / totalDisciplinasAvaliadas;
-                const statusGeralEl = document.getElementById('boletim-status-geral');
                 if (mediaGeralAno >= 7.0) {
                     statusGeralEl.className = 'bg-green-100 text-green-800 px-3 py-1.5 rounded-xl text-xs font-bold';
                     statusGeralEl.innerText = `Média Geral: ${mediaGeralAno.toFixed(1)} — Aprovado`;
@@ -562,24 +582,51 @@
                     statusGeralEl.innerText = `Média Geral: ${mediaGeralAno.toFixed(1)} — Em Recuperação`;
                 }
             } else {
-                document.getElementById('boletim-status-geral').innerText = 'Nenhuma nota lançada no ano';
+                statusGeralEl.className = 'bg-slate-100 text-slate-700 px-3 py-1.5 rounded-xl text-xs font-bold';
+                statusGeralEl.innerText = 'Digite as notas para calcular o desempenho';
             }
-
-            document.getElementById('modalBoletimAnual').classList.remove('hidden');
         }
 
-        function calcularMediaTrimestre(objNota) {
-            if (!objNota) return NaN;
-            const v1 = parseFloat(objNota.n1);
-            const v2 = parseFloat(objNota.n2);
-            const v3 = parseFloat(objNota.n3);
-            if (isNaN(v1) && isNaN(v2) && isNaN(v3)) return NaN;
+        function extrairNotaTrimestre(obj) {
+            if (!obj) return '';
+            if (obj.notaFinal !== undefined && obj.notaFinal !== null && obj.notaFinal !== '') return obj.notaFinal;
+            const v1 = parseFloat(obj.n1);
+            const v2 = parseFloat(obj.n2);
+            const v3 = parseFloat(obj.n3);
+            if (!isNaN(v1) || !isNaN(v2) || !isNaN(v3)) {
+                const n1 = isNaN(v1) ? 0 : v1;
+                const n2 = isNaN(v2) ? 0 : v2;
+                const n3 = isNaN(v3) ? 0 : v3;
+                return (((n1 * 3) + (n2 * 4) + (n3 * 3)) / 10).toFixed(1);
+            }
+            return '';
+        }
 
-            const nota1 = isNaN(v1) ? 0 : v1;
-            const nota2 = isNaN(v2) ? 0 : v2;
-            const nota3 = isNaN(v3) ? 0 : v3;
+        function salvarNotasBoletim() {
+            if (!alunoEditandoNotasRa) return;
+            const bancoNotas = JSON.parse(localStorage.getItem('peniel_banco_notas')) || {};
 
-            return ((nota1 * 3) + (nota2 * 4) + (nota3 * 3)) / 10;
+            materiasPadrao.forEach(materia => {
+                const matKey = materia.toLowerCase().replace(/ç/g, 'c').replace(/á/g, 'a').replace(/ê/g, 'e');
+                ['T1', 'T2', 'T3', 'T4'].forEach(periodo => {
+                    const inp = document.getElementById(`input_${matKey}_${periodo}`);
+                    if (inp) {
+                        const val = inp.value.trim();
+                        const chave = `${alunoEditandoNotasRa}_${materia}_${periodo}`;
+                        if (val !== '') {
+                            bancoNotas[chave] = {
+                                n1: val, n2: val, n3: val,
+                                notaFinal: val,
+                                dataAtualizacao: new Date().toLocaleDateString('pt-BR')
+                            };
+                        }
+                    }
+                });
+            });
+
+            localStorage.setItem('peniel_banco_notas', JSON.stringify(bancoNotas));
+            renderizarTabelaBoletimEditable(alunoEditandoNotasRa);
+            alert('✅ Notas salvas e médias atualizadas com sucesso!');
         }
 
         function fecharModalBoletim() {
