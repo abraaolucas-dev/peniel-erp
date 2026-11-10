@@ -3,12 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Prontuário e Fichas Cadastrais | Peniel Christian School</title>
+    <title>Fichas e Prontuários 360° | Peniel Christian School</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
-            theme: { extend: { colors: { marinho: '#003057', laranja: '#E85D04' }, fontFamily: { sans: ['Inter', 'sans-serif'], heading: ['Montserrat', 'sans-serif'] } } }
+            theme: {
+                extend: {
+                    colors: { marinho: '#003057', laranja: '#E85D04' },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], heading: ['Montserrat', 'sans-serif'] }
+                }
+            }
         }
     </script>
     <style>
@@ -17,8 +22,8 @@
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col md:flex-row overflow-x-hidden">
-    
-    <!-- Overlay do Menu Mobile -->
+
+    <!-- Overlay Mobile -->
     <div id="overlay-mobile" onclick="toggleMenuMobile()" class="fixed inset-0 bg-slate-950/75 z-[95] hidden md:hidden backdrop-blur-sm transition-opacity"></div>
 
     <!-- Menu Lateral -->
@@ -39,7 +44,7 @@
             
             <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Captação</div>
             <a href="painel.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">📥 Leads Typebot</a>
-
+            
             <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Secretaria</div>
             <a href="matriculas.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">📝 Matrículas & Turmas</a>
             <a href="fichas.html" class="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-laranja to-orange-500 rounded-xl font-bold text-white shadow-md">
@@ -67,229 +72,123 @@
     <!-- Área Principal -->
     <main class="flex-1 p-3 sm:p-5 md:p-8 flex flex-col gap-5 w-full max-w-full overflow-x-hidden">
         
+        <!-- Header -->
         <header class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm gap-4">
             <div class="flex items-center gap-3">
                 <button type="button" onclick="toggleMenuMobile()" class="md:hidden bg-slate-100 text-marinho p-2.5 rounded-lg text-xl hover:bg-slate-200 transition active:scale-95 shadow-sm">☰</button>
                 <div>
-                    <h2 class="font-heading text-xl sm:text-2xl font-bold text-slate-800">Prontuário e Fichas Cadastrais</h2>
-                    <p class="text-xs text-slate-500">Acesse anamnese médica, histórico escolar e documentação dos alunos.</p>
+                    <div class="flex items-center gap-2 mb-0.5">
+                        <span class="bg-purple-100 text-purple-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Prontuário 360°</span>
+                        <span class="bg-slate-100 text-slate-700 text-[10px] font-bold px-2 py-0.5 rounded-full">Central de Cadastros</span>
+                    </div>
+                    <h2 class="font-heading text-xl sm:text-2xl font-bold text-slate-800">Fichas Cadastrais, Anamnese e Família</h2>
+                    <p class="text-xs text-slate-500">Consulta profunda de dados dos responsáveis, saúde, alergias e histórico dos alunos.</p>
                 </div>
             </div>
+            
             <div class="relative w-full md:w-72">
                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔍</span>
-                <input type="text" id="inputBuscaFichas" onkeyup="filtrarTabelaFichas()" placeholder="Buscar aluno por nome ou RA..." class="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                <input type="text" id="buscaFichaGeral" onkeyup="filtrarFichas()" placeholder="Buscar por aluno, responsável ou RA..." class="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-marinho focus:outline-none bg-slate-50 font-medium">
             </div>
         </header>
 
-        <!-- ABAS DE SELEÇÃO (CHOICES) POR TURMA -->
-        <div class="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm overflow-x-auto hide-scrollbar flex gap-2">
-            <button type="button" onclick="mudarTurmaFichas('todas')" id="btn-todas" class="px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-marinho text-white shadow-sm">🌟 Todos os Alunos</button>
-            <button type="button" onclick="mudarTurmaFichas('maternal1')" id="btn-maternal1" class="px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">🧸 Maternal 1</button>
-            <button type="button" onclick="mudarTurmaFichas('maternal2')" id="btn-maternal2" class="px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">🧸 Maternal 2</button>
-            <button type="button" onclick="mudarTurmaFichas('pre1')" id="btn-pre1" class="px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">🎨 Pré-Escola 1</button>
-            <button type="button" onclick="mudarTurmaFichas('pre2')" id="btn-pre2" class="px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">🎒 Pré-Escola 2</button>
-            <button type="button" onclick="mudarTurmaFichas('fundamental1')" id="btn-fundamental1" class="px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">📚 Fundamental (1º ao 5º)</button>
-        </div>
-
-        <!-- Tabela Geral de Alunos para Prontuário -->
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col flex-1">
-            <div class="overflow-x-auto flex-1">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-slate-50 text-slate-500 border-b border-slate-200 uppercase text-[10px] font-bold tracking-wider">
-                        <tr>
-                            <th class="px-5 py-3.5">RA / Aluno</th>
-                            <th class="px-5 py-3.5 hidden md:table-cell">Turma Atual</th>
-                            <th class="px-5 py-3.5 hidden sm:table-cell">Status da Ficha</th>
-                            <th class="px-5 py-3.5 text-right">Ação</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabela-lista-fichas" class="divide-y divide-slate-100">
-                        <!-- Preenchido via JS -->
-                    </tbody>
-                </table>
+        <!-- GRID PRINCIPAL DE PRONTUÁRIOS -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 flex-1">
+            
+            <!-- Coluna Esquerda: Lista Selecionável de Alunos -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col h-[70vh] lg:h-auto">
+                <div class="p-4 bg-slate-50 border-b border-slate-200 font-bold text-slate-700 text-xs uppercase tracking-wider flex justify-between items-center">
+                    <span>Lista de Alunos</span>
+                    <span id="contador-fichas" class="bg-marinho text-white text-[10px] px-2 py-0.5 rounded-full">0 cadastrados</span>
+                </div>
+                <div id="lista-alunos-fichas" class="overflow-y-auto divide-y divide-slate-100 flex-1">
+                    <!-- Renderizado dinamicamente via JS -->
+                </div>
             </div>
+
+            <!-- Coluna Direita: Detalhes do Prontuário 360° -->
+            <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                <div id="detalhe-prontuario-vazio" class="p-12 text-center my-auto">
+                    <span class="text-4xl mb-3 block">📂</span>
+                    <h3 class="font-bold text-slate-700 text-base">Nenhum prontuário selecionado</h3>
+                    <p class="text-xs text-slate-400 mt-1">Selecione um aluno na lista ao lado para visualizar os dados completos de responsáveis, anamnese e histórico.</p>
+                </div>
+
+                <div id="detalhe-prontuario-conteudo" class="hidden flex flex-col h-full overflow-y-auto p-5 sm:p-6 space-y-6">
+                    
+                    <!-- Cabeçalho do Prontuário -->
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-slate-50 p-4 rounded-2xl border border-slate-200 gap-3">
+                        <div>
+                            <span id="ficha-turma-badge" class="bg-blue-100 text-marinho text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Turma</span>
+                            <h3 id="ficha-nome-aluno" class="font-heading text-xl font-bold text-slate-800 mt-1">Nome do Aluno</h3>
+                            <p class="text-xs text-slate-500 font-mono mt-0.5">RA: <span id="ficha-ra">--</span> • Nasc: <span id="ficha-nasc">--</span> • Naturalidade: <span id="ficha-nat">--</span></p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button type="button" onclick="editarAlunoAtual()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition">✏️ Editar Dados</button>
+                            <button type="button" onclick="window.print()" class="bg-marinho hover:bg-blue-900 text-white px-3 py-2 rounded-xl text-xs font-bold transition">🖨️ Imprimir Ficha</button>
+                        </div>
+                    </div>
+
+                    <!-- Grid de Responsáveis e Contatos -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-slate-50/50 p-4 rounded-2xl border border-slate-200 space-y-2">
+                            <h4 class="font-bold text-marinho text-xs uppercase tracking-wider border-b pb-1">👤 Responsável Principal</h4>
+                            <p class="text-xs text-slate-700 font-bold" id="ficha-pai">--</p>
+                            <p class="text-xs text-slate-500 font-mono">📞 <span id="ficha-pai-tel">--</span></p>
+                            <p class="text-xs text-slate-500">📧 <span id="ficha-pai-email">--</span></p>
+                        </div>
+                        <div class="bg-slate-50/50 p-4 rounded-2xl border border-slate-200 space-y-2">
+                            <h4 class="font-bold text-marinho text-xs uppercase tracking-wider border-b pb-1">👤 Co-responsável / Mãe</h4>
+                            <p class="text-xs text-slate-700 font-bold" id="ficha-mae">--</p>
+                            <p class="text-xs text-slate-500 font-mono">📞 <span id="ficha-mae-tel">--</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Prontuário Médico e Anamnese -->
+                    <div class="bg-red-50/60 p-4 rounded-2xl border border-red-200 space-y-3">
+                        <h4 class="font-bold text-red-800 text-xs uppercase tracking-wider flex items-center gap-1.5 border-b border-red-200 pb-1">
+                            🏥 Prontuário Médico & Anamnese Inicial
+                        </h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                            <div class="bg-white p-3 rounded-xl border border-red-100">
+                                <span class="text-[10px] font-bold text-slate-400 block uppercase">Tipo Sanguíneo</span>
+                                <span id="ficha-sangue" class="font-black text-red-700 text-sm">--</span>
+                            </div>
+                            <div class="bg-white p-3 rounded-xl border border-red-100">
+                                <span class="text-[10px] font-bold text-slate-400 block uppercase">Alergias Severas</span>
+                                <span id="ficha-alergia" class="font-bold text-slate-700">--</span>
+                            </div>
+                            <div class="bg-white p-3 rounded-xl border border-red-100">
+                                <span class="text-[10px] font-bold text-slate-400 block uppercase">Medicação Contínua</span>
+                                <span id="ficha-med" class="font-bold text-slate-700">--</span>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-bold text-slate-500 block uppercase mb-1">Observações Comportamentais / Pedagógicas</span>
+                            <p id="ficha-obs" class="text-xs bg-white p-3 rounded-xl border border-red-100 text-slate-700">--</p>
+                        </div>
+                    </div>
+
+                    <!-- Histórico e Ocorrências -->
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center border-b pb-1">
+                            <h4 class="font-bold text-slate-800 text-xs uppercase tracking-wider">📅 Histórico Escolar & Ocorrências</h4>
+                            <button type="button" onclick="adicionarOcorrencia()" class="text-xs bg-blue-50 text-marinho font-bold px-3 py-1.5 rounded-lg hover:bg-blue-100 transition">
+                                + Nova Ocorrência
+                            </button>
+                        </div>
+                        <div id="ficha-historico-lista" class="space-y-2">
+                            <!-- Preenchido via JS -->
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
         </div>
     </main>
 
-    <!-- ========================================================================= -->
-    <!-- MODAL: FICHA COMPLETA DO ALUNO (PRONTUÁRIO) -->
-    <!-- ========================================================================= -->
-    <div id="modalFichaAluno" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[120] p-3 sm:p-4 overflow-y-auto">
-        <div class="bg-white w-full max-w-5xl rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto max-h-[95vh]">
-            
-            <div class="p-4 md:p-6 bg-marinho text-white flex justify-between items-start shrink-0">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 md:w-16 md:h-16 bg-slate-200 rounded-full border-2 border-white text-3xl flex items-center justify-center overflow-hidden shrink-0">👦🏻</div>
-                    <div>
-                        <h3 class="font-bold text-lg md:text-2xl font-heading" id="nomeFichaAluno">--</h3>
-                        <p class="text-blue-200 text-xs md:text-sm" id="subFichaAluno">--</p>
-                    </div>
-                </div>
-                <button type="button" onclick="fecharFichaCompleta()" class="text-white hover:text-red-300 font-bold text-3xl leading-none transition">&times;</button>
-            </div>
-
-            <div class="flex border-b border-slate-200 bg-slate-50 px-2 md:px-4 pt-3 shrink-0 overflow-x-auto hide-scrollbar">
-                <button type="button" onclick="mudarAbaFicha('pessoais')" id="btn-pessoais" class="px-4 md:px-6 py-3 text-xs md:text-sm font-bold border-b-2 border-marinho text-marinho uppercase tracking-wider whitespace-nowrap">Dados Pessoais</button>
-                <button type="button" onclick="mudarAbaFicha('anamnese')" id="btn-anamnese" class="px-4 md:px-6 py-3 text-xs md:text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 uppercase tracking-wider whitespace-nowrap">⚕️ Anamnese Médica</button>
-                <button type="button" onclick="mudarAbaFicha('historico')" id="btn-historico" class="px-4 md:px-6 py-3 text-xs md:text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 uppercase tracking-wider whitespace-nowrap">🎓 Histórico Escolar</button>
-                <button type="button" onclick="mudarAbaFicha('documentacao')" id="btn-documentacao" class="px-4 md:px-6 py-3 text-xs md:text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 uppercase tracking-wider whitespace-nowrap">📄 Documentação</button>
-            </div>
-
-            <div class="p-4 md:p-8 overflow-y-auto bg-slate-50/50 flex-1 space-y-6">
-                
-                <!-- 1. Aba: Dados Pessoais e Anamnese Unificada na Edição -->
-                <div id="aba-pessoais" class="space-y-6">
-                    <div class="flex justify-between items-center border-b border-slate-200 pb-2">
-                        <h4 class="text-base md:text-lg font-bold text-slate-800">Informações Cadastrais e Saúde</h4>
-                        <button type="button" id="btn-editar-pessoais" onclick="habilitarEdicaoPessoais()" class="text-xs bg-blue-50 text-blue-600 border border-blue-200 px-3 py-1.5 rounded-lg font-bold hover:bg-blue-100 transition shadow-sm">
-                            ✏️ Editar Ficha Completa
-                        </button>
-                    </div>
-
-                    <!-- MODO VISUALIZAÇÃO -->
-                    <div id="visualizacao-pessoais" class="space-y-6 block">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div><label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Data de Nascimento</label><p id="view-nasc" class="font-semibold text-slate-800 text-sm">--</p></div>
-                            <div><label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Naturalidade</label><p id="view-nat" class="font-semibold text-slate-800 text-sm">--</p></div>
-                            <div><label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">CPF do Aluno</label><p id="view-cpf" class="font-semibold text-slate-800 text-sm">--</p></div>
-                        </div>
-                        
-                        <h4 class="text-base font-bold text-slate-800 border-b pb-2 mt-4">Responsáveis Familiares</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-5 border border-slate-200 rounded-xl shadow-sm">
-                            <div>
-                                <p class="font-bold text-marinho uppercase tracking-wider text-[10px] mb-1">Pai / Resp. Financeiro</p>
-                                <p id="view-pai-nome" class="font-bold text-slate-800 text-base">--</p>
-                                <p id="view-pai-tel" class="text-xs text-slate-600 mt-1">--</p>
-                                <p id="view-pai-email" class="text-xs text-slate-600">--</p>
-                            </div>
-                            <div>
-                                <p class="font-bold text-marinho uppercase tracking-wider text-[10px] mb-1">Mãe / Autorizada</p>
-                                <p id="view-mae-nome" class="font-bold text-slate-800 text-base">--</p>
-                                <p id="view-mae-tel" class="text-xs text-slate-600 mt-1">--</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- MODO EDIÇÃO COMPLETA (DADOS + ANAMNESE) -->
-                    <div id="edicao-pessoais" class="space-y-6 hidden bg-blue-50/60 p-5 md:p-6 rounded-2xl border-2 border-blue-200 shadow-inner text-xs">
-                        <div class="bg-blue-100 text-blue-900 font-bold p-3 rounded-xl flex items-center justify-between">
-                            <span>✏️ Editando Ficha Cadastral e Saúde do Aluno</span>
-                            <span class="text-[10px] text-blue-700">Preencha e clique em salvar</span>
-                        </div>
-
-                        <div class="space-y-4">
-                            <h5 class="font-bold text-marinho uppercase tracking-wider border-b pb-1">Dados Pessoais</h5>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                <div><label class="block font-bold text-slate-700 mb-1">Nascimento</label><input type="text" id="edit-nasc" class="w-full border rounded-lg px-3 py-2 bg-white"></div>
-                                <div><label class="block font-bold text-slate-700 mb-1">Naturalidade</label><input type="text" id="edit-nat" class="w-full border rounded-lg px-3 py-2 bg-white"></div>
-                                <div><label class="block font-bold text-slate-700 mb-1">CPF Aluno</label><input type="text" id="edit-cpf" class="w-full border rounded-lg px-3 py-2 bg-white"></div>
-                            </div>
-
-                            <h5 class="font-bold text-marinho uppercase tracking-wider border-b pb-1 pt-2">Responsáveis</h5>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                <div><label class="block font-bold text-slate-700 mb-1">Pai / Resp. Financeiro</label><input type="text" id="edit-pai-nome" class="w-full border rounded-lg px-3 py-2 bg-white mb-2" placeholder="Nome"><input type="text" id="edit-pai-tel" class="w-full border rounded-lg px-3 py-2 bg-white mb-2" placeholder="Telefone"><input type="text" id="edit-pai-email" class="w-full border rounded-lg px-3 py-2 bg-white" placeholder="E-mail"></div>
-                                <div><label class="block font-bold text-slate-700 mb-1">Mãe / Co-responsável</label><input type="text" id="edit-mae-nome" class="w-full border rounded-lg px-3 py-2 bg-white mb-2" placeholder="Nome"><input type="text" id="edit-mae-tel" class="w-full border rounded-lg px-3 py-2 bg-white" placeholder="Telefone"></div>
-                            </div>
-
-                            <h5 class="font-bold text-red-700 uppercase tracking-wider border-b pb-1 pt-2">⚕️ Informações de Anamnese & Saúde</h5>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                <div><label class="block font-bold text-slate-700 mb-1">Tipo Sanguíneo</label><input type="text" id="edit-sangue" class="w-full border rounded-lg px-3 py-2 bg-white font-mono" placeholder="Ex: O+"></div>
-                                <div><label class="block font-bold text-slate-700 mb-1">Alergias Severas</label><input type="text" id="edit-alergia" class="w-full border rounded-lg px-3 py-2 bg-white" placeholder="Ex: Amendoim"></div>
-                                <div><label class="block font-bold text-slate-700 mb-1">Medicação Contínua</label><input type="text" id="edit-medicacao" class="w-full border rounded-lg px-3 py-2 bg-white" placeholder="Ex: Não utiliza"></div>
-                            </div>
-                            <div>
-                                <label class="block font-bold text-slate-700 mb-1">Observações Clínicas e Emergência</label>
-                                <textarea id="edit-obs" rows="2" class="w-full border rounded-lg px-3 py-2 bg-white" placeholder="Restrições, convênio médico..."></textarea>
-                            </div>
-                        </div>
-
-                        <div class="flex justify-end gap-2 pt-3 border-t">
-                            <button type="button" onclick="cancelarEdicaoPessoais()" class="px-4 py-2 bg-white border text-slate-600 font-bold rounded-lg text-xs">Cancelar</button>
-                            <button type="button" onclick="salvarEdicaoPessoais()" class="px-5 py-2 bg-green-600 text-white font-bold rounded-lg text-xs shadow-md">💾 Salvar Alterações na Ficha</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 2. Aba: Anamnese Médica -->
-                <div id="aba-anamnese" class="hidden space-y-6 animate-fade-in">
-                    <div class="flex justify-between items-center border-b pb-2">
-                        <h4 class="text-lg font-bold text-red-600 flex items-center gap-2">⚕️ Prontuário de Saúde (Anamnese)</h4>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                        <div class="bg-white p-4 border rounded-xl shadow-sm"><label class="block font-bold text-slate-500 uppercase">Tipo Sanguíneo</label><p class="text-3xl font-black text-red-600 mt-1" id="anamnese-sangue">--</p></div>
-                        <div class="bg-white p-4 border border-red-200 rounded-xl shadow-sm bg-red-50"><label class="block font-bold text-red-800 uppercase">Alergias</label><p class="text-base font-bold text-red-700 mt-1" id="anamnese-alergia">--</p></div>
-                        <div class="bg-white p-4 border rounded-xl shadow-sm"><label class="block font-bold text-slate-500 uppercase">Medicação</label><p class="text-base font-bold text-slate-800 mt-1" id="anamnese-medicacao">--</p></div>
-                    </div>
-                    <div class="bg-white p-5 border rounded-xl shadow-sm text-xs space-y-3">
-                        <h5 class="font-bold text-slate-700">Observações Clínicas e Cuidados Especiais</h5>
-                        <p class="text-slate-600" id="anamnese-obs">--</p>
-                        <div class="bg-slate-50 p-3 rounded-lg border flex justify-between items-center">
-                            <div><span class="font-bold text-slate-500 uppercase text-[10px] block">Contato de Emergência:</span><span class="font-bold text-slate-800" id="anamnese-emergencia">--</span></div>
-                            <a href="tel:21999999999" class="bg-red-100 text-red-600 border border-red-200 px-3 py-1.5 rounded-lg font-bold">☎️ Ligar</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 3. Aba: Histórico Escolar -->
-                <div id="aba-historico" class="hidden space-y-6 animate-fade-in text-xs">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-2 gap-2">
-                        <h4 class="text-base md:text-lg font-bold text-slate-800">🎓 Trajetória e Ocorrências Pedagógicas</h4>
-                        <button type="button" onclick="abrirModalNovaOcorrencia()" class="bg-marinho hover:bg-blue-900 text-white px-3.5 py-2 rounded-xl font-bold shadow-sm transition">
-                            ➕ Registrar Ocorrência / Nota
-                        </button>
-                    </div>
-
-                    <p class="text-slate-500">Linha do tempo alimentada pelos professores e coordenação ao longo do ano letivo.</p>
-
-                    <div id="container-linha-tempo" class="relative border-l-2 border-blue-200 ml-3 space-y-6 mt-4">
-                        <!-- Injetado via JS -->
-                    </div>
-                </div>
-
-                <!-- 4. Aba: Documentação -->
-                <div id="aba-documentacao" class="hidden space-y-6 animate-fade-in text-xs">
-                    <h4 class="text-lg font-bold text-slate-800 border-b pb-2">📄 Documentos Digitalizados</h4>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div class="bg-white border rounded-xl p-4 text-center shadow-sm">📸<h5 class="font-bold mt-2">Foto 3x4</h5><span class="text-green-700 bg-green-100 px-2 py-0.5 rounded text-[10px] font-bold block mt-2">Validado</span></div>
-                        <div class="bg-white border rounded-xl p-4 text-center shadow-sm">📜<h5 class="font-bold mt-2">Certidão Nasc.</h5><span class="text-green-700 bg-green-100 px-2 py-0.5 rounded text-[10px] font-bold block mt-2">Validado</span></div>
-                        <div class="bg-white border rounded-xl p-4 text-center shadow-sm">🪪<h5 class="font-bold mt-2">RG / CPF Pais</h5><span class="text-green-700 bg-green-100 px-2 py-0.5 rounded text-[10px] font-bold block mt-2">Validado</span></div>
-                        <div class="bg-orange-50 border border-orange-200 rounded-xl p-4 text-center shadow-sm">💉<h5 class="font-bold mt-2 text-orange-900">Vacinação</h5><span class="text-orange-700 bg-orange-200 px-2 py-0.5 rounded text-[10px] font-bold block mt-2">Pendente</span></div>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="p-4 border-t border-slate-200 bg-white flex justify-end gap-2 shrink-0">
-                <button type="button" onclick="fecharFichaCompleta()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition">Fechar Prontuário</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL: ADICIONAR OCORRÊNCIA NO HISTÓRICO -->
-    <div id="modalNovaOcorrencia" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[140] p-3 sm:p-4">
-        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto">
-            <div class="p-5 bg-marinho text-white flex justify-between items-center">
-                <h3 class="font-bold text-sm sm:text-base font-heading">➕ Registrar Ocorrência / Parecer</h3>
-                <button type="button" onclick="fecharModalNovaOcorrencia()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
-            </div>
-            <div class="p-6 space-y-4 text-xs">
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">Título do Registro</label>
-                    <input type="text" id="ocoTitulo" placeholder="Ex: Reunião Pedagógica / Evolução em Matemática" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold">
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">Descrição / Comentário</label>
-                    <textarea id="ocoDesc" rows="3" placeholder="Detalhes da ocorrência ou avanço do aluno..." class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs"></textarea>
-                </div>
-            </div>
-            <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2 text-xs">
-                <button type="button" onclick="fecharModalNovaOcorrencia()" class="px-4 py-2 bg-white border text-slate-600 font-bold rounded-xl">Cancelar</button>
-                <button type="button" onclick="salvarNovaOcorrencia()" class="px-5 py-2 bg-marinho text-white font-bold rounded-xl shadow-sm">💾 Adicionar ao Histórico</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- SCRIPTS -->
+    <!-- SCRIPT DO MÓDULO DE FICHAS 360° -->
     <script>
         function toggleMenuMobile() {
             const menu = document.getElementById('menu-lateral');
@@ -302,229 +201,152 @@
             if(confirm("Deseja encerrar sua sessão?")) { window.location.href = 'login.html'; }
         }
 
-        let filtroTurmaFichas = 'todas';
-
-        function mudarTurmaFichas(turmaKey) {
-            filtroTurmaFichas = turmaKey;
-            ['todas', 'maternal1', 'maternal2', 'pre1', 'pre2', 'fundamental1'].forEach(k => {
-                const btn = document.getElementById(`btn-${k}`);
-                if (k === turmaKey) {
-                    btn.className = 'px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-marinho text-white shadow-sm';
-                } else {
-                    btn.className = 'px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200';
-                }
-            });
-            renderizarListaFichas();
-        }
-
-        // BANCO DE DADOS GERAL DE ALUNOS COM SUPORTE A LOCALSTORAGE E TURMAS
         function obterBancoGeralAlunos() {
             let base = JSON.parse(localStorage.getItem('peniel_banco_fichas_detalhadas')) || {
-                '2027501': { ra: '2027501', nome: 'Helena Santos', turmaChave: 'maternal1', turma: 'Maternal 1', status: 'Ativo', nasc: '15/04/2023', nat: 'Rio de Janeiro - RJ', cpf: '000.111.222-33', pai: 'Camila Santos', paiTel: '(21) 98888-1111', paiEmail: 'camila@email.com', mae: 'Ana Santos', maeTel: '(21) 97777-2222', sangue: 'O+', alergia: 'Nenhuma', med: 'Não utiliza', obs: 'Excelente adaptação.', historico: [{ data: '12/02/2026', titulo: 'Adaptação Concluída', desc: 'Entrou na turminha sem chorar.' }] },
-                '2027001': { ra: '2027001', nome: 'Davi Lucas', turmaChave: 'fundamental1', turma: '3º Ano A', status: 'Ativo', nasc: '15/04/2018', nat: 'Rio de Janeiro - RJ', cpf: '111.222.333-44', pai: 'Carlos Lucas', paiTel: '(21) 99999-1111', paiEmail: 'carlos.lucas@email.com', mae: 'Ana Carolina Lucas', maeTel: '(21) 98888-2222', sangue: 'O+', alergia: 'Amendoim', med: 'Não utiliza', obs: 'Participativo nas aulas.', historico: [{ data: '10/03/2026', titulo: 'Início do Ano Letivo', desc: 'Alocado no 3º Ano A.' }] },
-                '2027002': { ra: '2027002', nome: 'Isabela Mendes', turmaChave: 'fundamental1', turma: '2º Ano B', status: 'Ativo', nasc: '10/11/2019', nat: 'Niterói - RJ', cpf: '222.333.444-55', pai: 'Roberto Mendes', paiTel: '(21) 97777-0000', paiEmail: 'roberto@email.com', mae: 'Mariana Mendes', maeTel: '(21) 96666-3333', sangue: 'A-', alergia: 'Corante Amarelo', med: 'Bombinha de Asma', obs: 'Asma leve após esforço físico.', historico: [{ data: '12/02/2026', titulo: 'Avaliação Inicial', desc: 'Fluência verbal ótima.' }] }
+                '2027501': { ra: '2027501', nome: 'Helena Santos', turmaChave: 'maternal1', turma: 'Maternal 1', status: 'Ativo', nasc: '15/04/2023', nat: 'Rio de Janeiro - RJ', cpf: '000.111.222-33', pai: 'Camila Santos', paiTel: '(21) 98888-1111', paiEmail: 'camila@email.com', mae: 'Ana Santos', maeTel: '(21) 97777-2222', sangue: 'O+', alergia: 'Nenhuma', med: 'Não utiliza', obs: 'Excelente adaptação na rotina.', historico: [{ data: '12/02/2026', titulo: 'Adaptação', desc: 'Concluída com sucesso.' }] },
+                '2027001': { ra: '2027001', nome: 'Davi Lucas', turmaChave: 'fundamental1', turma: 'Ensino Fundamental', status: 'Ativo', nasc: '15/04/2018', nat: 'Rio de Janeiro - RJ', cpf: '111.222.333-44', pai: 'Carlos Lucas', paiTel: '(21) 99999-1111', paiEmail: 'carlos.lucas@email.com', mae: 'Ana Carolina Lucas', maeTel: '(21) 98888-2222', sangue: 'O+', alergia: 'Amendoim', med: 'Não utiliza', obs: 'Aluno participativo em sala de aula.', historico: [{ data: '10/03/2026', titulo: 'Matrícula', desc: 'Renovação efetuada com sucesso.' }] }
             };
             return base;
         }
 
-        function salvarBancoGeralAlunos(base) {
-            localStorage.setItem('peniel_banco_fichas_detalhadas', JSON.stringify(base));
-        }
-
-        function renderizarListaFichas() {
-            const tbody = document.getElementById('tabela-lista-fichas');
-            tbody.innerHTML = '';
-            const base = obterBancoGeralAlunos();
-            const busca = document.getElementById('inputBuscaFichas').value.toLowerCase();
-            
-            let filtrados = [];
-            for (let ra in base) {
-                const a = base[ra];
-                const matchTurma = (filtroTurmaFichas === 'todas' || a.turmaChave === filtroTurmaFichas);
-                const matchBusca = (a.nome.toLowerCase().includes(busca) || a.ra.toLowerCase().includes(busca));
-                if (matchTurma && matchBusca) {
-                    filtrados.push(a);
-                }
-            }
-
-            if (filtrados.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400 text-xs">Nenhum aluno encontrado nesta turma.</td></tr>`;
-                return;
-            }
-
-            filtrados.forEach(aluno => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition";
-                tr.innerHTML = `
-                    <td class="px-5 py-3.5 font-bold text-slate-800 text-xs sm:text-sm">
-                        ${aluno.nome}
-                        <span class="block text-[10px] text-slate-400 font-mono font-normal">RA: ${aluno.ra}</span>
-                    </td>
-                    <td class="px-5 py-3.5 text-slate-600 font-medium hidden md:table-cell text-xs">${aluno.turma}</td>
-                    <td class="px-5 py-3.5 hidden sm:table-cell"><span class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded">${aluno.status}</span></td>
-                    <td class="px-5 py-3.5 text-right">
-                        <button type="button" onclick="abrirFichaCompleta('${aluno.ra}')" class="bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-bold text-xs transition">
-                            👥 Abrir Prontuário
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function filtrarTabelaFichas() { renderizarListaFichas(); }
-
-        let alunoAtivoRa = null;
-
-        function abrirFichaCompleta(ra) {
-            const base = obterBancoGeralAlunos();
-            const aluno = base[ra];
-            if (!aluno) { alert("Aluno não encontrado."); return; }
-            alunoAtivoRa = ra;
-
-            document.getElementById('nomeFichaAluno').innerText = aluno.nome;
-            document.getElementById('subFichaAluno').innerText = `RA: ${aluno.ra} • ${aluno.turma}`;
-            
-            document.getElementById('view-nasc').innerText = aluno.nasc;
-            document.getElementById('view-nat').innerText = aluno.nat;
-            document.getElementById('view-cpf').innerText = aluno.cpf;
-            document.getElementById('view-pai-nome').innerText = aluno.pai;
-            document.getElementById('view-pai-tel').innerText = `📱 ${aluno.paiTel}`;
-            document.getElementById('view-pai-email').innerText = `✉️ ${aluno.paiEmail}`;
-            document.getElementById('view-mae-nome').innerText = aluno.mae;
-            document.getElementById('view-mae-tel').innerText = `📱 ${aluno.maeTel}`;
-
-            document.getElementById('anamnese-sangue').innerText = aluno.sangue;
-            document.getElementById('anamnese-alergia').innerText = aluno.alergia;
-            document.getElementById('anamnese-medicacao').innerText = aluno.med;
-            document.getElementById('anamnese-obs').innerText = aluno.obs;
-            document.getElementById('anamnese-emergencia').innerText = `${aluno.pai} • ${aluno.paiTel}`;
-
-            renderizarLinhaTempoHistorico(aluno.historico || []);
-
-            document.getElementById('modalFichaAluno').classList.remove('hidden');
-            mudarAbaFicha('pessoais');
-            cancelarEdicaoPessoais();
-        }
-
-        function fecharFichaCompleta() { document.getElementById('modalFichaAluno').classList.add('hidden'); }
-
-        function mudarAbaFicha(aba) {
-            ['pessoais', 'anamnese', 'historico', 'documentacao'].forEach(a => {
-                document.getElementById(`aba-${a}`).classList.add('hidden');
-                document.getElementById(`btn-${a}`).className = 'px-4 md:px-6 py-3 text-xs md:text-sm font-bold border-b-2 border-transparent text-slate-500 uppercase tracking-wider whitespace-nowrap';
-            });
-            document.getElementById(`aba-${aba}`).classList.remove('hidden');
-            document.getElementById(`btn-${aba}`).className = 'px-4 md:px-6 py-3 text-xs md:text-sm font-bold border-b-2 border-marinho text-marinho uppercase tracking-wider whitespace-nowrap';
-        }
-
-        // EDIÇÃO COMPLETA (DADOS + ANAMNESE)
-        function habilitarEdicaoPessoais() {
-            document.getElementById('visualizacao-pessoais').classList.add('hidden');
-            document.getElementById('btn-editar-pessoais').classList.add('hidden');
-            document.getElementById('edicao-pessoais').classList.remove('hidden');
-            
-            const base = obterBancoGeralAlunos();
-            const aluno = base[alunoAtivoRa];
-            if (aluno) {
-                document.getElementById('edit-nasc').value = aluno.nasc || '';
-                document.getElementById('edit-nat').value = aluno.nat || '';
-                document.getElementById('edit-cpf').value = aluno.cpf || '';
-                document.getElementById('edit-pai-nome').value = aluno.pai || '';
-                document.getElementById('edit-pai-tel').value = aluno.paiTel || '';
-                document.getElementById('edit-pai-email').value = aluno.paiEmail || '';
-                document.getElementById('edit-mae-nome').value = aluno.mae || '';
-                document.getElementById('edit-mae-tel').value = aluno.maeTel || '';
-                document.getElementById('edit-sangue').value = aluno.sangue || '';
-                document.getElementById('edit-alergia').value = aluno.alergia || '';
-                document.getElementById('edit-medicacao').value = aluno.med || '';
-                document.getElementById('edit-obs').value = aluno.obs || '';
-            }
-        }
-
-        function cancelarEdicaoPessoais() {
-            document.getElementById('edicao-pessoais').classList.add('hidden');
-            document.getElementById('visualizacao-pessoais').classList.remove('hidden');
-            document.getElementById('btn-editar-pessoais').classList.remove('hidden');
-        }
-
-        function salvarEdicaoPessoais() {
-            const base = obterBancoGeralAlunos();
-            if (base[alunoAtivoRa]) {
-                base[alunoAtivoRa].nasc = document.getElementById('edit-nasc').value;
-                base[alunoAtivoRa].nat = document.getElementById('edit-nat').value;
-                base[alunoAtivoRa].cpf = document.getElementById('edit-cpf').value;
-                base[alunoAtivoRa].pai = document.getElementById('edit-pai-nome').value;
-                base[alunoAtivoRa].paiTel = document.getElementById('edit-pai-tel').value;
-                base[alunoAtivoRa].paiEmail = document.getElementById('edit-pai-email').value;
-                base[alunoAtivoRa].mae = document.getElementById('edit-mae-nome').value;
-                base[alunoAtivoRa].maeTel = document.getElementById('edit-mae-tel').value;
-                base[alunoAtivoRa].sangue = document.getElementById('edit-sangue').value;
-                base[alunoAtivoRa].alergia = document.getElementById('edit-alergia').value;
-                base[alunoAtivoRa].med = document.getElementById('edit-medicacao').value;
-                base[alunoAtivoRa].obs = document.getElementById('edit-obs').value;
-
-                salvarBancoGeralAlunos(base);
-                abrirFichaCompleta(alunoAtivoRa);
-            }
-            cancelarEdicaoPessoais();
-            alert('✅ Ficha cadastral e anamnese atualizadas com sucesso!');
-        }
-
-        // HISTÓRICO ESCOLAR (LINHA DO TEMPO DINÂMICA)
-        function renderizarLinhaTempoHistorico(historicoArray) {
-            const container = document.getElementById('container-linha-tempo');
-            container.innerHTML = '';
-            
-            if (!historicoArray || historicoArray.length === 0) {
-                container.innerHTML = `<p class="text-xs text-slate-400 pl-6">Nenhum registro no histórico escolar ainda.</p>`;
-                return;
-            }
-
-            historicoArray.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'relative pl-6';
-                div.innerHTML = `
-                    <div class="absolute -left-[9px] top-1 w-4 h-4 bg-marinho rounded-full border-2 border-white shadow-sm"></div>
-                    <p class="font-bold text-marinho bg-blue-50 inline-block px-2 py-0.5 rounded text-[10px]">${item.data}</p>
-                    <h5 class="font-extrabold text-slate-800 text-sm mt-1">${item.titulo}</h5>
-                    <p class="text-xs text-slate-600 mt-0.5">${item.desc}</p>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function abrirModalNovaOcorrencia() { document.getElementById('modalNovaOcorrencia').classList.remove('hidden'); }
-        function fecharModalNovaOcorrencia() { document.getElementById('modalNovaOcorrencia').classList.add('hidden'); }
-
-        function salvarNovaOcorrencia() {
-            const titulo = document.getElementById('ocoTitulo').value.trim();
-            const desc = document.getElementById('ocoDesc').value.trim();
-            if (!titulo || !desc) { alert('Preencha o título e a descrição.'); return; }
-
-            const base = obterBancoGeralAlunos();
-            if (base[alunoAtivoRa]) {
-                if (!base[alunoAtivoRa].historico) base[alunoAtivoRa].historico = [];
-                const dataHoje = new Date().toLocaleDateString('pt-BR');
-                base[alunoAtivoRa].historico.unshift({ data: dataHoje, titulo: titulo, desc: desc });
-                salvarBancoGeralAlunos(base);
-                renderizarLinhaTempoHistorico(base[alunoAtivoRa].historico);
-            }
-
-            document.getElementById('ocoTitulo').value = '';
-            document.getElementById('ocoDesc').value = '';
-            fecharModalNovaOcorrencia();
-            alert('✅ Ocorrência adicionada ao histórico escolar do aluno!');
-        }
+        let alunoSelecionadoRa = null;
 
         document.addEventListener('DOMContentLoaded', () => {
-            renderizarListaFichas();
-            const params = new URLSearchParams(window.location.search);
-            const raUrl = params.get('ra');
-            if (raUrl) {
-                setTimeout(() => { abrirFichaCompleta(raUrl); }, 200);
+            carregarListaAlunosFichas();
+            // Se houver parâmetro na URL (?ra=...), seleciona automaticamente
+            const urlParams = new URLSearchParams(window.location.search);
+            const raParam = urlParams.get('ra');
+            if (raParam) {
+                selecionarAlunoFicha(raParam);
             }
         });
+
+        function carregarListaAlunosFichas(filtro = '') {
+            const base = obterBancoGeralAlunos();
+            const container = document.getElementById('lista-alunos-fichas');
+            container.innerHTML = '';
+            
+            let total = 0;
+            for (let ra in base) {
+                const aluno = base[ra];
+                if (filtro && !aluno.nome.toLowerCase().includes(filtro) && !aluno.ra.includes(filtro) && !aluno.pai.toLowerCase().includes(filtro)) {
+                    continue;
+                }
+                total++;
+
+                const item = document.createElement('div');
+                item.className = `p-4 hover:bg-slate-50 transition cursor-pointer flex items-center justify-between border-b border-slate-100 ${alunoSelecionadoRa === ra ? 'bg-blue-50/70 border-l-4 border-l-laranja' : ''}`;
+                item.onclick = () => selecionarAlunoFicha(ra);
+                
+                item.innerHTML = `
+                    <div>
+                        <p class="font-bold text-slate-800 text-xs sm:text-sm">${aluno.nome}</p>
+                        <p class="text-[10px] text-slate-400 font-mono">RA: ${aluno.ra} • <span class="text-blue-600 font-semibold">${aluno.turma}</span></p>
+                    </div>
+                    <span class="text-xs text-slate-400">➡️</span>
+                `;
+                container.appendChild(item);
+            }
+            document.getElementById('contador-fichas').innerText = `${total} cadastrados`;
+        }
+
+        function filtrarFichas() {
+            const termo = document.getElementById('buscaFichaGeral').value.toLowerCase();
+            carregarListaAlunosFichas(termo);
+        }
+
+        function selecionarAlunoFicha(ra) {
+            const base = obterBancoGeralAlunos();
+            const aluno = base[ra];
+            if (!aluno) return;
+
+            alunoSelecionadoRa = ra;
+            carregarListaAlunosFichas(document.getElementById('buscaFichaGeral').value.toLowerCase());
+
+            document.getElementById('detalhe-prontuario-vazio').classList.add('hidden');
+            document.getElementById('detalhe-prontuario-conteudo').classList.remove('hidden');
+
+            document.getElementById('ficha-turma-badge').innerText = aluno.turma;
+            document.getElementById('ficha-nome-aluno').innerText = aluno.nome;
+            document.getElementById('ficha-ra').innerText = aluno.ra;
+            document.getElementById('ficha-nasc').innerText = aluno.nasc || 'Não informada';
+            document.getElementById('ficha-nat').innerText = aluno.nat || 'Rio de Janeiro - RJ';
+
+            document.getElementById('ficha-pai').innerText = aluno.pai || 'Não informado';
+            document.getElementById('ficha-pai-tel').innerText = aluno.paiTel || '--';
+            document.getElementById('ficha-pai-email').innerText = aluno.paiEmail || '--';
+            
+            document.getElementById('ficha-mae').innerText = aluno.mae || 'Co-responsável';
+            document.getElementById('ficha-mae-tel').innerText = aluno.maeTel || '--';
+
+            document.getElementById('ficha-sangue').innerText = aluno.sangue || 'O+';
+            document.getElementById('ficha-alergia').innerText = aluno.alergia || 'Nenhuma restrição registrada';
+            document.getElementById('ficha-med').innerText = aluno.med || 'Nenhuma medicação informada';
+            document.getElementById('ficha-obs').innerText = aluno.obs || 'Nenhuma observação cadastrada.';
+
+            // Renderizar Histórico
+            const histContainer = document.getElementById('ficha-historico-lista');
+            histContainer.innerHTML = '';
+            if (aluno.historico && aluno.historico.length > 0) {
+                aluno.historico.forEach(h => {
+                    const box = document.createElement('div');
+                    box.className = 'bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-1';
+                    box.innerHTML = `
+                        <div class="flex justify-between font-bold text-slate-700">
+                            <span>📌 ${h.titulo}</span>
+                            <span class="text-slate-400 font-mono text-[10px]">${h.data}</span>
+                        </div>
+                        <p class="text-slate-600">${h.desc}</p>
+                    `;
+                    histContainer.appendChild(box);
+                });
+            } else {
+                histContainer.innerHTML = `<p class="text-xs text-slate-400 italic">Nenhum evento registrado no histórico.</p>`;
+            }
+        }
+
+        function adicionarOcorrencia() {
+            if (!alunoSelecionadoRa) return;
+            const titulo = prompt("Título da Ocorrência (ex: Reunião Pedagógica, Atestado Médico):");
+            if (!titulo) return;
+            const desc = prompt("Descrição detalhada da ocorrência:");
+            if (!desc) return;
+
+            const base = obterBancoGeralAlunos();
+            if (base[alunoSelecionadoRa]) {
+                if (!base[alunoSelecionadoRa].historico) base[alunoSelecionadoRa].historico = [];
+                base[alunoSelecionadoRa].historico.unshift({
+                    data: new Date().toLocaleDateString('pt-BR'),
+                    titulo: titulo,
+                    desc: desc
+                });
+                localStorage.setItem('peniel_banco_fichas_detalhadas', JSON.stringify(base));
+                selecionarAlunoFicha(alunoSelecionadoRa);
+                alert('✅ Ocorrência registrada com sucesso!');
+            }
+        }
+
+        function editarAlunoAtual() {
+            if (!alunoSelecionadoRa) return;
+            const base = obterBancoGeralAlunos();
+            const aluno = base[alunoSelecionadoRa];
+            
+            const novoNome = prompt("Editar Nome do Aluno:", aluno.nome);
+            if (!novoNome) return;
+            const novoPai = prompt("Editar Responsável:", aluno.pai);
+            const novoTel = prompt("Editar Telefone:", aluno.paiTel);
+            const novaAlergia = prompt("Editar Alergias:", aluno.alergia);
+
+            aluno.nome = novoNome;
+            if (novoPai) aluno.pai = novoPai;
+            if (novoTel) aluno.paiTel = novoTel;
+            if (novaAlergia) aluno.alergia = novaAlergia;
+
+            localStorage.setItem('peniel_banco_fichas_detalhadas', JSON.stringify(base));
+            carregarListaAlunosFichas();
+            selecionarAlunoFicha(alunoSelecionadoRa);
+            alert('✅ Dados do prontuário atualizados com sucesso!');
+        }
     </script>
 </body>
 </html>
