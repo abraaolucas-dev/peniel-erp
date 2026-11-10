@@ -79,7 +79,6 @@
             <a href="rematricula.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">🔄 Rematrícula</a>
 
             <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Acadêmico</div>
-            <!-- BOTÃO DE CALENDÁRIO ATUALIZADO E FUNCIONAL -->
             <a href="calendario.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">📅 Calendário e Equipe</a>
             <a href="notas.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">📊 Notas e Avaliações</a>
 
@@ -119,9 +118,15 @@
             </div>
             
             <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 w-full xl:w-auto">
-                <div class="flex items-center justify-center gap-1.5 bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-xs font-bold text-slate-700">
-                    <span>📅</span><span id="data-topo">--/--/----</span>
+                
+                <!-- BOTÃO DE CALENDÁRIO INTERATIVO E CLICÁVEL -->
+                <div class="relative flex items-center bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:border-marinho transition cursor-pointer" onclick="abrirCalendarioInterativo()">
+                    <span>📅</span>
+                    <span id="data-topo" class="ml-1.5">--/--/----</span>
+                    <!-- Input nativo invisível cobrindo o botão para abrir o calendário nativo do sistema/navegador -->
+                    <input type="date" id="inputCalendarioTopo" onchange="mudarDataSistema(this.value)" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
                 </div>
+
                 <div class="flex items-center justify-center gap-1.5 bg-slate-50 border border-slate-200 px-2.5 py-2 rounded-xl">
                     <span class="text-sm">🏫</span>
                     <select id="seletorUnidade" onchange="mudarUnidade()" class="bg-transparent text-xs font-bold text-slate-700 focus:outline-none cursor-pointer w-full">
@@ -130,6 +135,7 @@
                         <option value="Filial Barra">Filial Barra</option>
                     </select>
                 </div>
+
                 <button type="button" onclick="abrirModalPerfil()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5">
                     👤 <span id="nomeGestorBtn" class="truncate">Abraão Lucas</span>
                 </button>
@@ -416,6 +422,23 @@
                 localStorage.removeItem('peniel_sessao_ativa');
                 window.location.href = 'login.html';
             }
+        }
+
+        // FUNCIONALIDADE DO CALENDÁRIO INTERATIVO NO TOPO
+        function abrirCalendarioInterativo() {
+            const inputDate = document.getElementById('inputCalendarioTopo');
+            if (inputDate && typeof inputDate.showPicker === 'function') {
+                inputDate.showPicker();
+            }
+        }
+
+        function mudarDataSistema(dataSelecionada) {
+            if (!dataSelecionada) return;
+            const partes = dataSelecionada.split('-');
+            const dataFormatada = `${partes[2]}/${partes[1]}/${partes[0]}`;
+            document.getElementById('data-topo').innerText = dataFormatada;
+            localStorage.setItem('peniel_data_ativa', dataFormatada);
+            alert(`📅 Data do sistema alterada para: ${dataFormatada}\n(As turmas e presenças foram sincronizadas para este dia).`);
         }
 
         const bancoUnidades = {
@@ -729,7 +752,9 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('data-topo').innerText = new Date().toLocaleDateString('pt-BR');
+            const dataSalva = localStorage.getItem('peniel_data_ativa') || new Date().toLocaleDateString('pt-BR');
+            document.getElementById('data-topo').innerText = dataSalva;
+
             const corSalva = localStorage.getItem('peniel_cor_sessao') || '#003057';
             mudarCorSessao(corSalva);
 
