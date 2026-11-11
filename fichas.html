@@ -186,7 +186,114 @@
             </div>
 
         </div>
-    </main>
+    
+    <!-- ========================================================================= -->
+    <!-- MODAL DE EDIÇÃO COMPLETA DO ALUNO (FICHA 360°) -->
+    <!-- ========================================================================= -->
+    <div id="modalEdicaoCompletaAluno" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[150] p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto max-h-[95vh]">
+            <div class="p-5 bg-marinho text-white flex justify-between items-center shrink-0 border-b border-laranja/40">
+                <div>
+                    <span class="text-[10px] font-bold bg-laranja text-white px-2 py-0.5 rounded uppercase">Formulário de Edição Completa</span>
+                    <h3 class="font-bold text-lg font-heading mt-1" id="titulo-modal-edicao">✏️ Editar Ficha do Aluno</h3>
+                </div>
+                <button type="button" onclick="fecharModalEdicaoCompleta()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
+            </div>
+
+            <div class="p-6 overflow-y-auto bg-slate-50 space-y-5 text-xs flex-1">
+                <!-- Seção 1: Dados Pessoais do Aluno -->
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                    <h4 class="font-bold text-marinho uppercase tracking-wider border-b pb-1 text-[11px] flex items-center gap-1.5">👤 1. Dados Pessoais do Aluno</h4>
+                    <input type="hidden" id="editRa">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="sm:col-span-2">
+                            <label class="block font-bold text-slate-700 mb-1">Nome Completo do Aluno</label>
+                            <input type="text" id="editNome" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold focus:ring-2 focus:ring-marinho focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Data de Nascimento</label>
+                            <input type="text" id="editNasc" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-marinho focus:outline-none" placeholder="DD/MM/AAAA">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Naturalidade / Cidade-UF</label>
+                            <input type="text" id="editNat" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-marinho focus:outline-none" placeholder="Ex: Rio de Janeiro - RJ">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">CPF do Aluno</label>
+                            <input type="text" id="editCpf" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono focus:ring-2 focus:ring-marinho focus:outline-none" placeholder="000.000.000-00">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Turma / Ciclo</label>
+                            <select id="editTurma" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold bg-white focus:ring-2 focus:ring-marinho focus:outline-none">
+                                <option value="Maternal 1">Maternal 1</option>
+                                <option value="Maternal 2">Maternal 2</option>
+                                <option value="Pré-Escola 1">Pré-Escola 1</option>
+                                <option value="Pré-Escola 2">Pré-Escola 2</option>
+                                <option value="Ensino Fundamental">Ensino Fundamental</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção 2: Dados dos Responsáveis -->
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                    <h4 class="font-bold text-marinho uppercase tracking-wider border-b pb-1 text-[11px] flex items-center gap-1.5">👨‍👩‍👧 2. Dados da Família & Responsáveis</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Responsável Principal (Pai/Mãe/Tutor)</label>
+                            <input type="text" id="editPai" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold focus:ring-2 focus:ring-marinho focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Telefone / WhatsApp Responsável</label>
+                            <input type="text" id="editPaiTel" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono focus:ring-2 focus:ring-marinho focus:outline-none">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block font-bold text-slate-700 mb-1">E-mail do Responsável</label>
+                            <input type="email" id="editPaiEmail" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-marinho focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Co-responsável / Mãe</label>
+                            <input type="text" id="editMae" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold focus:ring-2 focus:ring-marinho focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Telefone Co-responsável</label>
+                            <input type="text" id="editMaeTel" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono focus:ring-2 focus:ring-marinho focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção 3: Saúde, Alergias e Observações -->
+                <div class="bg-white p-4 rounded-xl border border-red-200 shadow-sm space-y-3">
+                    <h4 class="font-bold text-red-700 uppercase tracking-wider border-b border-red-200 pb-1 text-[11px] flex items-center gap-1.5">🏥 3. Saúde, Anamnese & Observações</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Tipo Sanguíneo</label>
+                            <input type="text" id="editSangue" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold font-mono focus:ring-2 focus:ring-red-500 focus:outline-none">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block font-bold text-slate-700 mb-1">Alergias Severas / Alimentares</label>
+                            <input type="text" id="editAlergia" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-red-500 focus:outline-none">
+                        </div>
+                        <div class="sm:col-span-3">
+                            <label class="block font-bold text-slate-700 mb-1">Medicação Contínua / Cuidados</label>
+                            <input type="text" id="editMed" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-red-500 focus:outline-none">
+                        </div>
+                        <div class="sm:col-span-3">
+                            <label class="block font-bold text-slate-700 mb-1">Observações Comportamentais e Pedagógicas</label>
+                            <textarea id="editObs" rows="3" class="w-full border border-slate-300 rounded-xl p-3 text-xs focus:ring-2 focus:ring-red-500 focus:outline-none"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 border-t border-slate-200 bg-white flex justify-end gap-2 shrink-0">
+                <button type="button" onclick="fecharModalEdicaoCompleta()" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-300 transition">Cancelar</button>
+                <button type="button" onclick="salvarEdicaoCompletaFicha()" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-xs shadow-md transition flex items-center gap-1">💾 Salvar Todas as Informações</button>
+            </div>
+        </div>
+    </div>
+
+</main>
 
     <!-- SCRIPT DO MÓDULO DE FICHAS 360° -->
     <script>
@@ -213,11 +320,15 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             carregarListaAlunosFichas();
-            // Se houver parâmetro na URL (?ra=...), seleciona automaticamente
+            // Se houver parâmetro na URL (?ra=...), seleciona o aluno e abre DIRETO o formulário de edição completa!
             const urlParams = new URLSearchParams(window.location.search);
             const raParam = urlParams.get('ra');
+            const editarParam = urlParams.get('editar');
             if (raParam) {
                 selecionarAlunoFicha(raParam);
+                if (editarParam === 'true' || urlParams.has('ra')) {
+                    abrirModalEdicaoCompleta(raParam);
+                }
             }
         });
 
@@ -326,26 +437,70 @@
             }
         }
 
-        function editarAlunoAtual() {
-            if (!alunoSelecionadoRa) return;
+        function abrirModalEdicaoCompleta(ra) {
             const base = obterBancoGeralAlunos();
-            const aluno = base[alunoSelecionadoRa];
-            
-            const novoNome = prompt("Editar Nome do Aluno:", aluno.nome);
-            if (!novoNome) return;
-            const novoPai = prompt("Editar Responsável:", aluno.pai);
-            const novoTel = prompt("Editar Telefone:", aluno.paiTel);
-            const novaAlergia = prompt("Editar Alergias:", aluno.alergia);
+            const aluno = base[ra || alunoSelecionadoRa];
+            if (!aluno) return;
 
-            aluno.nome = novoNome;
-            if (novoPai) aluno.pai = novoPai;
-            if (novoTel) aluno.paiTel = novoTel;
-            if (novaAlergia) aluno.alergia = novaAlergia;
+            document.getElementById('editRa').value = aluno.ra;
+            document.getElementById('editNome').value = aluno.nome || '';
+            document.getElementById('editNasc').value = aluno.nasc || '';
+            document.getElementById('editNat').value = aluno.nat || '';
+            document.getElementById('editCpf').value = aluno.cpf || '';
+            document.getElementById('editTurma').value = aluno.turma || 'Ensino Fundamental';
 
-            localStorage.setItem('peniel_banco_fichas_detalhadas', JSON.stringify(base));
+            document.getElementById('editPai').value = aluno.pai || '';
+            document.getElementById('editPaiTel').value = aluno.paiTel || '';
+            document.getElementById('editPaiEmail').value = aluno.paiEmail || '';
+            document.getElementById('editMae').value = aluno.mae || '';
+            document.getElementById('editMaeTel').value = aluno.maeTel || '';
+
+            document.getElementById('editSangue').value = aluno.sangue || '';
+            document.getElementById('editAlergia').value = aluno.alergia || '';
+            document.getElementById('editMed').value = aluno.med || '';
+            document.getElementById('editObs').value = aluno.obs || '';
+
+            document.getElementById('titulo-modal-edicao').innerText = `✏️ Editar Ficha Completa: ${aluno.nome}`;
+            document.getElementById('modalEdicaoCompletaAluno').classList.remove('hidden');
+        }
+
+        function fecharModalEdicaoCompleta() {
+            document.getElementById('modalEdicaoCompletaAluno').classList.add('hidden');
+        }
+
+        function editarAlunoAtual() {
+            if (alunoSelecionadoRa) {
+                abrirModalEdicaoCompleta(alunoSelecionadoRa);
+            }
+        }
+
+        function salvarEdicaoCompletaFicha() {
+            const ra = document.getElementById('editRa').value;
+            const base = obterBancoGeralAlunos();
+            if (!base[ra]) return;
+
+            base[ra].nome = document.getElementById('editNome').value.trim();
+            base[ra].nasc = document.getElementById('editNasc').value.trim();
+            base[ra].nat = document.getElementById('editNat').value.trim();
+            base[ra].cpf = document.getElementById('editCpf').value.trim();
+            base[ra].turma = document.getElementById('editTurma').value;
+
+            base[ra].pai = document.getElementById('editPai').value.trim();
+            base[ra].paiTel = document.getElementById('editPaiTel').value.trim();
+            base[ra].paiEmail = document.getElementById('editPaiEmail').value.trim();
+            base[ra].mae = document.getElementById('editMae').value.trim();
+            base[ra].maeTel = document.getElementById('editMaeTel').value.trim();
+
+            base[ra].sangue = document.getElementById('editSangue').value.trim();
+            base[ra].alergia = document.getElementById('editAlergia').value.trim();
+            base[ra].med = document.getElementById('editMed').value.trim();
+            base[ra].obs = document.getElementById('editObs').value.trim();
+
+            salvarBancoGeralAlunos(base);
+            fecharModalEdicaoCompleta();
             carregarListaAlunosFichas();
-            selecionarAlunoFicha(alunoSelecionadoRa);
-            alert('✅ Dados do prontuário atualizados com sucesso!');
+            selecionarAlunoFicha(ra);
+            alert('✅ Todas as informações da ficha do aluno foram salvas e atualizadas com sucesso!');
         }
     </script>
 </body>
