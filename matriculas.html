@@ -456,13 +456,13 @@
                 if (aluno.turmaChave === 'fundamental1') {
                     botoesAcao = `
                         <button type="button" onclick="abrirBoletimAnual('${aluno.ra}')" class="bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-bold text-xs transition">📊 Notas</button>
-                        <a href="fichas.html?ra=${aluno.ra}" class="bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 px-3 py-1.5 rounded-lg font-bold text-xs transition inline-block">✏️ Editar</a>
+                        <a href="fichas.html?ra=${aluno.ra}&editar=true" class="bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 px-3 py-1.5 rounded-lg font-bold text-xs transition inline-block">✏️ Editar</a>
                         <a href="fichas.html?ra=${aluno.ra}" class="bg-marinho text-white hover:bg-blue-900 px-3 py-1.5 rounded-lg font-bold text-xs transition inline-block">👥 Ficha</a>
                     `;
                 } else {
                     botoesAcao = `
                         <button type="button" onclick="abrirModalInfantil('${aluno.ra}')" class="bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 px-3 py-1.5 rounded-lg font-bold text-xs transition">📝 Relatório</button>
-                        <a href="fichas.html?ra=${aluno.ra}" class="bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 px-3 py-1.5 rounded-lg font-bold text-xs transition inline-block">✏️ Editar</a>
+                        <a href="fichas.html?ra=${aluno.ra}&editar=true" class="bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 px-3 py-1.5 rounded-lg font-bold text-xs transition inline-block">✏️ Editar</a>
                         <a href="fichas.html?ra=${aluno.ra}" class="bg-marinho text-white hover:bg-blue-900 px-3 py-1.5 rounded-lg font-bold text-xs transition inline-block">👥 Ficha</a>
                     `;
                 }
