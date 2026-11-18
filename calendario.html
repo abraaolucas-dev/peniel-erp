@@ -6,7 +6,7 @@
     <title>Configurações e Central de Bordo | Peniel Christian School</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -24,8 +24,11 @@
         
         <!-- Menu Lateral Padrão -->
         <aside id="menu-lateral" class="fixed md:relative left-0 top-0 w-64 bg-marinho text-white flex-col h-full z-[100] transform -translate-x-full md:translate-x-0 transition-transform duration-300 flex shrink-0">
-            <div class="p-6">
-                <h1 class="font-heading text-2xl font-bold tracking-tight">PENIEL <span class="text-sm font-sans font-normal block text-blue-300">Sistema Interno</span></h1>
+            <div class="p-6 flex justify-between items-center border-b border-white/10">
+                <div>
+                    <h1 class="font-heading text-2xl font-bold tracking-tight">PENIEL <span class="text-sm font-sans font-normal block text-blue-300">Sistema Interno</span></h1>
+                </div>
+                <button onclick="toggleMenuMobile()" class="md:hidden text-white text-xl font-bold">&times;</button>
             </div>
             <nav class="flex-1 px-2 space-y-1 mt-2 overflow-y-auto pb-6">
                 <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-4 px-4">Geral</div>
@@ -56,8 +59,8 @@
                 <div class="flex items-center gap-3">
                     <button onclick="toggleMenuMobile()" class="md:hidden bg-slate-100 text-marinho p-2.5 rounded-lg text-xl hover:bg-slate-200 transition active:scale-95 shadow-sm">☰</button>
                     <div>
-                        <h2 class="font-heading text-3xl font-bold text-slate-800">Painel Administrativo & Governança</h2>
-                        <p class="text-slate-500">Parâmetros globais, segurança e controle de acesso master.</p>
+                        <h2 class="font-heading text-2xl md:text-3xl font-bold text-slate-800">Painel Administrativo & Governança</h2>
+                        <p class="text-xs md:text-sm text-slate-500">Parâmetros globais, segurança, ano letivo, valores e controle de acesso master.</p>
                     </div>
                 </div>
                 
@@ -75,38 +78,217 @@
                 </div>
             </header>
 
-            <!-- BLOCO 1: Habilitação Geral de Apps -->
-            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-100 pb-4 mb-6 gap-4">
+            <!-- BLOCO 1: PARÂMETROS ACADÊMICOS E CALENDÁRIO LETIVO -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- Calendário & Ano Letivo -->
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between">
                     <div>
-                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 text-blue-700 rounded-md text-xs font-bold uppercase tracking-wider mb-1">
-                            <span>📲</span> Ecossistema Mobile
+                        <div class="flex justify-between items-start border-b border-slate-100 pb-4 mb-5">
+                            <div>
+                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-700 rounded-md text-xs font-bold uppercase tracking-wider mb-1">
+                                    <span>📅</span> Calendário & Períodos
+                                </div>
+                                <h3 class="font-heading font-bold text-lg text-slate-800">Configuração do Ano Letivo</h3>
+                                <p class="text-xs text-slate-500">Defina o ano ativo, períodos avaliativos e datas de corte.</p>
+                            </div>
+                            <a href="calendario.html" class="bg-slate-100 hover:bg-slate-200 text-marinho px-3 py-1.5 rounded-lg font-bold text-xs transition">
+                                Abrir Calendário &rarr;
+                            </a>
                         </div>
-                        <h3 class="font-heading font-bold text-xl text-slate-800">Habilitar Acesso aos Apps (Pais e Professores)</h3>
-                        <p class="text-xs text-slate-500">Libere o acesso individual por e-mail para consulta de boletins e diário de classe.</p>
+
+                        <div class="space-y-4 text-xs">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">Ano Letivo Vigente</label>
+                                    <select id="cfgAnoLetivo" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-bold bg-white">
+                                        <option value="2026">2026 (Atual)</option>
+                                        <option value="2027" selected>2027 (Matrículas Abertas)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">Regime de Avaliação</label>
+                                    <select id="cfgRegimeAvaliacao" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-bold bg-white">
+                                        <option value="Trimestral" selected>Trimestral (4 Trimestres)</option>
+                                        <option value="Bimestral">Bimestral (4 Bimestres)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">Início das Aulas</label>
+                                    <input type="date" id="cfgInicioAulas" value="2027-02-01" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-mono">
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">Encerramento Letivo</label>
+                                    <input type="date" id="cfgFimAulas" value="2027-12-15" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-mono">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1">Média Mínima para Aprovação</label>
+                                <input type="number" step="0.5" id="cfgMediaMinima" value="7.0" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-bold">
+                            </div>
+                        </div>
                     </div>
 
-                    <button onclick="abrirModalLiberarApp()" class="w-full md:w-auto bg-marinho hover:bg-blue-900 text-white px-4 py-2.5 rounded-lg font-bold text-xs shadow-sm transition">
-                        ➕ Autorizar Novo E-mail
-                    </button>
+                    <div class="pt-4 mt-4 border-t border-slate-100 flex justify-end">
+                        <button onclick="salvarParametrosAcademicos()" class="bg-marinho hover:bg-blue-900 text-white px-4 py-2 rounded-lg font-bold text-xs shadow-sm transition">
+                            💾 Salvar Parâmetros Letivos
+                        </button>
+                    </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex justify-between items-center">
-                        <div>
-                            <h4 class="font-bold text-sm text-slate-800">App dos Pais & Responsáveis</h4>
-                            <p class="text-xs text-slate-500">Boletim, autorizações e financeiro</p>
+                <!-- Valores Padrão, Taxas e Financeiro -->
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start border-b border-slate-100 pb-4 mb-5">
+                            <div>
+                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 text-green-700 rounded-md text-xs font-bold uppercase tracking-wider mb-1">
+                                    <span>💰</span> Tabela Financeira
+                                </div>
+                                <h3 class="font-heading font-bold text-lg text-slate-800">Taxas, Materiais & Regras de Cobrança</h3>
+                                <p class="text-xs text-slate-500">Valores padrão aplicados automaticamente na matrícula e rematrícula.</p>
+                            </div>
                         </div>
-                        <input type="checkbox" checked class="w-5 h-5 accent-marinho cursor-pointer">
+
+                        <div class="space-y-4 text-xs">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">Taxa de Matrícula / Rematrícula (R$)</label>
+                                    <input type="number" step="0.01" id="cfgTaxaMatricula" value="450.00" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-bold text-slate-800">
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">Kit Material Didático FTD (R$)</label>
+                                    <input type="number" step="0.01" id="cfgMaterialFtd" value="670.00" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-bold text-slate-800">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">Dia Padrão de Vencimento</label>
+                                    <select id="cfgDiaVencimento" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-bold bg-white">
+                                        <option value="5">Todo dia 05</option>
+                                        <option value="10" selected>Todo dia 10</option>
+                                        <option value="15">Todo dia 15</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">Desconto Pontualidade (%)</label>
+                                    <input type="number" id="cfgDescontoPontualidade" value="5" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-bold">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1">Chave PIX Oficial da Escola</label>
+                                <input type="text" id="cfgChavePix" value="financeiro@penielchristianschool.com.br" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-mono">
+                            </div>
+                        </div>
                     </div>
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex justify-between items-center">
-                        <div>
-                            <h4 class="font-bold text-sm text-slate-800">App dos Professores & Docentes</h4>
-                            <p class="text-xs text-slate-500">Notas, faltas e diário de classe</p>
-                        </div>
-                        <input type="checkbox" checked class="w-5 h-5 accent-marinho cursor-pointer">
+
+                    <div class="pt-4 mt-4 border-t border-slate-100 flex justify-end">
+                        <button onclick="salvarParametrosFinanceiros()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-bold text-xs shadow-sm transition">
+                            💾 Salvar Tabela Financeira
+                        </button>
                     </div>
                 </div>
+
+            </div>
+
+            <!-- BLOCO 2: DADOS DA UNIDADE & INTEGRAÇÕES -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- Dados Institucionais -->
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="border-b border-slate-100 pb-4 mb-5">
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-purple-50 text-purple-700 rounded-md text-xs font-bold uppercase tracking-wider mb-1">
+                                <span>🏫</span> Identidade Institucional
+                            </div>
+                            <h3 class="font-heading font-bold text-lg text-slate-800">Dados da Unidade Escolar</h3>
+                            <p class="text-xs text-slate-500">Informações exibidas nos cabeçalhos de contratos, recibos e boletins.</p>
+                        </div>
+
+                        <div class="space-y-3 text-xs">
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1">Razão Social / Nome da Escola</label>
+                                <input type="text" id="cfgNomeEscola" value="Peniel Christian School — Unidade Matriz" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-bold">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">CNPJ</label>
+                                    <input type="text" id="cfgCnpjEscola" value="12.345.678/0001-99" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-mono">
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">WhatsApp Oficial Secretaria</label>
+                                    <input type="text" id="cfgZapEscola" value="(21) 99999-0000" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-mono">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1">Endereço Completo</label>
+                                <input type="text" id="cfgEnderecoEscola" value="Rua Exemplo da Unidade, 100 - Rio de Janeiro, RJ" class="w-full border border-slate-300 rounded-lg px-3 py-2">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 mt-4 border-t border-slate-100 flex justify-end">
+                        <button onclick="salvarDadosUnidade()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg font-bold text-xs shadow-sm transition">
+                            💾 Salvar Dados da Unidade
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Habilitação Geral de Apps & Integrações -->
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-100 pb-4 mb-5 gap-3">
+                            <div>
+                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 text-blue-700 rounded-md text-xs font-bold uppercase tracking-wider mb-1">
+                                    <span>📲</span> Ecossistema Mobile & API
+                                </div>
+                                <h3 class="font-heading font-bold text-lg text-slate-800">Apps e Automações</h3>
+                                <p class="text-xs text-slate-500">Libere acesso aos aplicativos e gerencie integrações.</p>
+                            </div>
+
+                            <button onclick="abrirModalLiberarApp()" class="bg-marinho hover:bg-blue-900 text-white px-3.5 py-2 rounded-lg font-bold text-xs shadow-sm transition whitespace-nowrap">
+                                ➕ Autorizar E-mail
+                            </button>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-bold text-xs text-slate-800">App dos Pais & Responsáveis</h4>
+                                    <p class="text-[11px] text-slate-500">Boletim, autorizações, mural de fotos e financeiro</p>
+                                </div>
+                                <input type="checkbox" id="chkAppPais" checked class="w-5 h-5 accent-marinho cursor-pointer">
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-bold text-xs text-slate-800">App dos Professores & Docentes</h4>
+                                    <p class="text-[11px] text-slate-500">Lançamento de notas, faltas e diário de classe</p>
+                                </div>
+                                <input type="checkbox" id="chkAppProf" checked class="w-5 h-5 accent-marinho cursor-pointer">
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-bold text-xs text-slate-800">Integração Typebot & WhatsApp</h4>
+                                    <p class="text-[11px] text-slate-500">Recebimento automático de leads e avisos de cobrança</p>
+                                </div>
+                                <input type="checkbox" id="chkTypebot" checked class="w-5 h-5 accent-marinho cursor-pointer">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 mt-4 border-t border-slate-100 flex justify-between items-center">
+                        <span class="text-[11px] text-green-600 font-bold flex items-center gap-1">● Sincronização em tempo real ativa</span>
+                        <button onclick="exportarBackupSistema()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-2 rounded-lg font-bold text-xs transition">
+                            📦 Exportar Backup (JSON)
+                        </button>
+                    </div>
+                </div>
+
             </div>
 
             <!-- CENTRAL DE BORDO / PORTAL EXECUTIVO (SÓ APARECE COM SENHA) -->
@@ -134,15 +316,31 @@
                         </a>
                         <a href="matriculas.html?modo_gestor=1" class="bg-blue-900/40 hover:bg-blue-900/70 border border-blue-700/50 rounded-xl p-4 transition group block">
                             <div class="flex justify-between items-start mb-2"><span class="text-2xl">📝</span><span class="text-xs text-blue-300 group-hover:translate-x-1 transition-transform">&rarr;</span></div>
-                            <h5 class="font-bold text-white text-sm">Matrículas</h5>
+                            <h5 class="font-bold text-white text-sm">Matrículas & Turmas</h5>
+                        </a>
+                        <a href="fichas.html?modo_gestor=1" class="bg-blue-900/40 hover:bg-blue-900/70 border border-blue-700/50 rounded-xl p-4 transition group block">
+                            <div class="flex justify-between items-start mb-2"><span class="text-2xl">👥</span><span class="text-xs text-blue-300 group-hover:translate-x-1 transition-transform">&rarr;</span></div>
+                            <h5 class="font-bold text-white text-sm">Fichas & Prontuários</h5>
+                        </a>
+                        <a href="rematricula.html?modo_gestor=1" class="bg-blue-900/40 hover:bg-blue-900/70 border border-blue-700/50 rounded-xl p-4 transition group block">
+                            <div class="flex justify-between items-start mb-2"><span class="text-2xl">🔄</span><span class="text-xs text-blue-300 group-hover:translate-x-1 transition-transform">&rarr;</span></div>
+                            <h5 class="font-bold text-white text-sm">Rematrícula & Extras</h5>
+                        </a>
+                        <a href="calendario.html?modo_gestor=1" class="bg-blue-900/40 hover:bg-blue-900/70 border border-blue-700/50 rounded-xl p-4 transition group block">
+                            <div class="flex justify-between items-start mb-2"><span class="text-2xl">📅</span><span class="text-xs text-blue-300 group-hover:translate-x-1 transition-transform">&rarr;</span></div>
+                            <h5 class="font-bold text-white text-sm">Calendário & Equipe</h5>
+                        </a>
+                        <a href="notas.html?modo_gestor=1" class="bg-blue-900/40 hover:bg-blue-900/70 border border-blue-700/50 rounded-xl p-4 transition group block">
+                            <div class="flex justify-between items-start mb-2"><span class="text-2xl">📊</span><span class="text-xs text-blue-300 group-hover:translate-x-1 transition-transform">&rarr;</span></div>
+                            <h5 class="font-bold text-white text-sm">Notas & Avaliações</h5>
                         </a>
                         <a href="financeiro.html?modo_gestor=1" class="bg-blue-900/40 hover:bg-blue-900/70 border border-blue-700/50 rounded-xl p-4 transition group block">
                             <div class="flex justify-between items-start mb-2"><span class="text-2xl">💰</span><span class="text-xs text-blue-300 group-hover:translate-x-1 transition-transform">&rarr;</span></div>
                             <h5 class="font-bold text-white text-sm">Gestão Financeira</h5>
                         </a>
-                        <a href="calendario.html?modo_gestor=1" class="bg-blue-900/40 hover:bg-blue-900/70 border border-blue-700/50 rounded-xl p-4 transition group block">
-                            <div class="flex justify-between items-start mb-2"><span class="text-2xl">📅</span><span class="text-xs text-blue-300 group-hover:translate-x-1 transition-transform">&rarr;</span></div>
-                            <h5 class="font-bold text-white text-sm">Calendário & Equipe</h5>
+                        <a href="painel.html?modo_gestor=1" class="bg-blue-900/40 hover:bg-blue-900/70 border border-blue-700/50 rounded-xl p-4 transition group block">
+                            <div class="flex justify-between items-start mb-2"><span class="text-2xl">📥</span><span class="text-xs text-blue-300 group-hover:translate-x-1 transition-transform">&rarr;</span></div>
+                            <h5 class="font-bold text-white text-sm">Leads Typebot</h5>
                         </a>
                     </div>
                 </div>
@@ -168,7 +366,6 @@
                                         <td class="px-5 py-3.5">Atendente</td>
                                         <td class="px-5 py-3.5"><span class="bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded text-[10px]">Matrículas, Fichas</span></td>
                                         <td class="px-5 py-3.5"><span class="bg-green-500/20 text-green-400 px-2 py-0.5 rounded font-bold text-[10px]">Ativo</span></td>
-                                        <!-- BOTÃO EDITAR QUE AGORA FUNCIONA -->
                                         <td class="px-5 py-3.5 text-right"><button onclick="editarPermissoes('Maria da Secretaria', 'secretaria@peniel.com', 'Atendente')" class="bg-blue-800 hover:bg-blue-700 text-white px-3 py-1 rounded text-[11px] font-bold transition">Editar</button></td>
                                     </tr>
                                 </tbody>
@@ -253,6 +450,12 @@
                             <input type="checkbox" name="permMod" value="Matrículas" class="w-4 h-4 accent-blue-900"> Matrículas e Fichas
                         </label>
                         <label class="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer p-1 hover:bg-slate-200 rounded">
+                            <input type="checkbox" name="permMod" value="Rematrícula" class="w-4 h-4 accent-blue-900"> Rematrícula & Extras
+                        </label>
+                        <label class="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer p-1 hover:bg-slate-200 rounded">
+                            <input type="checkbox" name="permMod" value="Calendário" class="w-4 h-4 accent-blue-900"> Calendário e Equipe
+                        </label>
+                        <label class="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer p-1 hover:bg-slate-200 rounded">
                             <input type="checkbox" name="permMod" value="Financeiro" class="w-4 h-4 accent-blue-900"> Gestão Financeira
                         </label>
                         <label class="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer p-1 hover:bg-slate-200 rounded">
@@ -273,7 +476,6 @@
 
     <!-- Scripts de Controle -->
     <script>
-        // Função de Menu Mobile
         function toggleMenuMobile() {
             const menu = document.getElementById('menu-lateral');
             const overlay = document.getElementById('overlay-mobile');
@@ -281,10 +483,80 @@
             overlay.classList.toggle('hidden');
         }
 
+        // Carregar parâmetros salvos
+        function carregarParametrosSalvos() {
+            const cfg = JSON.parse(localStorage.getItem('peniel_configuracoes_gerais')) || {};
+            if (cfg.anoLetivo) document.getElementById('cfgAnoLetivo').value = cfg.anoLetivo;
+            if (cfg.regimeAvaliacao) document.getElementById('cfgRegimeAvaliacao').value = cfg.regimeAvaliacao;
+            if (cfg.inicioAulas) document.getElementById('cfgInicioAulas').value = cfg.inicioAulas;
+            if (cfg.fimAulas) document.getElementById('cfgFimAulas').value = cfg.fimAulas;
+            if (cfg.mediaMinima) document.getElementById('cfgMediaMinima').value = cfg.mediaMinima;
+
+            if (cfg.taxaMatricula) document.getElementById('cfgTaxaMatricula').value = cfg.taxaMatricula;
+            if (cfg.materialFtd) document.getElementById('cfgMaterialFtd').value = cfg.materialFtd;
+            if (cfg.diaVencimento) document.getElementById('cfgDiaVencimento').value = cfg.diaVencimento;
+            if (cfg.descontoPontualidade) document.getElementById('cfgDescontoPontualidade').value = cfg.descontoPontualidade;
+            if (cfg.chavePix) document.getElementById('cfgChavePix').value = cfg.chavePix;
+
+            if (cfg.nomeEscola) document.getElementById('cfgNomeEscola').value = cfg.nomeEscola;
+            if (cfg.cnpjEscola) document.getElementById('cfgCnpjEscola').value = cfg.cnpjEscola;
+            if (cfg.zapEscola) document.getElementById('cfgZapEscola').value = cfg.zapEscola;
+            if (cfg.enderecoEscola) document.getElementById('cfgEnderecoEscola').value = cfg.enderecoEscola;
+        }
+
+        function salvarParametrosAcademicos() {
+            const cfg = JSON.parse(localStorage.getItem('peniel_configuracoes_gerais')) || {};
+            cfg.anoLetivo = document.getElementById('cfgAnoLetivo').value;
+            cfg.regimeAvaliacao = document.getElementById('cfgRegimeAvaliacao').value;
+            cfg.inicioAulas = document.getElementById('cfgInicioAulas').value;
+            cfg.fimAulas = document.getElementById('cfgFimAulas').value;
+            cfg.mediaMinima = document.getElementById('cfgMediaMinima').value;
+            localStorage.setItem('peniel_configuracoes_gerais', JSON.stringify(cfg));
+            alert('✅ Parâmetros do Ano Letivo e Calendário salvos com sucesso!');
+        }
+
+        function salvarParametrosFinanceiros() {
+            const cfg = JSON.parse(localStorage.getItem('peniel_configuracoes_gerais')) || {};
+            cfg.taxaMatricula = document.getElementById('cfgTaxaMatricula').value;
+            cfg.materialFtd = document.getElementById('cfgMaterialFtd').value;
+            cfg.diaVencimento = document.getElementById('cfgDiaVencimento').value;
+            cfg.descontoPontualidade = document.getElementById('cfgDescontoPontualidade').value;
+            cfg.chavePix = document.getElementById('cfgChavePix').value;
+            localStorage.setItem('peniel_configuracoes_gerais', JSON.stringify(cfg));
+            alert('✅ Tabela Financeira e regras de cobrança atualizadas!');
+        }
+
+        function salvarDadosUnidade() {
+            const cfg = JSON.parse(localStorage.getItem('peniel_configuracoes_gerais')) || {};
+            cfg.nomeEscola = document.getElementById('cfgNomeEscola').value;
+            cfg.cnpjEscola = document.getElementById('cfgCnpjEscola').value;
+            cfg.zapEscola = document.getElementById('cfgZapEscola').value;
+            cfg.enderecoEscola = document.getElementById('cfgEnderecoEscola').value;
+            localStorage.setItem('peniel_configuracoes_gerais', JSON.stringify(cfg));
+            alert('✅ Dados institucionais da unidade salvos com sucesso!');
+        }
+
+        function exportarBackupSistema() {
+            const backup = {
+                dataExportacao: new Date().toISOString(),
+                alunos: JSON.parse(localStorage.getItem('peniel_banco_fichas_detalhadas')) || {},
+                notas: JSON.parse(localStorage.getItem('peniel_banco_notas')) || {},
+                configuracoes: JSON.parse(localStorage.getItem('peniel_configuracoes_gerais')) || {}
+            };
+            const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `backup_peniel_${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
         // Lógica de Autenticação Master
         const SENHA_MASTER_GESTOR = "peniel2027";
 
         document.addEventListener('DOMContentLoaded', () => {
+            carregarParametrosSalvos();
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('modo_gestor') === '1') { localStorage.setItem('peniel_modo_gestor', 'ativo'); }
             if(localStorage.getItem('peniel_modo_gestor') === 'ativo') { ativarModoGestorVisual(); }
@@ -347,8 +619,6 @@
             document.getElementById('funcCargo').value = cargo;
             document.getElementById('tituloModalFunc').innerText = '✏️ Editar Permissões: ' + nome;
             document.getElementById('modalFuncionario').classList.remove('hidden'); 
-            
-            // Marca o checkbox de Dashboard por padrão
             document.querySelector('input[value="Dashboard"]').checked = true;
         }
 
