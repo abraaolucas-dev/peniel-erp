@@ -2,479 +2,201 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Configurações e Central de Bordo | Peniel Christian School</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Calendário Acadêmico em Tempo Real | Peniel Christian School</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
-                extend: { colors: { marinho: '#003057', laranja: '#E85D04' }, fontFamily: { sans: ['Inter', 'sans-serif'], heading: ['Montserrat', 'sans-serif'] } }
+                extend: {
+                    colors: { marinho: '#003057', laranja: '#E85D04' },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], heading: ['Montserrat', 'sans-serif'] }
+                }
             }
         }
     </script>
+    <style>
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen relative">
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col md:flex-row overflow-x-hidden">
 
-    <!-- Overlay do Menu Mobile -->
-    <div id="overlay-mobile" onclick="toggleMenuMobile()" class="fixed inset-0 bg-slate-900/60 z-[90] hidden md:hidden backdrop-blur-sm transition-opacity"></div>
+    <!-- Overlay Mobile -->
+    <div id="overlay-mobile" onclick="toggleMenuMobile()" class="fixed inset-0 bg-slate-950/75 z-[95] hidden md:hidden backdrop-blur-sm transition-opacity"></div>
 
-    <div class="flex h-screen overflow-hidden">
-        
-        <!-- Menu Lateral Padrão -->
-        <aside id="menu-lateral" class="fixed md:relative left-0 top-0 w-64 bg-marinho text-white flex-col h-full z-[100] transform -translate-x-full md:translate-x-0 transition-transform duration-300 flex shrink-0">
-            <div class="p-6 flex justify-between items-center border-b border-white/10">
-                <div>
-                    <h1 class="font-heading text-2xl font-bold tracking-tight">PENIEL <span class="text-sm font-sans font-normal block text-blue-300">Sistema Interno</span></h1>
-                </div>
-                <button onclick="toggleMenuMobile()" class="md:hidden text-white text-xl font-bold">&times;</button>
+    <!-- Menu Lateral -->
+    <aside id="menu-lateral" class="fixed md:sticky left-0 top-0 w-72 md:w-64 bg-marinho text-white flex-col h-screen z-[100] transform -translate-x-full md:translate-x-0 transition-all duration-300 flex shrink-0 shadow-2xl md:shadow-none border-r-4 border-laranja md:border-r-0">
+        <div class="p-6 flex justify-between items-center shrink-0 border-b border-white/10 bg-black/15">
+            <div>
+                <h1 class="font-heading text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-laranja inline-block"></span> PENIEL
+                </h1>
+                <span class="text-xs font-sans font-semibold block text-blue-300 mt-0.5">Unidade Matriz</span>
             </div>
-            <nav class="flex-1 px-2 space-y-1 mt-2 overflow-y-auto pb-6">
-                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-4 px-4">Geral</div>
-                <a href="index.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📈 Dashboard</a>
-                
-                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Captação</div>
-                <a href="painel.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📥 Leads Typebot</a>
-                
-                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Secretaria</div>
-                <a href="matriculas.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📝 Matrículas</a>
-                <a href="fichas.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">👥 Fichas (Alunos/Pais)</a>
-                <a href="rematricula.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">🔄 Rematrícula</a>
+            <button type="button" onclick="toggleMenuMobile()" class="md:hidden bg-white/10 hover:bg-red-500/30 text-white w-9 h-9 rounded-xl text-xl font-bold flex items-center justify-center transition">&times;</button>
+        </div>
 
-                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Acadêmico</div>
-                <a href="calendario.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📅 Calendário e Equipe</a>
-                <a href="notas.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📊 Notas e Avaliações</a>
-
-                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Administrativo</div>
-                <a href="financeiro.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">💰 Gestão Financeira</a>
-                <a href="configuracoes.html" class="block px-4 py-2.5 bg-blue-900 rounded-lg font-medium text-white shadow-inner">⚙️ Configurações / ADM</a>
-            </nav>
-        </aside>
-
-        <!-- Área Principal -->
-        <main class="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col gap-6" id="area-principal">
+        <nav class="flex-1 px-3 space-y-1.5 mt-3 overflow-y-auto pb-6">
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-3 px-3">Geral</div>
+            <a href="index.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">📈 Dashboard</a>
             
-            <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                <div class="flex items-center gap-3">
-                    <button onclick="toggleMenuMobile()" class="md:hidden bg-slate-100 text-marinho p-2.5 rounded-lg text-xl hover:bg-slate-200 transition active:scale-95 shadow-sm">☰</button>
-                    <div>
-                        <h2 class="font-heading text-2xl md:text-3xl font-bold text-slate-800">Painel Administrativo & Governança</h2>
-                        <p class="text-xs md:text-sm text-slate-500">Parâmetros globais, segurança, ano letivo, valores e controle de acesso master.</p>
-                    </div>
-                </div>
-                
-                <!-- Botão de Autenticação Master -->
-                <div id="blocoBotaoMaster" class="w-full md:w-auto">
-                    <button onclick="solicitarSenhaMaster()" class="w-full md:w-auto bg-slate-800 hover:bg-slate-900 text-white px-5 py-2.5 rounded-xl font-bold text-xs shadow-sm transition flex items-center justify-center gap-2">
-                        🔒 Acesso Modo Gestor (Senha Master)
-                    </button>
-                </div>
-                <div id="blocoStatusMaster" class="hidden flex items-center gap-3">
-                    <span class="bg-green-100 text-green-800 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 border border-green-200">
-                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Modo Gestor Master Ativo
-                    </span>
-                    <button onclick="bloquearModoMaster()" class="text-xs text-red-600 hover:underline font-bold">Bloquear / Sair</button>
-                </div>
-            </header>
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Captação</div>
+            <a href="painel.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">📥 Leads Typebot</a>
+            
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Secretaria</div>
+            <a href="matriculas.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">📝 Matrículas & Turmas</a>
+            <a href="fichas.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">👥 Fichas (Alunos/Pais)</a>
+            <a href="rematricula.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">🔄 Rematrícula</a>
 
-            <!-- BLOCO 1: PARÂMETROS ACADÊMICOS E CALENDÁRIO LETIVO -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                
-                <!-- Calendário & Ano Letivo -->
-                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between">
-                    <div>
-                        <div class="flex justify-between items-start border-b border-slate-100 pb-4 mb-5">
-                            <div>
-                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-700 rounded-md text-xs font-bold uppercase tracking-wider mb-1">
-                                    <span>📅</span> Calendário & Períodos
-                                </div>
-                                <h3 class="font-heading font-bold text-lg text-slate-800">Configuração do Ano Letivo</h3>
-                                <p class="text-xs text-slate-500">Defina o ano ativo, períodos avaliativos e datas de corte.</p>
-                            </div>
-                            <a href="calendario.html" class="bg-slate-100 hover:bg-slate-200 text-marinho px-3 py-1.5 rounded-lg font-bold text-xs transition">
-                                Abrir Calendário &rarr;
-                            </a>
-                        </div>
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Acadêmico</div>
+            <a href="calendario.html" class="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-laranja to-orange-500 rounded-xl font-bold text-white shadow-md">
+                <span>📅 Calendário & Aulas</span>
+                <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full">Ativo</span>
+            </a>
+            <a href="notas.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">📊 Notas e Avaliações</a>
 
-                        <div class="space-y-4 text-xs">
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block font-bold text-slate-700 mb-1">Ano Letivo Vigente</label>
-                                    <select id="cfgAnoLetivo" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-bold bg-white">
-                                        <option value="2026">2026 (Atual)</option>
-                                        <option value="2027" selected>2027 (Matrículas Abertas)</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block font-bold text-slate-700 mb-1">Regime de Avaliação</label>
-                                    <select id="cfgRegimeAvaliacao" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-bold bg-white">
-                                        <option value="Trimestral" selected>Trimestral (4 Trimestres)</option>
-                                        <option value="Bimestral">Bimestral (4 Bimestres)</option>
-                                    </select>
-                                </div>
-                            </div>
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Administrativo</div>
+            <a href="financeiro.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">💰 Gestão Financeira</a>
+            <a href="configuracoes.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">⚙️ Configurações / ADM</a>
+        </nav>
+        
+        <div class="p-4 border-t border-white/10 bg-black/20 shrink-0">
+            <button type="button" onclick="sairDoSistema()" class="w-full flex items-center justify-center gap-2 bg-red-600/80 hover:bg-red-600 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition">
+                🚪 Sair do Sistema
+            </button>
+        </div>
+    </aside>
 
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block font-bold text-slate-700 mb-1">Início das Aulas</label>
-                                    <input type="date" id="cfgInicioAulas" value="2027-02-01" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-mono">
-                                </div>
-                                <div>
-                                    <label class="block font-bold text-slate-700 mb-1">Encerramento Letivo</label>
-                                    <input type="date" id="cfgFimAulas" value="2027-12-15" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-mono">
-                                </div>
-                            </div>
-
-                            <div>
-                                <label class="block font-bold text-slate-700 mb-1">Média Mínima para Aprovação</label>
-                                <input type="number" step="0.5" id="cfgMediaMinima" value="7.0" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-bold">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="pt-4 mt-4 border-t border-slate-100 flex justify-end">
-                        <button onclick="salvarParametrosAcademicos()" class="bg-marinho hover:bg-blue-900 text-white px-4 py-2 rounded-lg font-bold text-xs shadow-sm transition">
-                            💾 Salvar Parâmetros Letivos
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Valores Padrão, Taxas e Financeiro -->
-                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between">
-                    <div>
-                        <div class="flex justify-between items-start border-b border-slate-100 pb-4 mb-5">
-                            <div>
-                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 text-green-700 rounded-md text-xs font-bold uppercase tracking-wider mb-1">
-                                    <span>💰</span> Tabela Financeira
-                                </div>
-                                <h3 class="font-heading font-bold text-lg text-slate-800">Taxas, Materiais & Regras de Cobrança</h3>
-                                <p class="text-xs text-slate-500">Valores padrão aplicados automaticamente na matrícula e rematrícula.</p>
-                            </div>
-                        </div>
-
-                        <div class="space-y-4 text-xs">
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block font-bold text-slate-700 mb-1">Taxa de Matrícula / Rematrícula (R$)</label>
-                                    <input type="number" step="0.01" id="cfgTaxaMatricula" value="450.00" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-bold text-slate-800">
-                                </div>
-                                <div>
-                                    <label class="block font-bold text-slate-700 mb-1">Kit Material Didático FTD (R$)</label>
-                                    <input type="number" step="0.01" id="cfgMaterialFtd" value="670.00" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-bold text-slate-800">
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block font-bold text-slate-700 mb-1">Dia Padrão de Vencimento</label>
-                                    <select id="cfgDiaVencimento" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-bold bg-white">
-                                        <option value="5">Todo dia 05</option>
-                                        <option value="10" selected>Todo dia 10</option>
-                                        <option value="15">Todo dia 15</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block font-bold text-slate-700 mb-1">Desconto Pontualidade (%)</label>
-                                    <input type="number" id="cfgDescontoPontualidade" value="5" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-bold">
-                                </div>
-                            </div>
-
-                            <div>
-                                <label class="block font-bold text-slate-700 mb-1">Chave PIX Oficial da Escola</label>
-                                <input type="text" id="cfgChavePix" value="financeiro@penielchristianschool.com.br" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-mono">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="pt-4 mt-4 border-t border-slate-100 flex justify-end">
-                        <button onclick="salvarParametrosFinanceiros()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-bold text-xs shadow-sm transition">
-                            💾 Salvar Tabela Financeira
-                        </button>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- BLOCO 2: DADOS DA UNIDADE & INTEGRAÇÕES -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                
-                <!-- Dados Institucionais -->
-                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between">
-                    <div>
-                        <div class="border-b border-slate-100 pb-4 mb-5">
-                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-purple-50 text-purple-700 rounded-md text-xs font-bold uppercase tracking-wider mb-1">
-                                <span>🏫</span> Identidade Institucional
-                            </div>
-                            <h3 class="font-heading font-bold text-lg text-slate-800">Dados da Unidade Escolar</h3>
-                            <p class="text-xs text-slate-500">Informações exibidas nos cabeçalhos de contratos, recibos e boletins.</p>
-                        </div>
-
-                        <div class="space-y-3 text-xs">
-                            <div>
-                                <label class="block font-bold text-slate-700 mb-1">Razão Social / Nome da Escola</label>
-                                <input type="text" id="cfgNomeEscola" value="Peniel Christian School — Unidade Matriz" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-bold">
-                            </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block font-bold text-slate-700 mb-1">CNPJ</label>
-                                    <input type="text" id="cfgCnpjEscola" value="12.345.678/0001-99" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-mono">
-                                </div>
-                                <div>
-                                    <label class="block font-bold text-slate-700 mb-1">WhatsApp Oficial Secretaria</label>
-                                    <input type="text" id="cfgZapEscola" value="(21) 99999-0000" class="w-full border border-slate-300 rounded-lg px-3 py-2 font-mono">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block font-bold text-slate-700 mb-1">Endereço Completo</label>
-                                <input type="text" id="cfgEnderecoEscola" value="Rua Exemplo da Unidade, 100 - Rio de Janeiro, RJ" class="w-full border border-slate-300 rounded-lg px-3 py-2">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="pt-4 mt-4 border-t border-slate-100 flex justify-end">
-                        <button onclick="salvarDadosUnidade()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg font-bold text-xs shadow-sm transition">
-                            💾 Salvar Dados da Unidade
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Habilitação Geral de Apps & Integrações -->
-                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between">
-                    <div>
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-100 pb-4 mb-5 gap-3">
-                            <div>
-                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 text-blue-700 rounded-md text-xs font-bold uppercase tracking-wider mb-1">
-                                    <span>📲</span> Ecossistema Mobile & API
-                                </div>
-                                <h3 class="font-heading font-bold text-lg text-slate-800">Apps e Automações</h3>
-                                <p class="text-xs text-slate-500">Libere acesso aos aplicativos e gerencie integrações.</p>
-                            </div>
-
-                            <button onclick="abrirModalLiberarApp()" class="bg-marinho hover:bg-blue-900 text-white px-3.5 py-2 rounded-lg font-bold text-xs shadow-sm transition whitespace-nowrap">
-                                ➕ Autorizar E-mail
-                            </button>
-                        </div>
-
-                        <div class="space-y-3">
-                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 flex justify-between items-center">
-                                <div>
-                                    <h4 class="font-bold text-xs text-slate-800">App dos Pais & Responsáveis</h4>
-                                    <p class="text-[11px] text-slate-500">Boletim, autorizações, mural de fotos e financeiro</p>
-                                </div>
-                                <input type="checkbox" id="chkAppPais" checked class="w-5 h-5 accent-marinho cursor-pointer">
-                            </div>
-                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 flex justify-between items-center">
-                                <div>
-                                    <h4 class="font-bold text-xs text-slate-800">App dos Professores & Docentes</h4>
-                                    <p class="text-[11px] text-slate-500">Lançamento de notas, faltas e diário de classe</p>
-                                </div>
-                                <input type="checkbox" id="chkAppProf" checked class="w-5 h-5 accent-marinho cursor-pointer">
-                            </div>
-                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 flex justify-between items-center">
-                                <div>
-                                    <h4 class="font-bold text-xs text-slate-800">Integração Typebot & WhatsApp</h4>
-                                    <p class="text-[11px] text-slate-500">Recebimento automático de leads e avisos de cobrança</p>
-                                </div>
-                                <input type="checkbox" id="chkTypebot" checked class="w-5 h-5 accent-marinho cursor-pointer">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="pt-4 mt-4 border-t border-slate-100 flex justify-between items-center">
-                        <span class="text-[11px] text-green-600 font-bold flex items-center gap-1">● Sincronização em tempo real ativa</span>
-                        <button onclick="exportarBackupSistema()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-2 rounded-lg font-bold text-xs transition">
-                            📦 Exportar Backup (JSON)
-                        </button>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- CENTRAL DE BORDO / PORTAL EXECUTIVO (SÓ APARECE COM SENHA) -->
-            <div id="centralDeBordo" class="hidden bg-gradient-to-br from-slate-900 to-blue-950 rounded-2xl shadow-xl p-6 md:p-8 text-white space-y-6 border-2 border-blue-400/30">
-                
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-blue-800/60 pb-5 gap-4">
-                    <div>
-                        <span class="bg-blue-500/20 text-blue-300 text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-widest border border-blue-400/30">Painel Executivo Master</span>
-                        <h3 class="font-heading font-bold text-2xl text-white mt-2">🧭 Central de Bordo & Atalhos do Sistema</h3>
-                        <p class="text-xs text-blue-200/70">Visão macro de toda a operação escolar. Acesso direto a qualquer módulo em modo tela cheia.</p>
-                    </div>
-
-                    <button onclick="abrirModalNovoFuncionario()" class="w-full md:w-auto bg-laranja hover:bg-orange-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs shadow-md transition flex items-center justify-center gap-2">
-                        ➕ Cadastrar Novo Funcionário
-                    </button>
-                </div>
-
-                <!-- CARDS DE ATALHO RÁPIDO -->
+    <!-- Área Principal -->
+    <main class="flex-1 p-3 sm:p-5 md:p-8 flex flex-col gap-5 w-full max-w-full overflow-x-hidden">
+        
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm gap-4">
+            <div class="flex items-center gap-3">
+                <button type="button" onclick="toggleMenuMobile()" class="md:hidden bg-slate-100 text-marinho p-2.5 rounded-lg text-xl hover:bg-slate-200 transition active:scale-95 shadow-sm">☰</button>
                 <div>
-                    <h4 class="text-xs font-bold text-blue-300 uppercase tracking-wider mb-3">Atalhos de Navegação Executiva</h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <a href="index.html?modo_gestor=1" class="bg-blue-900/40 hover:bg-blue-900/70 border border-blue-700/50 rounded-xl p-4 transition group block">
-                            <div class="flex justify-between items-start mb-2"><span class="text-2xl">📈</span><span class="text-xs text-blue-300 group-hover:translate-x-1 transition-transform">&rarr;</span></div>
-                            <h5 class="font-bold text-white text-sm">Dashboard Geral</h5>
-                        </a>
-                        <a href="matriculas.html?modo_gestor=1" class="bg-blue-900/40 hover:bg-blue-900/70 border border-blue-700/50 rounded-xl p-4 transition group block">
-                            <div class="flex justify-between items-start mb-2"><span class="text-2xl">📝</span><span class="text-xs text-blue-300 group-hover:translate-x-1 transition-transform">&rarr;</span></div>
-                            <h5 class="font-bold text-white text-sm">Matrículas & Turmas</h5>
-                        </a>
-                        <a href="fichas.html?modo_gestor=1" class="bg-blue-900/40 hover:bg-blue-900/70 border border-blue-700/50 rounded-xl p-4 transition group block">
-                            <div class="flex justify-between items-start mb-2"><span class="text-2xl">👥</span><span class="text-xs text-blue-300 group-hover:translate-x-1 transition-transform">&rarr;</span></div>
-                            <h5 class="font-bold text-white text-sm">Fichas & Prontuários</h5>
-                        </a>
-                        <a href="rematricula.html?modo_gestor=1" class="bg-blue-900/40 hover:bg-blue-900/70 border border-blue-700/50 rounded-xl p-4 transition group block">
-                            <div class="flex justify-between items-start mb-2"><span class="text-2xl">🔄</span><span class="text-xs text-blue-300 group-hover:translate-x-1 transition-transform">&rarr;</span></div>
-                            <h5 class="font-bold text-white text-sm">Rematrícula & Extras</h5>
-                        </a>
-                        <a href="calendario.html?modo_gestor=1" class="bg-blue-900/40 hover:bg-blue-900/70 border border-blue-700/50 rounded-xl p-4 transition group block">
-                            <div class="flex justify-between items-start mb-2"><span class="text-2xl">📅</span><span class="text-xs text-blue-300 group-hover:translate-x-1 transition-transform">&rarr;</span></div>
-                            <h5 class="font-bold text-white text-sm">Calendário & Equipe</h5>
-                        </a>
-                        <a href="notas.html?modo_gestor=1" class="bg-blue-900/40 hover:bg-blue-900/70 border border-blue-700/50 rounded-xl p-4 transition group block">
-                            <div class="flex justify-between items-start mb-2"><span class="text-2xl">📊</span><span class="text-xs text-blue-300 group-hover:translate-x-1 transition-transform">&rarr;</span></div>
-                            <h5 class="font-bold text-white text-sm">Notas & Avaliações</h5>
-                        </a>
-                        <a href="financeiro.html?modo_gestor=1" class="bg-blue-900/40 hover:bg-blue-900/70 border border-blue-700/50 rounded-xl p-4 transition group block">
-                            <div class="flex justify-between items-start mb-2"><span class="text-2xl">💰</span><span class="text-xs text-blue-300 group-hover:translate-x-1 transition-transform">&rarr;</span></div>
-                            <h5 class="font-bold text-white text-sm">Gestão Financeira</h5>
-                        </a>
-                        <a href="painel.html?modo_gestor=1" class="bg-blue-900/40 hover:bg-blue-900/70 border border-blue-700/50 rounded-xl p-4 transition group block">
-                            <div class="flex justify-between items-start mb-2"><span class="text-2xl">📥</span><span class="text-xs text-blue-300 group-hover:translate-x-1 transition-transform">&rarr;</span></div>
-                            <h5 class="font-bold text-white text-sm">Leads Typebot</h5>
-                        </a>
+                    <div class="flex items-center gap-2 mb-0.5">
+                        <span class="bg-blue-100 text-marinho text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Tempo Real</span>
+                        <span id="relogio-tempo-real" class="bg-slate-100 text-slate-700 text-[10px] font-bold px-2.5 py-0.5 rounded-full font-mono">--:--:--</span>
                     </div>
-                </div>
-
-                <!-- Tabela de Controle de Funcionários (ACL) -->
-                <div class="pt-2">
-                    <h4 class="text-xs font-bold text-blue-300 uppercase tracking-wider mb-3">Controle de Funcionários e Permissões (ACL)</h4>
-                    <div class="bg-slate-900/80 rounded-xl border border-blue-800/60 overflow-hidden">
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left text-sm" id="tabelaFuncionarios">
-                                <thead class="bg-blue-950/80 text-blue-200 border-b border-blue-800/60 text-[11px] font-bold uppercase tracking-wider">
-                                    <tr>
-                                        <th class="px-5 py-3">Funcionário / E-mail</th>
-                                        <th class="px-5 py-3">Cargo</th>
-                                        <th class="px-5 py-3">Módulos Permitidos</th>
-                                        <th class="px-5 py-3">Status</th>
-                                        <th class="px-5 py-3 text-right">Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-blue-950 text-slate-200 text-xs">
-                                    <tr class="hover:bg-blue-900/20 transition">
-                                        <td class="px-5 py-3.5 font-bold text-white">Maria da Secretaria <br><span class="text-[10px] text-slate-400 font-mono">secretaria@peniel.com</span></td>
-                                        <td class="px-5 py-3.5">Atendente</td>
-                                        <td class="px-5 py-3.5"><span class="bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded text-[10px]">Matrículas, Fichas</span></td>
-                                        <td class="px-5 py-3.5"><span class="bg-green-500/20 text-green-400 px-2 py-0.5 rounded font-bold text-[10px]">Ativo</span></td>
-                                        <td class="px-5 py-3.5 text-right"><button onclick="editarPermissoes('Maria da Secretaria', 'secretaria@peniel.com', 'Atendente')" class="bg-blue-800 hover:bg-blue-700 text-white px-3 py-1 rounded text-[11px] font-bold transition">Editar</button></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-        </main>
-    </div>
-
-    <!-- ========================================================= -->
-    <!-- MODAL 1: AUTORIZAR NOVO APP -->
-    <!-- ========================================================= -->
-    <div id="modalLiberarApp" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center z-[120] p-4">
-        <div class="bg-white w-full max-w-md rounded-2xl shadow-xl flex flex-col overflow-hidden">
-            <div class="p-5 border-b border-slate-100 bg-marinho text-white flex justify-between items-center">
-                <h3 class="font-bold text-base font-heading flex items-center gap-2">📲 Autorizar Novo Acesso (App)</h3>
-                <button onclick="fecharModalLiberarApp()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
-            </div>
-            <div class="p-6 space-y-4">
-                <div class="bg-blue-50 border border-blue-100 p-3 rounded-lg mb-2">
-                    <p class="text-xs text-blue-800 font-medium">Insira o e-mail do usuário. Um link seguro será enviado para a criação da senha de acesso ao aplicativo escolar.</p>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">E-mail do Responsável / Professor</label>
-                    <input type="email" id="appEmail" placeholder="exemplo@email.com" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Tipo de Acesso</label>
-                    <select id="appTipo" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 bg-white font-medium">
-                        <option value="Pais">App dos Pais (Boletim e Financeiro)</option>
-                        <option value="Professores">App dos Professores (Diário de Classe)</option>
-                    </select>
+                    <h2 class="font-heading text-xl sm:text-2xl font-bold text-slate-800">Calendário Acadêmico & Aulas em Tempo Real</h2>
+                    <p class="text-xs text-slate-500">Visualização interativa da grade de aulas, eventos escolares e agendamentos.</p>
                 </div>
             </div>
-            <div class="p-5 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
-                <button onclick="fecharModalLiberarApp()" class="px-4 py-2 bg-white border border-slate-300 text-slate-600 font-bold hover:bg-slate-50 rounded-lg text-xs transition">Cancelar</button>
-                <button onclick="salvarLiberacaoApp()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-bold text-xs shadow-sm transition">
-                    ✉️ Enviar Convite
+            
+            <div class="flex items-center gap-2 w-full md:w-auto">
+                <button type="button" onclick="abrirModalNovoEvento()" class="bg-laranja hover:bg-orange-600 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition flex items-center justify-center gap-1.5 whitespace-nowrap w-full md:w-auto">
+                    ➕ Novo Evento / Aula
                 </button>
+            </div>
+        </header>
+
+        <!-- BARRA DE CONTROLE DO CALENDÁRIO -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
+                <button type="button" onclick="mudarMes(-1)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 w-9 h-9 rounded-xl font-bold flex items-center justify-center transition">&larr;</button>
+                <h3 id="mesAnoTitulo" class="font-heading font-bold text-base sm:text-lg text-marinho min-w-[180px] text-center">Novembro 2026</h3>
+                <button type="button" onclick="mudarMes(1)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 w-9 h-9 rounded-xl font-bold flex items-center justify-center transition">&rarr;</button>
+                <button type="button" onclick="irParaHoje()" class="bg-blue-50 text-marinho hover:bg-blue-100 px-3 py-2 rounded-xl text-xs font-bold transition">Hoje</button>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
+                <select id="filtroTurmaCalendario" onchange="renderizarCalendario()" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-marinho">
+                    <option value="todas">🌟 Todas as Turmas / Eventos</option>
+                    <option value="Maternal">🧸 Maternal (1 e 2)</option>
+                    <option value="Pré-Escola">🎨 Pré-Escola (1 e 2)</option>
+                    <option value="Fundamental">📚 Ensino Fundamental</option>
+                    <option value="Geral">📢 Geral da Escola</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- GRADE MENSAL DO CALENDÁRIO -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col flex-1">
+            
+            <!-- Dias da Semana -->
+            <div class="grid grid-cols-7 bg-slate-50 border-b border-slate-200 text-center text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 py-3">
+                <div class="text-red-500">Dom</div>
+                <div>Seg</div>
+                <div>Ter</div>
+                <div>Qua</div>
+                <div>Qui</div>
+                <div>Sex</div>
+                <div class="text-blue-500">Sáb</div>
+            </div>
+
+            <!-- Dias do Mês (Grade Dinâmica) -->
+            <div id="gridDiasCalendario" class="grid grid-cols-7 auto-rows-fr divide-x divide-y divide-slate-100 bg-slate-100 flex-1 min-h-[550px]">
+                <!-- Preenchido via JavaScript -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ========================================================================= -->
+    <!-- MODAL: ADICIONAR / EDITAR EVENTO OU AULA -->
+    <!-- ========================================================================= -->
+    <div id="modalEvento" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[130] p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto">
+            <div class="p-5 bg-marinho text-white flex justify-between items-center">
+                <h3 class="font-bold text-base font-heading">📅 Agendar Aula ou Evento Escolar</h3>
+                <button type="button" onclick="fecharModalEvento()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
+            </div>
+            
+            <div class="p-6 space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Título da Aula / Evento</label>
+                    <input type="text" id="eventoTitulo" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold" placeholder="Ex: Aula Prática de Ciências / Reunião de Pais">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Data</label>
+                        <input type="date" id="eventoData" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Horário</label>
+                        <input type="text" id="eventoHorario" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono" placeholder="Ex: 08:30 - 10:00">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Categoria / Destinatário</label>
+                        <select id="eventoCategoria" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs bg-white font-bold">
+                            <option value="Fundamental">📚 Ensino Fundamental</option>
+                            <option value="Maternal">🧸 Maternal</option>
+                            <option value="Pré-Escola">🎨 Pré-Escola</option>
+                            <option value="Geral">📢 Geral da Escola</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Cor do Indicador</label>
+                        <select id="eventoCor" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs bg-white font-bold">
+                            <option value="bg-blue-500 text-white">Azul (Aula Regular)</option>
+                            <option value="bg-green-500 text-white">Verde (Atividade Extra / Projeto)</option>
+                            <option value="bg-orange-500 text-white">Laranja (Avaliação / Prova)</option>
+                            <option value="bg-purple-500 text-white">Roxo (Reunião / Evento Especial)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Descrição / Observações</label>
+                    <textarea id="eventoDescricao" rows="3" class="w-full border border-slate-300 rounded-xl p-3 text-xs focus:ring-2 focus:ring-marinho focus:outline-none" placeholder="Detalhes do evento ou conteúdo da aula..."></textarea>
+                </div>
+            </div>
+
+            <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2">
+                <button type="button" onclick="fecharModalEvento()" class="px-4 py-2 bg-white border border-slate-300 text-slate-600 font-bold rounded-xl text-xs">Cancelar</button>
+                <button type="button" onclick="salvarNovoEvento()" class="bg-marinho text-white px-5 py-2 rounded-xl font-bold text-xs shadow-sm">💾 Salvar Evento</button>
             </div>
         </div>
     </div>
 
-    <!-- ========================================================= -->
-    <!-- MODAL 2: CADASTRO DE FUNCIONÁRIO E PERMISSÕES (ACL) -->
-    <!-- ========================================================= -->
-    <div id="modalFuncionario" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center z-[120] p-4">
-        <div class="bg-white w-full max-w-xl rounded-2xl shadow-xl flex flex-col overflow-hidden max-h-[90vh]">
-            <div class="p-5 border-b border-slate-100 bg-blue-900 text-white flex justify-between items-center">
-                <h3 id="tituloModalFunc" class="font-bold text-base font-heading">🔐 Cadastrar / Editar Funcionário</h3>
-                <button onclick="fecharModalFuncionario()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
-            </div>
-
-            <div class="p-6 overflow-y-auto space-y-4">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Nome do Funcionário</label>
-                        <input type="text" id="funcNome" placeholder="Ex: Roberto Silva" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 font-medium">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">E-mail de Acesso</label>
-                        <input type="email" id="funcEmail" placeholder="roberto@peniel.com" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-blue-500">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Cargo / Função</label>
-                    <input type="text" id="funcCargo" placeholder="Ex: Auxiliar Administrativo" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 font-medium">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">Módulos do Sistema Permitidos:</label>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
-                        <label class="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer p-1 hover:bg-slate-200 rounded">
-                            <input type="checkbox" name="permMod" value="Dashboard" class="w-4 h-4 accent-blue-900"> Dashboard Geral
-                        </label>
-                        <label class="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer p-1 hover:bg-slate-200 rounded">
-                            <input type="checkbox" name="permMod" value="Matrículas" class="w-4 h-4 accent-blue-900"> Matrículas e Fichas
-                        </label>
-                        <label class="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer p-1 hover:bg-slate-200 rounded">
-                            <input type="checkbox" name="permMod" value="Rematrícula" class="w-4 h-4 accent-blue-900"> Rematrícula & Extras
-                        </label>
-                        <label class="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer p-1 hover:bg-slate-200 rounded">
-                            <input type="checkbox" name="permMod" value="Calendário" class="w-4 h-4 accent-blue-900"> Calendário e Equipe
-                        </label>
-                        <label class="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer p-1 hover:bg-slate-200 rounded">
-                            <input type="checkbox" name="permMod" value="Financeiro" class="w-4 h-4 accent-blue-900"> Gestão Financeira
-                        </label>
-                        <label class="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer p-1 hover:bg-slate-200 rounded">
-                            <input type="checkbox" name="permMod" value="Notas" class="w-4 h-4 accent-blue-900"> Notas e Avaliações
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <div class="p-5 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
-                <button onclick="fecharModalFuncionario()" class="px-4 py-2 bg-white border border-slate-300 text-slate-600 font-bold hover:bg-slate-50 rounded-lg text-xs transition">Cancelar</button>
-                <button onclick="salvarNovoFuncionario()" class="bg-blue-900 hover:bg-marinho text-white px-5 py-2 rounded-lg font-bold text-xs shadow-sm transition">
-                    💾 Salvar Permissões
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Scripts de Controle -->
+    <!-- SCRIPT DO CALENDÁRIO EM TEMPO REAL -->
     <script>
         function toggleMenuMobile() {
             const menu = document.getElementById('menu-lateral');
@@ -483,172 +205,228 @@
             overlay.classList.toggle('hidden');
         }
 
-        // Carregar parâmetros salvos
-        function carregarParametrosSalvos() {
-            const cfg = JSON.parse(localStorage.getItem('peniel_configuracoes_gerais')) || {};
-            if (cfg.anoLetivo) document.getElementById('cfgAnoLetivo').value = cfg.anoLetivo;
-            if (cfg.regimeAvaliacao) document.getElementById('cfgRegimeAvaliacao').value = cfg.regimeAvaliacao;
-            if (cfg.inicioAulas) document.getElementById('cfgInicioAulas').value = cfg.inicioAulas;
-            if (cfg.fimAulas) document.getElementById('cfgFimAulas').value = cfg.fimAulas;
-            if (cfg.mediaMinima) document.getElementById('cfgMediaMinima').value = cfg.mediaMinima;
-
-            if (cfg.taxaMatricula) document.getElementById('cfgTaxaMatricula').value = cfg.taxaMatricula;
-            if (cfg.materialFtd) document.getElementById('cfgMaterialFtd').value = cfg.materialFtd;
-            if (cfg.diaVencimento) document.getElementById('cfgDiaVencimento').value = cfg.diaVencimento;
-            if (cfg.descontoPontualidade) document.getElementById('cfgDescontoPontualidade').value = cfg.descontoPontualidade;
-            if (cfg.chavePix) document.getElementById('cfgChavePix').value = cfg.chavePix;
-
-            if (cfg.nomeEscola) document.getElementById('cfgNomeEscola').value = cfg.nomeEscola;
-            if (cfg.cnpjEscola) document.getElementById('cfgCnpjEscola').value = cfg.cnpjEscola;
-            if (cfg.zapEscola) document.getElementById('cfgZapEscola').value = cfg.zapEscola;
-            if (cfg.enderecoEscola) document.getElementById('cfgEnderecoEscola').value = cfg.enderecoEscola;
+        function sairDoSistema() {
+            if(confirm("Deseja encerrar sua sessão?")) { window.location.href = 'login.html'; }
         }
 
-        function salvarParametrosAcademicos() {
-            const cfg = JSON.parse(localStorage.getItem('peniel_configuracoes_gerais')) || {};
-            cfg.anoLetivo = document.getElementById('cfgAnoLetivo').value;
-            cfg.regimeAvaliacao = document.getElementById('cfgRegimeAvaliacao').value;
-            cfg.inicioAulas = document.getElementById('cfgInicioAulas').value;
-            cfg.fimAulas = document.getElementById('cfgFimAulas').value;
-            cfg.mediaMinima = document.getElementById('cfgMediaMinima').value;
-            localStorage.setItem('peniel_configuracoes_gerais', JSON.stringify(cfg));
-            alert('✅ Parâmetros do Ano Letivo e Calendário salvos com sucesso!');
+        // Relógio em tempo real no header
+        setInterval(() => {
+            const agora = new Date();
+            document.getElementById('relogio-tempo-real').innerText = agora.toLocaleTimeString('pt-BR');
+        }, 1000);
+
+        let dataAtual = new Date(); // Inicia com a data atual
+        
+        function obterBancoEventos() {
+            let eventos = JSON.parse(localStorage.getItem('peniel_banco_eventos_calendario')) || [
+                { id: 1, titulo: 'Início do Ano Letivo 2027', data: '2027-02-01', horario: '08:00', categoria: 'Geral', cor: 'bg-purple-500 text-white', desc: 'Recepção dos alunos e pais.' },
+                { id: 2, titulo: 'Avaliação de Matemática', data: '2027-03-15', horario: '09:00', categoria: 'Fundamental', cor: 'bg-orange-500 text-white', desc: 'Primeira avaliação trimestral.' },
+                { id: 3, titulo: 'Aula de Robótica e Lógica', data: '2027-02-10', horario: '14:00', categoria: 'Fundamental', cor: 'bg-green-500 text-white', desc: 'Oficina prática no laboratório.' },
+                { id: 4, titulo: 'Reunião de Pais e Mestres', data: '2027-02-20', horario: '19:00', categoria: 'Geral', cor: 'bg-purple-500 text-white', desc: 'Apresentação da proposta pedagógica.' }
+            ];
+            return eventos;
         }
 
-        function salvarParametrosFinanceiros() {
-            const cfg = JSON.parse(localStorage.getItem('peniel_configuracoes_gerais')) || {};
-            cfg.taxaMatricula = document.getElementById('cfgTaxaMatricula').value;
-            cfg.materialFtd = document.getElementById('cfgMaterialFtd').value;
-            cfg.diaVencimento = document.getElementById('cfgDiaVencimento').value;
-            cfg.descontoPontualidade = document.getElementById('cfgDescontoPontualidade').value;
-            cfg.chavePix = document.getElementById('cfgChavePix').value;
-            localStorage.setItem('peniel_configuracoes_gerais', JSON.stringify(cfg));
-            alert('✅ Tabela Financeira e regras de cobrança atualizadas!');
+        function salvarBancoEventos(eventos) {
+            localStorage.setItem('peniel_banco_eventos_calendario', JSON.stringify(eventos));
         }
 
-        function salvarDadosUnidade() {
-            const cfg = JSON.parse(localStorage.getItem('peniel_configuracoes_gerais')) || {};
-            cfg.nomeEscola = document.getElementById('cfgNomeEscola').value;
-            cfg.cnpjEscola = document.getElementById('cfgCnpjEscola').value;
-            cfg.zapEscola = document.getElementById('cfgZapEscola').value;
-            cfg.enderecoEscola = document.getElementById('cfgEnderecoEscola').value;
-            localStorage.setItem('peniel_configuracoes_gerais', JSON.stringify(cfg));
-            alert('✅ Dados institucionais da unidade salvos com sucesso!');
+        const nomesMeses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+
+        function mudarMes(direcao) {
+            dataAtual.setMonth(dataAtual.getMonth() + direcao);
+            renderizarCalendario();
         }
 
-        function exportarBackupSistema() {
-            const backup = {
-                dataExportacao: new Date().toISOString(),
-                alunos: JSON.parse(localStorage.getItem('peniel_banco_fichas_detalhadas')) || {},
-                notas: JSON.parse(localStorage.getItem('peniel_banco_notas')) || {},
-                configuracoes: JSON.parse(localStorage.getItem('peniel_configuracoes_gerais')) || {}
-            };
-            const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `backup_peniel_${new Date().toISOString().slice(0,10)}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
+        function irParaHoje() {
+            dataAtual = new Date();
+            renderizarCalendario();
         }
 
-        // Lógica de Autenticação Master
-        const SENHA_MASTER_GESTOR = "peniel2027";
+        function renderizarCalendario() {
+            const ano = dataAtual.getFullYear();
+            const mes = dataAtual.getMonth();
 
-        document.addEventListener('DOMContentLoaded', () => {
-            carregarParametrosSalvos();
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('modo_gestor') === '1') { localStorage.setItem('peniel_modo_gestor', 'ativo'); }
-            if(localStorage.getItem('peniel_modo_gestor') === 'ativo') { ativarModoGestorVisual(); }
-        });
+            document.getElementById('mesAnoTitulo').innerText = `${nomesMeses[mes]} ${ano}`;
 
-        function solicitarSenhaMaster() {
-            const senhaDigitada = prompt("🔒 Digite a Senha Master do Gestor Geral:");
-            if(senhaDigitada === SENHA_MASTER_GESTOR) {
-                localStorage.setItem('peniel_modo_gestor', 'ativo');
-                ativarModoGestorVisual();
-                alert("🔓 Central de Bordo (Modo Gestor) ativada com sucesso!");
-            } else if(senhaDigitada !== null) {
-                alert("❌ Senha incorreta! Acesso negado.");
+            const grid = document.getElementById('gridDiasCalendario');
+            grid.innerHTML = '';
+
+            const primeiroDiaSemana = new Date(ano, mes, 1).getDay();
+            const ultimoDiaMes = new Date(ano, mes + 1, 0).getDate();
+            const ultimoDiaMesAnterior = new Date(ano, mes, 0).getDate();
+
+            const filtroTurma = document.getElementById('filtroTurmaCalendario').value;
+            const eventos = obterBancoEventos();
+
+            // Dias do mês anterior para completar a primeira semana
+            for (let i = primeiroDiaSemana - 1; i >= 0; i--) {
+                const diaNum = ultimoDiaMesAnterior - i;
+                const celula = criarCelulaDia(diaNum, true, null);
+                grid.appendChild(celula);
+            }
+
+            // Dias do mês atual
+            const hojeStr = new Date().toISOString().slice(0, 10);
+
+            for (let dia = 1; dia <= ultimoDiaMes; dia++) {
+                const mesStr = String(mes + 1).padStart(2, '0');
+                const diaStr = String(dia).padStart(2, '0');
+                const dataIso = `${ano}-${mesStr}-${diaStr}`;
+
+                const eHojes = (dataIso === hojeStr);
+                const celula = criarCelulaDia(dia, false, dataIso, eHojes);
+
+                // Filtrar e inserir eventos do dia
+                const eventosDoDia = eventos.filter(ev => ev.data === dataIso && (filtroTurma === 'todas' || ev.categoria === filtroTurma));
+                
+                const containerEventos = celula.querySelector('.eventos-container');
+                eventosDoDia.forEach(ev => {
+                    const badge = document.createElement('div');
+                    badge.className = `text-[10px] font-bold px-2 py-1 rounded-lg truncate shadow-xs ${ev.cor} mb-1 cursor-pointer hover:opacity-80 transition flex items-center justify-between`;
+                    badge.innerHTML = `<span>${ev.horario} - ${ev.titulo}</span>`;
+                    badge.title = `${ev.titulo} (${ev.horario}) - ${ev.desc || ''}`;
+                    badge.onclick = (e) => {
+                        e.stopPropagation();
+                        if(confirm(`Remover o evento "${ev.titulo}"?`)) {
+                            removerEvento(ev.id);
+                        }
+                    };
+                    containerEventos.appendChild(badge);
+                });
+
+                grid.appendChild(celula);
+            }
+
+            // Dias do próximo mês para completar a grade (6 semanas = 42 células)
+            const totalCelulasFeitas = primeiroDiaSemana + ultimoDiaMes;
+            const proximoMesDias = totalCelulasFeitas <= 35 ? (35 - totalCelulasFeitas) : (42 - totalCelulasFeitas);
+
+            for (let dia = 1; dia <= proximoMesDias; dia++) {
+                const celula = criarCelulaDia(dia, true, null);
+                grid.appendChild(celula);
             }
         }
 
-        function ativarModoGestorVisual() {
-            document.getElementById('blocoBotaoMaster').classList.add('hidden');
-            document.getElementById('blocoStatusMaster').classList.remove('hidden');
-            document.getElementById('centralDeBordo').classList.remove('hidden');
-            const menuLateral = document.getElementById('menu-lateral');
-            if(menuLateral) { menuLateral.style.display = 'none'; }
-        }
+        function criarCelulaDia(numeroDia, outroMes, dataIso, eHoje = false) {
+            const div = document.createElement('div');
+            div.className = `bg-white p-2 sm:p-3 flex flex-col transition min-h-[100px] ${outroMes ? 'bg-slate-50/50 text-slate-300' : 'text-slate-700 hover:bg-blue-50/30'}`;
+            
+            if (dataIso) {
+                div.onclick = () => abrirModalNovoEventoComData(dataIso);
+                div.style.cursor = 'pointer';
+            }
 
-        function bloquearModoMaster() {
-            localStorage.removeItem('peniel_modo_gestor');
-            window.location.href = 'configuracoes.html';
-        }
+            let estiloNumero = "font-bold text-xs sm:text-sm mb-1.5 w-7 h-7 flex items-center justify-center rounded-full";
+            if (eHoje) {
+                estiloNumero += " bg-laranja text-white shadow-sm";
+            } else if (outroMes) {
+                estiloNumero += " text-slate-300";
+            } else {
+                estiloNumero += " text-slate-700 bg-slate-100";
+            }
 
-        // MODAL DE APPS
-        function abrirModalLiberarApp() { document.getElementById('modalLiberarApp').classList.remove('hidden'); }
-        function fecharModalLiberarApp() { 
-            document.getElementById('modalLiberarApp').classList.add('hidden'); 
-            document.getElementById('appEmail').value = '';
-        }
-        function salvarLiberacaoApp() {
-            const email = document.getElementById('appEmail').value;
-            const tipo = document.getElementById('appTipo').value;
-            if(!email) { alert("Por favor, digite um e-mail válido."); return; }
-            alert(`✅ Convite seguro enviado para ${email}!\n\nEste usuário agora terá acesso ao App dos ${tipo}.`);
-            fecharModalLiberarApp();
-        }
-
-        // MODAL DE FUNCIONÁRIO E EDIÇÃO
-        function abrirModalNovoFuncionario() { 
-            document.getElementById('tituloModalFunc').innerText = '🔐 Cadastrar Novo Funcionário';
-            document.getElementById('modalFuncionario').classList.remove('hidden'); 
-        }
-        function fecharModalFuncionario() { 
-            document.getElementById('modalFuncionario').classList.add('hidden');
-            document.getElementById('funcNome').value = '';
-            document.getElementById('funcEmail').value = '';
-            document.getElementById('funcCargo').value = '';
-            document.querySelectorAll('input[name="permMod"]').forEach(cb => cb.checked = false);
-        }
-
-        function editarPermissoes(nome, email, cargo) {
-            document.getElementById('funcNome').value = nome;
-            document.getElementById('funcEmail').value = email;
-            document.getElementById('funcCargo').value = cargo;
-            document.getElementById('tituloModalFunc').innerText = '✏️ Editar Permissões: ' + nome;
-            document.getElementById('modalFuncionario').classList.remove('hidden'); 
-            document.querySelector('input[value="Dashboard"]').checked = true;
-        }
-
-        function salvarNovoFuncionario() {
-            const nome = document.getElementById('funcNome').value.trim();
-            const email = document.getElementById('funcEmail').value.trim();
-            const cargo = document.getElementById('funcCargo').value.trim();
-
-            if(!nome || !email || !cargo) { alert('Preencha todos os campos do funcionário.'); return; }
-
-            const checkboxes = document.querySelectorAll('input[name="permMod"]:checked');
-            let badgesHTML = '';
-            checkboxes.forEach(cb => { badgesHTML += `<span class="bg-blue-500/20 text-blue-300 text-[10px] font-bold px-2 py-0.5 rounded">${cb.value}</span> `; });
-            if(!badgesHTML) badgesHTML = '<span class="text-xs text-slate-400">Nenhum módulo</span>';
-
-            const tbody = document.querySelector('#tabelaFuncionarios tbody');
-            const tr = document.createElement('tr');
-            tr.className = 'hover:bg-blue-900/20 transition';
-            tr.innerHTML = `
-                <td class="px-5 py-3.5 font-bold text-white">${nome} <br><span class="text-[10px] text-slate-400 font-mono">${email}</span></td>
-                <td class="px-5 py-3.5">${cargo}</td>
-                <td class="px-5 py-3.5"><div class="flex flex-wrap gap-1">${badgesHTML}</div></td>
-                <td class="px-5 py-3.5"><span class="bg-green-500/20 text-green-400 px-2 py-0.5 rounded font-bold text-[10px]">Ativo</span></td>
-                <td class="px-5 py-3.5 text-right"><button onclick="editarPermissoes('${nome}', '${email}', '${cargo}')" class="bg-blue-800 hover:bg-blue-700 text-white px-3 py-1 rounded text-[11px] font-bold transition">Editar</button></td>
+            div.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <span class="${estiloNumero}">${numeroDia}</span>
+                    ${dataIso ? '<span class="text-[10px] text-slate-300 group-hover:text-slate-500">+</span>' : ''}
+                </div>
+                <div class="eventos-container flex-1 overflow-y-auto space-y-1 mt-1 hide-scrollbar"></div>
             `;
-
-            tbody.prepend(tr);
-            fecharModalFuncionario();
-            alert(`✅ Funcionário e Acessos salvos com sucesso!`);
+            return div;
         }
+
+        function abrirModalNovoEvento() {
+            document.getElementById('eventoData').value = new Date().toISOString().slice(0, 10);
+            document.getElementById('modalEvento').classList.remove('hidden');
+        }
+
+        function abrirModalNovoEventoComData(dataIso) {
+            document.getElementById('eventoData').value = dataIso;
+            document.getElementById('modalEvento').classList.remove('hidden');
+        }
+
+        function fecharModalEvento() {
+            document.getElementById('modalEvento').classList.add('hidden');
+            document.getElementById('eventoTitulo').value = '';
+            document.getElementById('eventoHorario').value = '';
+            document.getElementById('eventoDescricao').value = '';
+        }
+
+        function salvarNovoEvento() {
+            const titulo = document.getElementById('eventoTitulo').value.trim();
+            const data = document.getElementById('eventoData').value;
+            const horario = document.getElementById('eventoHorario').value.trim() || '08:00';
+            const categoria = document.getElementById('eventoCategoria').value;
+            const cor = document.getElementById('eventoCor').value;
+            const desc = document.getElementById('eventoDescricao').value.trim();
+
+            if (!titulo || !data) {
+                alert('Preencha pelo menos o Título e a Data do evento.');
+                return;
+            }
+
+            let eventos = obterBancoEventos();
+            eventos.push({
+                id: Date.now(),
+                titulo,
+                data,
+                horario,
+                categoria,
+                cor,
+                desc
+            });
+
+            salvarBancoEventos(eventos);
+            fecharModalEvento();
+            renderizarCalendario();
+            alert('✅ Evento ou aula agendada com sucesso!');
+        }
+
+        function salvarModoGestorGlobal() { localStorage.removeItem('peniel_modo_gestor'); window.location.href = 'configuracoes.html'; }
+
+        function removerEvento(id) {
+            let eventos = obterBancoEventos();
+            eventos = eventos.filter(ev => ev.id !== id);
+            salvarBancoEventos(eventos);
+            renderizarCalendario();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderizarCalendario();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('modo_gestor') === '1') {
+                localStorage.setItem('peniel_modo_gestor', 'ativo');
+            }
+
+            if (localStorage.getItem('peniel_modo_gestor') === 'ativo') {
+                const menuLateral = document.querySelector('aside');
+                if (menuLateral) menuLateral.remove();
+
+                const main = document.querySelector('main');
+                if (main && !document.getElementById('barraExecutivaMaster')) {
+                    const barraGestor = document.createElement('div');
+                    barraGestor.id = 'barraExecutivaMaster';
+                    barraGestor.className = 'bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl mb-4 flex justify-between items-center border-2 border-blue-500/40 z-50';
+                    barraGestor.innerHTML = `
+                        <div class="flex items-center gap-3 text-xs font-bold text-blue-300">
+                            <span class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></span>
+                            <span>Modo Gestor Master Ativo (Tela Cheia Executiva)</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <a href="configuracoes.html?modo_gestor=1" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                                &larr; Voltar à Central de Bordo
+                            </a>
+                            <button onclick="salvarModoGestorGlobal()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-xl text-xs font-bold transition shadow-sm">
+                                🔒 Sair do Modo Gestor
+                            </button>
+                        </div>
+                    `;
+                    main.prepend(barraGestor);
+                }
+            }
+        });
     </script>
 </body>
 </html>
