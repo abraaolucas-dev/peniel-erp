@@ -247,6 +247,26 @@
                     <label class="block font-bold text-slate-700 mb-1">Nome Completo do Aluno</label>
                     <input type="text" id="editAlunoNome" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold">
                 </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Turma / Ciclo</label>
+                        <select id="editAlunoTurma" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs bg-white font-bold">
+                            <option value="maternal1">Maternal 1</option>
+                            <option value="maternal2">Maternal 2</option>
+                            <option value="pre1">Pré-Escola 1</option>
+                            <option value="pre2">Pré-Escola 2</option>
+                            <option value="fundamental1">Ensino Fundamental</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Status da Matrícula</label>
+                        <select id="editAlunoStatus" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs bg-white font-bold">
+                            <option value="Ativo">Ativo</option>
+                            <option value="Trancado">Trancado</option>
+                            <option value="Transferido">Transferido</option>
+                        </select>
+                    </div>
+                </div>
                 <div>
                     <label class="block font-bold text-slate-700 mb-1">Nome do Responsável</label>
                     <input type="text" id="editAlunoResp" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs">
@@ -456,14 +476,14 @@
                 if (aluno.turmaChave === 'fundamental1') {
                     botoesAcao = `
                         <button type="button" onclick="abrirBoletimAnual('${aluno.ra}')" class="bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-bold text-xs transition">📊 Notas</button>
-                        <a href="fichas.html?ra=${aluno.ra}&editar=true" class="bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 px-3 py-1.5 rounded-lg font-bold text-xs transition inline-block">✏️ Editar</a>
-                        <a href="fichas.html?ra=${aluno.ra}" class="bg-marinho text-white hover:bg-blue-900 px-3 py-1.5 rounded-lg font-bold text-xs transition inline-block">👥 Ficha</a>
+                        <button type="button" onclick="abrirModalEditarAluno('${aluno.ra}')" class="bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 px-3 py-1.5 rounded-lg font-bold text-xs transition">✏️ Editar Rápido</button>
+                        <a href="fichas.html?ra=${aluno.ra}" class="bg-marinho text-white hover:bg-blue-900 px-3 py-1.5 rounded-lg font-bold text-xs transition inline-block">👥 Ficha Completa</a>
                     `;
                 } else {
                     botoesAcao = `
                         <button type="button" onclick="abrirModalInfantil('${aluno.ra}')" class="bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 px-3 py-1.5 rounded-lg font-bold text-xs transition">📝 Relatório</button>
-                        <a href="fichas.html?ra=${aluno.ra}&editar=true" class="bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 px-3 py-1.5 rounded-lg font-bold text-xs transition inline-block">✏️ Editar</a>
-                        <a href="fichas.html?ra=${aluno.ra}" class="bg-marinho text-white hover:bg-blue-900 px-3 py-1.5 rounded-lg font-bold text-xs transition inline-block">👥 Ficha</a>
+                        <button type="button" onclick="abrirModalEditarAluno('${aluno.ra}')" class="bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 px-3 py-1.5 rounded-lg font-bold text-xs transition">✏️ Editar Rápido</button>
+                        <a href="fichas.html?ra=${aluno.ra}" class="bg-marinho text-white hover:bg-blue-900 px-3 py-1.5 rounded-lg font-bold text-xs transition inline-block">👥 Ficha Completa</a>
                     `;
                 }
 
@@ -640,6 +660,8 @@
 
             document.getElementById('editAlunoRa').value = aluno.ra;
             document.getElementById('editAlunoNome').value = aluno.nome;
+            document.getElementById('editAlunoTurma').value = aluno.turmaChave || 'maternal1';
+            document.getElementById('editAlunoStatus').value = aluno.status || 'Ativo';
             document.getElementById('editAlunoResp').value = aluno.pai;
             document.getElementById('editAlunoTel').value = aluno.paiTel;
             document.getElementById('modalEditarAluno').classList.remove('hidden');
@@ -651,7 +673,11 @@
             const ra = document.getElementById('editAlunoRa').value;
             const base = obterBancoGeralAlunos();
             if (base[ra]) {
+                const novaTurmaKey = document.getElementById('editAlunoTurma').value;
                 base[ra].nome = document.getElementById('editAlunoNome').value.trim();
+                base[ra].turmaChave = novaTurmaKey;
+                base[ra].turma = chaveParaNomeTurma[novaTurmaKey] || 'Turma Regular';
+                base[ra].status = document.getElementById('editAlunoStatus').value;
                 base[ra].pai = document.getElementById('editAlunoResp').value.trim();
                 base[ra].paiTel = document.getElementById('editAlunoTel').value.trim();
                 salvarBancoGeralAlunos(base);
@@ -659,7 +685,7 @@
             fecharModalEditarAluno();
             atualizarContagensEHeader();
             renderizarTabelaAlunos();
-            alert('✅ Informações atualizadas com sucesso!');
+            alert('✅ Dados cadastrais e turma atualizados com sucesso!');
         }
 
         // AVALIAÇÃO INFANTIL
