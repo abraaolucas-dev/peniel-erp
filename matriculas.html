@@ -681,6 +681,64 @@
                 base[ra].pai = document.getElementById('editAlunoResp').value.trim();
                 base[ra].paiTel = document.getElementById('editAlunoTel').value.trim();
                 salvarBancoGeralAlunos(base);
+
+            // --- GERAÇÃO AUTOMÁTICA DE ESTRUTURA DE BOLETOS AO MATRICULAR NOVO ALUNO ---
+            (function gerarBoletosAutomaticosNovaMatricula() {
+                const chaveBoletos = 'peniel_boletos_automaticos';
+                const listaBoletos = JSON.parse(localStorage.getItem(chaveBoletos) || '[]');
+
+                // Regras configuráveis por turma/plano
+                const regrasTurma = {
+                    maternal1:    { valorBase: 950.00, parcelas: 12, diaVencimento: 10, descontoPontualidadePct: 5, multaPct: 2, jurosMesPct: 1 },
+                    maternal2:    { valorBase: 950.00, parcelas: 12, diaVencimento: 10, descontoPontualidadePct: 5, multaPct: 2, jurosMesPct: 1 },
+                    pre1:         { valorBase: 920.00, parcelas: 12, diaVencimento: 10, descontoPontualidadePct: 5, multaPct: 2, jurosMesPct: 1 },
+                    pre2:         { valorBase: 920.00, parcelas: 12, diaVencimento: 10, descontoPontualidadePct: 5, multaPct: 2, jurosMesPct: 1 },
+                    fundamental1: { valorBase: 890.00, parcelas: 12, diaVencimento: 10, descontoPontualidadePct: 5, multaPct: 2, jurosMesPct: 1 }
+                };
+
+                const regra = regrasTurma[turmaKey] || { valorBase: 890.00, parcelas: 12, diaVencimento: 10, descontoPontualidadePct: 5, multaPct: 2, jurosMesPct: 1 };
+                const hoje = new Date();
+                const mesInicial = hoje.getMonth(); // 0..11
+                const anoInicial = hoje.getFullYear();
+
+                for (let i = 0; i < regra.parcelas; i++) {
+                    const dataVenc = new Date(anoInicial, mesInicial + i, regra.diaVencimento);
+                    const vencStr = dataVenc.toLocaleDateString('pt-BR');
+                    const mesRef = dataVenc.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' }).replace('.', '');
+
+                    const valorOriginal = regra.valorBase;
+                    const valorDesconto = +(valorOriginal * (regra.descontoPontualidadePct / 100)).toFixed(2);
+                    const valorComDesconto = +(valorOriginal - valorDesconto).toFixed(2);
+                    const valorMultaReais = +(valorOriginal * (regra.multaPct / 100)).toFixed(2);
+
+                    listaBoletos.push({
+                        id: 'BOL-' + novoRa + '-' + String(i + 1).padStart(2, '0'),
+                        raAluno: novoRa,
+                        nomeAluno: nomeAluno,
+                        turma: chaveParaNomeTurma[turmaKey] || 'Turma Regular',
+                        responsavel: nomeResp,
+                        cpfResponsavel: cpfResp,
+                        emailResponsavel: emailResp,
+                        telefoneResponsavel: telResp,
+                        parcela: (i + 1) + '/' + regra.parcelas,
+                        referencia: 'Mensalidade ' + mesRef,
+                        vencimento: vencStr,
+                        valorOriginal: valorOriginal,
+                        descontoPct: regra.descontoPontualidadePct,
+                        valorComDesconto: valorComDesconto,
+                        multaPct: regra.multaPct,
+                        valorMultaReais: valorMultaReais,
+                        jurosMesPct: regra.jurosMesPct,
+                        status: i === 0 ? 'pendente' : 'agendado',
+                        linhaDigitavel: '34191.79001 01043.510047 91020.150008 6 ' + Math.floor(10000000000000 + Math.random() * 89999999999999),
+                        urlBoleto: '',
+                        gatewayId: ''
+                    });
+                }
+
+                localStorage.setItem(chaveBoletos, JSON.stringify(listaBoletos));
+            })();
+
             }
             fecharModalEditarAluno();
             atualizarContagensEHeader();
