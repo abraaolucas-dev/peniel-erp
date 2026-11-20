@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema Interno | Peniel Christian School</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
@@ -16,6 +17,45 @@
             }
         }
     </script>
+    <style>
+        @keyframes pulsoSuaveEmpresa {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 2px 10px rgba(0, 48, 87, 0.06);
+                border-color: rgba(226, 232, 240, 1);
+            }
+            50% {
+                transform: scale(1.018);
+                box-shadow: 0 10px 26px rgba(232, 93, 4, 0.20);
+                border-color: rgba(232, 93, 4, 0.55);
+            }
+        }
+        .card-grafico-pulsante {
+            animation: pulsoSuaveEmpresa 3.2s ease-in-out infinite;
+            transition: all 0.4s ease;
+        }
+        .card-grafico-pulsante-atraso {
+            animation: pulsoSuaveEmpresa 3.2s ease-in-out 1.6s infinite;
+            transition: all 0.4s ease;
+        }
+        @keyframes fadeBadgeInfo {
+            0% { opacity: 0.35; transform: translateY(2px); }
+            15%, 85% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0.35; transform: translateY(-2px); }
+        }
+        .info-empresa-pulsante {
+            animation: fadeBadgeInfo 4s ease-in-out infinite;
+        }
+        @keyframes numPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.12); color: #E85D04; }
+            100% { transform: scale(1); }
+        }
+        .numero-animado {
+            display: inline-block;
+            animation: numPop 0.6s ease-out;
+        }
+    </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
 
@@ -85,6 +125,57 @@
                     </table>
                 </div>
             </div>
+
+            <!-- PAINEL INFERIOR DE GRÁFICOS EM TEMPO REAL (PULSAÇÃO SUAVE + NÚMEROS DINÂMICOS) -->
+            <section class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Gráfico 1: Leads por Série Pretendida -->
+                <div class="card-grafico-pulsante bg-white p-5 rounded-2xl border-2 border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-3">
+                        <div>
+                            <span class="inline-flex items-center gap-1.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> Tempo Real • Supabase
+                            </span>
+                            <h3 class="font-heading font-bold text-slate-800 text-base mt-1">📊 Distribuição de Leads por Série</h3>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-[10px] uppercase font-bold text-slate-400 block">Total Captado</span>
+                            <span id="num-total-leads" class="text-2xl font-extrabold text-marinho">0</span>
+                        </div>
+                    </div>
+
+                    <div class="h-44 relative w-full">
+                        <canvas id="graficoSeriesLeads"></canvas>
+                    </div>
+
+                    <div id="ticker-leads-series" class="info-empresa-pulsante mt-3 w-full text-center bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-2 text-xs font-bold text-marinho">
+                        Sincronizando métricas de captação 2027...
+                    </div>
+                </div>
+
+                <!-- Gráfico 2: Contato & Conversão WhatsApp -->
+                <div class="card-grafico-pulsante-atraso bg-white p-5 rounded-2xl border-2 border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-3">
+                        <div>
+                            <span class="inline-flex items-center gap-1.5 text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2.5 py-0.5 rounded-full">
+                                <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-ping"></span> Atualização Automática
+                            </span>
+                            <h3 class="font-heading font-bold text-slate-800 text-base mt-1">💬 Leads com WhatsApp & Hoje</h3>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-[10px] uppercase font-bold text-slate-400 block">Com WhatsApp</span>
+                            <span id="num-leads-whats" class="text-2xl font-extrabold text-emerald-600">0</span>
+                        </div>
+                    </div>
+
+                    <div class="h-44 relative w-full">
+                        <canvas id="graficoContatoLeads"></canvas>
+                    </div>
+
+                    <div id="ticker-leads-contato" class="info-empresa-pulsante mt-3 w-full text-center bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-2 text-xs font-bold text-emerald-700">
+                        Peniel Christian School • Captação 2027 Ativa
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
 
@@ -156,8 +247,188 @@
             }
         }
 
-        // Executa a busca assim que a página abrir
-        window.onload = carregarDados;
+        let chartSeries = null;
+        let chartContato = null;
+        let ultimoTotalLeads = -1;
+        let ultimoComWhats = -1;
+        let passoPulsoLeads = 0;
+        let mensagensTickerSeries = ['Peniel Christian School • Captação 2027 Ativa'];
+        let mensagensTickerContato = ['Monitoramento de contatos WhatsApp em tempo real'];
+
+        function animarNumero(elId, novoValor, valorAnterior) {
+            const el = document.getElementById(elId);
+            if (!el) return;
+            if (novoValor === valorAnterior) {
+                el.innerText = novoValor;
+                return;
+            }
+            const inicio = valorAnterior < 0 ? 0 : valorAnterior;
+            const duracao = 700;
+            const inicioTempo = performance.now();
+
+            function passo(agora) {
+                const progresso = Math.min((agora - inicioTempo) / duracao, 1);
+                const atual = Math.round(inicio + (novoValor - inicio) * progresso);
+                el.innerText = atual;
+                if (progresso < 1) {
+                    requestAnimationFrame(passo);
+                } else {
+                    el.classList.remove('numero-animado');
+                    void el.offsetWidth;
+                    el.classList.add('numero-animado');
+                }
+            }
+            requestAnimationFrame(passo);
+        }
+
+        function atualizarGraficosLeads(matriculas) {
+            const total = matriculas.length;
+            let comWhats = 0;
+            let semWhats = 0;
+            let leadsHoje = 0;
+            const hojeStr = new Date().toLocaleDateString('pt-BR');
+            const contagemSeries = {};
+
+            matriculas.forEach(item => {
+                const tel = (item.telefone_responsavel || '').replace(/[^0-9]/g, '');
+                if (tel) comWhats++; else semWhats++;
+
+                if (item.criado_at) {
+                    const dt = new Date(item.criado_at).toLocaleDateString('pt-BR');
+                    if (dt === hojeStr) leadsHoje++;
+                }
+
+                const serie = (item.serie_pretendida || 'Não informada').trim();
+                contagemSeries[serie] = (contagemSeries[serie] || 0) + 1;
+            });
+
+            animarNumero('num-total-leads', total, ultimoTotalLeads);
+            animarNumero('num-leads-whats', comWhats, ultimoComWhats);
+            ultimoTotalLeads = total;
+            ultimoComWhats = comWhats;
+
+            const labelsSeries = Object.keys(contagemSeries);
+            const valoresSeries = Object.values(contagemSeries);
+            const coresPalette = ['#003057', '#E85D04', '#10B981', '#3B82F6', '#8B5CF6', '#F59E0B'];
+
+            const serieTop = labelsSeries.length
+                ? labelsSeries.reduce((a, b) => contagemSeries[a] >= contagemSeries[b] ? a : b)
+                : 'Nenhuma';
+            const taxaWhats = total > 0 ? Math.round((comWhats / total) * 100) : 0;
+
+            mensagensTickerSeries = [
+                `Total de ${total} Leads Captados • Peniel 2027`,
+                `Série Mais Procurada: ${serieTop} (${contagemSeries[serieTop] || 0})`,
+                `${leadsHoje} Novo(s) Lead(s) Recebido(s) Hoje`
+            ];
+            mensagensTickerContato = [
+                `${taxaWhats}% dos Leads com WhatsApp Válido (${comWhats}/${total})`,
+                `${comWhats} Responsáveis Prontos para Atendimento`,
+                `Sincronizado com Typebot & Supabase • Ao Vivo`
+            ];
+
+            const ctxSeries = document.getElementById('graficoSeriesLeads')?.getContext('2d');
+            if (ctxSeries) {
+                if (!chartSeries) {
+                    chartSeries = new Chart(ctxSeries, {
+                        type: 'bar',
+                        data: {
+                            labels: labelsSeries,
+                            datasets: [{
+                                label: 'Leads',
+                                data: valoresSeries,
+                                backgroundColor: labelsSeries.map((_, i) => coresPalette[i % coresPalette.length]),
+                                borderRadius: 8
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            animation: { duration: 900, easing: 'easeOutQuart' },
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: { beginAtZero: true, ticks: { precision: 0, font: { size: 10 } } },
+                                x: { ticks: { font: { size: 10 } } }
+                            }
+                        }
+                    });
+                } else {
+                    chartSeries.data.labels = labelsSeries;
+                    chartSeries.data.datasets[0].data = valoresSeries;
+                    chartSeries.data.datasets[0].backgroundColor = labelsSeries.map((_, i) => coresPalette[i % coresPalette.length]);
+                    chartSeries.update();
+                }
+            }
+
+            const ctxContato = document.getElementById('graficoContatoLeads')?.getContext('2d');
+            if (ctxContato) {
+                if (!chartContato) {
+                    chartContato = new Chart(ctxContato, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Com WhatsApp', 'Sem Contato', 'Recebidos Hoje'],
+                            datasets: [{
+                                data: [comWhats, semWhats, leadsHoje],
+                                backgroundColor: ['#10B981', '#94A3B8', '#E85D04'],
+                                borderWidth: 2,
+                                borderColor: '#ffffff',
+                                hoverOffset: 8
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            cutout: '62%',
+                            animation: { duration: 900, easing: 'easeInOutQuart' },
+                            plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } }
+                        }
+                    });
+                } else {
+                    chartContato.data.datasets[0].data = [comWhats, semWhats, leadsHoje];
+                    chartContato.update();
+                }
+            }
+        }
+
+        const carregarDadosOriginal = carregarDados;
+        carregarDados = async function() {
+            await carregarDadosOriginal();
+            try {
+                const resposta = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': apiKey,
+                        'Authorization': 'Bearer ' + apiKey,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const matriculas = await resposta.json();
+                if (Array.isArray(matriculas)) {
+                    atualizarGraficosLeads(matriculas);
+                }
+            } catch (e) {
+                console.error("Erro ao atualizar gráficos:", e);
+            }
+        };
+
+        // Executa a busca assim que a página abrir e atualiza em tempo real
+        window.onload = () => {
+            carregarDados();
+            // Atualiza dados reais do Supabase a cada 10 segundos
+            setInterval(carregarDados, 10000);
+            // Alterna os destaques pulsantes a cada 4 segundos
+            setInterval(() => {
+                passoPulsoLeads++;
+                const elS = document.getElementById('ticker-leads-series');
+                const elC = document.getElementById('ticker-leads-contato');
+                if (elS) elS.innerText = mensagensTickerSeries[passoPulsoLeads % mensagensTickerSeries.length];
+                if (elC) elC.innerText = mensagensTickerContato[passoPulsoLeads % mensagensTickerContato.length];
+                if (chartContato && chartContato.data.datasets[0].data.length) {
+                    chartContato.setActiveElements([{ datasetIndex: 0, index: passoPulsoLeads % 3 }]);
+                    chartContato.update();
+                }
+            }, 4000);
+        };
     </script>
 
     <!-- ======================================================= -->
