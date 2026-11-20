@@ -23,15 +23,27 @@
 
         @keyframes pulsoSuaveEmpresa {
             0%, 100% {
-                transform: scale(1);
                 box-shadow: 0 2px 10px rgba(0, 48, 87, 0.06);
                 border-color: rgba(226, 232, 240, 1);
             }
             50% {
-                transform: scale(1.022);
-                box-shadow: 0 10px 26px rgba(232, 93, 4, 0.22);
+                box-shadow: 0 8px 24px rgba(232, 93, 4, 0.22);
                 border-color: rgba(232, 93, 4, 0.55);
             }
+        }
+        @keyframes pulsoApenasGrafico {
+            0%, 100% {
+                transform: scale(1);
+                filter: drop-shadow(0 0 0 rgba(232, 93, 4, 0));
+            }
+            50% {
+                transform: scale(1.035);
+                filter: drop-shadow(0 4px 12px rgba(232, 93, 4, 0.18));
+            }
+        }
+        canvas {
+            animation: pulsoApenasGrafico 3.2s ease-in-out infinite;
+            transform-origin: center center;
         }
         .card-grafico-pulsante {
             animation: pulsoSuaveEmpresa 3.2s ease-in-out infinite;
@@ -42,9 +54,8 @@
             transition: all 0.4s ease;
         }
         @keyframes fadeBadgeInfo {
-            0% { opacity: 0.35; transform: translateY(2px); }
-            15%, 85% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0.35; transform: translateY(-2px); }
+            0%, 100% { opacity: 0.72; }
+            50% { opacity: 1; }
         }
         .info-empresa-pulsante {
             animation: fadeBadgeInfo 4s ease-in-out infinite;
