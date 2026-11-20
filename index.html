@@ -20,6 +20,35 @@
     <style>
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        @keyframes pulsoSuaveEmpresa {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 2px 10px rgba(0, 48, 87, 0.06);
+                border-color: rgba(226, 232, 240, 1);
+            }
+            50% {
+                transform: scale(1.022);
+                box-shadow: 0 10px 26px rgba(232, 93, 4, 0.22);
+                border-color: rgba(232, 93, 4, 0.55);
+            }
+        }
+        .card-grafico-pulsante {
+            animation: pulsoSuaveEmpresa 3.2s ease-in-out infinite;
+            transition: all 0.4s ease;
+        }
+        .card-grafico-pulsante-atraso {
+            animation: pulsoSuaveEmpresa 3.2s ease-in-out 1.6s infinite;
+            transition: all 0.4s ease;
+        }
+        @keyframes fadeBadgeInfo {
+            0% { opacity: 0.35; transform: translateY(2px); }
+            15%, 85% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0.35; transform: translateY(-2px); }
+        }
+        .info-empresa-pulsante {
+            animation: fadeBadgeInfo 4s ease-in-out infinite;
+        }
     </style>
 </head>
 <body id="corpo-sistema" class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col md:flex-row overflow-x-hidden">
@@ -244,14 +273,32 @@
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center">
-                        <h3 class="font-bold text-slate-700 mb-3 text-center text-xs uppercase tracking-wider">Frequência Diária</h3>
+                    <div class="card-grafico-pulsante bg-white p-4 rounded-2xl border-2 border-slate-200 shadow-sm flex flex-col items-center relative overflow-hidden">
+                        <div class="w-full flex items-center justify-between mb-2">
+                            <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> Ao Vivo
+                            </span>
+                            <span class="text-[10px] font-mono text-slate-400">Peniel School</span>
+                        </div>
+                        <h3 class="font-bold text-slate-700 mb-2 text-center text-xs uppercase tracking-wider">Frequência Diária</h3>
                         <div class="w-36 h-36 relative"><canvas id="graficoFrequencia"></canvas></div>
+                        <div id="ticker-info-frequencia" class="info-empresa-pulsante mt-3 w-full text-center bg-slate-50 border border-slate-200/80 rounded-xl px-2.5 py-1.5 text-[11px] font-bold text-marinho">
+                            97,7% Presença Hoje • 342 Alunos
+                        </div>
                     </div>
                     
-                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center">
-                        <h3 class="font-bold text-slate-700 mb-3 text-center text-xs uppercase tracking-wider">Saúde Financeira</h3>
+                    <div class="card-grafico-pulsante-atraso bg-white p-4 rounded-2xl border-2 border-slate-200 shadow-sm flex flex-col items-center relative overflow-hidden">
+                        <div class="w-full flex items-center justify-between mb-2">
+                            <span class="inline-flex items-center gap-1 text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full">
+                                <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-ping"></span> Indicador
+                            </span>
+                            <span class="text-[10px] font-mono text-slate-400">Financeiro</span>
+                        </div>
+                        <h3 class="font-bold text-slate-700 mb-2 text-center text-xs uppercase tracking-wider">Saúde Financeira</h3>
                         <div class="w-36 h-36 relative"><canvas id="graficoFinanceiro"></canvas></div>
+                        <div id="ticker-info-financeiro" class="info-empresa-pulsante mt-3 w-full text-center bg-slate-50 border border-slate-200/80 rounded-xl px-2.5 py-1.5 text-[11px] font-bold text-emerald-700">
+                            85% Receita Em Dia • Meta 2027
+                        </div>
                     </div>
                 </div>
             </div>
@@ -779,17 +826,76 @@
             renderizarReunioes();
             renderizarCardsPortaria();
 
-            const chartOpts = { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, font: { size: 9 } } } } };
-            new Chart(document.getElementById('graficoFrequencia').getContext('2d'), {
+            const chartOpts = {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 1100, easing: 'easeInOutQuart' },
+                plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, font: { size: 9 } } } }
+            };
+            const chartFreq = new Chart(document.getElementById('graficoFrequencia').getContext('2d'), {
                 type: 'doughnut',
-                data: { labels: ['Presentes', 'Faltas', 'Atestado'], datasets: [{ data: [342, 6, 2], backgroundColor: ['#10B981', '#EF4444', '#F59E0B'], borderWidth: 0 }] },
+                data: {
+                    labels: ['Presentes', 'Faltas', 'Atestado'],
+                    datasets: [{
+                        data: [342, 6, 2],
+                        backgroundColor: ['#10B981', '#EF4444', '#F59E0B'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff',
+                        hoverOffset: 8
+                    }]
+                },
                 options: { ...chartOpts, cutout: '65%' }
             });
-            new Chart(document.getElementById('graficoFinanceiro').getContext('2d'), {
+            const chartFin = new Chart(document.getElementById('graficoFinanceiro').getContext('2d'), {
                 type: 'pie',
-                data: { labels: ['Pago', 'Atraso', 'Acordo'], datasets: [{ data: [85, 12, 3], backgroundColor: ['#3B82F6', '#EF4444', '#8B5CF6'], borderWidth: 0 }] },
+                data: {
+                    labels: ['Pago', 'Atraso', 'Acordo'],
+                    datasets: [{
+                        data: [85, 12, 3],
+                        backgroundColor: ['#3B82F6', '#EF4444', '#8B5CF6'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff',
+                        hoverOffset: 8
+                    }]
+                },
                 options: chartOpts
             });
+
+            // Pulsação suave em segundos destacando métricas da Peniel Christian School
+            const destaquesFreq = [
+                { texto: '97,7% Presença Hoje • 342 Alunos', idx: 0, cor: 'text-emerald-700' },
+                { texto: '6 Faltas Justificadas no Turno', idx: 1, cor: 'text-red-600' },
+                { texto: '97,7% Ocupação • 342/350 Vagas', idx: 0, cor: 'text-marinho' }
+            ];
+            const destaquesFin = [
+                { texto: '85% Receita Em Dia • Fluxo Positivo', idx: 0, cor: 'text-blue-700' },
+                { texto: '65% Retenção Rematrículas 2027', idx: 2, cor: 'text-purple-700' },
+                { texto: '12% Pendências em Negociação', idx: 1, cor: 'text-red-600' }
+            ];
+            let passoPulso = 0;
+
+            setInterval(() => {
+                passoPulso++;
+                const itemFreq = destaquesFreq[passoPulso % destaquesFreq.length];
+                const itemFin = destaquesFin[passoPulso % destaquesFin.length];
+
+                const elFreq = document.getElementById('ticker-info-frequencia');
+                const elFin = document.getElementById('ticker-info-financeiro');
+                if (elFreq) {
+                    elFreq.className = `info-empresa-pulsante mt-3 w-full text-center bg-slate-50 border border-slate-200/80 rounded-xl px-2.5 py-1.5 text-[11px] font-bold ${itemFreq.cor}`;
+                    elFreq.innerText = itemFreq.texto;
+                }
+                if (elFin) {
+                    elFin.className = `info-empresa-pulsante mt-3 w-full text-center bg-slate-50 border border-slate-200/80 rounded-xl px-2.5 py-1.5 text-[11px] font-bold ${itemFin.cor}`;
+                    elFin.innerText = itemFin.texto;
+                }
+
+                // Realce suave nas fatias do gráfico
+                chartFreq.setActiveElements([{ datasetIndex: 0, index: itemFreq.idx }]);
+                chartFreq.update();
+                chartFin.setActiveElements([{ datasetIndex: 0, index: itemFin.idx }]);
+                chartFin.update();
+            }, 4000);
 
             setTimeout(() => {
                 if (dadosPortaria.isabela.status === 'PENDENTE') {
