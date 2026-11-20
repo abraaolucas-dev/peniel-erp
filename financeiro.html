@@ -14,7 +14,7 @@
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
 
-    <div class="flex h-screen overflow-hidden">
+    <div class="flex min-h-screen md:h-screen md:overflow-hidden">
         
         <!-- Menu Lateral -->
         <aside id="menu-lateral" class="w-64 bg-marinho text-white flex flex-col hidden md:flex transition-all z-10">
@@ -44,7 +44,7 @@
         </aside>
 
         <!-- Área Principal -->
-        <main class="flex-1 overflow-y-auto p-6 md:p-8 flex flex-col gap-6 relative">
+        <main class="flex-1 overflow-y-auto p-6 md:p-8 pb-24 flex flex-col gap-6 relative scroll-smooth">
             
             <header class="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                 <div>
@@ -250,39 +250,55 @@
         
 
         <!-- ========================================================================= -->
-        <!-- MÓDULO AUTOMÁTICO DE BOLETOS POR ALUNO (CALCULADO AUTOMATICAMENTE)      -->
+        <!-- MÓDULO RECORRENTE MENSAL POR STATUS DO ALUNO (ATIVO vs BAIXA)             -->
         <!-- ========================================================================= -->
         <div id="blocoBoletosAutomaticos" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mt-8">
             <div class="p-5 border-b border-slate-100 bg-slate-50/70 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
                 <div>
-                    <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-blue-100 text-marinho text-[10px] font-bold uppercase tracking-wider mb-1">
-                        Automação Ativa • Matrícula → Boleto
+                    <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase tracking-wider mb-1">
+                        Recorrência Mensal Ativa • Enquanto Aluno Estiver Ativo
                     </div>
-                    <h3 class="font-bold text-slate-800 text-base">Boletos Gerados Automaticamente por Aluno</h3>
-                    <p class="text-xs text-slate-500">Calcula automaticamente valor base, desconto por pontualidade (%), multa (%), juros/mês (%) e vencimento.</p>
+                    <h3 class="font-bold text-slate-800 text-base">Cobrança Mensal Automática por Status de Matrícula</h3>
+                    <p class="text-xs text-slate-500">Enquanto o aluno estiver <strong>Ativo</strong> (sem baixa), o boleto mensal é gerado e calculado automaticamente todos os meses.</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
                     <select id="filtroAlunoBoletos" onchange="renderizarBoletosAutomaticos()" class="border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 bg-white">
-                        <option value="todos">Todos os alunos com boletos</option>
+                        <option value="todos">Todos os alunos</option>
                     </select>
-                    <button type="button" onclick="gerarLoteDemoSeVazio(true)" class="bg-marinho hover:bg-blue-900 text-white px-4 py-2 rounded-xl text-xs font-bold transition">
-                        ⚡ Simular Novo Aluno (12 Boletos)
+                    <button type="button" onclick="executarCicloMensalTodosAtivos(true)" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition shadow-sm">
+                        🔄 Gerar Competência Mensal (Ativos)
+                    </button>
+                    <button type="button" onclick="cadastrarEAtivarAlunoDemo()" class="bg-marinho hover:bg-blue-900 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition shadow-sm">
+                        ➕ Ativar Novo Aluno
                     </button>
                 </div>
             </div>
 
-            <div class="overflow-x-auto">
+            <!-- Painel de Status dos Alunos (Ativo x Baixa) -->
+            <div class="p-4 bg-slate-50 border-b border-slate-200">
+                <div class="flex items-center justify-between mb-2.5">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-600">Controle de Ativação / Baixa de Alunos (Gera ou Interrompe Boletos Futuros)</span>
+                    <span id="resumoAlunosAtivos" class="text-xs font-bold text-marinho">--</span>
+                </div>
+                <div id="listaAlunosRecorrencia" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 max-h-[210px] overflow-y-auto pr-1" style="scrollbar-width: thin;"></div>
+            </div>
+
+            <div class="px-5 py-2.5 bg-blue-50/60 border-b border-blue-100 flex flex-wrap items-center justify-between gap-2 text-[11px] text-marinho font-semibold">
+                <span>⬇️ Role a lista abaixo para visualizar todos os boletos mensais calculados automaticamente.</span>
+                <span id="contadorBoletosVisiveis" class="bg-white border border-blue-200 px-2.5 py-0.5 rounded-full text-xs font-bold">Carregando...</span>
+            </div>
+            <div class="overflow-x-auto overflow-y-auto max-h-[420px] border-b border-slate-100" style="scrollbar-width: thin;">
                 <table class="w-full text-left text-xs">
-                    <thead class="bg-slate-50 text-slate-500 border-b border-slate-200 uppercase text-[10px] font-bold">
+                    <thead class="bg-slate-50 text-slate-500 border-b border-slate-200 uppercase text-[10px] font-bold sticky top-0 z-10">
                         <tr>
-                            <th class="px-4 py-3">Boleto / Parcela</th>
-                            <th class="px-4 py-3">Aluno / Responsável</th>
+                            <th class="px-4 py-3">Boleto / Competência</th>
+                            <th class="px-4 py-3">Aluno / Status Matrícula</th>
                             <th class="px-4 py-3 text-center">Vencimento</th>
                             <th class="px-4 py-3 text-right">Valor Base</th>
                             <th class="px-4 py-3 text-right">C/ Desconto (%)</th>
                             <th class="px-4 py-3 text-center">Encargos Atraso</th>
-                            <th class="px-4 py-3 text-center">Status</th>
-                            <th class="px-4 py-3 text-right">Integração Bancária</th>
+                            <th class="px-4 py-3 text-center">Status Boleto</th>
+                            <th class="px-4 py-3 text-right">Ações / Banco</th>
                         </tr>
                     </thead>
                     <tbody id="corpoTabelaBoletosAutomaticos" class="divide-y divide-slate-100"></tbody>
@@ -671,15 +687,75 @@
         });
     
         // =====================================================================
-        // GESTÃO AUTOMÁTICA DE BOLETOS E INTEGRAÇÃO COM API BANCÁRIA / GATEWAY
+        // MOTOR DE COBRANÇA MENSAL RECORRENTE POR ATIVAÇÃO DO ALUNO (SEM BAIXA)
         // =====================================================================
         const CONFIG_BANCO_API = {
-            // Exemplos de endpoints:
-            // Asaas: 'https://api.asaas.com/v3/payments' ou seu webhook n8n 'https://seu-n8n.dominio/webhook/gerar-boleto'
             endpointUrl: '',
             apiKey: '',
-            provedor: 'n8n_ou_gateway' // 'asaas' | 'mercadopago' | 'banco_inter' | 'n8n_ou_gateway'
+            provedor: 'n8n_ou_gateway'
         };
+
+        function obterAlunosRecorrencia() {
+            let alunos = JSON.parse(localStorage.getItem('peniel_alunos_recorrencia') || '[]');
+            if (alunos.length === 0) {
+                alunos = [
+                    {
+                        ra: '2026001',
+                        nome: 'Davi Lucas',
+                        turma: '3º Ano A',
+                        responsavel: 'Carlos Lucas',
+                        cpf: '123.456.789-00',
+                        email: 'carlos@familia.com',
+                        valorMensalidade: 1250.00,
+                        diaVencimento: 5,
+                        descontoPontualidadePct: 5,
+                        multaAtrasoPct: 2,
+                        jurosMesPct: 1,
+                        ativo: true,
+                        dataAtivacao: '01/08/2026',
+                        dataBaixa: null
+                    },
+                    {
+                        ra: '2026002',
+                        nome: 'Marcos Paulo',
+                        turma: '2º Ano B',
+                        responsavel: 'Juliana Paulo',
+                        cpf: '222.333.444-55',
+                        email: 'juliana@familia.com',
+                        valorMensalidade: 1300.00,
+                        diaVencimento: 8,
+                        descontoPontualidadePct: 5,
+                        multaAtrasoPct: 2,
+                        jurosMesPct: 1,
+                        ativo: true,
+                        dataAtivacao: '01/08/2026',
+                        dataBaixa: null
+                    },
+                    {
+                        ra: '2026003',
+                        nome: 'Isabela Mendes',
+                        turma: '2º Ano B',
+                        responsavel: 'Mariana Mendes',
+                        cpf: '333.444.555-66',
+                        email: 'mariana@familia.com',
+                        valorMensalidade: 1100.00,
+                        diaVencimento: 15,
+                        descontoPontualidadePct: 5,
+                        multaAtrasoPct: 2,
+                        jurosMesPct: 1,
+                        ativo: true,
+                        dataAtivacao: '01/09/2026',
+                        dataBaixa: null
+                    }
+                ];
+                salvarAlunosRecorrencia(alunos);
+            }
+            return alunos;
+        }
+
+        function salvarAlunosRecorrencia(lista) {
+            localStorage.setItem('peniel_alunos_recorrencia', JSON.stringify(lista));
+        }
 
         function obterBoletosAutomaticos() {
             return JSON.parse(localStorage.getItem('peniel_boletos_automaticos') || '[]');
@@ -689,52 +765,174 @@
             localStorage.setItem('peniel_boletos_automaticos', JSON.stringify(lista));
         }
 
-        function gerarLoteDemoSeVazio(forcarNovoAluno = false) {
+        function formatarCompetencia(ano, mesZeroBased) {
+            const d = new Date(ano, mesZeroBased, 1);
+            const mes = String(d.getMonth() + 1).padStart(2, '0');
+            return `${mes}/${d.getFullYear()}`;
+        }
+
+        function gerarBoletoParaCompetencia(aluno, ano, mesZeroBased) {
+            const comp = formatarCompetencia(ano, mesZeroBased);
+            const dia = Math.min(aluno.diaVencimento || 10, 28);
+            const vencDate = new Date(ano, mesZeroBased, dia);
+            const valorBase = Number(aluno.valorMensalidade || 0);
+            const descPct = Number(aluno.descontoPontualidadePct || 0);
+            const multaPct = Number(aluno.multaAtrasoPct || 2);
+            const jurosPct = Number(aluno.jurosMesPct || 1);
+
+            const descontoValor = +(valorBase * (descPct / 100)).toFixed(2);
+            const valorLiquido = +(valorBase - descontoValor).toFixed(2);
+            const multaValor = +(valorBase * (multaPct / 100)).toFixed(2);
+
+            const hoje = new Date();
+            hoje.setHours(0, 0, 0, 0);
+            const estaVencido = vencDate < hoje;
+
+            return {
+                id: `BOL-${aluno.ra}-${ano}${String(mesZeroBased + 1).padStart(2, '0')}`,
+                raAluno: aluno.ra,
+                nomeAluno: aluno.nome,
+                turma: aluno.turma,
+                responsavel: aluno.responsavel,
+                cpfResponsavel: aluno.cpf || '000.000.000-00',
+                emailResponsavel: aluno.email || 'financeiro@peniel.com',
+                competencia: comp,
+                referencia: `Mensalidade ${comp}`,
+                vencimento: vencDate.toLocaleDateString('pt-BR'),
+                valorOriginal: valorBase,
+                descontoPct: descPct,
+                valorComDesconto: valorLiquido,
+                multaPct: multaPct,
+                valorMultaReais: multaValor,
+                jurosMesPct: jurosPct,
+                status: estaVencido ? 'atrasado' : 'pendente',
+                linhaDigitavel: '34191.79001 01043.510047 91020.150008 6 ' + Math.floor(10000000000000 + Math.random() * 89999999999999),
+                urlBoleto: '',
+                gatewayId: ''
+            };
+        }
+
+        // Gera automaticamente o boleto do mês vigente (e próximo mês se solicitado) apenas para alunos ATIVOS (sem baixa)
+        function executarCicloMensalTodosAtivos(avancarProximoMes = false) {
+            const alunos = obterAlunosRecorrencia();
             let boletos = obterBoletosAutomaticos();
-            if (boletos.length === 0 || forcarNovoAluno) {
-                const idxAluno = Math.floor(100 + Math.random() * 899);
-                const ra = '2027' + idxAluno;
-                const alunoNome = forcarNovoAluno ? 'Lucas Almeida #' + idxAluno : 'Davi Lucas';
-                const respNome = forcarNovoAluno ? 'Fernanda Almeida' : 'Carlos Lucas';
-                const valorBase = 890.00;
-                const descontoPct = 5;
-                const multaPct = 2;
-                const jurosMesPct = 1;
-                const hoje = new Date();
+            const agora = new Date();
+            let anoAlvo = agora.getFullYear();
+            let mesAlvo = agora.getMonth();
 
-                for (let i = 0; i < 12; i++) {
-                    const venc = new Date(hoje.getFullYear(), hoje.getMonth() + i, 10);
-                    const descontoValor = +(valorBase * (descontoPct / 100)).toFixed(2);
-                    const valorLiquido = +(valorBase - descontoValor).toFixed(2);
-                    const multaValor = +(valorBase * (multaPct / 100)).toFixed(2);
-
-                    boletos.push({
-                        id: 'BOL-' + ra + '-' + String(i + 1).padStart(2, '0'),
-                        raAluno: ra,
-                        nomeAluno: alunoNome,
-                        turma: 'Ensino Fundamental',
-                        responsavel: respNome,
-                        cpfResponsavel: '123.456.789-00',
-                        emailResponsavel: 'financeiro@familia.com',
-                        telefoneResponsavel: '(21) 99999-0000',
-                        parcela: (i + 1) + '/12',
-                        referencia: 'Mensalidade ' + venc.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' }).replace('.', ''),
-                        vencimento: venc.toLocaleDateString('pt-BR'),
-                        valorOriginal: valorBase,
-                        descontoPct: descontoPct,
-                        valorComDesconto: valorLiquido,
-                        multaPct: multaPct,
-                        valorMultaReais: multaValor,
-                        jurosMesPct: jurosMesPct,
-                        status: i === 0 ? 'pendente' : 'agendado',
-                        linhaDigitavel: '34191.79001 01043.510047 91020.150008 6 ' + Math.floor(10000000000000 + Math.random() * 89999999999999),
-                        urlBoleto: '',
-                        gatewayId: ''
-                    });
-                }
-                salvarBoletosAutomaticos(boletos);
+            if (avancarProximoMes) {
+                const ultimoOffset = Number(localStorage.getItem('peniel_offset_mes_simulado') || '0') + 1;
+                localStorage.setItem('peniel_offset_mes_simulado', String(ultimoOffset));
+                const dSim = new Date(agora.getFullYear(), agora.getMonth() + ultimoOffset, 1);
+                anoAlvo = dSim.getFullYear();
+                mesAlvo = dSim.getMonth();
             }
+
+            let geradosAgora = 0;
+            alunos.forEach(aluno => {
+                // Regra principal: SOMENTE gera se o aluno estiver ATIVO e sem baixa
+                if (!aluno.ativo) return;
+
+                const comp = formatarCompetencia(anoAlvo, mesAlvo);
+                const jaExiste = boletos.some(b => b.raAluno === aluno.ra && b.competencia === comp);
+                if (!jaExiste) {
+                    boletos.unshift(gerarBoletoParaCompetencia(aluno, anoAlvo, mesAlvo));
+                    geradosAgora++;
+                }
+            });
+
+            salvarBoletosAutomaticos(boletos);
+            renderizarPainelAlunosRecorrencia();
             renderizarBoletosAutomaticos();
+
+            if (avancarProximoMes) {
+                const compTexto = formatarCompetencia(anoAlvo, mesAlvo);
+                alert(`✅ Ciclo mensal (${compTexto}) executado!
+${geradosAgora} boleto(s) gerado(s) automaticamente apenas para os alunos ATIVOS (sem baixa).`);
+            }
+        }
+
+        function alternarStatusAtivoAluno(ra) {
+            const alunos = obterAlunosRecorrencia();
+            const idx = alunos.findIndex(a => a.ra === ra);
+            if (idx === -1) return;
+
+            const aluno = alunos[idx];
+            if (aluno.ativo) {
+                if (!confirm(`Deseja dar BAIXA na matrícula de ${aluno.nome}?
+Ao dar baixa, nenhum novo boleto mensal será gerado para este aluno.`)) return;
+                aluno.ativo = false;
+                aluno.dataBaixa = new Date().toLocaleDateString('pt-BR');
+                salvarAlunosRecorrencia(alunos);
+                renderizarPainelAlunosRecorrencia();
+                renderizarBoletosAutomaticos();
+            } else {
+                aluno.ativo = true;
+                aluno.dataBaixa = null;
+                aluno.dataAtivacao = new Date().toLocaleDateString('pt-BR');
+                salvarAlunosRecorrencia(alunos);
+                // Ao reativar, já calcula e gera imediatamente o boleto da competência atual se ainda não existir
+                executarCicloMensalTodosAtivos(false);
+            }
+        }
+
+        function cadastrarEAtivarAlunoDemo() {
+            const alunos = obterAlunosRecorrencia();
+            const sufixo = Math.floor(100 + Math.random() * 899);
+            const novo = {
+                ra: '2026' + sufixo,
+                nome: 'Lucas Almeida #' + sufixo,
+                turma: '4º Ano A',
+                responsavel: 'Fernanda Almeida',
+                cpf: '444.555.666-77',
+                email: 'fernanda@familia.com',
+                valorMensalidade: 1180.00,
+                diaVencimento: 10,
+                descontoPontualidadePct: 5,
+                multaAtrasoPct: 2,
+                jurosMesPct: 1,
+                ativo: true,
+                dataAtivacao: new Date().toLocaleDateString('pt-BR'),
+                dataBaixa: null
+            };
+            alunos.unshift(novo);
+            salvarAlunosRecorrencia(alunos);
+            executarCicloMensalTodosAtivos(false);
+            alert(`✅ Aluno ${novo.nome} ativado no sistema!
+O boleto mensal foi gerado e calculado automaticamente.`);
+        }
+
+        function renderizarPainelAlunosRecorrencia() {
+            const container = document.getElementById('listaAlunosRecorrencia');
+            const resumo = document.getElementById('resumoAlunosAtivos');
+            if (!container) return;
+
+            const alunos = obterAlunosRecorrencia();
+            const ativos = alunos.filter(a => a.ativo).length;
+            const baixados = alunos.length - ativos;
+            if (resumo) {
+                resumo.innerText = `${ativos} Ativo(s) gerando boleto mensal • ${baixados} Com Baixa`;
+            }
+
+            const fmtBRL = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+            container.innerHTML = alunos.map(a => `
+                <div class="p-3 rounded-xl border ${a.ativo ? 'bg-white border-emerald-200' : 'bg-slate-100 border-slate-300 opacity-80'} flex items-center justify-between gap-2 shadow-xs">
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full ${a.ativo ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}"></span>
+                            <p class="font-bold text-xs text-slate-800 truncate">${a.nome}</p>
+                        </div>
+                        <p class="text-[10px] text-slate-500 truncate">${a.turma} • ${fmtBRL(a.valorMensalidade)}/mês (Venc. dia ${a.diaVencimento})</p>
+                        <p class="text-[10px] font-semibold ${a.ativo ? 'text-emerald-700' : 'text-red-600'}">
+                            ${a.ativo ? `Ativo desde ${a.dataAtivacao} (Gerando todo mês)` : `Baixa em ${a.dataBaixa} (Cobrança encerrada)`}
+                        </p>
+                    </div>
+                    <button type="button" onclick="alternarStatusAtivoAluno('${a.ra}')" class="${a.ativo ? 'bg-red-50 hover:bg-red-100 text-red-700 border border-red-200' : 'bg-emerald-600 hover:bg-emerald-700 text-white'} px-2.5 py-1.5 rounded-lg text-[10px] font-bold shrink-0 transition">
+                        ${a.ativo ? 'Dar Baixa' : 'Reativar'}
+                    </button>
+                </div>
+            `).join('');
         }
 
         function renderizarBoletosAutomaticos() {
@@ -742,42 +940,55 @@
             const selectAluno = document.getElementById('filtroAlunoBoletos');
             if (!tbody || !selectAluno) return;
 
+            const alunos = obterAlunosRecorrencia();
+            const mapaAlunos = new Map(alunos.map(a => [a.ra, a]));
             const boletos = obterBoletosAutomaticos();
             const alunoSelecionado = selectAluno.value;
 
-            // Atualiza dropdown de alunos
-            const alunosUnicos = [...new Map(boletos.map(b => [b.raAluno, `${b.nomeAluno} (RA ${b.raAluno})`])).entries()];
             const valorAtualSelect = selectAluno.value;
-            selectAluno.innerHTML = '<option value="todos">Todos os alunos com boletos</option>' +
-                alunosUnicos.map(([ra, label]) => `<option value="${ra}">${label}</option>`).join('');
+            selectAluno.innerHTML = '<option value="todos">Todos os alunos</option>' +
+                alunos.map(a => `<option value="${a.ra}">${a.nome} (${a.ativo ? 'Ativo' : 'Baixa'})</option>`).join('');
             if ([...selectAluno.options].some(o => o.value === valorAtualSelect)) {
                 selectAluno.value = valorAtualSelect;
             }
 
             const filtrados = boletos.filter(b => alunoSelecionado === 'todos' || b.raAluno === alunoSelecionado);
+            const contadorEl = document.getElementById('contadorBoletosVisiveis');
+            if (contadorEl) contadorEl.innerText = `${filtrados.length} boleto(s) encontrado(s)`;
 
             if (filtrados.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" class="px-4 py-8 text-center text-slate-400">Nenhum boleto gerado ainda. Cadastre um aluno em Matrículas ou clique em "Simular Novo Aluno".</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" class="px-4 py-8 text-center text-slate-400">Nenhum boleto mensal gerado ainda. Ative um aluno para iniciar a cobrança recorrente.</td></tr>';
                 return;
             }
 
             const fmtBRL = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-            tbody.innerHTML = filtrados.slice(0, 24).map(b => {
-                const badgeStatus = b.status === 'emitido_banco'
-                    ? '<span class="bg-emerald-100 text-emerald-800 px-2 py-1 rounded font-bold">Emitido no Banco</span>'
-                    : (b.status === 'pendente'
-                        ? '<span class="bg-amber-100 text-amber-800 px-2 py-1 rounded font-bold">A Vencer</span>'
-                        : '<span class="bg-slate-100 text-slate-600 px-2 py-1 rounded font-bold">Agendado</span>');
+            tbody.innerHTML = filtrados.map(b => {
+                const alunoInfo = mapaAlunos.get(b.raAluno);
+                const estaAtivo = alunoInfo ? alunoInfo.ativo : true;
+
+                const badgeMatricula = estaAtivo
+                    ? '<span class="inline-block mt-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded text-[9px] font-bold">● Aluno Ativo</span>'
+                    : '<span class="inline-block mt-0.5 bg-red-50 text-red-700 border border-red-200 px-1.5 py-0.5 rounded text-[9px] font-bold">■ Baixa Efetuada</span>';
+
+                let badgeStatus = '<span class="bg-amber-100 text-amber-800 px-2 py-1 rounded font-bold">A Vencer</span>';
+                if (b.status === 'pago') {
+                    badgeStatus = '<span class="bg-green-100 text-green-800 px-2 py-1 rounded font-bold">Pago</span>';
+                } else if (b.status === 'atrasado') {
+                    badgeStatus = '<span class="bg-red-100 text-red-700 px-2 py-1 rounded font-bold">Atrasado</span>';
+                } else if (b.status === 'emitido_banco') {
+                    badgeStatus = '<span class="bg-blue-100 text-blue-800 px-2 py-1 rounded font-bold">Emitido no Banco</span>';
+                }
 
                 return `<tr class="hover:bg-slate-50">
                     <td class="px-4 py-3 font-mono">
                         <p class="font-bold text-slate-800">${b.id}</p>
-                        <p class="text-[10px] text-slate-400">Parc. ${b.parcela} • ${b.referencia}</p>
+                        <p class="text-[10px] text-slate-500">Comp. ${b.competencia}</p>
                     </td>
                     <td class="px-4 py-3">
                         <p class="font-bold text-slate-800">${b.nomeAluno}</p>
                         <p class="text-[10px] text-slate-500">Resp: ${b.responsavel}</p>
+                        ${badgeMatricula}
                     </td>
                     <td class="px-4 py-3 text-center font-mono font-bold text-marinho">${b.vencimento}</td>
                     <td class="px-4 py-3 text-right font-bold text-slate-700">${fmtBRL(b.valorOriginal)}</td>
@@ -789,13 +1000,23 @@
                         Multa ${b.multaPct}% (${fmtBRL(b.valorMultaReais)})<br>Juros ${b.jurosMesPct}% a.m.
                     </td>
                     <td class="px-4 py-3 text-center">${badgeStatus}</td>
-                    <td class="px-4 py-3 text-right">
-                        <button type="button" onclick="registrarBoletoNaApiBancaria('${b.id}')" class="bg-marinho hover:bg-blue-900 text-white px-3 py-1.5 rounded-lg font-bold text-[11px] transition">
-                            🏦 Enviar p/ Banco API
+                    <td class="px-4 py-3 text-right space-x-1">
+                        ${b.status !== 'pago' ? `<button type="button" onclick="darBaixaBoletoPago('${b.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 rounded-lg font-bold text-[10px] transition">✓ Baixar Pago</button>` : ''}
+                        <button type="button" onclick="registrarBoletoNaApiBancaria('${b.id}')" class="bg-marinho hover:bg-blue-900 text-white px-2.5 py-1.5 rounded-lg font-bold text-[10px] transition">
+                            🏦 API Banco
                         </button>
                     </td>
                 </tr>`;
             }).join('');
+        }
+
+        function darBaixaBoletoPago(boletoId) {
+            const boletos = obterBoletosAutomaticos();
+            const idx = boletos.findIndex(b => b.id === boletoId);
+            if (idx === -1) return;
+            boletos[idx].status = 'pago';
+            salvarBoletosAutomaticos(boletos);
+            renderizarBoletosAutomaticos();
         }
 
         async function registrarBoletoNaApiBancaria(boletoId) {
@@ -804,11 +1025,11 @@
             if (idx === -1) return;
             const bol = boletos[idx];
 
-            // Payload padronizado pronto para n8n, Asaas, Mercado Pago ou API bancária
             const payloadBoleto = {
                 externalReference: bol.id,
                 studentRa: bol.raAluno,
                 studentName: bol.nomeAluno,
+                competencia: bol.competencia,
                 customerName: bol.responsavel,
                 customerCpf: bol.cpfResponsavel,
                 customerEmail: bol.emailResponsavel,
@@ -821,11 +1042,13 @@
 
             if (!CONFIG_BANCO_API.endpointUrl) {
                 alert(
-                    `Payload pronto para envio ao banco/gateway (${bol.id}):\n` +
-                    `Aluno: ${bol.nomeAluno} | Vencimento: ${bol.vencimento}\n` +
-                    `Valor Base: R$ ${bol.valorOriginal.toFixed(2)} | Com ${bol.descontoPct}% desc.: R$ ${bol.valorComDesconto.toFixed(2)}\n` +
-                    `Linha Digitável simulada: ${bol.linhaDigitavel}\n\n` +
-                    `Preencha CONFIG_BANCO_API.endpointUrl no código para registrar o boleto de verdade.`
+                    `Payload pronto para envio ao banco/gateway (${bol.id}):
+` +
+                    `Aluno: ${bol.nomeAluno} | Competência: ${bol.competencia} | Vencimento: ${bol.vencimento}
+` +
+                    `Valor Base: R$ ${bol.valorOriginal.toFixed(2)} | Com ${bol.descontoPct}% desc.: R$ ${bol.valorComDesconto.toFixed(2)}
+` +
+                    `Linha Digitável simulada: ${bol.linhaDigitavel}`
                 );
                 return;
             }
@@ -852,7 +1075,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            gerarLoteDemoSeVazio(false);
+            executarCicloMensalTodosAtivos(false);
         });
 
     </script>
