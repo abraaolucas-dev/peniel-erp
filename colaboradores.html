@@ -383,6 +383,10 @@
             alert('✅ Evento ou aula agendada com sucesso!');
         }
 
+        function salvarModoGestorGlobal() { localStorage.removeItem('peniel_modo_gestor'); window.location.href = 'configuracoes.html'; }
+
+        function salvarModoGestorGlobal() { localStorage.removeItem('peniel_modo_gestor'); window.location.href = 'configuracoes.html'; }
+
         function removerEvento(id) {
             let eventos = obterBancoEventos();
             eventos = eventos.filter(ev => ev.id !== id);
