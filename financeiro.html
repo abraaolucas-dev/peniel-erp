@@ -361,6 +361,13 @@
     <!-- SCRIPTS DE LÓGICA (CÁLCULO DINÂMICO DE KPIS) E MODO GESTOR MASTER -->
     <!-- ========================================================================= -->
     <script>
+        function abrirModalNovaCobranca() {
+            document.getElementById('modalNovaCobranca').classList.remove('hidden');
+        }
+        function fecharModalNovaCobranca() {
+            document.getElementById('modalNovaCobranca').classList.add('hidden');
+        }
+
         // --- 1. LÓGICA DO ROBÔ DE COBRANÇAS ---
         function atualizarStatusAutomacao() {
             const isAtivo = document.getElementById('toggleAutomacao').checked;
@@ -622,4 +629,3 @@
     </script>
 </body>
 </html>
-<!-- FIM DO CÓDIGO -->
