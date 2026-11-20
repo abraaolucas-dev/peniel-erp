@@ -316,6 +316,10 @@
             return base;
         }
 
+        function salvarBancoGeralAlunos(base) {
+            localStorage.setItem('peniel_banco_fichas_detalhadas', JSON.stringify(base));
+        }
+
         let alunoSelecionadoRa = null;
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -431,7 +435,7 @@
                     titulo: titulo,
                     desc: desc
                 });
-                localStorage.setItem('peniel_banco_fichas_detalhadas', JSON.stringify(base));
+                salvarBancoGeralAlunos(base);
                 selecionarAlunoFicha(alunoSelecionadoRa);
                 alert('✅ Ocorrência registrada com sucesso!');
             }
