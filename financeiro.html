@@ -247,6 +247,49 @@
                     </div>
                 </div>
             </div>
+        
+
+        <!-- ========================================================================= -->
+        <!-- MÓDULO AUTOMÁTICO DE BOLETOS POR ALUNO (CALCULADO AUTOMATICAMENTE)      -->
+        <!-- ========================================================================= -->
+        <div id="blocoBoletosAutomaticos" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mt-8">
+            <div class="p-5 border-b border-slate-100 bg-slate-50/70 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-blue-100 text-marinho text-[10px] font-bold uppercase tracking-wider mb-1">
+                        Automação Ativa • Matrícula → Boleto
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-base">Boletos Gerados Automaticamente por Aluno</h3>
+                    <p class="text-xs text-slate-500">Calcula automaticamente valor base, desconto por pontualidade (%), multa (%), juros/mês (%) e vencimento.</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <select id="filtroAlunoBoletos" onchange="renderizarBoletosAutomaticos()" class="border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 bg-white">
+                        <option value="todos">Todos os alunos com boletos</option>
+                    </select>
+                    <button type="button" onclick="gerarLoteDemoSeVazio(true)" class="bg-marinho hover:bg-blue-900 text-white px-4 py-2 rounded-xl text-xs font-bold transition">
+                        ⚡ Simular Novo Aluno (12 Boletos)
+                    </button>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-slate-50 text-slate-500 border-b border-slate-200 uppercase text-[10px] font-bold">
+                        <tr>
+                            <th class="px-4 py-3">Boleto / Parcela</th>
+                            <th class="px-4 py-3">Aluno / Responsável</th>
+                            <th class="px-4 py-3 text-center">Vencimento</th>
+                            <th class="px-4 py-3 text-right">Valor Base</th>
+                            <th class="px-4 py-3 text-right">C/ Desconto (%)</th>
+                            <th class="px-4 py-3 text-center">Encargos Atraso</th>
+                            <th class="px-4 py-3 text-center">Status</th>
+                            <th class="px-4 py-3 text-right">Integração Bancária</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoTabelaBoletosAutomaticos" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+        </div>
+
         </main>
     </div>
 
@@ -626,6 +669,192 @@
                 header.insertBefore(btnMobile, header.firstChild);
             }
         });
+    
+        // =====================================================================
+        // GESTÃO AUTOMÁTICA DE BOLETOS E INTEGRAÇÃO COM API BANCÁRIA / GATEWAY
+        // =====================================================================
+        const CONFIG_BANCO_API = {
+            // Exemplos de endpoints:
+            // Asaas: 'https://api.asaas.com/v3/payments' ou seu webhook n8n 'https://seu-n8n.dominio/webhook/gerar-boleto'
+            endpointUrl: '',
+            apiKey: '',
+            provedor: 'n8n_ou_gateway' // 'asaas' | 'mercadopago' | 'banco_inter' | 'n8n_ou_gateway'
+        };
+
+        function obterBoletosAutomaticos() {
+            return JSON.parse(localStorage.getItem('peniel_boletos_automaticos') || '[]');
+        }
+
+        function salvarBoletosAutomaticos(lista) {
+            localStorage.setItem('peniel_boletos_automaticos', JSON.stringify(lista));
+        }
+
+        function gerarLoteDemoSeVazio(forcarNovoAluno = false) {
+            let boletos = obterBoletosAutomaticos();
+            if (boletos.length === 0 || forcarNovoAluno) {
+                const idxAluno = Math.floor(100 + Math.random() * 899);
+                const ra = '2027' + idxAluno;
+                const alunoNome = forcarNovoAluno ? 'Lucas Almeida #' + idxAluno : 'Davi Lucas';
+                const respNome = forcarNovoAluno ? 'Fernanda Almeida' : 'Carlos Lucas';
+                const valorBase = 890.00;
+                const descontoPct = 5;
+                const multaPct = 2;
+                const jurosMesPct = 1;
+                const hoje = new Date();
+
+                for (let i = 0; i < 12; i++) {
+                    const venc = new Date(hoje.getFullYear(), hoje.getMonth() + i, 10);
+                    const descontoValor = +(valorBase * (descontoPct / 100)).toFixed(2);
+                    const valorLiquido = +(valorBase - descontoValor).toFixed(2);
+                    const multaValor = +(valorBase * (multaPct / 100)).toFixed(2);
+
+                    boletos.push({
+                        id: 'BOL-' + ra + '-' + String(i + 1).padStart(2, '0'),
+                        raAluno: ra,
+                        nomeAluno: alunoNome,
+                        turma: 'Ensino Fundamental',
+                        responsavel: respNome,
+                        cpfResponsavel: '123.456.789-00',
+                        emailResponsavel: 'financeiro@familia.com',
+                        telefoneResponsavel: '(21) 99999-0000',
+                        parcela: (i + 1) + '/12',
+                        referencia: 'Mensalidade ' + venc.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' }).replace('.', ''),
+                        vencimento: venc.toLocaleDateString('pt-BR'),
+                        valorOriginal: valorBase,
+                        descontoPct: descontoPct,
+                        valorComDesconto: valorLiquido,
+                        multaPct: multaPct,
+                        valorMultaReais: multaValor,
+                        jurosMesPct: jurosMesPct,
+                        status: i === 0 ? 'pendente' : 'agendado',
+                        linhaDigitavel: '34191.79001 01043.510047 91020.150008 6 ' + Math.floor(10000000000000 + Math.random() * 89999999999999),
+                        urlBoleto: '',
+                        gatewayId: ''
+                    });
+                }
+                salvarBoletosAutomaticos(boletos);
+            }
+            renderizarBoletosAutomaticos();
+        }
+
+        function renderizarBoletosAutomaticos() {
+            const tbody = document.getElementById('corpoTabelaBoletosAutomaticos');
+            const selectAluno = document.getElementById('filtroAlunoBoletos');
+            if (!tbody || !selectAluno) return;
+
+            const boletos = obterBoletosAutomaticos();
+            const alunoSelecionado = selectAluno.value;
+
+            // Atualiza dropdown de alunos
+            const alunosUnicos = [...new Map(boletos.map(b => [b.raAluno, `${b.nomeAluno} (RA ${b.raAluno})`])).entries()];
+            const valorAtualSelect = selectAluno.value;
+            selectAluno.innerHTML = '<option value="todos">Todos os alunos com boletos</option>' +
+                alunosUnicos.map(([ra, label]) => `<option value="${ra}">${label}</option>`).join('');
+            if ([...selectAluno.options].some(o => o.value === valorAtualSelect)) {
+                selectAluno.value = valorAtualSelect;
+            }
+
+            const filtrados = boletos.filter(b => alunoSelecionado === 'todos' || b.raAluno === alunoSelecionado);
+
+            if (filtrados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="px-4 py-8 text-center text-slate-400">Nenhum boleto gerado ainda. Cadastre um aluno em Matrículas ou clique em "Simular Novo Aluno".</td></tr>';
+                return;
+            }
+
+            const fmtBRL = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+            tbody.innerHTML = filtrados.slice(0, 24).map(b => {
+                const badgeStatus = b.status === 'emitido_banco'
+                    ? '<span class="bg-emerald-100 text-emerald-800 px-2 py-1 rounded font-bold">Emitido no Banco</span>'
+                    : (b.status === 'pendente'
+                        ? '<span class="bg-amber-100 text-amber-800 px-2 py-1 rounded font-bold">A Vencer</span>'
+                        : '<span class="bg-slate-100 text-slate-600 px-2 py-1 rounded font-bold">Agendado</span>');
+
+                return `<tr class="hover:bg-slate-50">
+                    <td class="px-4 py-3 font-mono">
+                        <p class="font-bold text-slate-800">${b.id}</p>
+                        <p class="text-[10px] text-slate-400">Parc. ${b.parcela} • ${b.referencia}</p>
+                    </td>
+                    <td class="px-4 py-3">
+                        <p class="font-bold text-slate-800">${b.nomeAluno}</p>
+                        <p class="text-[10px] text-slate-500">Resp: ${b.responsavel}</p>
+                    </td>
+                    <td class="px-4 py-3 text-center font-mono font-bold text-marinho">${b.vencimento}</td>
+                    <td class="px-4 py-3 text-right font-bold text-slate-700">${fmtBRL(b.valorOriginal)}</td>
+                    <td class="px-4 py-3 text-right">
+                        <span class="font-bold text-emerald-700">${fmtBRL(b.valorComDesconto)}</span>
+                        <span class="block text-[10px] text-emerald-600">-${b.descontoPct}% até venc.</span>
+                    </td>
+                    <td class="px-4 py-3 text-center text-[10px] text-slate-500">
+                        Multa ${b.multaPct}% (${fmtBRL(b.valorMultaReais)})<br>Juros ${b.jurosMesPct}% a.m.
+                    </td>
+                    <td class="px-4 py-3 text-center">${badgeStatus}</td>
+                    <td class="px-4 py-3 text-right">
+                        <button type="button" onclick="registrarBoletoNaApiBancaria('${b.id}')" class="bg-marinho hover:bg-blue-900 text-white px-3 py-1.5 rounded-lg font-bold text-[11px] transition">
+                            🏦 Enviar p/ Banco API
+                        </button>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        async function registrarBoletoNaApiBancaria(boletoId) {
+            const boletos = obterBoletosAutomaticos();
+            const idx = boletos.findIndex(item => item.id === boletoId);
+            if (idx === -1) return;
+            const bol = boletos[idx];
+
+            // Payload padronizado pronto para n8n, Asaas, Mercado Pago ou API bancária
+            const payloadBoleto = {
+                externalReference: bol.id,
+                studentRa: bol.raAluno,
+                studentName: bol.nomeAluno,
+                customerName: bol.responsavel,
+                customerCpf: bol.cpfResponsavel,
+                customerEmail: bol.emailResponsavel,
+                dueDate: bol.vencimento,
+                value: bol.valorOriginal,
+                discount: { value: bol.descontoPct, type: 'PERCENTAGE' },
+                fine: { value: bol.multaPct },
+                interest: { value: bol.jurosMesPct }
+            };
+
+            if (!CONFIG_BANCO_API.endpointUrl) {
+                alert(
+                    `Payload pronto para envio ao banco/gateway (${bol.id}):\n` +
+                    `Aluno: ${bol.nomeAluno} | Vencimento: ${bol.vencimento}\n` +
+                    `Valor Base: R$ ${bol.valorOriginal.toFixed(2)} | Com ${bol.descontoPct}% desc.: R$ ${bol.valorComDesconto.toFixed(2)}\n` +
+                    `Linha Digitável simulada: ${bol.linhaDigitavel}\n\n` +
+                    `Preencha CONFIG_BANCO_API.endpointUrl no código para registrar o boleto de verdade.`
+                );
+                return;
+            }
+
+            const resp = await fetch(CONFIG_BANCO_API.endpointUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(CONFIG_BANCO_API.apiKey ? { 'Authorization': 'Bearer ' + CONFIG_BANCO_API.apiKey } : {})
+                },
+                body: JSON.stringify(payloadBoleto)
+            });
+
+            const retorno = await resp.json();
+            boletos[idx].status = 'emitido_banco';
+            boletos[idx].gatewayId = retorno.id || retorno.paymentId || 'OK';
+            boletos[idx].urlBoleto = retorno.bankSlipUrl || retorno.urlBoleto || '';
+            salvarBoletosAutomaticos(boletos);
+            renderizarBoletosAutomaticos();
+
+            if (boletos[idx].urlBoleto) {
+                window.open(boletos[idx].urlBoleto, '_blank');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            gerarLoteDemoSeVazio(false);
+        });
+
     </script>
 </body>
 </html>
