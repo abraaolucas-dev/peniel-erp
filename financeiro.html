@@ -249,6 +249,35 @@
             </div>
         
 
+            <!-- PAINEL DE INTEGRAÇÃO ASAAS (SANDBOX / PRODUÇÃO / WEBHOOK) -->
+            <div id="painelIntegracaoAsaas" class="bg-slate-900 text-white p-4 rounded-2xl border border-slate-800 shadow-sm flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
+                <div class="space-y-1">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <h4 class="font-bold text-sm text-white">Integração Asaas • Boleto & Encargos Automáticos</h4>
+                        <span id="badgeAmbienteAsaas" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">SANDBOX</span>
+                    </div>
+                    <p class="text-[11px] text-slate-300">
+                        Use <code class="text-emerald-300">https://api-sandbox.asaas.com/v3</code> para testes ou aponte para seu <strong>Webhook / n8n</strong> para proteger sua chave.
+                    </p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2 w-full xl:w-auto">
+                    <select id="asaasAmbiente" onchange="salvarConfigAsaas()" class="bg-slate-800 border border-slate-700 text-white rounded-xl px-3 py-2 text-xs font-bold">
+                        <option value="sandbox">Sandbox (api-sandbox.asaas.com/v3)</option>
+                        <option value="producao">Produção (api.asaas.com/v3)</option>
+                    </select>
+                    <input type="text" id="asaasEndpointCustom" onchange="salvarConfigAsaas()" placeholder="Opcional: URL Webhook / n8n" class="bg-slate-800 border border-slate-700 text-white placeholder-slate-400 rounded-xl px-3 py-2 text-xs w-full sm:w-52">
+                    <input type="password" id="asaasApiKey" onchange="salvarConfigAsaas()" placeholder="Cole sua API Key Asaas ($aact_...)" class="bg-slate-800 border border-slate-700 text-white placeholder-slate-400 rounded-xl px-3 py-2 text-xs w-full sm:w-56">
+                    <button type="button" onclick="preencherChaveSandboxRapida()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 px-3 py-2 rounded-xl text-xs font-bold transition shadow-sm whitespace-nowrap">
+                        🔑 Usar Chave Sandbox
+                    </button>
+                    <button type="button" onclick="testarConexaoAsaas()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition shadow-sm whitespace-nowrap">
+                        🔌 Testar API Asaas
+                    </button>
+                </div>
+            </div>
+
         <!-- ========================================================================= -->
         <!-- MÓDULO RECORRENTE MENSAL POR STATUS DO ALUNO (ATIVO vs BAIXA)             -->
         <!-- ========================================================================= -->
@@ -262,6 +291,14 @@
                     <p class="text-xs text-slate-500">Enquanto o aluno estiver <strong>Ativo</strong> (sem baixa), o boleto mensal é gerado e calculado automaticamente todos os meses.</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
+                    <select id="seletorBancoModelo" onchange="salvarBancoModeloSelecionado()" class="border border-blue-300 bg-blue-50 text-marinho rounded-xl px-3 py-2 text-xs font-bold">
+                        <option value="341|Itaú Unibanco S.A.|341-7">🏦 Modelo: Itaú (341-7)</option>
+                        <option value="001|Banco do Brasil S.A.|001-9">🏦 Modelo: Banco do Brasil (001-9)</option>
+                        <option value="237|Banco Bradesco S.A.|237-2">🏦 Modelo: Bradesco (237-2)</option>
+                        <option value="033|Banco Santander S.A.|033-7">🏦 Modelo: Santander (033-7)</option>
+                        <option value="077|Banco Inter S.A.|077-9">🏦 Modelo: Banco Inter (077-9)</option>
+                        <option value="461|Asaas I.P. S.A. (Sandbox)|461-3">🏦 Modelo: Asaas Sandbox (461-3)</option>
+                    </select>
                     <select id="filtroAlunoBoletos" onchange="renderizarBoletosAutomaticos()" class="border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 bg-white">
                         <option value="todos">Todos os alunos</option>
                     </select>
@@ -278,7 +315,10 @@
             <div class="p-4 bg-slate-50 border-b border-slate-200">
                 <div class="flex items-center justify-between mb-2.5">
                     <span class="text-[11px] font-bold uppercase tracking-wider text-slate-600">Controle de Ativação / Baixa de Alunos (Gera ou Interrompe Boletos Futuros)</span>
-                    <span id="resumoAlunosAtivos" class="text-xs font-bold text-marinho">--</span>
+                    <div class="flex items-center gap-3">
+                        <span id="resumoAlunosAtivos" class="text-xs font-bold text-marinho">--</span>
+                        <button type="button" onclick="restaurarAlunosPadraoDemo()" class="text-[11px] font-bold text-blue-700 hover:underline">Carregar Alunos Demo</button>
+                    </div>
                 </div>
                 <div id="listaAlunosRecorrencia" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 max-h-[210px] overflow-y-auto pr-1" style="scrollbar-width: thin;"></div>
             </div>
@@ -311,6 +351,124 @@
 
     <!-- ========================================================================= -->
     <!-- MODAIS DO SISTEMA -->
+    <!-- MODAL: VISUALIZADOR E IMPRESSÃO DE BOLETO BANCÁRIO MODELO -->
+    <div id="modalBoletoModelo" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden flex justify-center items-center z-[95] p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto max-h-[95vh]">
+            <div class="p-4 bg-marinho text-white flex justify-between items-center shrink-0">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl">🧾</span>
+                    <div>
+                        <h3 class="font-bold text-sm sm:text-base">Boleto Bancário Demonstrativo (Homologação / Apresentação)</h3>
+                        <p class="text-[11px] text-blue-200" id="subtituloBoletoModelo">Padrão FEBRABAN • Código de Barras & PIX Copia e Cola</p>
+                    </div>
+                </div>
+                <button type="button" onclick="fecharModalBoletoModelo()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
+            </div>
+
+            <div id="areaImpressaoBoleto" class="p-5 sm:p-6 overflow-y-auto bg-white text-slate-900 space-y-4 font-sans text-xs">
+                <!-- Cabeçalho do Banco (Ficha de Compensação) -->
+                <div class="border-2 border-slate-800 rounded-lg overflow-hidden">
+                    <div class="flex flex-wrap items-center justify-between border-b-2 border-slate-800 px-3 py-2 bg-slate-50 gap-2">
+                        <div class="flex items-center gap-3">
+                            <span class="font-black text-base tracking-tight text-marinho" id="bolBancoNome">Itaú Unibanco S.A.</span>
+                            <span class="border-x-2 border-slate-800 px-2.5 py-0.5 font-mono font-black text-base" id="bolBancoCodigo">341-7</span>
+                        </div>
+                        <span class="font-mono font-bold text-[11px] sm:text-xs tracking-wider text-slate-900" id="bolLinhaDigitavel">34191.79001 01043.510047 91020.150008 6 98540000125000</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-12 border-b border-slate-400">
+                        <div class="md:col-span-9 p-2.5 border-b md:border-b-0 md:border-r border-slate-400">
+                            <span class="block text-[9px] uppercase font-bold text-slate-500">Local de Pagamento</span>
+                            <p class="font-bold text-slate-800">PAGÁVEL EM QUALQUER BANCO OU LOTÉRICA ATÉ O VENCIMENTO. APÓS O VENCIMENTO, ATUALIZAR ENCARGOS.</p>
+                        </div>
+                        <div class="md:col-span-3 p-2.5 bg-amber-50/60">
+                            <span class="block text-[9px] uppercase font-bold text-slate-500">Vencimento</span>
+                            <p class="font-mono font-black text-sm text-marinho" id="bolVencimento">10/11/2026</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-12 border-b border-slate-400">
+                        <div class="md:col-span-9 p-2.5 border-b md:border-b-0 md:border-r border-slate-400">
+                            <span class="block text-[9px] uppercase font-bold text-slate-500">Beneficiário (Escola)</span>
+                            <p class="font-bold text-slate-800">PENIEL CHRISTIAN SCHOOL LTDA • CNPJ: 32.145.987/0001-00 • Rio de Janeiro - RJ</p>
+                        </div>
+                        <div class="md:col-span-3 p-2.5">
+                            <span class="block text-[9px] uppercase font-bold text-slate-500">Agência / Código Beneficiário</span>
+                            <p class="font-mono font-bold text-slate-800">0412 / 88492-1</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-12 border-b border-slate-400">
+                        <div class="md:col-span-3 p-2.5 border-r border-slate-400">
+                            <span class="block text-[9px] uppercase font-bold text-slate-500">Data do Documento</span>
+                            <p class="font-mono font-semibold" id="bolDataDoc">--/--/----</p>
+                        </div>
+                        <div class="md:col-span-3 p-2.5 md:border-r border-slate-400">
+                            <span class="block text-[9px] uppercase font-bold text-slate-500">Nº do Documento</span>
+                            <p class="font-mono font-bold" id="bolNumDoc">BOL-000</p>
+                        </div>
+                        <div class="md:col-span-3 p-2.5 border-t md:border-t-0 border-r border-slate-400">
+                            <span class="block text-[9px] uppercase font-bold text-slate-500">Carteira / Espécie</span>
+                            <p class="font-mono font-semibold">109 / R$</p>
+                        </div>
+                        <div class="md:col-span-3 p-2.5 border-t md:border-t-0 bg-blue-50/50">
+                            <span class="block text-[9px] uppercase font-bold text-slate-500">(=) Valor do Documento</span>
+                            <p class="font-mono font-black text-sm text-slate-900" id="bolValorDoc">R$ 1.250,00</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-12 border-b border-slate-400">
+                        <div class="md:col-span-9 p-2.5 border-b md:border-b-0 md:border-r border-slate-400 space-y-1">
+                            <span class="block text-[9px] uppercase font-bold text-slate-500">Instruções de Cobrança (Calculadas Automaticamente)</span>
+                            <p class="font-semibold text-emerald-700" id="bolInstrucaoDesconto">• Conceder desconto de 5% até o vencimento.</p>
+                            <p class="font-semibold text-slate-700" id="bolInstrucaoMulta">• Após o vencimento cobrar multa de 2% + juros moratórios de 1% ao mês.</p>
+                            <p class="text-[11px] text-slate-500" id="bolReferencia">• Referência: Mensalidade Escolar</p>
+                        </div>
+                        <div class="md:col-span-3 p-2.5 space-y-2">
+                            <div>
+                                <span class="block text-[9px] uppercase font-bold text-slate-500">(-) Desconto Pontualidade</span>
+                                <p class="font-mono font-bold text-emerald-700" id="bolValorDesconto">R$ 0,00</p>
+                            </div>
+                            <div>
+                                <span class="block text-[9px] uppercase font-bold text-slate-500">(=) Valor Líquido Até Venc.</span>
+                                <p class="font-mono font-black text-emerald-800 text-sm" id="bolValorLiquido">R$ 0,00</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-2.5 bg-slate-50">
+                        <span class="block text-[9px] uppercase font-bold text-slate-500">Pagador (Responsável Financeiro / Aluno)</span>
+                        <p class="font-bold text-slate-900" id="bolPagador">Responsável • CPF 000.000.000-00</p>
+                        <p class="text-[11px] text-slate-600" id="bolAlunoTurma">Aluno(a): -- • Turma: --</p>
+                    </div>
+                </div>
+
+                <!-- Código de Barras Visual + PIX -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center pt-1">
+                    <div class="md:col-span-8">
+                        <p class="text-[9px] uppercase font-bold text-slate-400 mb-1">Representação Visual do Código de Barras (FEBRABAN)</p>
+                        <div id="bolBarrasSvg" class="h-14 w-full bg-white border border-slate-200 rounded-lg p-2 flex items-center justify-center overflow-hidden"></div>
+                    </div>
+                    <div class="md:col-span-4 bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-center">
+                        <span class="text-[10px] font-bold uppercase text-emerald-800 block">PIX Boleto Híbrido (Demo)</span>
+                        <p class="text-[10px] text-emerald-700 mt-1 break-all font-mono" id="bolPixCopiaCola">00020126580014br.gov.bcb.pix...</p>
+                        <button type="button" onclick="copiarLinhaDigitavelModal()" class="mt-2 w-full bg-emerald-600 hover:bg-emerald-700 text-white py-1.5 px-2 rounded-lg text-[10px] font-bold transition">
+                            📋 Copiar Linha Digitável
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 border-t border-slate-200 bg-slate-50 flex flex-wrap justify-between items-center gap-2 shrink-0">
+                <span class="text-[11px] text-slate-500 font-medium">Modo Demonstração ativo • Pronto para homologação bancária</span>
+                <div class="flex gap-2">
+                    <button type="button" onclick="fecharModalBoletoModelo()" class="px-4 py-2 bg-white border border-slate-300 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-100">Fechar</button>
+                    <button type="button" onclick="imprimirBoletoModelo()" class="px-4 py-2 bg-marinho hover:bg-blue-900 text-white font-bold rounded-xl text-xs shadow-sm">🖨️ Imprimir / Salvar PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- ========================================================================= -->
 
     <!-- MODAL: NOVA COBRANÇA -->
@@ -690,13 +848,246 @@
         // MOTOR DE COBRANÇA MENSAL RECORRENTE POR ATIVAÇÃO DO ALUNO (SEM BAIXA)
         // =====================================================================
         const CONFIG_BANCO_API = {
+            ambiente: 'sandbox',
+            sandboxUrl: 'https://api-sandbox.asaas.com/v3',
+            producaoUrl: 'https://api.asaas.com/v3',
             endpointUrl: '',
             apiKey: '',
-            provedor: 'n8n_ou_gateway'
+            provedor: 'asaas'
         };
 
+        function preencherChaveSandboxRapida() {
+            const inputKey = document.getElementById('asaasApiKey');
+            const selAmb = document.getElementById('asaasAmbiente');
+            if (selAmb) selAmb.value = 'sandbox';
+            if (inputKey) {
+                inputKey.value = '$aact_hmlg_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OjNhY2U4MTEwLTUzZWUtNGE5MC04MTUwLWQxNjFkYjM0M2UzNTo6JGFhY2hfNzc2NjdlNWEtMjAxYS00MzkwLTg5MTctYjIyYjQ4NTgzMTQ0';
+            }
+            salvarConfigAsaas();
+            alert('✅ Chave Sandbox Asaas carregada no campo de teste. Clique em "🔌 Testar API Asaas" ou em "🏦 Asaas" em um boleto.');
+        }
+
+        function obterConfigAsaas() {
+            const salvo = JSON.parse(localStorage.getItem('peniel_config_asaas') || '{}');
+            return {
+                ambiente: salvo.ambiente || 'sandbox',
+                endpointUrl: salvo.endpointUrl || '',
+                apiKey: salvo.apiKey || ''
+            };
+        }
+
+        function salvarConfigAsaas() {
+            const ambEl = document.getElementById('asaasAmbiente');
+            const endEl = document.getElementById('asaasEndpointCustom');
+            const keyEl = document.getElementById('asaasApiKey');
+            const cfg = {
+                ambiente: ambEl ? ambEl.value : 'sandbox',
+                endpointUrl: endEl ? endEl.value.trim() : '',
+                apiKey: keyEl ? keyEl.value.trim() : ''
+            };
+            localStorage.setItem('peniel_config_asaas', JSON.stringify(cfg));
+            const badge = document.getElementById('badgeAmbienteAsaas');
+            if (badge) {
+                if (cfg.endpointUrl) {
+                    badge.innerText = 'WEBHOOK / N8N';
+                    badge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-400/20 text-sky-300 border border-sky-400/30';
+                } else if (cfg.ambiente === 'producao') {
+                    badge.innerText = 'PRODUÇÃO';
+                    badge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-400/30';
+                } else {
+                    badge.innerText = 'SANDBOX';
+                    badge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30';
+                }
+            }
+        }
+
+        function obterBaseUrlAsaas(cfg) {
+            if (cfg.endpointUrl) return cfg.endpointUrl.replace(/\/+$/, '');
+            return cfg.ambiente === 'producao' ? CONFIG_BANCO_API.producaoUrl : CONFIG_BANCO_API.sandboxUrl;
+        }
+
+        function converterDataBrParaIso(dataBr) {
+            if (!dataBr || !dataBr.includes('/')) {
+                const d = new Date(Date.now() + 7 * 86400000);
+                return d.toISOString().slice(0, 10);
+            }
+            const [dia, mes, ano] = dataBr.split('/');
+            return `${ano}-${String(mes).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+        }
+
+        async function testarConexaoAsaas() {
+            salvarConfigAsaas();
+            const cfg = obterConfigAsaas();
+            if (cfg.endpointUrl) {
+                alert(`✅ Configurado para enviar via Webhook/n8n:
+${cfg.endpointUrl}`);
+                return;
+            }
+            if (!cfg.apiKey) {
+                alert('⚠️ Cole sua API Key do Asaas (ex: $aact_hmlg_...) para testar a conexão.');
+                return;
+            }
+            const baseUrl = obterBaseUrlAsaas(cfg);
+            try {
+                const resp = await fetch(`${baseUrl}/customers?limit=1`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'access_token': cfg.apiKey
+                    }
+                });
+                const data = await resp.json();
+                if (!resp.ok) {
+                    alert('❌ Falha na conexão com Asaas:
+' + (data.errors?.[0]?.description || resp.status));
+                    return;
+                }
+                alert(`✅ Conexão ativa com Asaas (${cfg.ambiente.toUpperCase()})!
+Endpoint: ${baseUrl}`);
+            } catch (err) {
+                alert('❌ Erro de rede/CORS ao chamar o Asaas direto do navegador:
+' + err.message + '
+
+Dica: Se o navegador bloquear CORS, use a URL do seu Webhook / n8n no campo ao lado.');
+            }
+        }
+
+        async function obterOuCriarClienteAsaas(baseUrl, apiKey, bol) {
+            const cpfLimpo = String(bol.cpfResponsavel || '').replace(/\D/g, '') || '00000000000';
+            try {
+                const buscaResp = await fetch(`${baseUrl}/customers?cpfCnpj=${cpfLimpo}`, {
+                    headers: { 'Content-Type': 'application/json', 'access_token': apiKey }
+                });
+                if (buscaResp.ok) {
+                    const buscaData = await buscaResp.json();
+                    if (buscaData.data && buscaData.data.length > 0) {
+                        return buscaData.data[0].id;
+                    }
+                }
+            } catch (_) {}
+
+            const criarResp = await fetch(`${baseUrl}/customers`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'access_token': apiKey },
+                body: JSON.stringify({
+                    name: bol.responsavel || bol.nomeAluno,
+                    cpfCnpj: cpfLimpo,
+                    email: bol.emailResponsavel || 'financeiro@peniel.com',
+                    externalReference: `RA-${bol.raAluno}`
+                })
+            });
+            const criado = await criarResp.json();
+            if (!criarResp.ok) {
+                throw new Error(criado.errors?.[0]?.description || 'Erro ao criar cliente no Asaas');
+            }
+            return criado.id;
+        }
+
+        async function emitirBoletoNoAsaas(boletoId) {
+            salvarConfigAsaas();
+            const cfg = obterConfigAsaas();
+            const boletos = obterBoletosAutomaticos();
+            const idx = boletos.findIndex(item => item.id === boletoId);
+            if (idx === -1) return;
+            const bol = boletos[idx];
+
+            const dueDateIso = converterDataBrParaIso(bol.vencimento);
+            const payloadAsaas = {
+                billingType: 'BOLETO',
+                value: Number(bol.valorOriginal || 0),
+                dueDate: dueDateIso,
+                description: `${bol.referencia} - Aluno: ${bol.nomeAluno} (${bol.turma})`,
+                externalReference: bol.id,
+                discount: {
+                    value: Number(bol.descontoPct || 0),
+                    dueDateLimitDays: 0,
+                    type: 'PERCENTAGE'
+                },
+                fine: {
+                    value: Number(bol.multaPct || 2),
+                    type: 'PERCENTAGE'
+                },
+                interest: {
+                    value: Number(bol.jurosMesPct || 1)
+                }
+            };
+
+            if (!cfg.endpointUrl && !cfg.apiKey) {
+                alert(
+                    `📋 Payload Asaas (${cfg.ambiente.toUpperCase()}) preparado para ${bol.id}:\n` +
+                    `Endpoint: ${obterBaseUrlAsaas(cfg)}/payments\n` +
+                    `Cliente: ${bol.responsavel} | Vencimento: ${dueDateIso}\n` +
+                    `Valor: R$ ${Number(bol.valorOriginal).toFixed(2)} | Desconto: ${bol.descontoPct}% | Multa: ${bol.multaPct}% | Juros: ${bol.jurosMesPct}% a.m.\n\n` +
+                    `Cole sua API Key do Asaas ou a URL do Webhook/n8n na barra acima para emitir.`
+                );
+                return;
+            }
+
+            try {
+                let retorno = null;
+                if (cfg.endpointUrl) {
+                    const resp = await fetch(cfg.endpointUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            ...(cfg.apiKey ? { 'x-asaas-access-token': cfg.apiKey } : {})
+                        },
+                        body: JSON.stringify({
+                            ambiente: cfg.ambiente,
+                            asaasBaseUrl: cfg.ambiente === 'producao' ? CONFIG_BANCO_API.producaoUrl : CONFIG_BANCO_API.sandboxUrl,
+                            boleto: bol,
+                            paymentPayload: payloadAsaas
+                        })
+                    });
+                    retorno = await resp.json();
+                    if (!resp.ok) {
+                        throw new Error(retorno.message || 'Erro no webhook/n8n');
+                    }
+                } else {
+                    const baseUrl = obterBaseUrlAsaas(cfg);
+                    const customerId = await obterOuCriarClienteAsaas(baseUrl, cfg.apiKey, bol);
+                    const resp = await fetch(`${baseUrl}/payments`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'access_token': cfg.apiKey
+                        },
+                        body: JSON.stringify({
+                            customer: customerId,
+                            ...payloadAsaas
+                        })
+                    });
+                    retorno = await resp.json();
+                    if (!resp.ok) {
+                        throw new Error(retorno.errors?.[0]?.description || 'Erro ao emitir boleto no Asaas');
+                    }
+                }
+
+                boletos[idx].status = 'emitido_banco';
+                boletos[idx].gatewayId = retorno.id || retorno.paymentId || 'ASAAS_OK';
+                boletos[idx].urlBoleto = retorno.bankSlipUrl || retorno.invoiceUrl || retorno.urlBoleto || '';
+                if (retorno.nossoNumero) boletos[idx].nossoNumero = retorno.nossoNumero;
+                salvarBoletosAutomaticos(boletos);
+                renderizarBoletosAutomaticos();
+
+                const linkAbrir = boletos[idx].urlBoleto;
+                alert(`✅ Boleto emitido no Asaas (${cfg.ambiente.toUpperCase()})!\nID: ${boletos[idx].gatewayId}${linkAbrir ? '\nLink: ' + linkAbrir : ''}`);
+                if (linkAbrir) {
+                    window.open(linkAbrir, '_blank');
+                }
+            } catch (err) {
+                alert('❌ Erro ao emitir no Asaas:\n' + err.message);
+            }
+        }
+
         function obterAlunosRecorrencia() {
-            let alunos = JSON.parse(localStorage.getItem('peniel_alunos_recorrencia') || '[]');
+            let alunos = [];
+            try {
+                alunos = JSON.parse(localStorage.getItem('peniel_alunos_recorrencia') || '[]');
+                if (!Array.isArray(alunos)) alunos = [];
+            } catch (e) {
+                alunos = [];
+            }
             if (alunos.length === 0) {
                 alunos = [
                     {
@@ -1002,8 +1393,11 @@ O boleto mensal foi gerado e calculado automaticamente.`);
                     <td class="px-4 py-3 text-center">${badgeStatus}</td>
                     <td class="px-4 py-3 text-right space-x-1">
                         ${b.status !== 'pago' ? `<button type="button" onclick="darBaixaBoletoPago('${b.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 rounded-lg font-bold text-[10px] transition">✓ Baixar Pago</button>` : ''}
-                        <button type="button" onclick="registrarBoletoNaApiBancaria('${b.id}')" class="bg-marinho hover:bg-blue-900 text-white px-2.5 py-1.5 rounded-lg font-bold text-[10px] transition">
-                            🏦 API Banco
+                        <button type="button" onclick="abrirBoletoModeloDemo('${b.id}')" class="bg-marinho hover:bg-blue-900 text-white px-2.5 py-1.5 rounded-lg font-bold text-[10px] transition">
+                            🧾 Modelo
+                        </button>
+                        <button type="button" onclick="emitirBoletoNoAsaas('${b.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1.5 rounded-lg font-bold text-[10px] transition">
+                            🏦 Asaas
                         </button>
                     </td>
                 </tr>`;
@@ -1074,8 +1468,125 @@ O boleto mensal foi gerado e calculado automaticamente.`);
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        function obterBancoModeloAtual() {
+            const val = localStorage.getItem('peniel_banco_modelo') || '341|Itaú Unibanco S.A.|341-7';
+            const [codigo, nome, codigoDv] = val.split('|');
+            return { codigo, nome, codigoDv, raw: val };
+        }
+
+        function salvarBancoModeloSelecionado() {
+            const sel = document.getElementById('seletorBancoModelo');
+            if (!sel) return;
+            localStorage.setItem('peniel_banco_modelo', sel.value);
+            renderizarBoletosAutomaticos();
+        }
+
+        function gerarLinhaDigitavelPorBanco(bancoCodigo, valorNum, idBoleto) {
+            const centavos = String(Math.round(Number(valorNum || 0) * 100)).padStart(10, '0');
+            const fator = String(9800 + (idBoleto.length * 17)).padStart(4, '0');
+            const numAleatorio = String(Math.abs(idBoleto.split('').reduce((a, c) => a + c.charCodeAt(0), 0)) * 7919).padStart(14, '0').slice(0, 14);
+            return `${bancoCodigo}91.${numAleatorio.slice(0, 5)} ${numAleatorio.slice(5, 10)}.${numAleatorio.slice(10, 14)}7 91020.150008 6 ${fator}${centavos}`;
+        }
+
+        function desenharCodigoBarrasSvg(seedStr) {
+            let bars = '';
+            let x = 2;
+            for (let i = 0; i < 68; i++) {
+                const code = seedStr.charCodeAt(i % seedStr.length) + i;
+                const w = (code % 3 === 0) ? 3 : ((code % 2 === 0) ? 2 : 1);
+                if (i % 2 === 0) {
+                    bars += `<rect x="${x}" y="0" width="${w}" height="42" fill="#0f172a" />`;
+                }
+                x += w + 1.5;
+            }
+            return `<svg viewBox="0 0 ${x + 4} 42" class="w-full h-full" preserveAspectRatio="none">${bars}</svg>`;
+        }
+
+        function abrirBoletoModeloDemo(boletoId) {
+            const boletos = obterBoletosAutomaticos();
+            const idx = boletos.findIndex(b => b.id === boletoId);
+            if (idx === -1) return;
+            const bol = boletos[idx];
+            const banco = obterBancoModeloAtual();
+            const fmtBRL = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+            const linhaDigitavel = gerarLinhaDigitavelPorBanco(banco.codigo, bol.valorOriginal, bol.id);
+            const descontoReais = +(bol.valorOriginal - bol.valorComDesconto).toFixed(2);
+
+            // Marca como emitido no banco modelo para demonstração
+            if (bol.status === 'pendente') {
+                boletos[idx].status = 'emitido_banco';
+                boletos[idx].linhaDigitavel = linhaDigitavel;
+                salvarBoletosAutomaticos(boletos);
+                renderizarBoletosAutomaticos();
+            }
+
+            document.getElementById('bolBancoNome').innerText = banco.nome;
+            document.getElementById('bolBancoCodigo').innerText = banco.codigoDv;
+            document.getElementById('bolLinhaDigitavel').innerText = linhaDigitavel;
+            document.getElementById('bolVencimento').innerText = bol.vencimento;
+            document.getElementById('bolDataDoc').innerText = new Date().toLocaleDateString('pt-BR');
+            document.getElementById('bolNumDoc').innerText = bol.id;
+            document.getElementById('bolValorDoc').innerText = fmtBRL(bol.valorOriginal);
+            document.getElementById('bolValorDesconto').innerText = `- ${fmtBRL(descontoReais)} (${bol.descontoPct}%)`;
+            document.getElementById('bolValorLiquido').innerText = fmtBRL(bol.valorComDesconto);
+            document.getElementById('bolInstrucaoDesconto').innerText = `• Conceder desconto de ${bol.descontoPct}% (${fmtBRL(descontoReais)}) para pagamento até ${bol.vencimento}.`;
+            document.getElementById('bolInstrucaoMulta').innerText = `• Após o vencimento cobrar multa de ${bol.multaPct}% (${fmtBRL(bol.valorMultaReais)}) + juros de ${bol.jurosMesPct}% ao mês.`;
+            document.getElementById('bolReferencia').innerText = `• Referência: ${bol.referencia} (${bol.turma})`;
+            document.getElementById('bolPagador').innerText = `${bol.responsavel} • CPF: ${bol.cpfResponsavel}`;
+            document.getElementById('bolAlunoTurma').innerText = `Aluno(a): ${bol.nomeAluno} (RA ${bol.raAluno}) • Turma: ${bol.turma}`;
+            document.getElementById('bolBarrasSvg').innerHTML = desenharCodigoBarrasSvg(linhaDigitavel);
+            document.getElementById('bolPixCopiaCola').innerText = `00020126580014br.gov.bcb.pix0136peniel-${bol.id.toLowerCase()}520400005303986540${bol.valorComDesconto.toFixed(2)}5802BR`;
+
+            document.getElementById('modalBoletoModelo').classList.remove('hidden');
+        }
+
+        function fecharModalBoletoModelo() {
+            document.getElementById('modalBoletoModelo').classList.add('hidden');
+        }
+
+        function copiarLinhaDigitavelModal() {
+            const linha = document.getElementById('bolLinhaDigitavel').innerText;
+            navigator.clipboard?.writeText(linha);
+            alert('✅ Linha digitável copiada:
+' + linha);
+        }
+
+        function imprimirBoletoModelo() {
+            const conteudo = document.getElementById('areaImpressaoBoleto').innerHTML;
+            const jan = window.open('', '_blank', 'width=900,height=700');
+            jan.document.write(`<html><head><title>Boleto Demonstrativo - Peniel Christian School</title><script src="https://cdn.tailwindcss.com"><\/script></head><body class="p-6 bg-white">${conteudo}<script>setTimeout(()=>{window.print();}, 400);<\/script></body></html>`);
+            jan.document.close();
+        }
+
+        function restaurarAlunosPadraoDemo() {
+            localStorage.removeItem('peniel_alunos_recorrencia');
+            localStorage.removeItem('peniel_boletos_automaticos');
             executarCicloMensalTodosAtivos(false);
+        }
+
+        function inicializarModuloRecorrenciaSeguro() {
+            const sel = document.getElementById('seletorBancoModelo');
+            if (sel) sel.value = obterBancoModeloAtual().raw;
+            const cfgAsaas = obterConfigAsaas();
+            const ambEl = document.getElementById('asaasAmbiente');
+            const endEl = document.getElementById('asaasEndpointCustom');
+            const keyEl = document.getElementById('asaasApiKey');
+            if (ambEl) ambEl.value = cfgAsaas.ambiente;
+            if (endEl) endEl.value = cfgAsaas.endpointUrl;
+            if (keyEl) keyEl.value = cfgAsaas.apiKey;
+            salvarConfigAsaas();
+            executarCicloMensalTodosAtivos(false);
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', inicializarModuloRecorrenciaSeguro);
+        } else {
+            inicializarModuloRecorrenciaSeguro();
+        }
+        window.addEventListener('load', () => {
+            renderizarPainelAlunosRecorrencia();
+            renderizarBoletosAutomaticos();
         });
 
     </script>
