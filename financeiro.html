@@ -53,8 +53,8 @@
                 </div>
                 
                 <div class="flex bg-slate-100 p-1 rounded-xl border border-slate-200 w-full lg:w-auto">
-                    <button onclick="mudarAbaPrincipal('financeiro')" id="btnAbaFinanceiro" class="flex-1 lg:flex-none px-6 py-2 rounded-lg font-bold text-sm bg-white text-marinho shadow-sm transition border border-slate-200">💰 Fluxo Financeiro</button>
-                    <button onclick="mudarAbaPrincipal('estoque')" id="btnAbaEstoque" class="flex-1 lg:flex-none px-6 py-2 rounded-lg font-bold text-sm text-slate-500 hover:text-slate-800 transition border border-transparent">📦 Materiais & Fornecedores</button>
+                    <button type="button" onclick="mudarAbaPrincipal('financeiro')" id="btnAbaFinanceiro" class="flex-1 lg:flex-none px-6 py-2 rounded-lg font-bold text-sm bg-white text-marinho shadow-sm transition border border-slate-200">💰 Fluxo Financeiro</button>
+                    <button type="button" onclick="mudarAbaPrincipal('estoque')" id="btnAbaEstoque" class="flex-1 lg:flex-none px-6 py-2 rounded-lg font-bold text-sm text-slate-500 hover:text-slate-800 transition border border-transparent">📦 Materiais & Fornecedores</button>
                 </div>
             </header>
 
@@ -86,26 +86,26 @@
                             <option value="agosto">Agosto / 2026</option>
                         </select>
                     </div>
-                    <button onclick="abrirModalNovaCobranca()" class="w-full md:w-auto bg-laranja hover:bg-orange-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm transition flex items-center justify-center gap-2">
+                    <button type="button" onclick="abrirModalNovaCobranca()" class="w-full md:w-auto bg-laranja hover:bg-orange-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm transition flex items-center justify-center gap-2">
                         ➕ Nova Cobrança
                     </button>
                 </div>
 
                 <!-- KPIs Dinâmicos (Calculados via JS) -->
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <button onclick="filtrarPorStatus('todos')" class="text-left bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-blue-500 hover:-translate-y-1 hover:shadow-md transition">
+                    <button type="button" onclick="filtrarPorStatus('todos')" class="text-left bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-blue-500 hover:-translate-y-1 hover:shadow-md transition">
                         <h3 class="text-slate-500 text-xs font-bold uppercase">Receita Total Prevista</h3>
                         <div id="kpi-receita" class="text-2xl font-black text-slate-800 mt-1">Calculando...</div>
                     </button>
-                    <button onclick="filtrarPorStatus('pago')" class="text-left bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-green-500 hover:-translate-y-1 hover:shadow-md transition">
+                    <button type="button" onclick="filtrarPorStatus('pago')" class="text-left bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-green-500 hover:-translate-y-1 hover:shadow-md transition">
                         <h3 class="text-slate-500 text-xs font-bold uppercase">Faturas Pagas</h3>
                         <div id="kpi-pagas" class="text-2xl font-black text-slate-800 mt-1">Calculando...</div>
                     </button>
-                    <button onclick="filtrarPorStatus('pendente')" class="text-left bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-orange-500 hover:-translate-y-1 hover:shadow-md transition">
+                    <button type="button" onclick="filtrarPorStatus('pendente')" class="text-left bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-orange-500 hover:-translate-y-1 hover:shadow-md transition">
                         <h3 class="text-slate-500 text-xs font-bold uppercase">A Vencer (Pendentes)</h3>
                         <div id="kpi-pendentes" class="text-2xl font-black text-slate-800 mt-1">Calculando...</div>
                     </button>
-                    <button onclick="filtrarPorStatus('atrasado')" class="text-left bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-red-500 hover:-translate-y-1 hover:shadow-md transition">
+                    <button type="button" onclick="filtrarPorStatus('atrasado')" class="text-left bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-red-500 hover:-translate-y-1 hover:shadow-md transition">
                         <h3 class="text-slate-500 text-xs font-bold uppercase">Inadimplência</h3>
                         <div id="kpi-atrasadas" class="text-2xl font-black text-red-600 mt-1">Calculando...</div>
                     </button>
@@ -115,10 +115,10 @@
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                     <div class="p-4 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row justify-between items-center gap-3">
                         <div class="flex gap-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0">
-                            <button onclick="filtrarPorStatus('todos')" class="btn-filtro-fin bg-marinho text-white px-4 py-2 rounded-lg text-xs font-bold shadow-sm whitespace-nowrap">Todos</button>
-                            <button onclick="filtrarPorStatus('pago')" class="btn-filtro-fin bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 px-4 py-2 rounded-lg text-xs font-bold transition whitespace-nowrap">Pagos</button>
-                            <button onclick="filtrarPorStatus('pendente')" class="btn-filtro-fin bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 px-4 py-2 rounded-lg text-xs font-bold transition whitespace-nowrap">Pendentes</button>
-                            <button onclick="filtrarPorStatus('atrasado')" class="btn-filtro-fin bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 px-4 py-2 rounded-lg text-xs font-bold transition whitespace-nowrap">Atrasados</button>
+                            <button type="button" onclick="filtrarPorStatus('todos')" class="btn-filtro-fin bg-marinho text-white px-4 py-2 rounded-lg text-xs font-bold shadow-sm whitespace-nowrap">Todos</button>
+                            <button type="button" onclick="filtrarPorStatus('pago')" class="btn-filtro-fin bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 px-4 py-2 rounded-lg text-xs font-bold transition whitespace-nowrap">Pagos</button>
+                            <button type="button" onclick="filtrarPorStatus('pendente')" class="btn-filtro-fin bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 px-4 py-2 rounded-lg text-xs font-bold transition whitespace-nowrap">Pendentes</button>
+                            <button type="button" onclick="filtrarPorStatus('atrasado')" class="btn-filtro-fin bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 px-4 py-2 rounded-lg text-xs font-bold transition whitespace-nowrap">Atrasados</button>
                         </div>
                         <div class="relative w-full sm:w-64">
                             <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔍</span>
@@ -148,7 +148,7 @@
                                     <td class="px-5 py-4 text-center text-xs text-slate-500">05/09/2026</td>
                                     <td class="px-5 py-4 text-center"><span class="bg-green-100 text-green-700 px-2.5 py-1 rounded text-[10px] font-bold uppercase">Pago</span></td>
                                     <td class="px-5 py-4 text-right">
-                                        <button onclick="abrirModalRecibo('Carlos Lucas', 'R$ 1.250,00', 'Mensalidade Setembro/2026', '04/09/2026')" class="text-blue-600 border border-blue-200 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded font-bold text-xs transition">📄 Ver Recibo</button>
+                                        <button type="button" onclick="abrirModalRecibo('Carlos Lucas', 'R$ 1.250,00', 'Mensalidade Setembro/2026', '04/09/2026')" class="text-blue-600 border border-blue-200 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded font-bold text-xs transition">📄 Ver Recibo</button>
                                     </td>
                                 </tr>
                                 <tr class="hover:bg-slate-50 transition linha-fin" data-status="pago" data-mes="setembro" data-valor="1300">
@@ -158,7 +158,7 @@
                                     <td class="px-5 py-4 text-center text-xs text-slate-500">08/09/2026</td>
                                     <td class="px-5 py-4 text-center"><span class="bg-green-100 text-green-700 px-2.5 py-1 rounded text-[10px] font-bold uppercase">Pago</span></td>
                                     <td class="px-5 py-4 text-right">
-                                        <button onclick="abrirModalRecibo('Juliana Paulo', 'R$ 1.300,00', 'Mensalidade Setembro/2026', '05/09/2026')" class="text-blue-600 border border-blue-200 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded font-bold text-xs transition">📄 Ver Recibo</button>
+                                        <button type="button" onclick="abrirModalRecibo('Juliana Paulo', 'R$ 1.300,00', 'Mensalidade Setembro/2026', '05/09/2026')" class="text-blue-600 border border-blue-200 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded font-bold text-xs transition">📄 Ver Recibo</button>
                                     </td>
                                 </tr>
                                 <tr class="hover:bg-slate-50 transition linha-fin" data-status="pendente" data-mes="setembro" data-valor="1100">
@@ -178,7 +178,7 @@
                                     <td class="px-5 py-4 text-center text-xs text-slate-500">05/08/2026</td>
                                     <td class="px-5 py-4 text-center"><span class="bg-green-100 text-green-700 px-2.5 py-1 rounded text-[10px] font-bold uppercase">Pago</span></td>
                                     <td class="px-5 py-4 text-right">
-                                        <button onclick="abrirModalRecibo('Carlos Lucas', 'R$ 1.250,00', 'Mensalidade Agosto/2026', '02/08/2026')" class="text-blue-600 border border-blue-200 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded font-bold text-xs transition">📄 Ver Recibo</button>
+                                        <button type="button" onclick="abrirModalRecibo('Carlos Lucas', 'R$ 1.250,00', 'Mensalidade Agosto/2026', '02/08/2026')" class="text-blue-600 border border-blue-200 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded font-bold text-xs transition">📄 Ver Recibo</button>
                                     </td>
                                 </tr>
                                 <tr class="bg-red-50/40 hover:bg-red-50 transition linha-fin" data-status="atrasado" data-mes="agosto" data-valor="1300">
@@ -188,7 +188,7 @@
                                     <td class="px-5 py-4 text-center text-xs text-red-600 font-bold">10/08/2026</td>
                                     <td class="px-5 py-4 text-center"><span class="bg-red-100 text-red-700 px-2.5 py-1 rounded text-[10px] font-bold uppercase">Atrasado</span></td>
                                     <td class="px-5 py-4 text-right">
-                                        <button onclick="alert('Iniciando fluxo de renegociação via WhatsApp...')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded font-bold text-xs transition shadow-sm">Negociar Fatura</button>
+                                        <button type="button" onclick="alert('Iniciando fluxo de renegociação via WhatsApp...')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded font-bold text-xs transition shadow-sm">Negociar Fatura</button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -233,14 +233,14 @@
                                     <td class="px-5 py-4 text-xs font-semibold text-slate-600">Material Escolar</td>
                                     <td class="px-5 py-4 text-center font-bold text-slate-800">15 un</td>
                                     <td class="px-5 py-4 text-center"><span class="bg-green-100 text-green-700 px-2.5 py-1 rounded text-[10px] font-bold uppercase">Estoque Bom</span></td>
-                                    <td class="px-5 py-4 text-right"><button onclick="abrirFichaMaterial('Papel Chamex A4', 'Material Escolar', 'Kalunga S/A', 15, 'bom')" class="text-marinho bg-slate-100 border border-slate-300 px-3 py-1.5 rounded font-bold text-xs hover:bg-slate-200 transition">Ficha Completa</button></td>
+                                    <td class="px-5 py-4 text-right"><button type="button" onclick="abrirFichaMaterial('Papel Chamex A4', 'Material Escolar', 'Kalunga S/A', 15, 'bom')" class="text-marinho bg-slate-100 border border-slate-300 px-3 py-1.5 rounded font-bold text-xs hover:bg-slate-200 transition">Ficha Completa</button></td>
                                 </tr>
                                 <tr class="bg-orange-50/40">
                                     <td class="px-5 py-4"><p class="font-bold text-slate-800">Desinfetante Pinho 5L</p></td>
                                     <td class="px-5 py-4 text-xs font-semibold text-slate-600">Limpeza</td>
                                     <td class="px-5 py-4 text-center font-bold text-orange-600">2 un</td>
                                     <td class="px-5 py-4 text-center"><span class="bg-orange-100 text-orange-700 px-2.5 py-1 rounded text-[10px] font-bold uppercase animate-pulse">Repor Urgente</span></td>
-                                    <td class="px-5 py-4 text-right"><button onclick="abrirFichaMaterial('Desinfetante Pinho 5L', 'Limpeza', 'Distribuidora LimpaFácil', 2, 'baixo')" class="bg-laranja hover:bg-orange-600 text-white px-3 py-1.5 rounded font-bold text-xs transition">Reposição (Ficha)</button></td>
+                                    <td class="px-5 py-4 text-right"><button type="button" onclick="abrirFichaMaterial('Desinfetante Pinho 5L', 'Limpeza', 'Distribuidora LimpaFácil', 2, 'baixo')" class="bg-laranja hover:bg-orange-600 text-white px-3 py-1.5 rounded font-bold text-xs transition">Reposição (Ficha)</button></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -312,18 +312,23 @@
             </div>
 
 
-            <!-- FEED AUTOMÁTICO DO APP DOS PAIS (SEM CLIQUE MANUAL) -->
-            <div id="painelAppPaisAutomatico" class="p-4 bg-gradient-to-r from-slate-900 to-marinho text-white border-b border-slate-200">
-                <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            
+            <!-- APP DOS PAIS: NOTIFICAÇÕES AUTOMÁTICAS + BOLETO PRONTO (SEM CLIQUE) -->
+            <div id="painelAppPaisAutomatico" class="p-5 bg-slate-900 text-white border-b border-slate-800">
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
                     <div>
                         <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">
-                            📱 App dos Pais • Sincronização Automática em Tempo Real
+                            📱 App dos Pais • Automático (Zero Cliques)
                         </span>
-                        <h4 class="font-bold text-sm mt-1">Notificações & Boletos Prontos (Dias Antes, No Dia e Pós-Vencimento com Taxa)</h4>
+                        <h4 class="font-bold text-base mt-1">Notificações Automáticas & Boleto Pronto na Tela do Responsável</h4>
+                        <p class="text-[11px] text-slate-300 mt-0.5">Aparece automaticamente: <strong>dias antes</strong> (boleto pronto + desconto), <strong>no dia do vencimento</strong> e <strong>após o vencimento</strong> (com multa + juros calculados).</p>
                     </div>
-                    <span id="statusSyncAppPais" class="text-[11px] font-mono text-emerald-300">● Motor Automático Ativo</span>
+                    <div class="text-right">
+                        <span id="statusSyncAppPais" class="text-[11px] font-mono text-emerald-300 block">● Sincronizado automaticamente</span>
+                        <span class="text-[10px] text-slate-400">Régua: D-5 • D-2 • D-0 • D+Taxa</span>
+                    </div>
                 </div>
-                <div id="feedNotificacoesAppPais" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 max-h-[240px] overflow-y-auto pr-1" style="scrollbar-width: thin;"></div>
+                <div id="feedNotificacoesAppPais" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3.5 max-h-[360px] overflow-y-auto pr-1" style="scrollbar-width: thin;"></div>
             </div>
 
             <!-- Painel de Status dos Alunos (Ativo x Baixa) -->
@@ -491,15 +496,15 @@
         <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl flex flex-col overflow-hidden">
             <div class="p-5 border-b border-slate-100 bg-marinho text-white flex justify-between items-center">
                 <h3 class="font-bold text-lg">➕ Gerar Nova Fatura</h3>
-                <button onclick="fecharModalNovaCobranca()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
+                <button type="button" onclick="fecharModalNovaCobranca()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
             </div>
             <div class="p-6 space-y-4">
                 <div><label class="block text-xs font-bold text-slate-700 mb-1">Selecionar Aluno</label><select class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 bg-white"><option>Davi Lucas</option><option>Isabela Mendes</option></select></div>
                 <div><label class="block text-xs font-bold text-slate-700 mb-1">Valor (R$)</label><input type="text" placeholder="1.250,00" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"></div>
             </div>
             <div class="p-5 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
-                <button onclick="fecharModalNovaCobranca()" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 font-bold rounded-lg text-sm transition hover:bg-slate-100">Cancelar</button>
-                <button onclick="fecharModalNovaCobranca(); alert('Nova Fatura gerada com sucesso!');" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg text-sm shadow-sm transition">Gerar Boleto</button>
+                <button type="button" onclick="fecharModalNovaCobranca()" class="px-5 py-2 bg-white border border-slate-300 text-slate-700 font-bold rounded-lg text-sm transition hover:bg-slate-100">Cancelar</button>
+                <button type="button" onclick="fecharModalNovaCobranca(); alert('Nova Fatura gerada com sucesso!');" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg text-sm shadow-sm transition">Gerar Boleto</button>
             </div>
         </div>
     </div>
@@ -534,8 +539,8 @@
                 </div>
             </div>
             <div class="p-4 bg-slate-800 flex justify-between gap-3 relative z-10">
-                <button onclick="document.getElementById('modalRecibo').classList.add('hidden')" class="px-4 text-center bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-bold text-xs py-3 transition">Fechar</button>
-                <button onclick="alert('Recibo enviado por WhatsApp!');" class="flex-1 text-center bg-green-600 hover:bg-green-700 text-white rounded-lg font-bold text-xs py-3 shadow-sm transition">Compartilhar PDF</button>
+                <button type="button" onclick="document.getElementById('modalRecibo').classList.add('hidden')" class="px-4 text-center bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-bold text-xs py-3 transition">Fechar</button>
+                <button type="button" onclick="alert('Recibo enviado por WhatsApp!');" class="flex-1 text-center bg-green-600 hover:bg-green-700 text-white rounded-lg font-bold text-xs py-3 shadow-sm transition">Compartilhar PDF</button>
             </div>
         </div>
     </div>
@@ -551,7 +556,7 @@
                         <p class="text-blue-300 text-xs" id="subFichaMat">Categoria</p>
                     </div>
                 </div>
-                <button onclick="fecharFichaMaterial()" class="text-white hover:text-red-300 font-bold text-3xl leading-none">&times;</button>
+                <button type="button" onclick="fecharFichaMaterial()" class="text-white hover:text-red-300 font-bold text-3xl leading-none">&times;</button>
             </div>
             <div class="p-6 bg-slate-50/50 flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 overflow-y-auto">
                 <div class="space-y-4">
@@ -572,7 +577,7 @@
                             <span class="text-xs text-slate-600 font-bold">Unidades a solicitar</span>
                         </div>
                         <textarea id="inputReporObs" rows="2" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs mb-3" placeholder="Observações (ex: entregar na portaria 2)"></textarea>
-                        <button onclick="enviarPedidoFicha()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-lg shadow-sm text-xs transition flex items-center justify-center gap-2">
+                        <button type="button" onclick="enviarPedidoFicha()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-lg shadow-sm text-xs transition flex items-center justify-center gap-2">
                             <span>📱</span> Enviar ao Fornecedor
                         </button>
                     </div>
@@ -611,7 +616,7 @@
                 });
             } else {
                 celulas.forEach(c => {
-                    c.innerHTML = `<button onclick="alert('📨 Lembrete enviado!')" class="text-slate-600 border border-slate-200 bg-white hover:bg-slate-100 px-4 py-2 rounded-lg font-bold text-xs transition shadow-sm whitespace-nowrap">Enviar Lembrete</button>`;
+                    c.innerHTML = `<button type="button" onclick="alert('📨 Lembrete enviado!')" class="text-slate-600 border border-slate-200 bg-white hover:bg-slate-100 px-4 py-2 rounded-lg font-bold text-xs transition shadow-sm whitespace-nowrap">Enviar Lembrete</button>`;
                 });
             }
         }
@@ -790,7 +795,7 @@
                             <a href="configuracoes.html?modo_gestor=1" class="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
                                 &larr; Voltar à Central
                             </a>
-                            <button onclick="sairModoGestorGlobal()" class="flex-1 sm:flex-none bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-sm">
+                            <button type="button" onclick="sairModoGestorGlobal()" class="flex-1 sm:flex-none bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-sm">
                                 🔒 Bloquear Painel
                             </button>
                         </div>
@@ -871,16 +876,7 @@
             provedor: 'asaas'
         };
 
-        function preencherChaveSandboxRapida() {
-            const inputKey = document.getElementById('asaasApiKey');
-            const selAmb = document.getElementById('asaasAmbiente');
-            if (selAmb) selAmb.value = 'sandbox';
-            if (inputKey) {
-                inputKey.value = '$aact_hmlg_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OjNhY2U4MTEwLTUzZWUtNGE5MC04MTUwLWQxNjFkYjM0M2UzNTo6JGFhY2hfNzc2NjdlNWEtMjAxYS00MzkwLTg5MTctYjIyYjQ4NTgzMTQ0';
-            }
-            salvarConfigAsaas();
-            alert('✅ Chave Sandbox Asaas carregada no campo de teste. Clique em "🔌 Testar API Asaas" ou em "🏦 Asaas" em um boleto.');
-        }
+        
 
         function obterConfigAsaas() {
             const salvo = JSON.parse(localStorage.getItem('peniel_config_asaas') || '{}');
@@ -930,38 +926,7 @@
             return `${ano}-${String(mes).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
         }
 
-        async function testarConexaoAsaas() {
-            salvarConfigAsaas();
-            const cfg = obterConfigAsaas();
-            if (cfg.endpointUrl) {
-                alert(`✅ Configurado para enviar via Webhook/n8n:
-${cfg.endpointUrl}`);
-                return;
-            }
-            if (!cfg.apiKey) {
-                alert('⚠️ Cole sua API Key do Asaas (ex: $aact_hmlg_...) para testar a conexão.');
-                return;
-            }
-            const baseUrl = obterBaseUrlAsaas(cfg);
-            try {
-                const resp = await fetch(`${baseUrl}/customers?limit=1`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'access_token': cfg.apiKey
-                    }
-                });
-                const data = await resp.json();
-                if (!resp.ok) {
-                    alert('❌ Falha na conexão com Asaas:\n' + (data.errors?.[0]?.description || resp.status));
-                    return;
-                }
-                alert(`✅ Conexão ativa com Asaas (${cfg.ambiente.toUpperCase()})!
-Endpoint: ${baseUrl}`);
-            } catch (err) {
-                alert('❌ Erro de rede/CORS ao chamar o Asaas direto do navegador:\n' + err.message + '\n\nDica: Se o navegador bloquear CORS, use a URL do seu Webhook / n8n no campo ao lado.');
-            }
-        }
+        
 
         async function obterOuCriarClienteAsaas(baseUrl, apiKey, bol) {
             const cpfLimpo = String(bol.cpfResponsavel || '').replace(/\D/g, '') || '00000000000';
@@ -1283,6 +1248,140 @@ Endpoint: ${baseUrl}`);
             };
         }
 
+        function formatarDataOffsetDias(offsetDias) {
+            const d = new Date();
+            d.setHours(0, 0, 0, 0);
+            d.setDate(d.getDate() + offsetDias);
+            return d.toLocaleDateString('pt-BR');
+        }
+
+        function semearCenariosAutomaticosRegua() {
+            const chaveSeed = 'peniel_regua_cenarios_v2';
+            if (localStorage.getItem(chaveSeed)) return;
+
+            const hoje = new Date();
+            const compAtual = formatarCompetencia(hoje.getFullYear(), hoje.getMonth());
+
+            const cenarios = [
+                {
+                    id: 'BOL-APP-D5',
+                    raAluno: '2026001',
+                    nomeAluno: 'Davi Lucas',
+                    turma: '3º Ano A',
+                    responsavel: 'Carlos Lucas',
+                    cpfResponsavel: '123.456.789-00',
+                    emailResponsavel: 'carlos@familia.com',
+                    competencia: compAtual,
+                    referencia: `Mensalidade ${compAtual} • Lembrete Antecipado (5 dias antes)`,
+                    vencimento: formatarDataOffsetDias(5),
+                    valorOriginal: 1250.00,
+                    descontoPct: 5,
+                    valorComDesconto: 1187.50,
+                    multaPct: 2,
+                    valorMultaReais: 25.00,
+                    jurosMesPct: 1,
+                    status: 'pendente',
+                    linhaDigitavel: '34191.79001 01043.510047 91020.150008 6 98540000125000',
+                    urlBoleto: '',
+                    gatewayId: ''
+                },
+                {
+                    id: 'BOL-APP-D2',
+                    raAluno: '2026002',
+                    nomeAluno: 'Marcos Paulo',
+                    turma: '2º Ano B',
+                    responsavel: 'Juliana Paulo',
+                    cpfResponsavel: '222.333.444-55',
+                    emailResponsavel: 'juliana@familia.com',
+                    competencia: compAtual,
+                    referencia: `Mensalidade ${compAtual} • Lembrete (2 dias antes)`,
+                    vencimento: formatarDataOffsetDias(2),
+                    valorOriginal: 1300.00,
+                    descontoPct: 5,
+                    valorComDesconto: 1235.00,
+                    multaPct: 2,
+                    valorMultaReais: 26.00,
+                    jurosMesPct: 1,
+                    status: 'pendente',
+                    linhaDigitavel: '34191.79001 01043.510047 91020.150008 6 98540000130000',
+                    urlBoleto: '',
+                    gatewayId: ''
+                },
+                {
+                    id: 'BOL-APP-D0',
+                    raAluno: '2026003',
+                    nomeAluno: 'Isabela Mendes',
+                    turma: '2º Ano B',
+                    responsavel: 'Mariana Mendes',
+                    cpfResponsavel: '333.444.555-66',
+                    emailResponsavel: 'mariana@familia.com',
+                    competencia: compAtual,
+                    referencia: `Mensalidade ${compAtual} • Vence Hoje`,
+                    vencimento: formatarDataOffsetDias(0),
+                    valorOriginal: 1100.00,
+                    descontoPct: 0,
+                    valorComDesconto: 1100.00,
+                    multaPct: 2,
+                    valorMultaReais: 22.00,
+                    jurosMesPct: 1,
+                    status: 'pendente',
+                    linhaDigitavel: '34191.79001 01043.510047 91020.150008 6 98540000110000',
+                    urlBoleto: '',
+                    gatewayId: ''
+                },
+                {
+                    id: 'BOL-APP-ATRASO3',
+                    raAluno: '2026004',
+                    nomeAluno: 'Pedro Souza',
+                    turma: '5º Ano A',
+                    responsavel: 'Roberto Souza',
+                    cpfResponsavel: '555.666.777-88',
+                    emailResponsavel: 'roberto@familia.com',
+                    competencia: compAtual,
+                    referencia: `Mensalidade ${compAtual} • Pós-Vencimento com Taxa`,
+                    vencimento: formatarDataOffsetDias(-3),
+                    valorOriginal: 1200.00,
+                    descontoPct: 5,
+                    valorComDesconto: 1140.00,
+                    multaPct: 2,
+                    valorMultaReais: 24.00,
+                    jurosMesPct: 1,
+                    status: 'atrasado',
+                    linhaDigitavel: '34191.79001 01043.510047 91020.150008 6 98540000120000',
+                    urlBoleto: '',
+                    gatewayId: ''
+                },
+                {
+                    id: 'BOL-APP-ATRASO10',
+                    raAluno: '2026005',
+                    nomeAluno: 'Sofia Ferreira',
+                    turma: '1º Ano A',
+                    responsavel: 'Amanda Ferreira',
+                    cpfResponsavel: '777.888.999-00',
+                    emailResponsavel: 'amanda@familia.com',
+                    competencia: compAtual,
+                    referencia: `Mensalidade ${compAtual} • Atraso 10 Dias c/ Multa + Juros`,
+                    vencimento: formatarDataOffsetDias(-10),
+                    valorOriginal: 1400.00,
+                    descontoPct: 5,
+                    valorComDesconto: 1330.00,
+                    multaPct: 2,
+                    valorMultaReais: 28.00,
+                    jurosMesPct: 1,
+                    status: 'atrasado',
+                    linhaDigitavel: '34191.79001 01043.510047 91020.150008 6 98540000140000',
+                    urlBoleto: '',
+                    gatewayId: ''
+                }
+            ];
+
+            const existentes = obterBoletosAutomaticos();
+            const idsExistentes = new Set(existentes.map(x => x.id));
+            const combinados = [...cenarios.filter(c => !idsExistentes.has(c.id)), ...existentes];
+            salvarBoletosAutomaticos(combinados);
+            localStorage.setItem(chaveSeed, '1');
+        }
+
         function renderizarFeedAppPaisAutomatico(boletosEnriquecidos) {
             const container = document.getElementById('feedNotificacoesAppPais');
             const statusSync = document.getElementById('statusSyncAppPais');
@@ -1290,29 +1389,50 @@ Endpoint: ${baseUrl}`);
 
             const fmtBRL = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-            if (!boletosEnriquecidos || boletosEnriquecidos.length === 0) {
+            const priorizados = [...(boletosEnriquecidos || [])].sort((a, b) => {
+                const ordem = { 'lembrete_antes': 1, 'vence_hoje': 2, 'atrasado_encargos': 3, 'agendado': 4, 'pago': 5 };
+                return (ordem[a.estagio] || 9) - (ordem[b.estagio] || 9);
+            });
+
+            if (priorizados.length === 0) {
                 container.innerHTML = '<div class="col-span-full text-xs text-slate-300 bg-white/5 p-3 rounded-xl">Nenhuma notificação gerada até o momento.</div>';
                 return;
             }
 
-            container.innerHTML = boletosEnriquecidos.slice(0, 9).map(b => {
+            container.innerHTML = priorizados.slice(0, 6).map(b => {
                 const valorExibido = b.estagio === 'atrasado_encargos'
                     ? fmtBRL(b.valorAtualizado)
                     : (b.diffDias > 0 ? fmtBRL(b.valorComDesconto) : fmtBRL(b.valorOriginal));
 
+                const detalheTaxa = b.estagio === 'atrasado_encargos'
+                    ? `<div class="mt-2 p-2 rounded-lg bg-red-50 border border-red-200 text-[10px] text-red-800 font-semibold">
+                        ⚠️ Taxa de atraso aplicada: Base ${fmtBRL(b.valorOriginal)} + Multa ${fmtBRL(b.valorMulta)} + Juros ${fmtBRL(b.valorJuros)} = <strong>${fmtBRL(b.valorAtualizado)}</strong>
+                       </div>`
+                    : (b.diffDias > 0
+                        ? `<div class="mt-2 p-2 rounded-lg bg-emerald-50 border border-emerald-200 text-[10px] text-emerald-800 font-semibold">
+                            ✅ Boleto pronto com desconto: Base ${fmtBRL(b.valorOriginal)} → <strong>${fmtBRL(b.valorComDesconto)}</strong> até ${b.vencimento}
+                           </div>`
+                        : `<div class="mt-2 p-2 rounded-lg bg-amber-50 border border-amber-200 text-[10px] text-amber-800 font-semibold">
+                            🕒 Boleto pronto para hoje (${b.vencimento}): <strong>${fmtBRL(b.valorOriginal)}</strong>
+                           </div>`);
+
                 return `
-                    <div class="bg-white text-slate-800 rounded-xl p-3 border border-slate-200 shadow-sm flex flex-col justify-between gap-2">
+                    <div class="bg-white text-slate-800 rounded-xl p-3.5 border border-slate-200 shadow-sm flex flex-col justify-between gap-2">
                         <div>
-                            <div class="flex items-center justify-between gap-2 mb-1">
+                            <div class="flex items-center justify-between gap-2 mb-1.5">
                                 <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${b.corBadge}">${b.tituloNotif}</span>
-                                <span class="text-[10px] font-mono text-slate-400">Venc. ${b.vencimento}</span>
+                                <span class="text-[10px] font-mono text-slate-500">Venc. ${b.vencimento}</span>
                             </div>
                             <p class="font-bold text-xs text-slate-900">${b.nomeAluno} <span class="font-normal text-slate-500">• Resp: ${b.responsavel}</span></p>
                             <p class="text-[11px] text-slate-600 mt-1 leading-snug">${b.msgNotif}</p>
+                            ${detalheTaxa}
+                            <div class="mt-2 bg-slate-100 rounded-lg px-2.5 py-1.5 font-mono text-[10px] text-slate-700 truncate">
+                                Boleto pronto: ${b.linhaDigitavel}
+                            </div>
                         </div>
                         <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
-                            <span class="font-mono text-slate-500">${b.id}</span>
-                            <span class="font-black text-marinho">${valorExibido}</span>
+                            <span class="font-mono text-slate-400">${b.id}</span>
+                            <span class="font-black text-sm text-marinho">${valorExibido}</span>
                         </div>
                     </div>
                 `;
@@ -1320,49 +1440,12 @@ Endpoint: ${baseUrl}`);
 
             if (statusSync) {
                 const agoraStr = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                statusSync.innerText = `● Atualizado automaticamente às ${agoraStr}`;
+                statusSync.innerText = `● Automático às ${agoraStr}`;
             }
         }
 
         // Gera automaticamente o boleto do mês vigente (e próximo mês se solicitado) apenas para alunos ATIVOS (sem baixa)
-        function executarCicloMensalTodosAtivos(avancarProximoMes = false) {
-            const alunos = obterAlunosRecorrencia();
-            let boletos = obterBoletosAutomaticos();
-            const agora = new Date();
-            let anoAlvo = agora.getFullYear();
-            let mesAlvo = agora.getMonth();
-
-            if (avancarProximoMes) {
-                const ultimoOffset = Number(localStorage.getItem('peniel_offset_mes_simulado') || '0') + 1;
-                localStorage.setItem('peniel_offset_mes_simulado', String(ultimoOffset));
-                const dSim = new Date(agora.getFullYear(), agora.getMonth() + ultimoOffset, 1);
-                anoAlvo = dSim.getFullYear();
-                mesAlvo = dSim.getMonth();
-            }
-
-            let geradosAgora = 0;
-            alunos.forEach(aluno => {
-                // Regra principal: SOMENTE gera se o aluno estiver ATIVO e sem baixa
-                if (!aluno.ativo) return;
-
-                const comp = formatarCompetencia(anoAlvo, mesAlvo);
-                const jaExiste = boletos.some(b => b.raAluno === aluno.ra && b.competencia === comp);
-                if (!jaExiste) {
-                    boletos.unshift(gerarBoletoParaCompetencia(aluno, anoAlvo, mesAlvo));
-                    geradosAgora++;
-                }
-            });
-
-            salvarBoletosAutomaticos(boletos);
-            renderizarPainelAlunosRecorrencia();
-            renderizarBoletosAutomaticos();
-
-            if (avancarProximoMes) {
-                const compTexto = formatarCompetencia(anoAlvo, mesAlvo);
-                alert(`✅ Ciclo mensal (${compTexto}) executado!
-${geradosAgora} boleto(s) gerado(s) automaticamente apenas para os alunos ATIVOS (sem baixa).`);
-            }
-        }
+        
 
         function alternarStatusAtivoAluno(ra) {
             const alunos = obterAlunosRecorrencia();
@@ -1388,31 +1471,7 @@ Ao dar baixa, nenhum novo boleto mensal será gerado para este aluno.`)) return;
             }
         }
 
-        function cadastrarEAtivarAlunoDemo() {
-            const alunos = obterAlunosRecorrencia();
-            const sufixo = Math.floor(100 + Math.random() * 899);
-            const novo = {
-                ra: '2026' + sufixo,
-                nome: 'Lucas Almeida #' + sufixo,
-                turma: '4º Ano A',
-                responsavel: 'Fernanda Almeida',
-                cpf: '444.555.666-77',
-                email: 'fernanda@familia.com',
-                valorMensalidade: 1180.00,
-                diaVencimento: 10,
-                descontoPontualidadePct: 5,
-                multaAtrasoPct: 2,
-                jurosMesPct: 1,
-                ativo: true,
-                dataAtivacao: new Date().toLocaleDateString('pt-BR'),
-                dataBaixa: null
-            };
-            alunos.unshift(novo);
-            salvarAlunosRecorrencia(alunos);
-            executarCicloMensalTodosAtivos(false);
-            alert(`✅ Aluno ${novo.nome} ativado no sistema!
-O boleto mensal foi gerado e calculado automaticamente.`);
-        }
+        
 
         function renderizarPainelAlunosRecorrencia() {
             const container = document.getElementById('listaAlunosRecorrencia');
@@ -1683,13 +1742,10 @@ O boleto mensal foi gerado e calculado automaticamente.`);
             jan.document.close();
         }
 
-        function restaurarAlunosPadraoDemo() {
-            localStorage.removeItem('peniel_alunos_recorrencia');
-            localStorage.removeItem('peniel_boletos_automaticos');
-            executarCicloMensalTodosAtivos(false);
-        }
+        
 
         function inicializarModuloRecorrenciaSeguro() {
+            semearCenariosAutomaticosRegua();
             const sel = document.getElementById('seletorBancoModelo');
             if (sel) sel.value = obterBancoModeloAtual().raw;
             const cfgAsaas = obterConfigAsaas();
@@ -1716,6 +1772,170 @@ O boleto mensal foi gerado e calculado automaticamente.`);
         setInterval(() => {
             executarCicloMensalTodosAtivos(false);
         }, 60000);
+
+    
+        function definirStatusBotaoFeedback(mensagem, tipo = 'info') {
+            try {
+                let el = document.getElementById('feedbackAcoesFinanceiro');
+                if (!el) {
+                    const bloco = document.getElementById('blocoBoletosAutomaticos');
+                    if (!bloco) return;
+                    el = document.createElement('div');
+                    el.id = 'feedbackAcoesFinanceiro';
+                    el.className = 'mx-5 mt-3 px-4 py-2.5 rounded-xl text-xs font-bold border';
+                    bloco.prepend(el);
+                }
+                const estilos = {
+                    ok: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+                    warn: 'bg-amber-50 text-amber-800 border-amber-200',
+                    err: 'bg-red-50 text-red-800 border-red-200',
+                    info: 'bg-blue-50 text-blue-900 border-blue-200'
+                };
+                el.className = `mx-5 mt-3 px-4 py-2.5 rounded-xl text-xs font-bold border ${estilos[tipo] || estilos.info}`;
+                el.innerText = mensagem;
+            } catch (_) {}
+        }
+
+        function preencherChaveSandboxRapida() {
+            try {
+                const inputKey = document.getElementById('asaasApiKey');
+                const selAmb = document.getElementById('asaasAmbiente');
+                if (selAmb) selAmb.value = 'sandbox';
+                if (inputKey) {
+                    inputKey.value = '$aact_hmlg_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OjNhY2U4MTEwLTUzZWUtNGE5MC04MTUwLWQxNjFkYjM0M2UzNTo6JGFhY2hfNzc2NjdlNWEtMjAxYS00MzkwLTg5MTctYjIyYjQ4NTgzMTQ0';
+                }
+                if (typeof salvarConfigAsaas === 'function') salvarConfigAsaas();
+                definirStatusBotaoFeedback('🔑 Chave Sandbox Asaas aplicada. Clique em "Testar API Asaas" para verificar.', 'ok');
+            } catch (e) {
+                definirStatusBotaoFeedback('❌ Erro ao aplicar chave sandbox: ' + e.message, 'err');
+            }
+        }
+
+        async function testarConexaoAsaas() {
+            try {
+                if (typeof salvarConfigAsaas === 'function') salvarConfigAsaas();
+                const cfg = typeof obterConfigAsaas === 'function' ? obterConfigAsaas() : { ambiente: 'sandbox', endpointUrl: '', apiKey: '' };
+                if (cfg.endpointUrl) {
+                    definirStatusBotaoFeedback(`✅ Webhook/n8n configurado: ${cfg.endpointUrl}`, 'ok');
+                    return;
+                }
+                if (!cfg.apiKey) {
+                    definirStatusBotaoFeedback('⚠️ Preencha a API Key do Asaas ou clique em "Usar Chave Sandbox" primeiro.', 'warn');
+                    return;
+                }
+                const baseUrl = typeof obterBaseUrlAsaas === 'function' ? obterBaseUrlAsaas(cfg) : CONFIG_BANCO_API.sandboxUrl;
+                definirStatusBotaoFeedback(`⏳ Testando conexão com ${baseUrl}...`, 'info');
+                const resp = await fetch(`${baseUrl}/customers?limit=1`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'access_token': cfg.apiKey
+                    }
+                });
+                const data = await resp.json().catch(() => ({}));
+                if (!resp.ok) {
+                    definirStatusBotaoFeedback('❌ Asaas retornou erro: ' + (data.errors?.[0]?.description || `HTTP ${resp.status}`), 'err');
+                    return;
+                }
+                definirStatusBotaoFeedback(`✅ Conexão ativa com Asaas (${String(cfg.ambiente || 'sandbox').toUpperCase()}).`, 'ok');
+            } catch (err) {
+                definirStatusBotaoFeedback(`⚠️ Sem acesso direto via navegador (${err.message}). Use um Webhook/n8n ou rode em servidor local.`, 'warn');
+            }
+        }
+
+        function executarCicloMensalTodosAtivos(avancarProximoMes = false) {
+            try {
+                const alunos = typeof obterAlunosRecorrencia === 'function' ? obterAlunosRecorrencia() : [];
+                let boletos = typeof obterBoletosAutomaticos === 'function' ? obterBoletosAutomaticos() : [];
+                const agora = new Date();
+                let anoAlvo = agora.getFullYear();
+                let mesAlvo = agora.getMonth();
+
+                if (avancarProximoMes) {
+                    const ultimoOffset = Number(localStorage.getItem('peniel_offset_mes_simulado') || '0') + 1;
+                    localStorage.setItem('peniel_offset_mes_simulado', String(ultimoOffset));
+                    const dSim = new Date(agora.getFullYear(), agora.getMonth() + ultimoOffset, 1);
+                    anoAlvo = dSim.getFullYear();
+                    mesAlvo = dSim.getMonth();
+                }
+
+                const comp = typeof formatarCompetencia === 'function'
+                    ? formatarCompetencia(anoAlvo, mesAlvo)
+                    : `${String(mesAlvo + 1).padStart(2, '0')}/${anoAlvo}`;
+                let geradosAgora = 0;
+
+                alunos.forEach(aluno => {
+                    if (!aluno || !aluno.ativo) return;
+                    const jaExiste = boletos.some(b => b.raAluno === aluno.ra && b.competencia === comp);
+                    if (!jaExiste && typeof gerarBoletoParaCompetencia === 'function') {
+                        boletos.unshift(gerarBoletoParaCompetencia(aluno, anoAlvo, mesAlvo));
+                        geradosAgora++;
+                    }
+                });
+
+                if (typeof salvarBoletosAutomaticos === 'function') salvarBoletosAutomaticos(boletos);
+                if (typeof renderizarPainelAlunosRecorrencia === 'function') renderizarPainelAlunosRecorrencia();
+                if (typeof renderizarBoletosAutomaticos === 'function') renderizarBoletosAutomaticos();
+
+                if (avancarProximoMes) {
+                    definirStatusBotaoFeedback(
+                        `🔄 Competência ${comp} processada: ${geradosAgora} novo(s) boleto(s) gerado(s) para alunos ativos.`,
+                        geradosAgora > 0 ? 'ok' : 'info'
+                    );
+                }
+            } catch (err) {
+                definirStatusBotaoFeedback('❌ Erro ao gerar competência: ' + err.message, 'err');
+            }
+        }
+
+        function cadastrarEAtivarAlunoDemo() {
+            try {
+                const alunos = typeof obterAlunosRecorrencia === 'function' ? obterAlunosRecorrencia() : [];
+                const sufixo = Math.floor(100 + Math.random() * 899);
+                const novo = {
+                    ra: '2026' + sufixo,
+                    nome: 'Lucas Almeida #' + sufixo,
+                    turma: '4º Ano A',
+                    responsavel: 'Fernanda Almeida',
+                    cpf: '444.555.666-77',
+                    email: 'fernanda@familia.com',
+                    valorMensalidade: 1180.00,
+                    diaVencimento: 10,
+                    descontoPontualidadePct: 5,
+                    multaAtrasoPct: 2,
+                    jurosMesPct: 1,
+                    ativo: true,
+                    dataAtivacao: new Date().toLocaleDateString('pt-BR'),
+                    dataBaixa: null
+                };
+                alunos.unshift(novo);
+                if (typeof salvarAlunosRecorrencia === 'function') salvarAlunosRecorrencia(alunos);
+                executarCicloMensalTodosAtivos(false);
+                definirStatusBotaoFeedback(`✅ Aluno "${novo.nome}" ativado e boleto mensal gerado.`, 'ok');
+            } catch (err) {
+                definirStatusBotaoFeedback('❌ Erro ao ativar novo aluno: ' + err.message, 'err');
+            }
+        }
+
+        function restaurarAlunosPadraoDemo() {
+            try {
+                localStorage.removeItem('peniel_alunos_recorrencia');
+                localStorage.removeItem('peniel_boletos_automaticos');
+                localStorage.removeItem('peniel_regua_cenarios_v2');
+                localStorage.removeItem('peniel_offset_mes_simulado');
+                if (typeof semearCenariosAutomaticosRegua === 'function') semearCenariosAutomaticosRegua();
+                executarCicloMensalTodosAtivos(false);
+                definirStatusBotaoFeedback('♻️ Alunos e boletos de demonstração restaurados com sucesso.', 'ok');
+            } catch (err) {
+                definirStatusBotaoFeedback('❌ Erro ao restaurar alunos demo: ' + err.message, 'err');
+            }
+        }
+
+        window.preencherChaveSandboxRapida = preencherChaveSandboxRapida;
+        window.testarConexaoAsaas = testarConexaoAsaas;
+        window.executarCicloMensalTodosAtivos = executarCicloMensalTodosAtivos;
+        window.cadastrarEAtivarAlunoDemo = cadastrarEAtivarAlunoDemo;
+        window.restaurarAlunosPadraoDemo = restaurarAlunosPadraoDemo;
 
     </script>
 </body>
