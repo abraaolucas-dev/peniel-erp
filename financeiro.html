@@ -491,6 +491,76 @@
 
     <!-- ========================================================================= -->
 
+    
+    <!-- MODAL: TELA DE FATURAS DO ALUNO (TODOS OS MESES, EMISSÃO, VENCIMENTO E REGRA POR DATA) -->
+    <div id="modalFaturasAluno" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden flex justify-center items-center z-[96] p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto max-h-[92vh]">
+            <div class="p-4 sm:p-5 bg-marinho text-white flex justify-between items-start gap-3 shrink-0">
+                <div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">
+                            🗂️ Tela de Faturas por Aluno • Cronograma & Envio por Data
+                        </span>
+                        <span id="faturaAlunoBadgeStatus" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">● Ativo</span>
+                    </div>
+                    <h3 id="faturaAlunoTitulo" class="font-bold text-lg sm:text-xl mt-1">Faturas do Aluno</h3>
+                    <p id="faturaAlunoSubtitulo" class="text-xs text-blue-200 mt-0.5">Responsável • Turma • Dia de vencimento</p>
+                </div>
+                <button type="button" onclick="fecharModalFaturasAluno()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
+            </div>
+
+            <div class="p-4 sm:p-5 bg-slate-50 border-b border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-3 shrink-0">
+                <div class="bg-white p-3 rounded-xl border border-slate-200">
+                    <span class="text-[10px] font-bold uppercase text-slate-400 block">Meses Gerados</span>
+                    <strong id="faturaResumoQtd" class="text-lg font-black text-marinho">0</strong>
+                </div>
+                <div class="bg-white p-3 rounded-xl border border-slate-200">
+                    <span class="text-[10px] font-bold uppercase text-slate-400 block">Ativados / Enviados</span>
+                    <strong id="faturaResumoEnviados" class="text-lg font-black text-emerald-700">0</strong>
+                </div>
+                <div class="bg-white p-3 rounded-xl border border-slate-200">
+                    <span class="text-[10px] font-bold uppercase text-slate-400 block">Agendados (Futuros)</span>
+                    <strong id="faturaResumoAgendados" class="text-lg font-black text-slate-700">0</strong>
+                </div>
+                <div class="bg-white p-3 rounded-xl border border-slate-200">
+                    <span class="text-[10px] font-bold uppercase text-slate-400 block">Em Atraso c/ Taxa</span>
+                    <strong id="faturaResumoAtrasados" class="text-lg font-black text-red-600">0</strong>
+                </div>
+            </div>
+
+            <div class="p-4 sm:p-5 overflow-y-auto flex-1">
+                <div class="mb-3 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-600">
+                    <span>Os boletos são <strong>ativados e enviados automaticamente</strong> conforme a data de vencimento (ex.: até 5 dias antes, no dia, ou após o vencimento com multa + juros).</span>
+                    <button type="button" id="btnGerarAnoLetivoAluno" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-[11px] font-bold transition shadow-sm">
+                        + Gerar Meses do Ciclo (Ativo)
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto border border-slate-200 rounded-xl bg-white">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-100 text-slate-600 border-b border-slate-200 uppercase text-[10px] font-bold">
+                            <tr>
+                                <th class="px-3.5 py-2.5">Mês / Comp.</th>
+                                <th class="px-3.5 py-2.5 text-center">Data Emissão</th>
+                                <th class="px-3.5 py-2.5 text-center">Vencimento</th>
+                                <th class="px-3.5 py-2.5">Ativação & Envio (Pela Data)</th>
+                                <th class="px-3.5 py-2.5 text-right">Valor / Atualizado</th>
+                                <th class="px-3.5 py-2.5 text-center">Situação</th>
+                                <th class="px-3.5 py-2.5 text-right">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoTabelaFaturasAluno" class="divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="p-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-2 shrink-0">
+                <button type="button" onclick="fecharModalFaturasAluno()" class="px-4 py-2 bg-marinho hover:bg-blue-900 text-white font-bold rounded-xl text-xs transition">Fechar Tela de Faturas</button>
+            </div>
+        </div>
+    </div>
+
+
     <!-- MODAL: NOVA COBRANÇA -->
     <div id="modalNovaCobranca" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden flex justify-center items-center z-[80] p-4">
         <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl flex flex-col overflow-hidden">
@@ -1467,7 +1537,8 @@ Ao dar baixa, nenhum novo boleto mensal será gerado para este aluno.`)) return;
                 aluno.dataAtivacao = new Date().toLocaleDateString('pt-BR');
                 salvarAlunosRecorrencia(alunos);
                 // Ao reativar, já calcula e gera imediatamente o boleto da competência atual se ainda não existir
-                executarCicloMensalTodosAtivos(false);
+                sincronizarFaturasTodosAlunosPorData(false);
+            executarCicloMensalTodosAtivos(false);
             }
         }
 
@@ -1488,18 +1559,18 @@ Ao dar baixa, nenhum novo boleto mensal será gerado para este aluno.`)) return;
             const fmtBRL = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
             container.innerHTML = alunos.map(a => `
-                <div class="p-3 rounded-xl border ${a.ativo ? 'bg-white border-emerald-200' : 'bg-slate-100 border-slate-300 opacity-80'} flex items-center justify-between gap-2 shadow-xs">
+                <div onclick="abrirFaturasDoAluno('${a.ra}')" title="Clique para abrir todas as faturas deste aluno" class="cursor-pointer p-3 rounded-xl border ${a.ativo ? 'bg-white border-emerald-200 hover:border-marinho hover:shadow-md' : 'bg-slate-100 border-slate-300 opacity-85 hover:border-slate-400'} flex items-center justify-between gap-2 shadow-xs transition">
                     <div class="min-w-0">
                         <div class="flex items-center gap-1.5">
                             <span class="w-2 h-2 rounded-full ${a.ativo ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}"></span>
-                            <p class="font-bold text-xs text-slate-800 truncate">${a.nome}</p>
+                            <p class="font-bold text-xs text-marinho underline decoration-dotted truncate">${a.nome}</p>
                         </div>
                         <p class="text-[10px] text-slate-500 truncate">${a.turma} • ${fmtBRL(a.valorMensalidade)}/mês (Venc. dia ${a.diaVencimento})</p>
                         <p class="text-[10px] font-semibold ${a.ativo ? 'text-emerald-700' : 'text-red-600'}">
-                            ${a.ativo ? `Ativo desde ${a.dataAtivacao} (Gerando todo mês)` : `Baixa em ${a.dataBaixa} (Cobrança encerrada)`}
+                            ${a.ativo ? `Ativo desde ${a.dataAtivacao} • Ver faturas por mês` : `Baixa em ${a.dataBaixa} • Ver histórico de faturas`}
                         </p>
                     </div>
-                    <button type="button" onclick="alternarStatusAtivoAluno('${a.ra}')" class="${a.ativo ? 'bg-red-50 hover:bg-red-100 text-red-700 border border-red-200' : 'bg-emerald-600 hover:bg-emerald-700 text-white'} px-2.5 py-1.5 rounded-lg text-[10px] font-bold shrink-0 transition">
+                    <button type="button" onclick="event.stopPropagation(); alternarStatusAtivoAluno('${a.ra}')" class="${a.ativo ? 'bg-red-50 hover:bg-red-100 text-red-700 border border-red-200' : 'bg-emerald-600 hover:bg-emerald-700 text-white'} px-2.5 py-1.5 rounded-lg text-[10px] font-bold shrink-0 transition">
                         ${a.ativo ? 'Dar Baixa' : 'Reativar'}
                     </button>
                 </div>
@@ -1936,6 +2007,244 @@ Ao dar baixa, nenhum novo boleto mensal será gerado para este aluno.`)) return;
         window.executarCicloMensalTodosAtivos = executarCicloMensalTodosAtivos;
         window.cadastrarEAtivarAlunoDemo = cadastrarEAtivarAlunoDemo;
         window.restaurarAlunosPadraoDemo = restaurarAlunosPadraoDemo;
+
+    
+        // =====================================================================
+        // TELA DE FATURAS POR ALUNO: TODOS OS MESES, EMISSÃO, VENCIMENTO E ENVIO POR DATA
+        // =====================================================================
+        function gerarGradeMensalCompletaAluno(aluno, mesesAntes = 2, mesesDepois = 4) {
+            const hoje = new Date();
+            hoje.setHours(0, 0, 0, 0);
+            const faturas = [];
+            const diaVenc = Math.min(Number(aluno.diaVencimento || 10), 28);
+            const valorBase = Number(aluno.valorMensalidade || 0);
+            const descPct = Number(aluno.descontoPontualidadePct || 5);
+            const multaPct = Number(aluno.multaAtrasoPct || 2);
+            const jurosPct = Number(aluno.jurosMesPct || 1);
+
+            for (let offset = -mesesAntes; offset <= mesesDepois; offset++) {
+                const refMes = new Date(hoje.getFullYear(), hoje.getMonth() + offset, 1);
+                const ano = refMes.getFullYear();
+                const mesZero = refMes.getMonth();
+                const comp = formatarCompetencia(ano, mesZero);
+
+                const vencDate = new Date(ano, mesZero, diaVenc);
+                // Data de emissão: 15 dias antes do vencimento (ou início do mês de emissão)
+                const emissaoDate = new Date(vencDate.getFullYear(), vencDate.getMonth(), vencDate.getDate() - 15);
+
+                const descontoValor = +(valorBase * (descPct / 100)).toFixed(2);
+                const valorComDesconto = +(valorBase - descontoValor).toFixed(2);
+                const multaValor = +(valorBase * (multaPct / 100)).toFixed(2);
+
+                const diffDias = Math.round((vencDate - hoje) / 86400000);
+                let statusBoleto = 'pendente';
+                if (diffDias < 0) statusBoleto = 'atrasado';
+                else if (diffDias <= 5) statusBoleto = 'emitido_banco';
+
+                faturas.push({
+                    id: `BOL-${aluno.ra}-${ano}${String(mesZero + 1).padStart(2, '0')}`,
+                    raAluno: aluno.ra,
+                    nomeAluno: aluno.nome,
+                    turma: aluno.turma,
+                    responsavel: aluno.responsavel,
+                    cpfResponsavel: aluno.cpf || '000.000.000-00',
+                    emailResponsavel: aluno.email || 'financeiro@peniel.com',
+                    competencia: comp,
+                    referencia: `Mensalidade ${comp}`,
+                    dataEmissao: emissaoDate.toLocaleDateString('pt-BR'),
+                    vencimento: vencDate.toLocaleDateString('pt-BR'),
+                    valorOriginal: valorBase,
+                    descontoPct: descPct,
+                    valorComDesconto: valorComDesconto,
+                    multaPct: multaPct,
+                    valorMultaReais: multaValor,
+                    jurosMesPct: jurosPct,
+                    status: statusBoleto,
+                    linhaDigitavel: gerarLinhaDigitavelPorBanco(obterBancoModeloAtual().codigo, valorBase, `${aluno.ra}-${comp}`),
+                    urlBoleto: '',
+                    gatewayId: ''
+                });
+            }
+            return faturas;
+        }
+
+        function sincronizarFaturasTodosAlunosPorData(forcarGeracaoMeses = false) {
+            try {
+                const alunos = obterAlunosRecorrencia();
+                let boletos = obterBoletosAutomaticos();
+                const mapaExistentes = new Map(boletos.map(b => [b.id, b]));
+                let adicionados = 0;
+
+                alunos.forEach(aluno => {
+                    if (!aluno || !aluno.ativo) return;
+                    const mesesAntes = forcarGeracaoMeses ? 3 : 1;
+                    const mesesDepois = forcarGeracaoMeses ? 6 : 2;
+                    const grade = gerarGradeMensalCompletaAluno(aluno, mesesAntes, mesesDepois);
+                    grade.forEach(item => {
+                        if (!mapaExistentes.has(item.id)) {
+                            mapaExistentes.set(item.id, item);
+                            adicionados++;
+                        } else {
+                            const atual = mapaExistentes.get(item.id);
+                            if (!atual.dataEmissao) atual.dataEmissao = item.dataEmissao;
+                        }
+                    });
+                });
+
+                const atualizados = Array.from(mapaExistentes.values()).map(b => {
+                    const calc = calcularEncargosEEstagioBoleto(b);
+                    // Ativa e marca como enviado automaticamente quando entra na janela de até 5 dias antes, no dia ou em atraso
+                    if (calc.status !== 'pago' && (calc.diffDias <= 5)) {
+                        return { ...calc, enviadoAutomaticamente: true };
+                    }
+                    return { ...calc, enviadoAutomaticamente: Boolean(b.enviadoAutomaticamente) };
+                });
+
+                atualizados.sort((a, b) => {
+                    const parseBr = (s) => {
+                        if (!s || !s.includes('/')) return 0;
+                        const [d, m, a] = s.split('/').map(Number);
+                        return new Date(a, m - 1, d).getTime();
+                    };
+                    return parseBr(a.vencimento) - parseBr(b.vencimento);
+                });
+
+                salvarBoletosAutomaticos(atualizados);
+                return { adicionados, total: atualizados.length };
+            } catch (e) {
+                console.error('Erro ao sincronizar faturas por data:', e);
+                return { adicionados: 0, total: 0 };
+            }
+        }
+
+        function descreverRegraEnvioPorData(b) {
+            if (b.status === 'pago') {
+                return {
+                    tag: 'Pago & Liquidado',
+                    cor: 'bg-emerald-100 text-emerald-800',
+                    detalhe: 'Pagamento confirmado'
+                };
+            }
+            if (b.diffDias > 5) {
+                return {
+                    tag: `Agendado (em ${b.diffDias}d)`,
+                    cor: 'bg-slate-100 text-slate-700',
+                    detalhe: `Ativa e envia 5 dias antes do venc.`
+                };
+            }
+            if (b.diffDias > 0 && b.diffDias <= 5) {
+                return {
+                    tag: `Ativado • Enviado (${b.diffDias}d p/ venc.)`,
+                    cor: 'bg-sky-100 text-sky-800',
+                    detalhe: 'Notificação + boleto com desconto enviados'
+                };
+            }
+            if (b.diffDias === 0) {
+                return {
+                    tag: 'Ativado • Enviado Hoje',
+                    cor: 'bg-amber-100 text-amber-800',
+                    detalhe: 'Aviso de vencimento no dia enviado'
+                };
+            }
+            return {
+                tag: `Enviado em Atraso (${b.diasAtraso}d)`,
+                cor: 'bg-red-100 text-red-800',
+                detalhe: 'Boleto atualizado c/ multa + juros enviado'
+            };
+        }
+
+        function abrirFaturasDoAluno(ra) {
+            sincronizarFaturasTodosAlunosPorData(false);
+            const alunos = obterAlunosRecorrencia();
+            const aluno = alunos.find(a => a.ra === ra);
+            const boletos = obterBoletosAutomaticos().map(b => calcularEncargosEEstagioBoleto(b));
+            const faturasAluno = boletos.filter(b => b.raAluno === ra);
+
+            const modal = document.getElementById('modalFaturasAluno');
+            if (!modal) return;
+
+            const nomeAluno = aluno ? aluno.nome : (faturasAluno[0]?.nomeAluno || 'Aluno');
+            const turmaAluno = aluno ? aluno.turma : (faturasAluno[0]?.turma || '--');
+            const respAluno = aluno ? aluno.responsavel : (faturasAluno[0]?.responsavel || '--');
+            const diaVenc = aluno ? aluno.diaVencimento : 10;
+            const estaAtivo = aluno ? Boolean(aluno.ativo) : true;
+
+            document.getElementById('faturaAlunoTitulo').innerText = `Faturas do Aluno • ${nomeAluno}`;
+            document.getElementById('faturaAlunoSubtitulo').innerText = `Responsável: ${respAluno} • Turma: ${turmaAluno} • Vencimento todo dia ${diaVenc}`;
+
+            const badge = document.getElementById('faturaAlunoBadgeStatus');
+            if (badge) {
+                badge.innerText = estaAtivo ? '● Matrícula Ativa (Gera Mensalmente)' : '■ Baixa Efetuada';
+                badge.className = estaAtivo
+                    ? 'text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800'
+                    : 'text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-red-100 text-red-800';
+            }
+
+            const qtdEnviados = faturasAluno.filter(f => f.status !== 'pago' && f.diffDias <= 5).length;
+            const qtdAgendados = faturasAluno.filter(f => f.status !== 'pago' && f.diffDias > 5).length;
+            const qtdAtrasados = faturasAluno.filter(f => f.status !== 'pago' && f.diffDias < 0).length;
+
+            document.getElementById('faturaResumoQtd').innerText = String(faturasAluno.length);
+            document.getElementById('faturaResumoEnviados').innerText = String(qtdEnviados);
+            document.getElementById('faturaResumoAgendados').innerText = String(qtdAgendados);
+            document.getElementById('faturaResumoAtrasados').innerText = String(qtdAtrasados);
+
+            const btnGerar = document.getElementById('btnGerarAnoLetivoAluno');
+            if (btnGerar) {
+                btnGerar.onclick = () => {
+                    const res = sincronizarFaturasTodosAlunosPorData(true);
+                    abrirFaturasDoAluno(ra);
+                    renderizarBoletosAutomaticos();
+                    definirStatusBotaoFeedback(`✅ Grade mensal atualizada para ${nomeAluno} (${res.adicionados} nova(s) fatura(s) adicionada(s)).`, 'ok');
+                };
+            }
+
+            const fmtBRL = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            const tbody = document.getElementById('corpoTabelaFaturasAluno');
+
+            if (faturasAluno.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="px-4 py-6 text-center text-slate-400">Nenhuma fatura encontrada para este aluno.</td></tr>';
+            } else {
+                tbody.innerHTML = faturasAluno.map(f => {
+                    const regra = descreverRegraEnvioPorData(f);
+                    const valorExibido = f.estagio === 'atrasado_encargos'
+                        ? `<span class="font-black text-red-700 block">${fmtBRL(f.valorAtualizado)}</span><span class="text-[10px] text-red-500">Base ${fmtBRL(f.valorOriginal)} + taxa</span>`
+                        : `<span class="font-bold text-slate-800 block">${fmtBRL(f.valorOriginal)}</span><span class="text-[10px] text-emerald-700">Até venc.: ${fmtBRL(f.valorComDesconto)}</span>`;
+
+                    let sitBadge = '<span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold text-[10px]">A Vencer</span>';
+                    if (f.status === 'pago') sitBadge = '<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold text-[10px]">Pago</span>';
+                    else if (f.status === 'atrasado') sitBadge = '<span class="bg-red-100 text-red-800 px-2 py-0.5 rounded font-bold text-[10px]">Atrasado</span>';
+                    else if (f.status === 'emitido_banco') sitBadge = '<span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-bold text-[10px]">Boleto Ativado</span>';
+
+                    return `<tr class="hover:bg-slate-50">
+                        <td class="px-3.5 py-2.5 font-mono font-bold text-slate-800">${f.competencia}</td>
+                        <td class="px-3.5 py-2.5 text-center font-mono text-slate-600">${f.dataEmissao || '--/--/----'}</td>
+                        <td class="px-3.5 py-2.5 text-center font-mono font-bold text-marinho">${f.vencimento}</td>
+                        <td class="px-3.5 py-2.5">
+                            <span class="inline-block px-2 py-0.5 rounded-full font-bold text-[10px] ${regra.cor}">${regra.tag}</span>
+                            <span class="block text-[10px] text-slate-500 mt-0.5">${regra.detalhe}</span>
+                        </td>
+                        <td class="px-3.5 py-2.5 text-right">${valorExibido}</td>
+                        <td class="px-3.5 py-2.5 text-center">${sitBadge}</td>
+                        <td class="px-3.5 py-2.5 text-right space-x-1 whitespace-nowrap">
+                            ${f.status !== 'pago' ? `<button type="button" onclick="darBaixaBoletoPago('${f.id}'); abrirFaturasDoAluno('${ra}');" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded text-[10px] font-bold">Pago</button>` : ''}
+                            <button type="button" onclick="abrirBoletoModeloDemo('${f.id}')" class="bg-marinho hover:bg-blue-900 text-white px-2 py-1 rounded text-[10px] font-bold">Boleto</button>
+                        </td>
+                    </tr>`;
+                }).join('');
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function fecharModalFaturasAluno() {
+            const modal = document.getElementById('modalFaturasAluno');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        window.abrirFaturasDoAluno = abrirFaturasDoAluno;
+        window.fecharModalFaturasAluno = fecharModalFaturasAluno;
+        window.sincronizarFaturasTodosAlunosPorData = sincronizarFaturasTodosAlunosPorData;
 
     </script>
 </body>
