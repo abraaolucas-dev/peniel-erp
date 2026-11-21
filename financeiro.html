@@ -276,6 +276,17 @@
                         🔌 Testar API Asaas
                     </button>
                 </div>
+
+                <div id="painelEvolutionApi" class="w-full pt-3 mt-2 border-t border-slate-800 flex flex-wrap items-center gap-2">
+                    <span class="text-[11px] font-bold text-emerald-300">📱 Evolution API (WhatsApp):</span>
+                    <input type="text" id="evoBaseUrl" onchange="salvarConfigEvolution()" placeholder="URL Evolution (ex: http://localhost:8080)" class="bg-slate-800 border border-slate-700 text-white placeholder-slate-400 rounded-xl px-3 py-1.5 text-xs w-full sm:w-56">
+                    <input type="text" id="evoInstance" onchange="salvarConfigEvolution()" placeholder="Instância (ex: peniel-financeiro)" class="bg-slate-800 border border-slate-700 text-white placeholder-slate-400 rounded-xl px-3 py-1.5 text-xs w-full sm:w-44">
+                    <input type="password" id="evoApiKey" onchange="salvarConfigEvolution()" placeholder="Evolution API Key" class="bg-slate-800 border border-slate-700 text-white placeholder-slate-400 rounded-xl px-3 py-1.5 text-xs w-full sm:w-44">
+                    <button type="button" onclick="copiarWorkflowN8nJson()" class="bg-sky-600 hover:bg-sky-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm whitespace-nowrap">
+                        📋 Copiar JSON n8n
+                    </button>
+                </div>
+
             </div>
 
         <!-- ========================================================================= -->
@@ -1081,6 +1092,8 @@
                         body: JSON.stringify({
                             ambiente: cfg.ambiente,
                             asaasBaseUrl: cfg.ambiente === 'producao' ? CONFIG_BANCO_API.producaoUrl : CONFIG_BANCO_API.sandboxUrl,
+                            asaasApiKey: cfg.apiKey,
+                            evolution: obterConfigEvolution(),
                             boleto: bol,
                             paymentPayload: payloadAsaas
                         })
@@ -1122,7 +1135,32 @@
                     window.open(linkAbrir, '_blank');
                 }
             } catch (err) {
-                alert('❌ Erro ao emitir no Asaas:\n' + err.message);
+                const isFetchFail = /failed to fetch|networkerror|cors/i.test(err.message || '');
+                if (isFetchFail) {
+                    const simular = confirm(
+                        '⚠️ O navegador bloqueou a chamada direta à API do Asaas (Failed to fetch / CORS).\n\n' +
+                        'Deseja registrar este boleto como EMITIDO em modo Simulação Sandbox Local para continuar o teste agora?\n' +
+                        '(Para chamadas reais externas sem CORS, configure a URL do Webhook / n8n ou rode em um servidor local.)'
+                    );
+                    if (simular) {
+                        const simId = 'pay_sandbox_' + Math.floor(100000 + Math.random() * 899999);
+                        boletos[idx].status = 'emitido_banco';
+                        boletos[idx].gatewayId = simId;
+                        boletos[idx].urlBoleto = 'https://sandbox.asaas.com/b/pdf/' + simId;
+                        salvarBoletosAutomaticos(boletos);
+                        renderizarBoletosAutomaticos();
+                        definirStatusBotaoFeedback(
+                            `🧪 Simulação Sandbox aplicada para ${bol.id} (ID ${simId}). Para envio real, use Webhook/n8n ou servidor local.`,
+                            'warn'
+                        );
+                        return;
+                    }
+                }
+                definirStatusBotaoFeedback(
+                    `⚠️ Sem acesso direto via navegador (${err.message}). Use um Webhook/n8n ou rode em servidor local.`,
+                    'warn'
+                );
+                alert('❌ Erro ao emitir no Asaas:\n' + err.message + '\n\nDica: Use um Webhook/n8n ou rode em um servidor local.');
             }
         }
 
@@ -1826,6 +1864,13 @@ Ao dar baixa, nenhum novo boleto mensal será gerado para este aluno.`)) return;
             if (ambEl) ambEl.value = cfgAsaas.ambiente;
             if (endEl) endEl.value = cfgAsaas.endpointUrl;
             if (keyEl) keyEl.value = cfgAsaas.apiKey;
+            const cfgEvo = obterConfigEvolution();
+            const evoU = document.getElementById('evoBaseUrl');
+            const evoI = document.getElementById('evoInstance');
+            const evoK = document.getElementById('evoApiKey');
+            if (evoU) evoU.value = cfgEvo.baseUrl;
+            if (evoI) evoI.value = cfgEvo.instance;
+            if (evoK) evoK.value = cfgEvo.apiKey;
             salvarConfigAsaas();
             executarCicloMensalTodosAtivos(false);
         }
@@ -2245,6 +2290,40 @@ Ao dar baixa, nenhum novo boleto mensal será gerado para este aluno.`)) return;
         window.abrirFaturasDoAluno = abrirFaturasDoAluno;
         window.fecharModalFaturasAluno = fecharModalFaturasAluno;
         window.sincronizarFaturasTodosAlunosPorData = sincronizarFaturasTodosAlunosPorData;
+
+    
+        // =====================================================================
+        // INTEGRAÇÃO EVOLUTION API + WORKFLOW N8N
+        // =====================================================================
+        const WORKFLOW_N8N_BOLETO_JSON = "{\n  \"name\": \"Peniel - Boleto Asaas Sandbox + Evolution API\",\n  \"nodes\": [\n    {\n      \"parameters\": {\n        \"httpMethod\": \"POST\",\n        \"path\": \"asaas-boleto-sandbox\",\n        \"responseMode\": \"responseNode\",\n        \"options\": {}\n      },\n      \"id\": \"webhook-asaas-boleto\",\n      \"name\": \"Webhook Boleto\",\n      \"type\": \"n8n-nodes-base.webhook\",\n      \"typeVersion\": 2,\n      \"position\": [\n        240,\n        300\n      ]\n    },\n    {\n      \"parameters\": {\n        \"method\": \"POST\",\n        \"url\": \"={{ $json.body.asaasBaseUrl || 'https://api-sandbox.asaas.com/v3' }}/payments\",\n        \"sendHeaders\": true,\n        \"headerParameters\": {\n          \"parameters\": [\n            {\n              \"name\": \"Content-Type\",\n              \"value\": \"application/json\"\n            },\n            {\n              \"name\": \"access_token\",\n              \"value\": \"={{ $json.body.asaasApiKey || $json.headers['x-asaas-access-token'] }}\"\n            }\n          ]\n        },\n        \"sendBody\": true,\n        \"specifyBody\": \"json\",\n        \"jsonBody\": \"={{ JSON.stringify($json.body.paymentPayload) }}\",\n        \"options\": {}\n      },\n      \"id\": \"http-asaas-payment\",\n      \"name\": \"Asaas Criar Boleto\",\n      \"type\": \"n8n-nodes-base.httpRequest\",\n      \"typeVersion\": 4.2,\n      \"position\": [\n        520,\n        300\n      ]\n    },\n    {\n      \"parameters\": {\n        \"method\": \"POST\",\n        \"url\": \"={{ $('Webhook Boleto').item.json.body.evolution.baseUrl }}/message/sendText/{{ $('Webhook Boleto').item.json.body.evolution.instance }}\",\n        \"sendHeaders\": true,\n        \"headerParameters\": {\n          \"parameters\": [\n            {\n              \"name\": \"Content-Type\",\n              \"value\": \"application/json\"\n            },\n            {\n              \"name\": \"apikey\",\n              \"value\": \"={{ $('Webhook Boleto').item.json.body.evolution.apiKey }}\"\n            }\n          ]\n        },\n        \"sendBody\": true,\n        \"specifyBody\": \"json\",\n        \"jsonBody\": \"={{ JSON.stringify({ number: '5521999999999', text: 'Boleto ' + $('Webhook Boleto').item.json.body.boleto.id + ' emitido! Venc.: ' + $('Webhook Boleto').item.json.body.boleto.vencimento + ' | Link: ' + ($json.bankSlipUrl || $json.invoiceUrl || '') }) }}\",\n        \"options\": {}\n      },\n      \"id\": \"http-evolution-whatsapp\",\n      \"name\": \"Evolution Enviar WhatsApp\",\n      \"type\": \"n8n-nodes-base.httpRequest\",\n      \"typeVersion\": 4.2,\n      \"position\": [\n        800,\n        300\n      ]\n    },\n    {\n      \"parameters\": {\n        \"respondWith\": \"json\",\n        \"responseBody\": \"={{ JSON.stringify({ id: $('Asaas Criar Boleto').item.json.id, bankSlipUrl: $('Asaas Criar Boleto').item.json.bankSlipUrl || $('Asaas Criar Boleto').item.json.invoiceUrl || '', nossoNumero: $('Asaas Criar Boleto').item.json.nossoNumero || '' }) }}\",\n        \"options\": {}\n      },\n      \"id\": \"respond-webhook\",\n      \"name\": \"Responder Financeiro\",\n      \"type\": \"n8n-nodes-base.respondToWebhook\",\n      \"typeVersion\": 1.1,\n      \"position\": [\n        1080,\n        300\n      ]\n    }\n  ],\n  \"connections\": {\n    \"Webhook Boleto\": {\n      \"main\": [\n        [\n          {\n            \"node\": \"Asaas Criar Boleto\",\n            \"type\": \"main\",\n            \"index\": 0\n          }\n        ]\n      ]\n    },\n    \"Asaas Criar Boleto\": {\n      \"main\": [\n        [\n          {\n            \"node\": \"Evolution Enviar WhatsApp\",\n            \"type\": \"main\",\n            \"index\": 0\n          }\n        ]\n      ]\n    },\n    \"Evolution Enviar WhatsApp\": {\n      \"main\": [\n        [\n          {\n            \"node\": \"Responder Financeiro\",\n            \"type\": \"main\",\n            \"index\": 0\n          }\n        ]\n      ]\n    }\n  },\n  \"settings\": {}\n}";
+
+        function obterConfigEvolution() {
+            const salvo = JSON.parse(localStorage.getItem('peniel_config_evolution') || '{}');
+            return {
+                baseUrl: salvo.baseUrl || 'http://localhost:8080',
+                instance: salvo.instance || 'peniel-financeiro',
+                apiKey: salvo.apiKey || ''
+            };
+        }
+
+        function salvarConfigEvolution() {
+            const u = document.getElementById('evoBaseUrl');
+            const i = document.getElementById('evoInstance');
+            const k = document.getElementById('evoApiKey');
+            const cfg = {
+                baseUrl: u ? u.value.trim().replace(/\/+$/, '') : 'http://localhost:8080',
+                instance: i ? i.value.trim() : 'peniel-financeiro',
+                apiKey: k ? k.value.trim() : ''
+            };
+            localStorage.setItem('peniel_config_evolution', JSON.stringify(cfg));
+        }
+
+        function copiarWorkflowN8nJson() {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(WORKFLOW_N8N_BOLETO_JSON).catch(() => {});
+            }
+            definirStatusBotaoFeedback('📋 JSON do workflow n8n (Webhook + Asaas + Evolution API) copiado para importar no n8n!', 'ok');
+        }
 
     </script>
 </body>
