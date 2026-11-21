@@ -311,6 +311,21 @@
                 </div>
             </div>
 
+
+            <!-- FEED AUTOMÁTICO DO APP DOS PAIS (SEM CLIQUE MANUAL) -->
+            <div id="painelAppPaisAutomatico" class="p-4 bg-gradient-to-r from-slate-900 to-marinho text-white border-b border-slate-200">
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                    <div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">
+                            📱 App dos Pais • Sincronização Automática em Tempo Real
+                        </span>
+                        <h4 class="font-bold text-sm mt-1">Notificações & Boletos Prontos (Dias Antes, No Dia e Pós-Vencimento com Taxa)</h4>
+                    </div>
+                    <span id="statusSyncAppPais" class="text-[11px] font-mono text-emerald-300">● Motor Automático Ativo</span>
+                </div>
+                <div id="feedNotificacoesAppPais" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 max-h-[240px] overflow-y-auto pr-1" style="scrollbar-width: thin;"></div>
+            </div>
+
             <!-- Painel de Status dos Alunos (Ativo x Baixa) -->
             <div class="p-4 bg-slate-50 border-b border-slate-200">
                 <div class="flex items-center justify-between mb-2.5">
@@ -938,17 +953,13 @@ ${cfg.endpointUrl}`);
                 });
                 const data = await resp.json();
                 if (!resp.ok) {
-                    alert('❌ Falha na conexão com Asaas:
-' + (data.errors?.[0]?.description || resp.status));
+                    alert('❌ Falha na conexão com Asaas:\n' + (data.errors?.[0]?.description || resp.status));
                     return;
                 }
                 alert(`✅ Conexão ativa com Asaas (${cfg.ambiente.toUpperCase()})!
 Endpoint: ${baseUrl}`);
             } catch (err) {
-                alert('❌ Erro de rede/CORS ao chamar o Asaas direto do navegador:
-' + err.message + '
-
-Dica: Se o navegador bloquear CORS, use a URL do seu Webhook / n8n no campo ao lado.');
+                alert('❌ Erro de rede/CORS ao chamar o Asaas direto do navegador:\n' + err.message + '\n\nDica: Se o navegador bloquear CORS, use a URL do seu Webhook / n8n no campo ao lado.');
             }
         }
 
@@ -1203,6 +1214,116 @@ Dica: Se o navegador bloquear CORS, use a URL do seu Webhook / n8n no campo ao l
             };
         }
 
+        function calcularEncargosEEstagioBoleto(bol, dataReferencia = new Date()) {
+            const hoje = new Date(dataReferencia.getFullYear(), dataReferencia.getMonth(), dataReferencia.getDate());
+            let vencDate = hoje;
+            if (bol.vencimento && bol.vencimento.includes('/')) {
+                const [d, m, a] = bol.vencimento.split('/').map(Number);
+                vencDate = new Date(a, m - 1, d);
+            }
+
+            const diffDias = Math.round((vencDate - hoje) / 86400000);
+            const valorBase = Number(bol.valorOriginal || 0);
+            const descPct = Number(bol.descontoPct || 5);
+            const multaPct = Number(bol.multaPct || 2);
+            const jurosMesPct = Number(bol.jurosMesPct || 1);
+
+            const valorDesconto = +(valorBase * (descPct / 100)).toFixed(2);
+            const valorComDesconto = +(valorBase - valorDesconto).toFixed(2);
+
+            let diasAtraso = 0;
+            let valorMulta = 0;
+            let valorJuros = 0;
+            let valorAtualizado = valorBase;
+            let estagio = 'agendado';
+            let tituloNotif = 'Boleto Disponível';
+            let msgNotif = `Mensalidade ${bol.competencia} disponível no App com vencimento em ${bol.vencimento}.`;
+            let corBadge = 'bg-slate-100 text-slate-700';
+
+            if (bol.status === 'pago') {
+                estagio = 'pago';
+                tituloNotif = 'Pagamento Confirmado';
+                msgNotif = `Recebemos o pagamento da mensalidade ${bol.competencia}. Comprovante liberado no App.`;
+                corBadge = 'bg-emerald-100 text-emerald-800';
+            } else if (diffDias > 0 && diffDias <= 5) {
+                estagio = 'lembrete_antes';
+                tituloNotif = `Lembrete: Vence em ${diffDias} dia(s)`;
+                msgNotif = `Boleto pronto no App! Pague até ${bol.vencimento} com desconto de ${descPct}% (${valorComDesconto.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}).`;
+                corBadge = 'bg-sky-100 text-sky-800';
+            } else if (diffDias === 0) {
+                estagio = 'vence_hoje';
+                tituloNotif = 'Vence Hoje';
+                msgNotif = `A mensalidade ${bol.competencia} vence hoje (${bol.vencimento}). Boleto e linha digitável prontos no App.`;
+                corBadge = 'bg-amber-100 text-amber-800';
+            } else if (diffDias < 0) {
+                diasAtraso = Math.abs(diffDias);
+                estagio = 'atrasado_encargos';
+                valorMulta = +(valorBase * (multaPct / 100)).toFixed(2);
+                const jurosDiario = (jurosMesPct / 100) / 30;
+                valorJuros = +(valorBase * jurosDiario * diasAtraso).toFixed(2);
+                valorAtualizado = +(valorBase + valorMulta + valorJuros).toFixed(2);
+                tituloNotif = `Em Atraso (${diasAtraso}d) • Encargos Aplicados`;
+                msgNotif = `Vencido em ${bol.vencimento}. Atualizado com multa de ${valorMulta.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} + juros de ${valorJuros.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} = ${valorAtualizado.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}.`;
+                corBadge = 'bg-red-100 text-red-800';
+            }
+
+            return {
+                ...bol,
+                diffDias,
+                diasAtraso,
+                valorComDesconto,
+                valorMulta,
+                valorJuros,
+                valorAtualizado,
+                estagio,
+                tituloNotif,
+                msgNotif,
+                corBadge,
+                status: bol.status === 'pago' ? 'pago' : (diffDias < 0 ? 'atrasado' : (bol.status === 'emitido_banco' ? 'emitido_banco' : 'pendente'))
+            };
+        }
+
+        function renderizarFeedAppPaisAutomatico(boletosEnriquecidos) {
+            const container = document.getElementById('feedNotificacoesAppPais');
+            const statusSync = document.getElementById('statusSyncAppPais');
+            if (!container) return;
+
+            const fmtBRL = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+            if (!boletosEnriquecidos || boletosEnriquecidos.length === 0) {
+                container.innerHTML = '<div class="col-span-full text-xs text-slate-300 bg-white/5 p-3 rounded-xl">Nenhuma notificação gerada até o momento.</div>';
+                return;
+            }
+
+            container.innerHTML = boletosEnriquecidos.slice(0, 9).map(b => {
+                const valorExibido = b.estagio === 'atrasado_encargos'
+                    ? fmtBRL(b.valorAtualizado)
+                    : (b.diffDias > 0 ? fmtBRL(b.valorComDesconto) : fmtBRL(b.valorOriginal));
+
+                return `
+                    <div class="bg-white text-slate-800 rounded-xl p-3 border border-slate-200 shadow-sm flex flex-col justify-between gap-2">
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-1">
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${b.corBadge}">${b.tituloNotif}</span>
+                                <span class="text-[10px] font-mono text-slate-400">Venc. ${b.vencimento}</span>
+                            </div>
+                            <p class="font-bold text-xs text-slate-900">${b.nomeAluno} <span class="font-normal text-slate-500">• Resp: ${b.responsavel}</span></p>
+                            <p class="text-[11px] text-slate-600 mt-1 leading-snug">${b.msgNotif}</p>
+                        </div>
+                        <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                            <span class="font-mono text-slate-500">${b.id}</span>
+                            <span class="font-black text-marinho">${valorExibido}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            if (statusSync) {
+                const agoraStr = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                statusSync.innerText = `● Atualizado automaticamente às ${agoraStr}`;
+            }
+        }
+
         // Gera automaticamente o boleto do mês vigente (e próximo mês se solicitado) apenas para alunos ATIVOS (sem baixa)
         function executarCicloMensalTodosAtivos(avancarProximoMes = false) {
             const alunos = obterAlunosRecorrencia();
@@ -1343,7 +1464,9 @@ O boleto mensal foi gerado e calculado automaticamente.`);
                 selectAluno.value = valorAtualSelect;
             }
 
-            const filtrados = boletos.filter(b => alunoSelecionado === 'todos' || b.raAluno === alunoSelecionado);
+            const boletosCalculados = boletos.map(b => calcularEncargosEEstagioBoleto(b));
+            renderizarFeedAppPaisAutomatico(boletosCalculados);
+            const filtrados = boletosCalculados.filter(b => alunoSelecionado === 'todos' || b.raAluno === alunoSelecionado);
             const contadorEl = document.getElementById('contadorBoletosVisiveis');
             if (contadorEl) contadorEl.innerText = `${filtrados.length} boleto(s) encontrado(s)`;
 
@@ -1387,8 +1510,10 @@ O boleto mensal foi gerado e calculado automaticamente.`);
                         <span class="font-bold text-emerald-700">${fmtBRL(b.valorComDesconto)}</span>
                         <span class="block text-[10px] text-emerald-600">-${b.descontoPct}% até venc.</span>
                     </td>
-                    <td class="px-4 py-3 text-center text-[10px] text-slate-500">
-                        Multa ${b.multaPct}% (${fmtBRL(b.valorMultaReais)})<br>Juros ${b.jurosMesPct}% a.m.
+                    <td class="px-4 py-3 text-center text-[10px]">
+                        ${b.estagio === 'atrasado_encargos'
+                            ? `<span class="font-bold text-red-700 block">Atualizado: ${fmtBRL(b.valorAtualizado)}</span><span class="text-red-600">Multa ${fmtBRL(b.valorMulta)} + Juros ${fmtBRL(b.valorJuros)} (${b.diasAtraso}d)</span>`
+                            : `<span class="text-slate-500">Multa ${b.multaPct}% (${fmtBRL(b.valorMultaReais)})<br>Juros ${b.jurosMesPct}% a.m.</span>`}
                     </td>
                     <td class="px-4 py-3 text-center">${badgeStatus}</td>
                     <td class="px-4 py-3 text-right space-x-1">
@@ -1548,8 +1673,7 @@ O boleto mensal foi gerado e calculado automaticamente.`);
         function copiarLinhaDigitavelModal() {
             const linha = document.getElementById('bolLinhaDigitavel').innerText;
             navigator.clipboard?.writeText(linha);
-            alert('✅ Linha digitável copiada:
-' + linha);
+            alert('✅ Linha digitável copiada:\n' + linha);
         }
 
         function imprimirBoletoModelo() {
@@ -1585,9 +1709,13 @@ O boleto mensal foi gerado e calculado automaticamente.`);
             inicializarModuloRecorrenciaSeguro();
         }
         window.addEventListener('load', () => {
+            executarCicloMensalTodosAtivos(false);
             renderizarPainelAlunosRecorrencia();
             renderizarBoletosAutomaticos();
         });
+        setInterval(() => {
+            executarCicloMensalTodosAtivos(false);
+        }, 60000);
 
     </script>
 </body>
