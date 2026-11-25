@@ -85,10 +85,6 @@
             transition: top 0.5s ease, background-color 0.5s ease, transform 0.3s ease;
             z-index: 5;
         }
-
-    
-
-
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col md:flex-row overflow-x-hidden">
@@ -189,8 +185,6 @@
             </div>
         </div>
 
-        
-
         <!-- BARRA DE SIMULAÇÃO DA TIMELINE VERTICAL & EXPORTAÇÃO -->
         <div class="bg-white px-4 py-2.5 rounded-2xl border border-slate-200 shadow-sm flex flex-col xl:flex-row justify-between items-start xl:items-center gap-3">
             <div class="flex flex-wrap items-center gap-2 text-xs">
@@ -212,52 +206,6 @@
                     Carregando fase...
                 </span>
             </div>
-
-
-        </div>
-
-
-        <!-- ESPELHO EM TEMPO REAL: TURMAS, ALUNOS, PRESENÇA E SISTEMA -->
-        <div id="blocoEspelhoTurmasAlunos" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-4">
-            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3 border-b border-slate-100 pb-3">
-                <div>
-                    <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase tracking-wider">
-                        📡 Espelho em Tempo Real • Turmas, Alunos & Frequência
-                    </div>
-                    <h3 class="font-bold text-slate-800 text-base mt-1">Visão Espelhada do Sistema Escolar</h3>
-                    <p class="text-xs text-slate-500">Espelha as turmas, alunos cadastrados (incluindo fichas/matrículas/Supabase), presença e faltas das aulas e sincroniza com o Dashboard.</p>
-                </div>
-                <div class="flex flex-wrap items-center gap-2">
-                    <button type="button" onclick="sincronizarEspelhoCompleto(true)" class="bg-marinho hover:bg-blue-900 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition shadow-sm">
-                        🔄 Espelhar Agora
-                    </button>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                    <span class="text-[10px] font-bold uppercase text-slate-400 block">Turmas Ativas</span>
-                    <strong id="esp-total-turmas" class="text-xl font-black text-marinho">0</strong>
-                    <span class="text-[10px] text-slate-500 block">Maternal, Pré e Fundamental</span>
-                </div>
-                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                    <span class="text-[10px] font-bold uppercase text-slate-400 block">Alunos Espelhados</span>
-                    <strong id="esp-total-alunos" class="text-xl font-black text-slate-800">0</strong>
-                    <span id="esp-alunos-fonte" class="text-[10px] text-emerald-700 font-semibold block">Sincronizado</span>
-                </div>
-                <div class="bg-emerald-50/60 p-3.5 rounded-xl border border-emerald-200">
-                    <span class="text-[10px] font-bold uppercase text-emerald-700 block">Presenças Registradas</span>
-                    <strong id="esp-total-presentes" class="text-xl font-black text-emerald-700">0</strong>
-                    <span class="text-[10px] text-emerald-600 block">Soma nas aulas/cards</span>
-                </div>
-                <div class="bg-red-50/60 p-3.5 rounded-xl border border-red-200">
-                    <span class="text-[10px] font-bold uppercase text-red-700 block">Faltas Registradas</span>
-                    <strong id="esp-total-faltantes" class="text-xl font-black text-red-700">0</strong>
-                    <span class="text-[10px] text-red-600 block">Clique em P/F nos cards</span>
-                </div>
-            </div>
-
-            <div id="gridCardsTurmasEspelhadas" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3"></div>
         </div>
 
         <!-- GRADE MENSAL DO CALENDÁRIO -->
@@ -286,6 +234,47 @@
                 </div>
             </div>
         </div>
+
+        <!-- ESPELHO DE TURMAS, ALUNOS E SUPABASE -->
+        <section id="blocoEspelhoCalendario" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 space-y-3">
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3 border-b border-slate-100 pb-3">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase tracking-wider">
+                        🔄 Espelho Acadêmico • Unidade Ativa, Turmas, Alunos & Supabase
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-sm sm:text-base mt-1">Sincronização de Grade, Frequência e Turmas</h3>
+                    <p class="text-xs text-slate-500">Busca alunos cadastrados da unidade no Supabase e bases locais para enriquecer a chamada e manter a grade espelhada.</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" onclick="sincronizarAlunosComGradeCalendario(true)" class="bg-marinho hover:bg-blue-900 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition shadow-sm">
+                        📥 Sincronizar Alunos da Unidade
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <span class="text-[10px] font-bold uppercase text-slate-400 block">Unidade Ativa</span>
+                    <strong id="cal-unidade-ativa" class="text-base font-black text-marinho">Matriz</strong>
+                    <span id="cal-sync-origem" class="text-[10px] text-emerald-700 font-semibold block">Aguardando sincronização</span>
+                </div>
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <span class="text-[10px] font-bold uppercase text-slate-400 block">Alunos na Unidade</span>
+                    <strong id="cal-qtd-alunos" class="text-xl font-black text-slate-800">0</strong>
+                    <span class="text-[10px] text-slate-500 block">Disponíveis p/ frequência</span>
+                </div>
+                <div class="bg-blue-50/60 p-3 rounded-xl border border-blue-200">
+                    <span class="text-[10px] font-bold uppercase text-blue-700 block">Aulas Semanais</span>
+                    <strong id="cal-qtd-aulas-sem" class="text-xl font-black text-marinho">0</strong>
+                    <span class="text-[10px] text-blue-600 block">Grade recorrente</span>
+                </div>
+                <div class="bg-orange-50/60 p-3 rounded-xl border border-orange-200">
+                    <span class="text-[10px] font-bold uppercase text-orange-700 block">Eventos Pontuais</span>
+                    <strong id="cal-qtd-eventos-pont" class="text-xl font-black text-laranja">0</strong>
+                    <span class="text-[10px] text-orange-600 block">Calendário anual</span>
+                </div>
+            </div>
+        </section>
 
         <!-- GRADE COMPLETA DE AULAS AGENDADAS -->
         <div id="blocoGradeCompletaAulas" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mt-2">
@@ -399,7 +388,7 @@
         </div>
     </div>
 
-    <!-- MODAL: VISUALIZAR E EDITAR CARD DO DIA (SALA, MATÉRIA, HORÁRIO E DESCRIÇÃO) -->
+    <!-- MODAL: VISUALIZAR E EDITAR CARD DO DIA -->
     <div id="modalDetalheCard" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[140] p-3 sm:p-4 overflow-y-auto">
         <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto">
             <div class="p-5 bg-marinho text-white flex justify-between items-center">
@@ -547,52 +536,33 @@
         </div>
     </div>
 
-
     <script>
-
         const SUPABASE_URL_CAL = 'https://fxjdmhrlujiajkouduhg.supabase.co';
         const SUPABASE_KEY_CAL = 'sb_publishable_EANH7zIXleZ3G18S6z7KFw_26oySNP9';
 
-        function obterAlunosEspelhadosLocais() {
-            const lista = [];
-            const nomesVistos = new Set();
-
-            const adicionarAluno = (nome, turma, status = 'Ativo') => {
-                const limpo = String(nome || '').trim();
-                if (!limpo) return;
-                const chave = limpo.toLowerCase();
-                if (nomesVistos.has(chave)) return;
-                nomesVistos.add(chave);
-                lista.push({
-                    nome: limpo,
-                    turma: String(turma || 'Ensino Fundamental').trim(),
-                    status: String(status || 'Ativo').trim()
-                });
+        function obterAlunosUnidadeLocalCal() {
+            const nomes = [];
+            const vistos = new Set();
+            const add = (nome) => {
+                const n = String(nome || '').trim();
+                if (!n) return;
+                const k = n.toLowerCase();
+                if (vistos.has(k)) return;
+                vistos.add(k);
+                nomes.push(n);
             };
-
             try {
                 const fichas = JSON.parse(localStorage.getItem('peniel_fichas_alunos') || '[]');
-                if (Array.isArray(fichas)) {
-                    fichas.forEach(f => adicionarAluno(f.nome || f.aluno, f.turma || f.serie, f.status || 'Ativo'));
-                }
+                if (Array.isArray(fichas)) fichas.forEach(f => add(f.nome || f.aluno));
             } catch (_) {}
-
             try {
-                const recorrencia = JSON.parse(localStorage.getItem('peniel_alunos_recorrencia') || '[]');
-                if (Array.isArray(recorrencia)) {
-                    recorrencia.forEach(a => adicionarAluno(a.nome, a.turma, a.ativo === false ? 'Baixa' : 'Ativo'));
-                }
+                const rec = JSON.parse(localStorage.getItem('peniel_alunos_recorrencia') || '[]');
+                if (Array.isArray(rec)) rec.forEach(a => add(a.nome));
             } catch (_) {}
-
-            Object.values(ALUNOS_POR_CATEGORIA_PADRAO).forEach(grupo => {
-                (grupo.presentes || []).forEach(n => adicionarAluno(n, 'Turma Regular', 'Ativo'));
-                (grupo.faltantes || []).forEach(n => adicionarAluno(n, 'Turma Regular', 'Ativo'));
-            });
-
-            return lista;
+            return nomes;
         }
 
-        async function buscarAlunosSupabaseCalendario() {
+        async function buscarAlunosSupabaseCal() {
             const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
             try {
                 const url = `${SUPABASE_URL_CAL}/rest/v1/fichas_alunos?unidade=eq.${encodeURIComponent(unidade)}&order=nome.asc`;
@@ -602,119 +572,72 @@
                         'Authorization': `Bearer ${SUPABASE_KEY_CAL}`
                     }
                 });
-                if (!resp.ok) return null;
+                if (!resp.ok) return [];
                 const rows = await resp.json();
-                if (!Array.isArray(rows) || rows.length === 0) return null;
-                return rows.map(r => ({
-                    nome: r.nome || 'Aluno',
-                    turma: r.turma || r.serie || 'Ensino Fundamental',
-                    status: r.status || 'Ativo'
-                }));
+                if (!Array.isArray(rows)) return [];
+                return rows.map(r => r.nome).filter(Boolean);
             } catch (_) {
-                return null;
+                return [];
             }
         }
 
-        function renderizarEspelhoTurmasAlunos(alunosLista = null) {
-            const alunos = Array.isArray(alunosLista) && alunosLista.length > 0
-                ? alunosLista
-                : obterAlunosEspelhadosLocais();
-
+        function atualizarResumoEspelhoCalendario(origemTxt = null) {
+            const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
             const grade = obterGradeRecorrente();
             const eventos = obterBancoEventos();
-            const todosItens = [
-                ...grade.map(g => ({ ...g, recorrente: true })),
-                ...eventos.map(e => ({ ...e, recorrente: false, materia: e.materia || e.categoria, sala: e.sala || 'Sala Padrão', desc: e.desc || e.titulo }))
-            ];
+            const locais = obterAlunosUnidadeLocalCal();
 
-            let somaPresentes = 0;
-            let somaFaltantes = 0;
-            todosItens.forEach(item => {
-                const freq = obterFrequenciaPadrao(item);
-                somaPresentes += freq.presentes.length;
-                somaFaltantes += freq.faltantes.length;
-            });
+            const elUnid = document.getElementById('cal-unidade-ativa');
+            const elAlunos = document.getElementById('cal-qtd-alunos');
+            const elAulas = document.getElementById('cal-qtd-aulas-sem');
+            const elEv = document.getElementById('cal-qtd-eventos-pont');
+            const elSync = document.getElementById('cal-sync-origem');
 
-            const turmasBase = ['Maternal', 'Pré-Escola', 'Fundamental', 'Geral'];
-            const elTurmas = document.getElementById('esp-total-turmas');
-            const elAlunos = document.getElementById('esp-total-alunos');
-            const elPres = document.getElementById('esp-total-presentes');
-            const elFalt = document.getElementById('esp-total-faltantes');
-            const gridTurmas = document.getElementById('gridCardsTurmasEspelhadas');
-
-            if (elTurmas) elTurmas.innerText = String(turmasBase.length);
-            if (elAlunos) elAlunos.innerText = String(alunos.length);
-            if (elPres) elPres.innerText = String(somaPresentes);
-            if (elFalt) elFalt.innerText = String(somaFaltantes);
-
-            if (!gridTurmas) return;
-
-            gridTurmas.innerHTML = turmasBase.map(cat => {
-                const aulasCat = grade.filter(g => g.categoria === cat);
-                const alunosCat = alunos.filter(a => a.turma.toLowerCase().includes(cat.toLowerCase()));
-                const listaExibir = alunosCat.length > 0 ? alunosCat : alunos.slice(0, 4);
-
-                let pCat = 0;
-                let fCat = 0;
-                aulasCat.forEach(a => {
-                    const fr = obterFrequenciaPadrao(a);
-                    pCat += fr.presentes.length;
-                    fCat += fr.faltantes.length;
-                });
-
-                const primeiraAula = aulasCat[0] || {
-                    id: `AULA-${cat.toUpperCase()}-1`,
-                    recorrente: true,
-                    diaSemana: 'Segunda-feira',
-                    horario: '08:00 - 09:00',
-                    sala: 'Sala 101',
-                    materia: cat,
-                    titulo: `Aula Espelhada • ${cat}`,
-                    categoria: cat,
-                    cor: 'bg-blue-600 text-white',
-                    desc: `Espelho da turma ${cat} com descrição, alunos e frequência.`
-                };
-
-                const payloadAula = encodeURIComponent(JSON.stringify({
-                    ...primeiraAula,
-                    corCard: (primeiraAula.cor || 'bg-blue-600 text-white') + ' border-l-4 border-white/60'
-                }));
-
-                return `
-                    <div onclick="abrirModalDetalheCard(JSON.parse(decodeURIComponent('${payloadAula}')))" class="p-3.5 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-blue-50/50 hover:border-marinho transition cursor-pointer flex flex-col justify-between gap-2.5">
-                        <div>
-                            <div class="flex items-center justify-between gap-1">
-                                <span class="font-bold text-xs text-marinho">${cat}</span>
-                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-700">${aulasCat.length} aula(s)/sem</span>
-                            </div>
-                            <p class="text-[11px] text-slate-600 mt-1 line-clamp-2">${primeiraAula.desc || primeiraAula.titulo}</p>
-                            <div class="mt-2 flex flex-wrap gap-1">
-                                ${listaExibir.slice(0, 4).map(al => `<span class="text-[10px] bg-white border border-slate-200 text-slate-700 px-1.5 py-0.5 rounded">${al.nome}</span>`).join('')}
-                            </div>
-                        </div>
-                        <div class="pt-2 border-t border-slate-200/80 flex items-center justify-between text-[10px] font-bold">
-                            <span class="text-emerald-700">✅ P: ${pCat}</span>
-                            <span class="text-red-700">❌ F: ${fCat}</span>
-                            <span class="text-marinho underline">Abrir / Editar</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+            if (elUnid) elUnid.innerText = unidade;
+            if (elAlunos && Number(elAlunos.innerText || '0') === 0) elAlunos.innerText = String(locais.length);
+            if (elAulas) elAulas.innerText = String(grade.length);
+            if (elEv) elEv.innerText = String(eventos.length);
+            if (elSync && origemTxt) elSync.innerText = origemTxt;
         }
 
-        async function sincronizarEspelhoCompleto(mostrarToast = false) {
-            sincronizarComDashboardETurmas();
-            const alunosSupa = await buscarAlunosSupabaseCalendario();
-            const fonteEl = document.getElementById('esp-alunos-fonte');
-            if (alunosSupa && alunosSupa.length > 0) {
-                renderizarEspelhoTurmasAlunos(alunosSupa);
-                if (fonteEl) fonteEl.innerText = `Supabase • ${localStorage.getItem('peniel_unidade') || 'Matriz'}`;
-            } else {
-                renderizarEspelhoTurmasAlunos(null);
-                if (fonteEl) fonteEl.innerText = `Local • ${localStorage.getItem('peniel_unidade') || 'Matriz'}`;
+        async function sincronizarAlunosComGradeCalendario(mostrarToast = false) {
+            const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
+            const locais = obterAlunosUnidadeLocalCal();
+            const supa = await buscarAlunosSupabaseCal();
+            const combinados = [...new Set([...supa, ...locais])];
+
+            const elAlunos = document.getElementById('cal-qtd-alunos');
+            if (elAlunos) elAlunos.innerText = String(combinados.length);
+
+            if (combinados.length > 0) {
+                const grade = obterGradeRecorrente();
+                const metade = Math.max(1, Math.ceil(combinados.length * 0.8));
+                const presentesPadrao = combinados.slice(0, metade);
+                const faltantesPadrao = combinados.slice(metade);
+
+                let alterou = false;
+                const gradeAtualizada = grade.map(aula => {
+                    const semFreq = !Array.isArray(aula.presentes) || aula.presentes.length === 0;
+                    if (semFreq) {
+                        alterou = true;
+                        return {
+                            ...aula,
+                            presentes: presentesPadrao,
+                            faltantes: faltantesPadrao,
+                            desc: formatarDescricaoComFrequencia(aula.desc || aula.titulo, presentesPadrao, faltantesPadrao)
+                        };
+                    }
+                    return aula;
+                });
+                if (alterou) {
+                    salvarGradeRecorrente(gradeAtualizada);
+                }
             }
+
+            atualizarResumoEspelhoCalendario(supa.length > 0 ? `Supabase (${unidade})` : `Local (${unidade})`);
+            renderizarCalendario();
             if (mostrarToast) {
-                notificarCalendario('Espelho de turmas, alunos, presença e sistema atualizado!');
+                notificarCalendario(`Espelho atualizado para a unidade ${unidade} (${combinados.length} aluno(s)).`);
             }
         }
 
@@ -790,7 +713,6 @@
             renderizarTimelineDomADom();
         }, 1000);
 
-        
         const DIAS_DOM_A_DOM = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
         const DIAS_CURTOS_DOM_A_DOM = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
@@ -798,7 +720,6 @@
             const minutosTotais = agora.getHours() * 60 + agora.getMinutes() + (agora.getSeconds() / 60);
             const pctDia = Math.max(0, Math.min(100, (minutosTotais / 1440) * 100));
 
-            // Janela padrão das aulas: 07:30 (450 min) até 17:30 (1050 min)
             const inicioAulasMin = 7 * 60 + 30;
             const fimAulasMin = 17 * 60 + 30;
 
@@ -858,21 +779,15 @@
         }
 
         function calcularProgressoSemanalDomASab(agora = new Date()) {
-            // Progresso da semana iniciando no domingo às 00:00 (0%) até o fim do sábado às 24:00 (100%)
-            // na velocidade das horas do dia.
-            const diaSemana = agora.getDay(); // 0 = Domingo ... 6 = Sábado
+            const diaSemana = agora.getDay();
             const minutosHoje = agora.getHours() * 60 + agora.getMinutes() + (agora.getSeconds() / 60);
             const minutosDesdeDomingo = diaSemana * 1440 + minutosHoje;
-            const minutosTotaisSemana = 7 * 1440; // 10080 minutos
+            const minutosTotaisSemana = 7 * 1440;
             const pctSemana = Math.max(0, Math.min(100, (minutosDesdeDomingo / minutosTotaisSemana) * 100));
             return { pctSemana, diaSemana, minutosHoje };
         }
 
         function obterCorFaseVertical(estado, minutosHoje) {
-            // Mudança automática de cor:
-            // - Início do dia das aulas (07:30 às 08:30): vermelho vivo / coral brilhante (#ef4444 / #f97316)
-            // - Durante o dia das aulas (08:30 às 17:30): vermelho intenso (#dc2626)
-            // - Fim do dia (após 17:30 ou antes das 07:30): vermelho escuro / bordô (#991b1b)
             const inicioAulas = 7 * 60 + 30;
             const fimInicioAulas = 8 * 60 + 30;
             const fimDiaAulas = 17 * 60 + 30;
@@ -900,7 +815,7 @@
 
         function renderizarTimelineDomADom() {
             const agora = obterDataReferenciaTimeline();
-            const diaSemanaHojeIdx = agora.getDay(); // 0 = Domingo ... 6 = Sábado
+            const diaSemanaHojeIdx = agora.getDay();
             const estado = obterEstadoTempoDia(agora);
             const { pctSemana, minutosHoje } = calcularProgressoSemanalDomASab(agora);
             const estiloVertical = obterCorFaseVertical(estado, minutosHoje);
@@ -1204,7 +1119,6 @@
             }
 
             renderizarGradeCompletaAulas();
-            renderizarEspelhoTurmasAlunos(null);
             renderizarTimelineDomADom();
         }
 
@@ -1241,7 +1155,6 @@
             `;
             return div;
         }
-
 
         const ALUNOS_POR_CATEGORIA_PADRAO = {
             'Fundamental': {
@@ -1320,7 +1233,6 @@
                 `;
             }
         }
-
 
         function renderizarChipsRelacao(containerId, lista, classeChip) {
             const el = document.getElementById(containerId);
@@ -1677,6 +1589,7 @@
 
         window.addEventListener('storage', (e) => {
             if (e.key === 'peniel_banco_eventos_calendario' || e.key === 'peniel_grade_recorrente_calendario' || e.key === 'peniel_unidade' || e.key === 'peniel_cor_sessao') {
+                atualizarResumoEspelhoCalendario();
                 renderizarCalendario();
             }
         });
@@ -1691,8 +1604,10 @@
                 if (unidEl) unidEl.innerText = 'Unidade ' + unidadeSalva;
             }
 
-            sincronizarEspelhoCompleto(false);
+            sincronizarComDashboardETurmas();
+            atualizarResumoEspelhoCalendario();
             renderizarCalendario();
+            sincronizarAlunosComGradeCalendario(false);
 
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('modo_gestor') === '1') {
