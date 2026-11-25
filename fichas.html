@@ -69,6 +69,11 @@
         </div>
     </aside>
 
+    <div id="toast-fichas" class="fixed bottom-5 right-5 z-[200] hidden max-w-sm bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-white/10 text-xs font-semibold flex items-center gap-2.5">
+        <span>✅</span>
+        <span id="toast-fichas-texto">Operação concluída</span>
+    </div>
+
     <!-- Área Principal -->
     <main class="flex-1 p-3 sm:p-5 md:p-8 flex flex-col gap-5 w-full max-w-full overflow-x-hidden">
         
@@ -86,9 +91,13 @@
                 </div>
             </div>
             
-            <div class="relative w-full md:w-72">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔍</span>
-                <input type="text" id="buscaFichaGeral" onkeyup="filtrarFichas()" placeholder="Buscar por aluno, responsável ou RA..." class="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-marinho focus:outline-none bg-slate-50 font-medium">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
+                <span id="status-sync-fichas" class="text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-3 py-2 rounded-xl text-center">⏳ Sincronizando...</span>
+                <div class="relative w-full sm:w-64">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔍</span>
+                    <input type="text" id="buscaFichaGeral" onkeyup="filtrarFichas()" placeholder="Buscar aluno, pai ou RA..." class="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-marinho focus:outline-none bg-slate-50 font-medium">
+                </div>
+                <button type="button" onclick="abrirModalNovaFicha()" class="bg-laranja hover:bg-orange-600 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm transition whitespace-nowrap">+ Nova Ficha</button>
             </div>
         </header>
 
@@ -293,10 +302,187 @@
         </div>
     </div>
 
+
+    <!-- MODAL DE NOVA OCORRÊNCIA -->
+    <div id="modalNovaOcorrencia" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[160] p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto">
+            <div class="p-5 bg-marinho text-white flex justify-between items-center">
+                <h3 class="font-bold text-base font-heading">📌 Registrar Ocorrência Escolar</h3>
+                <button type="button" onclick="fecharModalOcorrencia()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
+            </div>
+            <div class="p-5 space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Título da Ocorrência</label>
+                    <input type="text" id="ocorrenciaTitulo" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold focus:ring-2 focus:ring-marinho focus:outline-none" placeholder="Ex: Reunião Pedagógica, Atestado Médico...">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Descrição Detalhada</label>
+                    <textarea id="ocorrenciaDesc" rows="3" class="w-full border border-slate-300 rounded-xl p-3 text-xs focus:ring-2 focus:ring-marinho focus:outline-none" placeholder="Descreva o acompanhamento ou ocorrência..."></textarea>
+                </div>
+            </div>
+            <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2">
+                <button type="button" onclick="fecharModalOcorrencia()" class="px-4 py-2 bg-white border border-slate-300 text-slate-600 font-bold rounded-xl text-xs">Cancelar</button>
+                <button type="button" onclick="salvarNovaOcorrencia()" class="bg-marinho hover:bg-blue-900 text-white px-5 py-2 rounded-xl font-bold text-xs shadow-sm transition">💾 Registrar</button>
+            </div>
+        </div>
+    </div>
+
 </main>
 
     <!-- SCRIPT DO MÓDULO DE FICHAS 360° -->
     <script>
+        const SUPABASE_URL = 'https://fxjdmhrlujiajkouduhg.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_EANH7zIXleZ3G18S6z7KFw_26oySNP9';
+
+        async function supabaseFetchFichas(path, options = {}) {
+            const resp = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+                ...options,
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': options.prefer || 'resolution=merge-duplicates,return=representation',
+                    ...(options.headers || {})
+                }
+            });
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const text = await resp.text();
+            return text ? JSON.parse(text) : null;
+        }
+
+        function atualizarBadgeSyncFichas(online) {
+            const el = document.getElementById('status-sync-fichas');
+            if (!el) return;
+            if (online) {
+                el.className = 'text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-2 rounded-xl text-center';
+                el.innerText = '🟢 Supabase Sincronizado';
+            } else {
+                el.className = 'text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-3 py-2 rounded-xl text-center';
+                el.innerText = '🟡 Modo Local';
+            }
+        }
+
+        function rowParaAluno(r) {
+            return {
+                ra: String(r.ra),
+                nome: r.nome || '',
+                turmaChave: r.turma_chave || nomeParaChaveTurma[r.turma] || 'fundamental1',
+                turma: r.turma || 'Ensino Fundamental',
+                status: r.status || 'Ativo',
+                nasc: r.nasc || '',
+                nat: r.nat || 'Rio de Janeiro - RJ',
+                cpf: r.cpf || '',
+                pai: r.pai || '',
+                paiTel: r.pai_tel || '',
+                paiEmail: r.pai_email || '',
+                mae: r.mae || '',
+                maeTel: r.mae_tel || '',
+                sangue: r.sangue || 'O+',
+                alergia: r.alergia || 'Nenhuma',
+                med: r.med || 'Não utiliza',
+                obs: r.obs || '',
+                historico: Array.isArray(r.historico) ? r.historico : []
+            };
+        }
+
+        function alunoParaRow(aluno) {
+            const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
+            return {
+                ra: String(aluno.ra),
+                unidade,
+                nome: aluno.nome,
+                turma_chave: aluno.turmaChave || nomeParaChaveTurma[aluno.turma] || 'fundamental1',
+                turma: aluno.turma,
+                status: aluno.status || 'Ativo',
+                nasc: aluno.nasc || '',
+                nat: aluno.nat || 'Rio de Janeiro - RJ',
+                cpf: aluno.cpf || '',
+                pai: aluno.pai || '',
+                pai_tel: aluno.paiTel || '',
+                pai_email: aluno.paiEmail || '',
+                mae: aluno.mae || '',
+                mae_tel: aluno.maeTel || '',
+                sangue: aluno.sangue || 'O+',
+                alergia: aluno.alergia || 'Nenhuma',
+                med: aluno.med || 'Não utiliza',
+                obs: aluno.obs || '',
+                historico: aluno.historico || [],
+                atualizado_em: new Date().toISOString()
+            };
+        }
+
+        async function sincronizarFichasComSupabase() {
+            const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
+            try {
+                const rows = await supabaseFetchFichas(`fichas_alunos?unidade=eq.${encodeURIComponent(unidade)}&order=nome.asc`);
+                if (Array.isArray(rows)) {
+                    const baseLocal = obterBancoGeralAlunos();
+                    rows.forEach(r => {
+                        baseLocal[String(r.ra)] = rowParaAluno(r);
+                    });
+                    salvarBancoGeralAlunos(baseLocal);
+                    carregarListaAlunosFichas(document.getElementById('buscaFichaGeral').value.toLowerCase());
+                    if (alunoSelecionadoRa && baseLocal[alunoSelecionadoRa]) {
+                        selecionarAlunoFicha(alunoSelecionadoRa);
+                    }
+                    atualizarBadgeSyncFichas(true);
+                }
+            } catch (_) {
+                atualizarBadgeSyncFichas(false);
+            }
+        }
+
+        async function persistirAlunoNoSupabase(aluno) {
+            try {
+                await supabaseFetchFichas('fichas_alunos?on_conflict=ra', {
+                    method: 'POST',
+                    body: JSON.stringify(alunoParaRow(aluno))
+                });
+                atualizarBadgeSyncFichas(true);
+            } catch (_) {
+                atualizarBadgeSyncFichas(false);
+            }
+        }
+
+        function abrirModalNovaFicha() {
+            const novoRa = '2027' + String(Math.floor(100 + Math.random() * 900));
+            const base = obterBancoGeralAlunos();
+            base[novoRa] = {
+                ra: novoRa,
+                nome: '',
+                turmaChave: 'fundamental1',
+                turma: 'Ensino Fundamental',
+                status: 'Ativo',
+                nasc: '',
+                nat: 'Rio de Janeiro - RJ',
+                cpf: '',
+                pai: '',
+                paiTel: '',
+                paiEmail: '',
+                mae: '',
+                maeTel: '',
+                sangue: 'O+',
+                alergia: 'Nenhuma',
+                med: 'Não utiliza',
+                obs: '',
+                historico: [{ data: new Date().toLocaleDateString('pt-BR'), titulo: 'Cadastro Inicial', desc: 'Ficha criada na secretaria.' }]
+            };
+            salvarBancoGeralAlunos(base);
+            alunoSelecionadoRa = novoRa;
+            abrirModalEdicaoCompleta(novoRa);
+            document.getElementById('titulo-modal-edicao').innerText = `➕ Nova Ficha Cadastral (RA ${novoRa})`;
+        }
+
+        let toastFichasTimer = null;
+        function notificarFicha(msg) {
+            const el = document.getElementById('toast-fichas');
+            if (!el) return;
+            document.getElementById('toast-fichas-texto').innerText = msg;
+            el.classList.remove('hidden');
+            clearTimeout(toastFichasTimer);
+            toastFichasTimer = setTimeout(() => el.classList.add('hidden'), 3500);
+        }
+
         function toggleMenuMobile() {
             const menu = document.getElementById('menu-lateral');
             const overlay = document.getElementById('overlay-mobile');
@@ -308,12 +494,19 @@
             if(confirm("Deseja encerrar sua sessão?")) { window.location.href = 'login.html'; }
         }
 
+        const nomeParaChaveTurma = {
+            'Maternal 1': 'maternal1',
+            'Maternal 2': 'maternal2',
+            'Pré-Escola 1': 'pre1',
+            'Pré-Escola 2': 'pre2',
+            'Ensino Fundamental': 'fundamental1'
+        };
+
         function obterBancoGeralAlunos() {
-            let base = JSON.parse(localStorage.getItem('peniel_banco_fichas_detalhadas')) || {
+            return JSON.parse(localStorage.getItem('peniel_banco_fichas_detalhadas')) || {
                 '2027501': { ra: '2027501', nome: 'Helena Santos', turmaChave: 'maternal1', turma: 'Maternal 1', status: 'Ativo', nasc: '15/04/2023', nat: 'Rio de Janeiro - RJ', cpf: '000.111.222-33', pai: 'Camila Santos', paiTel: '(21) 98888-1111', paiEmail: 'camila@email.com', mae: 'Ana Santos', maeTel: '(21) 97777-2222', sangue: 'O+', alergia: 'Nenhuma', med: 'Não utiliza', obs: 'Excelente adaptação na rotina.', historico: [{ data: '12/02/2026', titulo: 'Adaptação', desc: 'Concluída com sucesso.' }] },
                 '2027001': { ra: '2027001', nome: 'Davi Lucas', turmaChave: 'fundamental1', turma: 'Ensino Fundamental', status: 'Ativo', nasc: '15/04/2018', nat: 'Rio de Janeiro - RJ', cpf: '111.222.333-44', pai: 'Carlos Lucas', paiTel: '(21) 99999-1111', paiEmail: 'carlos.lucas@email.com', mae: 'Ana Carolina Lucas', maeTel: '(21) 98888-2222', sangue: 'O+', alergia: 'Amendoim', med: 'Não utiliza', obs: 'Aluno participativo em sala de aula.', historico: [{ data: '10/03/2026', titulo: 'Matrícula', desc: 'Renovação efetuada com sucesso.' }] }
             };
-            return base;
         }
 
         function salvarBancoGeralAlunos(base) {
@@ -323,17 +516,24 @@
         let alunoSelecionadoRa = null;
 
         document.addEventListener('DOMContentLoaded', () => {
+            const corSalva = localStorage.getItem('peniel_cor_sessao') || '#003057';
+            const menuLat = document.getElementById('menu-lateral');
+            if (menuLat) menuLat.style.backgroundColor = corSalva;
+            const unidadeSalva = localStorage.getItem('peniel_unidade') || 'Matriz';
+            const unidEl = document.querySelector('#menu-lateral span.text-blue-300');
+            if (unidEl) unidEl.innerText = 'Unidade ' + unidadeSalva;
+
             carregarListaAlunosFichas();
-            // Se houver parâmetro na URL (?ra=...), seleciona o aluno e abre DIRETO o formulário de edição completa!
             const urlParams = new URLSearchParams(window.location.search);
             const raParam = urlParams.get('ra');
             const editarParam = urlParams.get('editar');
             if (raParam) {
                 selecionarAlunoFicha(raParam);
-                if (editarParam === 'true' || urlParams.has('ra')) {
+                if (editarParam === 'true') {
                     abrirModalEdicaoCompleta(raParam);
                 }
             }
+            sincronizarFichasComSupabase();
         });
 
         function carregarListaAlunosFichas(filtro = '') {
@@ -399,7 +599,6 @@
             document.getElementById('ficha-med').innerText = aluno.med || 'Nenhuma medicação informada';
             document.getElementById('ficha-obs').innerText = aluno.obs || 'Nenhuma observação cadastrada.';
 
-            // Renderizar Histórico
             const histContainer = document.getElementById('ficha-historico-lista');
             histContainer.innerHTML = '';
             if (aluno.historico && aluno.historico.length > 0) {
@@ -422,10 +621,23 @@
 
         function adicionarOcorrencia() {
             if (!alunoSelecionadoRa) return;
-            const titulo = prompt("Título da Ocorrência (ex: Reunião Pedagógica, Atestado Médico):");
-            if (!titulo) return;
-            const desc = prompt("Descrição detalhada da ocorrência:");
-            if (!desc) return;
+            document.getElementById('ocorrenciaTitulo').value = '';
+            document.getElementById('ocorrenciaDesc').value = '';
+            document.getElementById('modalNovaOcorrencia').classList.remove('hidden');
+        }
+
+        function fecharModalOcorrencia() {
+            document.getElementById('modalNovaOcorrencia').classList.add('hidden');
+        }
+
+        function salvarNovaOcorrencia() {
+            if (!alunoSelecionadoRa) return;
+            const titulo = document.getElementById('ocorrenciaTitulo').value.trim();
+            const desc = document.getElementById('ocorrenciaDesc').value.trim();
+            if (!titulo || !desc) {
+                notificarFicha('Preencha o título e a descrição da ocorrência.');
+                return;
+            }
 
             const base = obterBancoGeralAlunos();
             if (base[alunoSelecionadoRa]) {
@@ -436,8 +648,10 @@
                     desc: desc
                 });
                 salvarBancoGeralAlunos(base);
+                persistirAlunoNoSupabase(base[alunoSelecionadoRa]);
+                fecharModalOcorrencia();
                 selecionarAlunoFicha(alunoSelecionadoRa);
-                alert('✅ Ocorrência registrada com sucesso!');
+                notificarFicha('Ocorrência registrada e sincronizada!');
             }
         }
 
@@ -483,11 +697,15 @@
             const base = obterBancoGeralAlunos();
             if (!base[ra]) return;
 
+            const novaTurma = document.getElementById('editTurma').value;
             base[ra].nome = document.getElementById('editNome').value.trim();
             base[ra].nasc = document.getElementById('editNasc').value.trim();
             base[ra].nat = document.getElementById('editNat').value.trim();
             base[ra].cpf = document.getElementById('editCpf').value.trim();
-            base[ra].turma = document.getElementById('editTurma').value;
+            base[ra].turma = novaTurma;
+            if (nomeParaChaveTurma[novaTurma]) {
+                base[ra].turmaChave = nomeParaChaveTurma[novaTurma];
+            }
 
             base[ra].pai = document.getElementById('editPai').value.trim();
             base[ra].paiTel = document.getElementById('editPaiTel').value.trim();
@@ -501,10 +719,11 @@
             base[ra].obs = document.getElementById('editObs').value.trim();
 
             salvarBancoGeralAlunos(base);
+            persistirAlunoNoSupabase(base[ra]);
             fecharModalEdicaoCompleta();
-            carregarListaAlunosFichas();
+            carregarListaAlunosFichas(document.getElementById('buscaFichaGeral').value.toLowerCase());
             selecionarAlunoFicha(ra);
-            alert('✅ Todas as informações da ficha do aluno foram salvas e atualizadas com sucesso!');
+            notificarFicha('Ficha salva e sincronizada com o Supabase!');
         }
     </script>
 </body>
