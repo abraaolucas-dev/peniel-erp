@@ -584,8 +584,21 @@
 
                     localStorage.setItem('peniel_banco_fichas_detalhadas', JSON.stringify(baseLocal));
                     const kpiAlunosEl = document.getElementById('kpi-alunos');
+                    const totalRef = ativos > 0 ? ativos : 342;
+                    const faltasNum = parseInt((bancoUnidades[unidade]?.faltas || '8'), 10) || 0;
+                    const presentesNum = Math.max(totalRef - faltasNum, 0);
+                    const pctPresenca = totalRef > 0 ? ((presentesNum / totalRef) * 100).toFixed(1).replace('.', ',') : '100,0';
+
                     if (kpiAlunosEl && ativos > 0) {
                         kpiAlunosEl.innerHTML = `${ativos} <span class="text-[11px] font-semibold text-emerald-700 block sm:inline">fichas ativas</span>`;
+                    }
+                    const tickerFreq = document.getElementById('ticker-info-frequencia');
+                    if (tickerFreq) {
+                        tickerFreq.innerText = `${pctPresenca}% Presença Hoje • ${presentesNum}/${totalRef} Alunos`;
+                    }
+                    if (window.__chartFreqPeniel) {
+                        window.__chartFreqPeniel.data.datasets[0].data = [presentesNum, faltasNum, 0];
+                        window.__chartFreqPeniel.update();
                     }
                     atualizarBadgeConexao(true);
                     renderizarCardsPortaria();
@@ -613,6 +626,18 @@
             if (lblMob) lblMob.innerText = `Unidade ${uKey}`;
 
             document.getElementById('subtitulo-unidade-header').innerText = dados.sub;
+            fetch(`${SUPABASE_URL}/rest/v1/mensagens_typebot?select=id`, {
+                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+            })
+            .then(r => r.ok ? r.json() : null)
+            .then(rows => {
+                if (Array.isArray(rows) && rows.length > 0) {
+                    const el = document.getElementById('subtitulo-unidade-header');
+                    if (el && !el.innerText.includes('Typebot')) {
+                        el.innerText = `${dados.sub} • ${rows.length} lead(s) no Typebot`;
+                    }
+                }
+            }).catch(() => {});
             document.getElementById('kpi-alunos').innerHTML = `${dados.alunos} <span class="text-[11px] font-semibold text-emerald-700 block sm:inline">vagas</span>`;
             document.getElementById('kpi-faltas').innerHTML = `${dados.faltas}`;
             document.getElementById('kpi-inadimplencia').innerHTML = `${dados.inadimplencia} <span class="text-[11px] font-semibold text-red-600 block sm:inline">Atenção</span>`;
@@ -1109,7 +1134,7 @@
                 }
             };
 
-            const chartFreq = new Chart(document.getElementById('graficoFrequencia').getContext('2d'), {
+            const chartFreq = window.__chartFreqPeniel = new Chart(document.getElementById('graficoFrequencia').getContext('2d'), {
                 type: 'doughnut',
                 data: {
                     labels: ['Presentes', 'Faltas', 'Atestado'],
