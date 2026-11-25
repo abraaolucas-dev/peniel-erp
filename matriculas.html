@@ -824,7 +824,28 @@
             notificarMatricula('Relatório e fotos salvos com sucesso!');
         }
 
-        function abrirModalNovaMatricula() { document.getElementById('modalNovaMatricula').classList.remove('hidden'); }
+        function abrirModalNovaMatricula() {
+            const rawLead = localStorage.getItem('peniel_lead_matricula');
+            if (rawLead) {
+                try {
+                    const lead = JSON.parse(rawLead);
+                    if (lead.nome_aluno && !document.getElementById('matAlunoNome').value) {
+                        document.getElementById('matAlunoNome').value = lead.nome_aluno;
+                    }
+                    if (lead.telefone_responsavel && !document.getElementById('matRespTel').value) {
+                        document.getElementById('matRespTel').value = lead.telefone_responsavel;
+                    }
+                    if (lead.turma_chave) {
+                        const sel = document.getElementById('matTurmaKey');
+                        if (sel && sel.querySelector(`option[value="${lead.turma_chave}"]`)) {
+                            sel.value = lead.turma_chave;
+                        }
+                    }
+                    localStorage.removeItem('peniel_lead_matricula');
+                } catch (_) {}
+            }
+            document.getElementById('modalNovaMatricula').classList.remove('hidden');
+        }
         function fecharModalNovaMatricula() { document.getElementById('modalNovaMatricula').classList.add('hidden'); }
 
         function gerarBoletosParaAluno(alunoObj, cpfResp, emailResp) {
@@ -941,6 +962,9 @@
             if (unidEl) unidEl.innerText = 'Unidade ' + unidadeSalva;
             mudarTurmaMatricula('todas');
             sincronizarMatriculasSupabase();
+            if (localStorage.getItem('peniel_lead_matricula')) {
+                setTimeout(() => abrirModalNovaMatricula(), 250);
+            }
         });
     </script>
 </body>
