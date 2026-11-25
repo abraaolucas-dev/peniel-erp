@@ -2,10 +2,10 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Rematrícula | Peniel Christian School</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -16,348 +16,1075 @@
             }
         }
     </script>
+    <style>
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        @media print {
+            aside, header, #barraExecutivaMaster, #toast-rematricula, #modalContratoRematricula button, #modalNovaRematricula, #modalModeloContrato {
+                display: none !important;
+            }
+            body, main {
+                background: #fff !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+        }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col md:flex-row overflow-x-hidden">
 
-    <div class="flex h-screen overflow-hidden">
-        
-        <!-- Menu Lateral Interno -->
-        <aside class="w-64 bg-marinho text-white flex flex-col hidden md:flex">
-            <div class="p-6">
-                <h1 class="font-heading text-2xl font-bold tracking-tight">PENIEL <span class="text-sm font-sans font-normal block text-blue-300">Sistema Interno</span></h1>
+    <!-- Overlay Mobile -->
+    <div id="overlay-mobile" onclick="toggleMenuMobile()" class="fixed inset-0 bg-slate-950/75 z-[95] hidden md:hidden backdrop-blur-sm transition-opacity"></div>
+
+    <!-- Menu Lateral Interno -->
+    <aside id="menu-lateral" class="fixed md:sticky left-0 top-0 w-72 md:w-64 bg-marinho text-white flex-col h-screen z-[100] transform -translate-x-full md:translate-x-0 transition-all duration-300 flex shrink-0 shadow-2xl md:shadow-none border-r-4 border-laranja md:border-r-0">
+        <div class="p-6 flex justify-between items-center shrink-0 border-b border-white/10 bg-black/15">
+            <div>
+                <h1 class="font-heading text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-laranja inline-block"></span> PENIEL
+                </h1>
+                <span class="text-xs font-sans font-semibold block text-blue-300 mt-0.5">Unidade Matriz</span>
             </div>
-            <nav class="flex-1 px-2 space-y-1 mt-2 overflow-y-auto pb-6">
-                
-                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-4 px-4">Geral</div>
-                <a href="index.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📈 Dashboard</a>
-                
-                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Captação</div>
-                <a href="painel.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📥 Leads Typebot</a>
-                
-                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Secretaria</div>
-                <a href="matriculas.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📝 Matrículas</a>
-                <a href="fichas.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">👥 Fichas (Alunos/Pais)</a>
-                <!-- Rematrícula está ATIVO -->
-                <a href="rematricula.html" class="block px-4 py-2.5 bg-blue-900 rounded-lg font-medium text-white shadow-inner">🔄 Rematrícula</a>
+            <button type="button" onclick="toggleMenuMobile()" class="md:hidden bg-white/10 hover:bg-red-500/30 text-white w-9 h-9 rounded-xl text-xl font-bold flex items-center justify-center transition">&times;</button>
+        </div>
 
-                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Acadêmico</div>
-                <a href="calendario.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📅 Calendário Escolar</a>
-                <a href="notas.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📊 Notas e Avaliações</a>
-
-                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Administrativo</div>
-                <a href="financeiro.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">💰 Gestão Financeira</a>
-                <a href="configuracoes.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">⚙️ Configurações</a>
-            </nav>
-        </aside>
-
-        <!-- Área Principal -->
-        <main class="flex-1 overflow-y-auto p-6 md:p-8">
+        <nav class="flex-1 px-3 space-y-1.5 mt-3 overflow-y-auto pb-6">
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-3 px-3">Geral</div>
+            <a href="index.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">📈 Dashboard</a>
             
-            <!-- Header -->
-            <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Captação</div>
+            <a href="painel.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">📥 Leads Typebot</a>
+            
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Secretaria</div>
+            <a href="matriculas.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">📝 Matrículas & Turmas</a>
+            <a href="fichas.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">👥 Fichas (Alunos/Pais)</a>
+            <a href="rematricula.html" class="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-laranja to-orange-500 rounded-xl font-bold text-white shadow-md">
+                <span>🔄 Rematrícula</span>
+                <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full">Ativo</span>
+            </a>
+
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Acadêmico</div>
+            <a href="calendario.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">📅 Calendário e Equipe</a>
+            <a href="notas.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">📊 Notas e Avaliações</a>
+
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Administrativo</div>
+            <a href="financeiro.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">💰 Gestão Financeira</a>
+            <a href="configuracoes.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">⚙️ Configurações / ADM</a>
+        </nav>
+
+        <div class="p-4 border-t border-white/10 bg-black/20 shrink-0">
+            <button type="button" onclick="sairDoSistema()" class="w-full flex items-center justify-center gap-2 bg-red-600/80 hover:bg-red-600 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition">
+                🚪 Sair do Sistema
+            </button>
+        </div>
+    </aside>
+
+    <div id="toast-rematricula" class="fixed bottom-5 right-5 z-[200] hidden max-w-sm bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-white/10 text-xs font-semibold flex items-center gap-2.5">
+        <span>✅</span>
+        <span id="toast-rematricula-texto">Operação concluída</span>
+    </div>
+
+    <!-- Área Principal -->
+    <main class="flex-1 p-3 sm:p-5 md:p-8 flex flex-col gap-5 w-full max-w-full overflow-x-hidden">
+        
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm gap-4">
+            <div class="flex items-center gap-3">
+                <button type="button" onclick="toggleMenuMobile()" class="md:hidden bg-slate-100 text-marinho p-2.5 rounded-lg text-xl hover:bg-slate-200 transition active:scale-95 shadow-sm">☰</button>
                 <div>
-                    <div class="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 text-marinho rounded-full text-xs font-bold tracking-wide mb-2">
+                    <div class="inline-flex items-center gap-2 px-3 py-0.5 bg-blue-100 text-marinho rounded-full text-[10px] font-bold uppercase tracking-wide mb-1">
                         Campanha Aberta
                     </div>
-                    <h2 class="font-heading text-3xl font-bold text-slate-800">Campanha de Rematrícula 2027</h2>
-                    <p class="text-slate-500">Projeção de turmas, envio de contratos e acompanhamento de retenção.</p>
+                    <h2 class="font-heading text-xl sm:text-2xl font-bold text-slate-800">Campanha de Rematrícula 2027</h2>
+                    <p class="text-xs text-slate-500">Projeção de turmas, modelo padrão de contrato, envio de links e retenção.</p>
                 </div>
-                
-                <div class="flex items-center gap-3">
-                    <button class="bg-marinho hover:bg-blue-900 text-white px-5 py-2.5 rounded-lg font-bold shadow-sm transition flex items-center gap-2 whitespace-nowrap text-sm">
-                        📱 Disparar Lembretes em Massa
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-2.5">
+                <button type="button" onclick="abrirModalModeloContrato()" class="bg-blue-50 hover:bg-blue-100 text-marinho border border-blue-200 px-4 py-2.5 rounded-xl font-bold shadow-sm transition flex items-center gap-1.5 whitespace-nowrap text-xs">
+                    📄 Modelo de Contrato
+                </button>
+                <button type="button" onclick="abrirModalNovaRematricula()" class="bg-laranja hover:bg-orange-600 text-white px-4 py-2.5 rounded-xl font-bold shadow-sm transition flex items-center gap-1.5 whitespace-nowrap text-xs">
+                    ➕ Incluir Aluno
+                </button>
+                <button type="button" onclick="dispararLembretesMassa()" class="bg-marinho hover:bg-blue-900 text-white px-4 py-2.5 rounded-xl font-bold shadow-sm transition flex items-center gap-1.5 whitespace-nowrap text-xs">
+                    📱 Disparar Lembretes em Massa
+                </button>
+            </div>
+        </header>
+
+        <!-- Cartão de Regras da Campanha 2027 -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+            <!-- Card Financeiro -->
+            <div class="bg-gradient-to-br from-marinho to-blue-900 rounded-2xl p-5 text-white shadow-md">
+                <h3 class="text-blue-200 text-xs font-bold uppercase tracking-wider mb-3">Tabela de Valores 2027</h3>
+                <div class="flex justify-between items-end border-b border-blue-800/50 pb-2.5 mb-2.5">
+                    <span class="text-sm font-medium">Taxa de Rematrícula</span>
+                    <span class="text-2xl font-black text-laranja">R$ 450,00</span>
+                </div>
+                <div class="flex justify-between items-center text-xs sm:text-sm mb-1.5">
+                    <span class="text-blue-100">Material FTD (Até 10/Nov)</span>
+                    <span class="font-bold text-green-400">R$ 670,00</span>
+                </div>
+                <div class="flex justify-between items-center text-xs sm:text-sm">
+                    <span class="text-blue-100">Material FTD (Após 10/Nov)</span>
+                    <span class="font-bold text-red-300">R$ 770,00</span>
+                </div>
+            </div>
+
+            <!-- Card de Turnos -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-3">Horários de Funcionamento</h3>
+                <ul class="space-y-2 text-xs sm:text-sm font-medium text-slate-700 divide-y divide-slate-100">
+                    <li class="flex justify-between pt-1.5"><span>Ensino Fundamental</span> <span>8h às 12h</span></li>
+                    <li class="flex justify-between pt-1.5"><span>Educação Infantil</span> <span>13h30 às 17h30</span></li>
+                    <li class="flex justify-between pt-1.5 text-marinho font-bold"><span>Período Integral</span> <span>7h às 17h30</span></li>
+                    <li class="flex justify-between pt-1.5 text-marinho font-bold"><span>Semi-Integral</span> <span>7h às 15h</span></li>
+                </ul>
+            </div>
+
+            <!-- Card de Atividades Extras -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-3">Atividades Extras (2027)</h3>
+                <div class="flex flex-wrap gap-2">
+                    <span class="bg-pink-100 text-pink-700 px-2.5 py-1 rounded-lg text-xs font-bold">🩰 Balé</span>
+                    <span class="bg-green-100 text-green-700 px-2.5 py-1 rounded-lg text-xs font-bold">🥋 Capoeira</span>
+                    <span class="bg-purple-100 text-purple-700 px-2.5 py-1 rounded-lg text-xs font-bold">🎵 Musicalização</span>
+                    <span class="bg-blue-100 text-blue-700 px-2.5 py-1 rounded-lg text-xs font-bold">🏊 Natação (Opcional)</span>
+                    <span class="bg-slate-100 text-slate-700 px-2.5 py-1 rounded-lg text-xs font-bold">♟️ Xadrez</span>
+                    <span class="bg-orange-100 text-orange-700 px-2.5 py-1 rounded-lg text-xs font-bold">🤖 Robótica</span>
+                    <span class="bg-yellow-100 text-yellow-700 px-2.5 py-1 rounded-lg text-xs font-bold">⚽ Jogos Corporais</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- CAMPO DIRETO DE MODELO DE CONTRATO PARA TODOS OS ALUNOS -->
+        <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6 space-y-4">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 border-b border-slate-100 pb-4">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-2.5 py-0.5 bg-orange-100 text-laranja rounded-full text-[10px] font-bold uppercase tracking-wider mb-1">
+                        Contrato Base Coletivo
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-base">Modelo de Contrato de Rematrícula (Preenchimento Automático por Aluno)</h3>
+                    <p class="text-xs text-slate-500">Escreva ou cole o contrato padrão da escola abaixo. Use variáveis como <code class="bg-slate-100 px-1.5 py-0.5 rounded font-mono text-marinho">{{ALUNO}}</code>, <code class="bg-slate-100 px-1.5 py-0.5 rounded font-mono text-marinho">{{RESPONSAVEL}}</code>, <code class="bg-slate-100 px-1.5 py-0.5 rounded font-mono text-marinho">{{TURMA_2026}}</code>, <code class="bg-slate-100 px-1.5 py-0.5 rounded font-mono text-marinho">{{TURMA_2027}}</code>, <code class="bg-slate-100 px-1.5 py-0.5 rounded font-mono text-marinho">{{TAXA}}</code> e <code class="bg-slate-100 px-1.5 py-0.5 rounded font-mono text-marinho">{{UNIDADE}}</code>.</p>
+                </div>
+                <div class="flex flex-wrap gap-2 shrink-0">
+                    <button type="button" onclick="restaurarModeloPadrao()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition">
+                        ↺ Modelo Criado pela Base
+                    </button>
+                    <button type="button" onclick="salvarModeloContratoInline()" class="px-4 py-2 bg-marinho hover:bg-blue-900 text-white font-bold rounded-xl text-xs shadow-sm transition">
+                        💾 Salvar Modelo para Todos
                     </button>
                 </div>
-            </header>
+            </div>
 
-            <!-- NOVO: Cartão de Regras da Campanha 2027 -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                <!-- Card Financeiro -->
-                <div class="bg-gradient-to-br from-marinho to-blue-900 rounded-xl p-5 text-white shadow-md">
-                    <h3 class="text-blue-200 text-xs font-bold uppercase tracking-wider mb-3">Tabela de Valores 2027</h3>
-                    <div class="flex justify-between items-end border-b border-blue-800/50 pb-2 mb-2">
-                        <span class="text-sm font-medium">Taxa de Rematrícula</span>
-                        <span class="text-2xl font-black text-laranja">R$ 450,00</span>
-                    </div>
-                    <div class="flex justify-between items-center text-sm mb-1">
-                        <span class="text-blue-100">Material FTD (Até 10/Nov)</span>
-                        <span class="font-bold text-green-400">R$ 670,00</span>
-                    </div>
-                    <div class="flex justify-between items-center text-sm">
-                        <span class="text-blue-100">Material FTD (Após 10/Nov)</span>
-                        <span class="font-bold text-red-300">R$ 770,00</span>
-                    </div>
+            <div class="flex flex-wrap gap-1.5 text-[11px]">
+                <span class="text-slate-400 font-semibold mr-1">Inserir campo:</span>
+                <button type="button" onclick="inserirVariavelModelo('{{ALUNO}}')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-blue-100 text-slate-700 hover:text-marinho font-mono font-bold transition">+ Aluno</button>
+                <button type="button" onclick="inserirVariavelModelo('{{RESPONSAVEL}}')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-blue-100 text-slate-700 hover:text-marinho font-mono font-bold transition">+ Responsável</button>
+                <button type="button" onclick="inserirVariavelModelo('{{TURMA_2026}}')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-blue-100 text-slate-700 hover:text-marinho font-mono font-bold transition">+ Turma 2026</button>
+                <button type="button" onclick="inserirVariavelModelo('{{TURMA_2027}}')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-blue-100 text-slate-700 hover:text-marinho font-mono font-bold transition">+ Turma 2027</button>
+                <button type="button" onclick="inserirVariavelModelo('{{TAXA}}')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-blue-100 text-slate-700 hover:text-marinho font-mono font-bold transition">+ Taxa (R$ 450,00)</button>
+                <button type="button" onclick="inserirVariavelModelo('{{UNIDADE}}')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-blue-100 text-slate-700 hover:text-marinho font-mono font-bold transition">+ Unidade</button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Título do Contrato</label>
+                    <input type="text" id="modeloContratoTitulo" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold focus:ring-2 focus:ring-marinho focus:outline-none" placeholder="Ex: Contrato de Prestação de Serviços Educacionais 2027">
                 </div>
-
-                <!-- Card de Turnos -->
-                <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
-                    <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-3">Horários de Funcionamento</h3>
-                    <ul class="space-y-2 text-sm font-medium text-slate-700 divide-y divide-slate-100">
-                        <li class="flex justify-between pt-1"><span>Ensino Fundamental</span> <span>8h às 12h</span></li>
-                        <li class="flex justify-between pt-1"><span>Educação Infantil</span> <span>13h30 às 17h30</span></li>
-                        <li class="flex justify-between pt-1 text-marinho font-bold"><span>Período Integral</span> <span>7h às 17h30</span></li>
-                        <li class="flex justify-between pt-1 text-marinho font-bold"><span>Semi-Integral</span> <span>7h às 15h</span></li>
-                    </ul>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Valor da Taxa de Rematrícula</label>
+                    <input type="text" id="modeloContratoTaxa" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold font-mono focus:ring-2 focus:ring-marinho focus:outline-none" placeholder="R$ 450,00">
                 </div>
-
-                <!-- Card de Atividades Extras -->
-                <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
-                    <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-3">Atividades Extras (2027)</h3>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="bg-pink-100 text-pink-700 px-2 py-1 rounded text-xs font-bold">🩰 Balé</span>
-                        <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold">🥋 Capoeira</span>
-                        <span class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-xs font-bold">🎵 Musicalização</span>
-                        <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-bold">🏊 Natação (Opcional)</span>
-                        <span class="bg-slate-100 text-slate-700 px-2 py-1 rounded text-xs font-bold">♟️ Xadrez</span>
-                        <span class="bg-orange-100 text-orange-700 px-2 py-1 rounded text-xs font-bold">🤖 Robótica</span>
-                        <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs font-bold">⚽ Jogos Corporais</span>
-                    </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Cláusulas / Regras Complementares da Escola</label>
+                    <input type="text" id="modeloContratoClausulasExtra" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-marinho focus:outline-none" placeholder="Ex: Material FTD até 10/Nov: R$ 670,00">
                 </div>
             </div>
 
-            <!-- Painel de Progresso da Campanha -->
-            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 mb-8">
-                <div class="flex justify-between items-end mb-2">
+            <div>
+                <label class="block font-bold text-slate-700 mb-1 text-xs">Texto Base do Contrato (aplicado automaticamente a todos os alunos)</label>
+                <textarea id="modeloContratoTexto" rows="7" class="w-full border border-slate-300 rounded-xl p-3.5 text-xs leading-relaxed font-sans focus:ring-2 focus:ring-marinho focus:outline-none bg-slate-50/60" placeholder="Digite ou cole aqui o contrato da escola..."></textarea>
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-[11px] text-slate-500">
+                <span id="status-modelo-salvo">Modelo sincronizado para todos os alunos da campanha 2027.</span>
+                <button type="button" onclick="previsualizarPrimeiroAluno()" class="text-marinho font-bold hover:underline">👁️ Pré-visualizar contrato preenchido</button>
+            </div>
+        </section>
+
+        <!-- ESPELHO DE ALUNOS, TURMAS E INTEGRAÇÃO COM FINANÇAS / SUPABASE -->
+        <section id="blocoEspelhoRematricula" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6 space-y-4">
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3 border-b border-slate-100 pb-3">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase tracking-wider">
+                        🔄 Espelho & Integração • Fichas, Turmas, Financeiro & Supabase
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-base mt-1">Sincronização Automática da Campanha 2027</h3>
+                    <p class="text-xs text-slate-500">Importa alunos de fichas/matrículas/Supabase, projeta a turma 2027 e registra cobrança de taxa/material no financeiro quando confirmado.</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" onclick="importarAlunosBaseParaRematricula(true)" class="bg-marinho hover:bg-blue-900 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition shadow-sm">
+                        📥 Espelhar Alunos da Base
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                    <span class="text-[10px] font-bold uppercase text-slate-400 block">Unidade Ativa</span>
+                    <strong id="rem-unidade-ativa" class="text-base font-black text-marinho">Matriz</strong>
+                    <span id="rem-sync-status" class="text-[10px] text-emerald-700 font-semibold block">Pronto para espelhar</span>
+                </div>
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                    <span class="text-[10px] font-bold uppercase text-slate-400 block">Alunos na Campanha</span>
+                    <strong id="rem-qtd-lista" class="text-xl font-black text-slate-800">0</strong>
+                    <span class="text-[10px] text-slate-500 block">Lista de rematrícula</span>
+                </div>
+                <div class="bg-emerald-50/60 p-3.5 rounded-xl border border-emerald-200">
+                    <span class="text-[10px] font-bold uppercase text-emerald-700 block">Confirmados na Lista</span>
+                    <strong id="rem-qtd-confirmados-lista" class="text-xl font-black text-emerald-700">0</strong>
+                    <span class="text-[10px] text-emerald-600 block">Vagas garantidas</span>
+                </div>
+                <div class="bg-orange-50/60 p-3.5 rounded-xl border border-orange-200">
+                    <span class="text-[10px] font-bold uppercase text-orange-700 block">Pendentes / Enviados</span>
+                    <strong id="rem-qtd-abertos-lista" class="text-xl font-black text-orange-700">0</strong>
+                    <span class="text-[10px] text-orange-600 block">Aguardando assinatura/taxa</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Painel de Progresso da Campanha -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-3 gap-2">
+                <div>
+                    <h3 class="font-bold text-slate-800 text-base">Progresso da Retenção (Base / Meta: <span id="meta-campanha">350</span> alunos)</h3>
+                    <p class="text-xs text-slate-500">Alunos que já garantiram vaga para o próximo ano letivo.</p>
+                </div>
+                <div class="text-left sm:text-right">
+                    <span id="perc-retencao" class="text-3xl font-black text-marinho">65%</span>
+                    <span id="resumo-renovados" class="text-xs font-bold text-green-600 block">228 renovados</span>
+                </div>
+            </div>
+            
+            <!-- Barra de Progresso -->
+            <div class="w-full bg-slate-100 rounded-full h-4 mb-3 overflow-hidden flex">
+                <div id="barra-confirmados" class="bg-green-500 h-4 transition-all duration-300" style="width: 65%" title="Renovados"></div>
+                <div id="barra-enviados" class="bg-blue-400 h-4 transition-all duration-300" style="width: 15%" title="Contrato Enviado (Aguardando Assinatura)"></div>
+                <div id="barra-pendentes" class="bg-slate-300 h-4 transition-all duration-300" style="width: 20%" title="Pendentes"></div>
+            </div>
+
+            <div class="flex flex-wrap gap-4 sm:gap-6 text-xs font-medium mt-3 pt-3 border-t border-slate-100">
+                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-green-500"></span> Renovação Confirmada (<span id="legenda-confirmados">228</span>)</div>
+                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-blue-400"></span> Contrato Enviado (<span id="legenda-enviados">52</span>)</div>
+                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-slate-300"></span> Pendentes (<span id="legenda-pendentes">70</span>)</div>
+            </div>
+        </div>
+
+        <!-- Filtros e Busca -->
+        <div class="flex flex-col md:flex-row justify-between items-center gap-3">
+            <div class="flex gap-2 overflow-x-auto hide-scrollbar w-full md:w-auto pb-1">
+                <button type="button" onclick="filtrarStatusRematricula('todos')" id="filtro-todos" class="bg-slate-800 text-white px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap shadow-sm transition">Todos</button>
+                <button type="button" onclick="filtrarStatusRematricula('pendente')" id="filtro-pendente" class="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition">Pendentes</button>
+                <button type="button" onclick="filtrarStatusRematricula('enviado')" id="filtro-enviado" class="bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition">Contrato Enviado</button>
+                <button type="button" onclick="filtrarStatusRematricula('confirmado')" id="filtro-confirmado" class="bg-green-50 border border-green-200 text-green-700 hover:bg-green-100 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition">Confirmados</button>
+            </div>
+            
+            <div class="relative w-full md:w-64">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔍</span>
+                <input type="text" id="buscaRematricula" onkeyup="renderizarTabelaRematricula()" placeholder="Buscar aluno ou responsável..." class="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-marinho">
+            </div>
+        </div>
+
+        <!-- Tabela de Rematrícula -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-slate-50 text-slate-500 border-b border-slate-200 uppercase text-[10px] tracking-wider font-bold">
+                        <tr>
+                            <th class="px-5 py-3.5">Aluno / Responsável</th>
+                            <th class="px-5 py-3.5">Turma Atual (2026)</th>
+                            <th class="px-5 py-3.5">Projeção (2027)</th>
+                            <th class="px-5 py-3.5">Status da Rematrícula</th>
+                            <th class="px-5 py-3.5 text-right">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-rematricula" class="divide-y divide-slate-100 text-xs"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL: EDITAR MODELO DE CONTRATO -->
+    <div id="modalModeloContrato" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[150] p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto max-h-[92vh]">
+            <div class="p-5 bg-marinho text-white flex justify-between items-center shrink-0">
+                <div>
+                    <span class="text-[10px] font-bold bg-laranja text-white px-2 py-0.5 rounded uppercase">Configuração Global</span>
+                    <h3 class="font-bold text-base font-heading mt-1">📄 Modelo de Contrato da Escola (2027)</h3>
+                </div>
+                <button type="button" onclick="fecharModalModeloContrato()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
+            </div>
+            <div class="p-5 overflow-y-auto space-y-3 text-xs flex-1">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Título do Modelo</label>
+                    <input type="text" id="modalModeloTitulo" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <h3 class="font-bold text-slate-700">Progresso da Retenção (Meta: 350 alunos)</h3>
-                        <p class="text-sm text-slate-500">Alunos que já garantiram vaga para o próximo ano letivo.</p>
+                        <label class="block font-bold text-slate-700 mb-1">Taxa de Rematrícula</label>
+                        <input type="text" id="modalModeloTaxa" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold font-mono">
                     </div>
-                    <div class="text-right">
-                        <span class="text-3xl font-black text-marinho">65%</span>
-                        <span class="text-sm font-bold text-green-500 block">228 renovados</span>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Observação / Regra Extra</label>
+                        <input type="text" id="modalModeloExtra" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs">
                     </div>
                 </div>
-                
-                <!-- Barra de Progresso -->
-                <div class="w-full bg-slate-100 rounded-full h-4 mb-4 overflow-hidden flex">
-                    <div class="bg-green-500 h-4 rounded-l-full" style="width: 65%" title="Renovados"></div>
-                    <div class="bg-blue-400 h-4" style="width: 15%" title="Contrato Enviado (Aguardando Assinatura)"></div>
-                    <div class="bg-slate-300 h-4 rounded-r-full" style="width: 20%" title="Pendentes"></div>
-                </div>
-
-                <div class="flex gap-6 text-sm font-medium mt-4 pt-4 border-t border-slate-100">
-                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-green-500"></span> Renovação Confirmada (228)</div>
-                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-blue-400"></span> Contrato Enviado (52)</div>
-                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-slate-300"></span> Pendentes (70)</div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Corpo do Contrato (use {{ALUNO}}, {{RESPONSAVEL}}, {{TURMA_2026}}, {{TURMA_2027}}, {{TAXA}}, {{UNIDADE}})</label>
+                    <textarea id="modalModeloTexto" rows="9" class="w-full border border-slate-300 rounded-xl p-3 text-xs leading-relaxed"></textarea>
                 </div>
             </div>
-
-            <!-- Filtros e Busca -->
-            <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
-                <div class="flex gap-2 overflow-x-auto w-full md:w-auto">
-                    <button class="bg-slate-800 text-white px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap shadow-sm">Todos</button>
-                    <button class="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap">Pendentes</button>
-                    <button class="bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap">Contrato Enviado</button>
-                    <button class="bg-green-50 border border-green-200 text-green-700 hover:bg-green-100 px-4 py-1.5 rounded-full text-sm font-bold whitespace-nowrap">Confirmados</button>
-                </div>
-                
-                <div class="relative w-full md:w-64">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔍</span>
-                    <input type="text" placeholder="Buscar aluno..." class="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <div class="p-4 border-t border-slate-200 bg-slate-50 flex justify-between items-center gap-2 shrink-0">
+                <button type="button" onclick="restaurarModeloPadrao(true)" class="px-3.5 py-2 bg-white border border-slate-300 text-slate-600 font-bold rounded-xl text-xs hover:bg-slate-100 transition">↺ Restaurar Padrão</button>
+                <div class="flex gap-2">
+                    <button type="button" onclick="fecharModalModeloContrato()" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs">Cancelar</button>
+                    <button type="button" onclick="salvarModeloContratoModal()" class="px-5 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-xs shadow-sm transition">💾 Salvar Modelo</button>
                 </div>
             </div>
-
-            <!-- Tabela de Rematrícula -->
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-50 text-slate-500 border-b border-slate-200 uppercase text-[11px] tracking-wider font-bold">
-                            <tr>
-                                <th class="px-6 py-4">Aluno / Responsável</th>
-                                <th class="px-6 py-4">Turma Atual (2026)</th>
-                                <th class="px-6 py-4">Projeção (2027)</th>
-                                <th class="px-6 py-4">Status da Rematrícula</th>
-                                <th class="px-6 py-4 text-right">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100">
-                            
-                            <!-- Aluno 1: Confirmado -->
-                            <tr class="hover:bg-slate-50 transition">
-                                <td class="px-6 py-4">
-                                    <p class="font-bold text-slate-800">Davi Lucas</p>
-                                    <p class="text-[11px] text-slate-500 mt-0.5">Resp: Carlos Lucas</p>
-                                </td>
-                                <td class="px-6 py-4 text-slate-600 font-medium">3º Ano A - Matutino</td>
-                                <td class="px-6 py-4">
-                                    <span class="font-bold text-marinho flex items-center gap-1">
-                                        <span class="text-slate-300">↳</span> 4º Ano A - Matutino
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span class="bg-green-100 text-green-700 py-1.5 px-3 rounded text-xs font-bold flex w-max items-center gap-1">
-                                        ✅ Vaga Garantida (2027)
-                                    </span>
-                                    <p class="text-[10px] text-slate-400 mt-1">Taxa paga em 10/09/2026</p>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <button class="text-slate-400 hover:text-marinho font-medium text-xs px-2 py-1 transition">Ver Contrato</button>
-                                </td>
-                            </tr>
-
-                            <!-- Aluno 2: Contrato Enviado -->
-                            <tr class="hover:bg-slate-50 transition">
-                                <td class="px-6 py-4">
-                                    <p class="font-bold text-slate-800">Isabela Mendes</p>
-                                    <p class="text-[11px] text-slate-500 mt-0.5">Resp: Mariana Mendes</p>
-                                </td>
-                                <td class="px-6 py-4 text-slate-600 font-medium">2º Ano B - Vespertino</td>
-                                <td class="px-6 py-4">
-                                    <span class="font-bold text-marinho flex items-center gap-1">
-                                        <span class="text-slate-300">↳</span> 3º Ano B - Vespertino
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span class="bg-blue-50 text-blue-600 border border-blue-200 py-1.5 px-3 rounded text-xs font-bold flex w-max items-center">
-                                        📄 Aguardando Assinatura
-                                    </span>
-                                    <p class="text-[10px] text-blue-400 mt-1">Enviado há 2 dias</p>
-                                </td>
-                                <td class="px-6 py-4 text-right flex flex-col items-end gap-2">
-                                    <button class="bg-marinho text-white font-semibold text-[11px] px-3 py-1.5 rounded hover:bg-blue-900 transition w-max">Confirmar Pagamento</button>
-                                    <button class="text-blue-600 font-bold text-[11px] hover:underline">Reenviar Link</button>
-                                </td>
-                            </tr>
-
-                            <!-- Aluno 3: Pendente (Ação de Envio) -->
-                            <tr class="hover:bg-slate-50 transition">
-                                <td class="px-6 py-4">
-                                    <p class="font-bold text-slate-800">Pedro Souza</p>
-                                    <p class="text-[11px] text-slate-500 mt-0.5">Resp: Roberto Souza</p>
-                                </td>
-                                <td class="px-6 py-4 text-slate-600 font-medium">Pré II - Matutino</td>
-                                <td class="px-6 py-4">
-                                    <span class="font-bold text-marinho flex items-center gap-1">
-                                        <span class="text-slate-300">↳</span> 1º Ano - Fundamental I
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span class="bg-slate-100 text-slate-600 py-1.5 px-3 rounded text-xs font-bold flex w-max items-center">
-                                        ⚠️ Pendente
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 text-right flex flex-col items-end gap-2">
-                                    <!-- Botão de Envio via WhatsApp -->
-                                    <a href="https://wa.me/5521900000000?text=Olá%20Roberto,%20as%20rematrículas%20para%20o%20ano%20de%202027%20da%20Peniel%20já%20estão%20abertas!%20Acesse%20o%20link%20abaixo%20para%20garantir%20a%20vaga%20do%20Pedro." target="_blank" class="bg-green-500 text-white font-bold text-[11px] px-3 py-1.5 rounded flex items-center gap-1 hover:bg-green-600 transition shadow-sm w-max">
-                                        💬 Enviar Contrato Digital
-                                    </a>
-                                </td>
-                            </tr>
-
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-        </main>
+        </div>
     </div>
-    
-    <!-- BLOCO GLOBAL DE CONTROLE DO MODO GESTOR MASTER -->
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('modo_gestor') === '1') {
-            localStorage.setItem('peniel_modo_gestor', 'ativo');
-        }
 
-        // Se o modo gestor estiver ativo em qualquer tela do sistema:
-        if (localStorage.getItem('peniel_modo_gestor') === 'ativo') {
-            
-            // 1. Remove ou oculta completamente qualquer menu lateral existente na tela
-            const menuLateral = document.querySelector('aside');
-            if (menuLateral) {
-                menuLateral.remove(); // Remove o elemento do DOM para liberar 100% da tela
-            }
+    <!-- MODAL: CONTRATO PREENCHIDO POR ALUNO -->
+    <div id="modalContratoRematricula" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[140] p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto max-h-[92vh]">
+            <div class="p-5 bg-marinho text-white flex justify-between items-center shrink-0">
+                <div>
+                    <span class="text-[10px] font-bold bg-laranja text-white px-2 py-0.5 rounded uppercase">Contrato Preenchido — Ano Letivo 2027</span>
+                    <h3 class="font-bold text-base font-heading mt-1" id="contrato-titulo">Contrato Digital</h3>
+                </div>
+                <button type="button" onclick="fecharModalContrato()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
+            </div>
+            <div id="contrato-corpo" class="p-5 overflow-y-auto space-y-3 text-xs text-slate-700 bg-slate-50 flex-1"></div>
+            <div class="p-4 border-t border-slate-200 bg-white flex flex-wrap justify-between items-center gap-2 shrink-0">
+                <button type="button" onclick="copiarContratoPreenchido()" class="px-4 py-2 bg-blue-50 hover:bg-blue-100 text-marinho font-bold rounded-xl text-xs transition">📋 Copiar Texto</button>
+                <div class="flex gap-2">
+                    <button type="button" onclick="window.print()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition">🖨️ Imprimir</button>
+                    <button type="button" onclick="fecharModalContrato()" class="px-5 py-2 bg-marinho hover:bg-blue-900 text-white font-bold rounded-xl text-xs transition">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-            // 2. Garante que o layout principal ocupe a largura total (sem espaço reservado para menu)
-            const containerPrincipal = document.querySelector('.flex.h-screen');
-            if (containerPrincipal) {
-                containerPrincipal.classList.remove('overflow-hidden');
-            }
-
-            // 3. Adiciona a Barra Executiva Superior com o botão de retorno e opção de sair/bloquear
-            const main = document.querySelector('main');
-            if (main && !document.getElementById('barraExecutivaMaster')) {
-                const barraGestor = document.createElement('div');
-                barraGestor.id = 'barraExecutivaMaster';
-                barraGestor.className = 'bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl mb-4 flex justify-between items-center border-2 border-blue-500/40 z-50';
-                barraGestor.innerHTML = `
-                    <div class="flex items-center gap-3 text-xs font-bold text-blue-300">
-                        <span class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></span>
-                        <span>Modo Gestor Master Ativo (Tela Cheia Executiva)</span>
+    <!-- MODAL: INCLUIR ALUNO NA REMATRÍCULA -->
+    <div id="modalNovaRematricula" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[140] p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto">
+            <div class="p-5 bg-marinho text-white flex justify-between items-center">
+                <h3 class="font-bold text-base font-heading">➕ Incluir Aluno na Campanha 2027</h3>
+                <button type="button" onclick="fecharModalNovaRematricula()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
+            </div>
+            <div class="p-5 space-y-3.5 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Nome do Aluno</label>
+                    <input type="text" id="remAlunoNome" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold" placeholder="Ex: Sofia Almeida">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Responsável</label>
+                    <input type="text" id="remRespNome" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs" placeholder="Ex: Patrícia Almeida">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">WhatsApp (com DDD)</label>
+                    <input type="text" id="remRespTel" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono" placeholder="21999998888">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Turma Atual (2026)</label>
+                        <input type="text" id="remTurmaAtual" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs" placeholder="Ex: Pré II - Matutino">
                     </div>
-                    <div class="flex items-center gap-2">
-                        <a href="configuracoes.html?modo_gestor=1" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
-                            &larr; Voltar à Central de Bordo
-                        </a>
-                        <button onclick="sairModoGestorGlobal()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-xl text-xs font-bold transition shadow-sm">
-                            🔒 Sair do Modo Gestor
-                        </button>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Projeção (2027)</label>
+                        <input type="text" id="remTurma2027" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold" placeholder="Ex: 1º Ano - Matutino">
                     </div>
-                `;
-                main.prepend(barraGestor);
-            }
-        }
-    });
+                </div>
+            </div>
+            <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2">
+                <button type="button" onclick="fecharModalNovaRematricula()" class="px-4 py-2 bg-white border border-slate-300 text-slate-600 font-bold rounded-xl text-xs">Cancelar</button>
+                <button type="button" onclick="salvarNovaRematricula()" class="bg-laranja hover:bg-orange-600 text-white px-5 py-2 rounded-xl font-bold text-xs shadow-sm transition">💾 Salvar</button>
+            </div>
+        </div>
+    </div>
 
-    function sairModoGestorGlobal() {
-        if(confirm("Deseja realmente encerrar a sessão de Gestor Master e bloquear o painel?")) {
-            localStorage.removeItem('peniel_modo_gestor');
-            window.location.href = 'configuracoes.html';
-        }
-    }
-</script>
-
-    <!-- ======================================================= -->
-    <!-- SCRIPT DO MENU MOBILE (IPHONE / ANDROID) -->
-    <!-- ======================================================= -->
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const menuLateral = document.querySelector('aside');
-            const header = document.querySelector('header');
-            
-            // Verifica se a tela tem menu lateral e se não está no modo Gestor Tela Cheia
-            if (menuLateral && header && !document.getElementById('btnMobile')) {
-                
-                // 1. Adapta as classes do Tailwind para o menu deslizar no celular
-                menuLateral.classList.remove('hidden'); // Remove o bloqueio original
-                menuLateral.classList.add(
-                    'fixed', 'left-0', 'top-0', 'h-full', 'z-[100]', 
-                    'transform', '-translate-x-full', 'transition-transform', 'duration-300',
-                    'md:relative', 'md:translate-x-0' // Mantém fixo no Computador
-                );
+        const SUPABASE_URL_REM = 'https://fxjdmhrlujiajkouduhg.supabase.co';
+        const SUPABASE_KEY_REM = 'sb_publishable_EANH7zIXleZ3G18S6z7KFw_26oySNP9';
 
-                // 2. Cria o Fundo Escuro (Overlay) para a tela do iPhone
-                const overlay = document.createElement('div');
-                overlay.className = 'fixed inset-0 bg-slate-900/60 z-[90] hidden backdrop-blur-sm md:hidden transition-opacity';
-                document.body.appendChild(overlay);
-
-                // 3. Função para Abrir e Fechar o menu
-                const toggleMenu = () => {
-                    const estaFechado = menuLateral.classList.contains('-translate-x-full');
-                    if(estaFechado) {
-                        menuLateral.classList.remove('-translate-x-full');
-                        overlay.classList.remove('hidden');
-                    } else {
-                        menuLateral.classList.add('-translate-x-full');
-                        overlay.classList.add('hidden');
-                    }
-                };
-
-                // Fechar menu ao clicar no fundo escuro
-                overlay.onclick = toggleMenu;
-
-                // 4. Cria o Botão "Hambúrguer" no Header (Só aparece no celular)
-                const btnMobile = document.createElement('button');
-                btnMobile.id = 'btnMobile';
-                btnMobile.className = 'md:hidden w-full sm:w-auto bg-marinho text-white px-4 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-md mb-4 sm:mb-0 transition active:scale-95';
-                btnMobile.innerHTML = '☰ Abrir Menu do Sistema';
-                btnMobile.onclick = toggleMenu;
-
-                // Insere o botão no topo do Header
-                header.insertBefore(btnMobile, header.firstChild);
+        function projetarTurma2027(turmaAtual = '') {
+            const t = String(turmaAtual || '').trim();
+            if (!t) return 'Turma 2027';
+            const matchAno = t.match(/(\d+)º\s*Ano/i);
+            if (matchAno) {
+                const prox = Number(matchAno[1]) + 1;
+                return t.replace(/(\d+)º\s*Ano/i, `${prox}º Ano`);
             }
+            if (/pré\s*ii/i.test(t)) return t.replace(/pré\s*ii/i, '1º Ano');
+            if (/pré\s*i/i.test(t)) return t.replace(/pré\s*i/i, 'Pré II');
+            if (/maternal\s*ii/i.test(t)) return t.replace(/maternal\s*ii/i, 'Pré I');
+            if (/maternal\s*i/i.test(t)) return t.replace(/maternal\s*i/i, 'Maternal II');
+            return `${t} (2027)`;
+        }
+
+        function obterAlunosCandidatosRematricula() {
+            const candidatos = [];
+            const vistos = new Set();
+
+            const add = (aluno, responsavel, telefone, turma2026) => {
+                const nomeLimpo = String(aluno || '').trim();
+                if (!nomeLimpo) return;
+                const chave = nomeLimpo.toLowerCase();
+                if (vistos.has(chave)) return;
+                vistos.add(chave);
+                candidatos.push({
+                    aluno: nomeLimpo,
+                    responsavel: String(responsavel || 'Responsável').trim(),
+                    telefone: String(telefone || '5521900000000').replace(/\D/g, '') || '5521900000000',
+                    turma2026: String(turma2026 || 'Turma 2026').trim(),
+                    projecao2027: projetarTurma2027(turma2026)
+                });
+            };
+
+            try {
+                const fichas = JSON.parse(localStorage.getItem('peniel_fichas_alunos') || '[]');
+                if (Array.isArray(fichas)) {
+                    fichas.forEach(f => add(f.nome || f.aluno, f.responsavel || f.pai || f.mae, f.telefone || f.whatsapp, f.turma || f.serie));
+                }
+            } catch (_) {}
+
+            try {
+                const recorrencia = JSON.parse(localStorage.getItem('peniel_alunos_recorrencia') || '[]');
+                if (Array.isArray(recorrencia)) {
+                    recorrencia.forEach(a => add(a.nome, a.responsavel, a.telefone, a.turma));
+                }
+            } catch (_) {}
+
+            return candidatos;
+        }
+
+        async function buscarAlunosSupabaseRematricula() {
+            const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
+            try {
+                const url = `${SUPABASE_URL_REM}/rest/v1/fichas_alunos?unidade=eq.${encodeURIComponent(unidade)}&order=nome.asc`;
+                const resp = await fetch(url, {
+                    headers: {
+                        'apikey': SUPABASE_KEY_REM,
+                        'Authorization': `Bearer ${SUPABASE_KEY_REM}`
+                    }
+                });
+                if (!resp.ok) return [];
+                const rows = await resp.json();
+                if (!Array.isArray(rows)) return [];
+                return rows.map(r => ({
+                    aluno: r.nome || 'Aluno',
+                    responsavel: r.responsavel || 'Responsável',
+                    telefone: String(r.telefone || r.whatsapp || '5521900000000').replace(/\D/g, '') || '5521900000000',
+                    turma2026: r.turma || r.serie || 'Turma 2026',
+                    projecao2027: projetarTurma2027(r.turma || r.serie || 'Turma 2026')
+                }));
+            } catch (_) {
+                return [];
+            }
+        }
+
+        async function importarAlunosBaseParaRematricula(mostrarToast = false) {
+            const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
+            const elUnid = document.getElementById('rem-unidade-ativa');
+            if (elUnid) elUnid.innerText = unidade;
+
+            const locais = obterAlunosCandidatosRematricula();
+            const supa = await buscarAlunosSupabaseRematricula();
+            const todosCandidatos = [...supa, ...locais];
+
+            const listaAtual = obterListaRematricula();
+            const nomesExistentes = new Set(listaAtual.map(i => String(i.aluno || '').trim().toLowerCase()));
+            let adicionados = 0;
+
+            todosCandidatos.forEach(cand => {
+                const chave = cand.aluno.toLowerCase();
+                if (!nomesExistentes.has(chave)) {
+                    nomesExistentes.add(chave);
+                    listaAtual.push({
+                        id: 'REM-2027-' + String(listaAtual.length + 1).padStart(2, '0'),
+                        aluno: cand.aluno,
+                        responsavel: cand.responsavel,
+                        telefone: cand.telefone,
+                        turma2026: cand.turma2026,
+                        projecao2027: cand.projecao2027,
+                        status: 'pendente',
+                        detalheStatus: ''
+                    });
+                    adicionados++;
+                }
+            });
+
+            if (adicionados > 0) {
+                salvarListaRematricula(listaAtual);
+            }
+
+            atualizarResumoEspelhoRematricula(supa.length > 0 ? `Supabase (${unidade})` : `Local (${unidade})`);
+            atualizarPainelRetencao();
+            renderizarTabelaRematricula();
+
+            if (mostrarToast) {
+                notificarRematricula(
+                    adicionados > 0
+                        ? `${adicionados} aluno(s) espelhado(s) e projetado(s) para 2027!`
+                        : 'Lista de rematrícula já está espelhada com os alunos encontrados.'
+                );
+            }
+        }
+
+        function atualizarResumoEspelhoRematricula(origemTxt = null) {
+            const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
+            const lista = obterListaRematricula();
+            const conf = lista.filter(i => i.status === 'confirmado').length;
+            const abertos = lista.filter(i => i.status !== 'confirmado').length;
+
+            const elUnid = document.getElementById('rem-unidade-ativa');
+            const elQtd = document.getElementById('rem-qtd-lista');
+            const elConf = document.getElementById('rem-qtd-confirmados-lista');
+            const elAb = document.getElementById('rem-qtd-abertos-lista');
+            const elSync = document.getElementById('rem-sync-status');
+
+            if (elUnid) elUnid.innerText = unidade;
+            if (elQtd) elQtd.innerText = String(lista.length);
+            if (elConf) elConf.innerText = String(conf);
+            if (elAb) elAb.innerText = String(abertos);
+            if (elSync && origemTxt) elSync.innerText = `Espelhado • ${origemTxt}`;
+        }
+
+        function registrarTaxaFinanceiroRematricula(item) {
+            try {
+                const m = obterModeloContrato();
+                const taxaNum = Number(String(m.taxa || '450').replace(/[^\d,.-]/g, '').replace(',', '.')) || 450;
+                const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
+                const lancamentos = JSON.parse(localStorage.getItem('peniel_lancamentos_financeiros') || '[]');
+                const jaExiste = lancamentos.some(l => l.origemId === item.id && l.tipo === 'rematricula_2027');
+                if (!jaExiste) {
+                    lancamentos.push({
+                        id: 'FIN-REM-' + Date.now(),
+                        origemId: item.id,
+                        tipo: 'rematricula_2027',
+                        unidade,
+                        aluno: item.aluno,
+                        responsavel: item.responsavel,
+                        turma: item.projecao2027,
+                        descricao: `Taxa de Rematrícula 2027 - ${item.aluno} (${item.projecao2027})`,
+                        valor: taxaNum,
+                        status: 'Pago',
+                        data: new Date().toISOString().slice(0, 10)
+                    });
+                    localStorage.setItem('peniel_lancamentos_financeiros', JSON.stringify(lancamentos));
+                }
+            } catch (_) {}
+        }
+
+        let toastRemTimer = null;
+        let ultimoContratoTextoPuro = '';
+
+        function notificarRematricula(msg) {
+            const el = document.getElementById('toast-rematricula');
+            if (!el) return;
+            document.getElementById('toast-rematricula-texto').innerText = msg;
+            el.classList.remove('hidden');
+            clearTimeout(toastRemTimer);
+            toastRemTimer = setTimeout(() => el.classList.add('hidden'), 3500);
+        }
+
+        function toggleMenuMobile() {
+            const menu = document.getElementById('menu-lateral');
+            const overlay = document.getElementById('overlay-mobile');
+            menu.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        function sairDoSistema() {
+            if (confirm("Deseja encerrar sua sessão?")) { window.location.href = 'login.html'; }
+        }
+
+        const MODELO_CONTRATO_PADRAO = {
+            titulo: 'Contrato de Rematrícula Escolar — Ano Letivo 2027',
+            taxa: 'R$ 450,00',
+            clausulasExtra: 'Material didático FTD: R$ 670,00 até 10/Nov ou R$ 770,00 após 10/Nov.',
+            corpo: `CONTRATO DE REMATRÍCULA ESCOLAR — ANO LETIVO 2027\nInstituição: Peniel Christian School ({{UNIDADE}})\n\nPelo presente instrumento, o(a) responsável legal {{RESPONSAVEL}} formaliza a solicitação e o compromisso de rematrícula do(a) aluno(a) {{ALUNO}}, matriculado(a) em 2026 na turma {{TURMA_2026}}, com projeção de vaga para 2027 na turma {{TURMA_2027}}.\n\n1. TAXA DE REMATRÍCULA: Fica estabelecido o valor de {{TAXA}} referente à reserva de vaga para o ano letivo de 2027, sujeito às normas internas e ao regimento escolar.\n2. CONDIÇÕES E PRAZOS: {{CLAUSULAS_EXTRA}}\n3. REGIME E ROTINA: O(A) responsável declara ciência dos horários de funcionamento, atividades extracurriculares disponíveis e normas pedagógicas da unidade.\n\nData de emissão: {{DATA_HOJE}}.`
+        };
+
+        function obterModeloContrato() {
+            const salvo = JSON.parse(localStorage.getItem('peniel_modelo_contrato_rematricula_2027'));
+            return {
+                ...MODELO_CONTRATO_PADRAO,
+                ...(salvo || {})
+            };
+        }
+
+        function salvarModeloContratoObj(obj) {
+            localStorage.setItem('peniel_modelo_contrato_rematricula_2027', JSON.stringify(obj));
+            carregarCamposModeloNaTela();
+        }
+
+        function carregarCamposModeloNaTela() {
+            const m = obterModeloContrato();
+            if (document.getElementById('modeloContratoTitulo')) {
+                document.getElementById('modeloContratoTitulo').value = m.titulo;
+                document.getElementById('modeloContratoTaxa').value = m.taxa;
+                document.getElementById('modeloContratoClausulasExtra').value = m.clausulasExtra;
+                document.getElementById('modeloContratoTexto').value = m.corpo;
+                document.getElementById('status-modelo-salvo').innerText = `Modelo ativo: "${m.titulo}" • Taxa: ${m.taxa}`;
+            }
+        }
+
+        function inserirVariavelModelo(variavel) {
+            const ta = document.getElementById('modeloContratoTexto');
+            if (!ta) return;
+            const start = ta.selectionStart ?? ta.value.length;
+            const end = ta.selectionEnd ?? ta.value.length;
+            ta.value = ta.value.slice(0, start) + variavel + ta.value.slice(end);
+            ta.focus();
+            ta.setSelectionRange(start + variavel.length, start + variavel.length);
+        }
+
+        function salvarModeloContratoInline() {
+            const novoModelo = {
+                titulo: document.getElementById('modeloContratoTitulo').value.trim() || MODELO_CONTRATO_PADRAO.titulo,
+                taxa: document.getElementById('modeloContratoTaxa').value.trim() || MODELO_CONTRATO_PADRAO.taxa,
+                clausulasExtra: document.getElementById('modeloContratoClausulasExtra').value.trim() || MODELO_CONTRATO_PADRAO.clausulasExtra,
+                corpo: document.getElementById('modeloContratoTexto').value.trim() || MODELO_CONTRATO_PADRAO.corpo
+            };
+            salvarModeloContratoObj(novoModelo);
+            notificarRematricula('Modelo de contrato salvo e aplicado para todos os alunos!');
+        }
+
+        function abrirModalModeloContrato() {
+            const m = obterModeloContrato();
+            document.getElementById('modalModeloTitulo').value = m.titulo;
+            document.getElementById('modalModeloTaxa').value = m.taxa;
+            document.getElementById('modalModeloExtra').value = m.clausulasExtra;
+            document.getElementById('modalModeloTexto').value = m.corpo;
+            document.getElementById('modalModeloContrato').classList.remove('hidden');
+        }
+
+        function fecharModalModeloContrato() {
+            document.getElementById('modalModeloContrato').classList.add('hidden');
+        }
+
+        function salvarModeloContratoModal() {
+            const novoModelo = {
+                titulo: document.getElementById('modalModeloTitulo').value.trim() || MODELO_CONTRATO_PADRAO.titulo,
+                taxa: document.getElementById('modalModeloTaxa').value.trim() || MODELO_CONTRATO_PADRAO.taxa,
+                clausulasExtra: document.getElementById('modalModeloExtra').value.trim() || MODELO_CONTRATO_PADRAO.clausulasExtra,
+                corpo: document.getElementById('modalModeloTexto').value.trim() || MODELO_CONTRATO_PADRAO.corpo
+            };
+            salvarModeloContratoObj(novoModelo);
+            fecharModalModeloContrato();
+            notificarRematricula('Modelo de contrato atualizado para todos os alunos!');
+        }
+
+        function restaurarModeloPadrao(noModal = false) {
+            if (noModal) {
+                document.getElementById('modalModeloTitulo').value = MODELO_CONTRATO_PADRAO.titulo;
+                document.getElementById('modalModeloTaxa').value = MODELO_CONTRATO_PADRAO.taxa;
+                document.getElementById('modalModeloExtra').value = MODELO_CONTRATO_PADRAO.clausulasExtra;
+                document.getElementById('modalModeloTexto').value = MODELO_CONTRATO_PADRAO.corpo;
+                notificarRematricula('Campos restaurados para o modelo base (clique em Salvar Modelo para aplicar).');
+                return;
+            }
+            salvarModeloContratoObj({ ...MODELO_CONTRATO_PADRAO });
+            notificarRematricula('Modelo padrão restaurado e salvo para todos os alunos!');
+        }
+
+        function preencherContratoParaAluno(item) {
+            const m = obterModeloContrato();
+            const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
+            const dataHoje = new Date().toLocaleDateString('pt-BR');
+
+            const mapaVariaveis = {
+                '{{ALUNO}}': item.aluno || '',
+                '{{RESPONSAVEL}}': item.responsavel || '',
+                '{{TURMA_2026}}': item.turma2026 || '',
+                '{{TURMA_2027}}': item.projecao2027 || '',
+                '{{TAXA}}': m.taxa || 'R$ 450,00',
+                '{{CLAUSULAS_EXTRA}}': m.clausulasExtra || '',
+                '{{UNIDADE}}': unidade,
+                '{{DATA_HOJE}}': dataHoje
+            };
+
+            let textoFinal = m.corpo;
+            for (const chave in mapaVariaveis) {
+                textoFinal = textoFinal.split(chave).join(mapaVariaveis[chave]);
+            }
+
+            return {
+                titulo: m.titulo,
+                taxa: m.taxa,
+                texto: textoFinal
+            };
+        }
+
+        const REMATRICULA_INICIAL = [
+            {
+                id: 'REM-2027-01',
+                aluno: 'Davi Lucas',
+                responsavel: 'Carlos Lucas',
+                telefone: '5521999991111',
+                turma2026: '3º Ano A - Matutino',
+                projecao2027: '4º Ano A - Matutino',
+                status: 'confirmado',
+                detalheStatus: 'Taxa paga em 10/09/2026'
+            },
+            {
+                id: 'REM-2027-02',
+                aluno: 'Isabela Mendes',
+                responsavel: 'Mariana Mendes',
+                telefone: '5521988882222',
+                turma2026: '2º Ano B - Vespertino',
+                projecao2027: '3º Ano B - Vespertino',
+                status: 'enviado',
+                detalheStatus: 'Enviado há 2 dias'
+            },
+            {
+                id: 'REM-2027-03',
+                aluno: 'Pedro Souza',
+                responsavel: 'Roberto Souza',
+                telefone: '5521900000000',
+                turma2026: 'Pré II - Matutino',
+                projecao2027: '1º Ano - Fundamental I',
+                status: 'pendente',
+                detalheStatus: ''
+            }
+        ];
+
+        function obterListaRematricula() {
+            return JSON.parse(localStorage.getItem('peniel_campanha_rematricula_2027')) || REMATRICULA_INICIAL;
+        }
+
+        function salvarListaRematricula(lista) {
+            localStorage.setItem('peniel_campanha_rematricula_2027', JSON.stringify(lista));
+        }
+
+        let filtroStatusAtual = 'todos';
+
+        function filtrarStatusRematricula(status) {
+            filtroStatusAtual = status;
+            ['todos', 'pendente', 'enviado', 'confirmado'].forEach(st => {
+                const btn = document.getElementById(`filtro-${st}`);
+                if (!btn) return;
+                if (st === status) {
+                    btn.className = 'bg-slate-800 text-white px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap shadow-sm transition';
+                } else if (st === 'pendente') {
+                    btn.className = 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition';
+                } else if (st === 'enviado') {
+                    btn.className = 'bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition';
+                } else if (st === 'confirmado') {
+                    btn.className = 'bg-green-50 border border-green-200 text-green-700 hover:bg-green-100 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition';
+                } else {
+                    btn.className = 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition';
+                }
+            });
+            renderizarTabelaRematricula();
+        }
+
+        function atualizarPainelRetencao() {
+            const lista = obterListaRematricula();
+            const confirmadosLista = lista.filter(i => i.status === 'confirmado').length;
+            const enviadosLista = lista.filter(i => i.status === 'enviado').length;
+
+            const extra = Math.max(0, lista.length - REMATRICULA_INICIAL.length);
+            const totalMeta = 350 + extra;
+            const totalConfirmados = 228 + Math.max(0, confirmadosLista - 1);
+            const totalEnviados = 52 + Math.max(0, enviadosLista - 1);
+            const totalPendentes = Math.max(0, totalMeta - totalConfirmados - totalEnviados);
+
+            const pctConf = Math.min(100, Math.round((totalConfirmados / totalMeta) * 100));
+            const pctEnv = Math.min(100 - pctConf, Math.round((totalEnviados / totalMeta) * 100));
+            const pctPend = Math.max(0, 100 - pctConf - pctEnv);
+
+            document.getElementById('meta-campanha').innerText = totalMeta;
+            document.getElementById('perc-retencao').innerText = `${pctConf}%`;
+            document.getElementById('resumo-renovados').innerText = `${totalConfirmados} renovados`;
+
+            document.getElementById('barra-confirmados').style.width = `${pctConf}%`;
+            document.getElementById('barra-enviados').style.width = `${pctEnv}%`;
+            document.getElementById('barra-pendentes').style.width = `${pctPend}%`;
+
+            document.getElementById('legenda-confirmados').innerText = totalConfirmados;
+            document.getElementById('legenda-enviados').innerText = totalEnviados;
+            document.getElementById('legenda-pendentes').innerText = totalPendentes;
+        }
+
+        function construirLinkWhatsApp(item) {
+            const telLimpo = (item.telefone || '5521900000000').replace(/\D/g, '');
+            const contrato = preencherContratoParaAluno(item);
+            const msg = `Olá ${item.responsavel}, as rematrículas para 2027 da Peniel estão abertas para ${item.aluno} (${item.projecao2027}). Taxa: ${contrato.taxa}. Seguem os dados do contrato:\n\n${contrato.texto}`;
+            return `https://wa.me/${telLimpo}?text=${encodeURIComponent(msg)}`;
+        }
+
+        function enviarContrato(id) {
+            const lista = obterListaRematricula();
+            const item = lista.find(i => i.id === id);
+            if (!item) return;
+            item.status = 'enviado';
+            item.detalheStatus = `Enviado hoje (${new Date().toLocaleDateString('pt-BR')})`;
+            salvarListaRematricula(lista);
+            atualizarResumoEspelhoRematricula();
+            atualizarPainelRetencao();
+            renderizarTabelaRematricula();
+            window.open(construirLinkWhatsApp(item), '_blank');
+            notificarRematricula(`Contrato enviado para ${item.responsavel}!`);
+        }
+
+        function confirmarPagamentoRematricula(id) {
+            const lista = obterListaRematricula();
+            const item = lista.find(i => i.id === id);
+            if (!item) return;
+            item.status = 'confirmado';
+            item.detalheStatus = `Taxa paga em ${new Date().toLocaleDateString('pt-BR')}`;
+            registrarTaxaFinanceiroRematricula(item);
+            salvarListaRematricula(lista);
+            atualizarResumoEspelhoRematricula();
+            atualizarPainelRetencao();
+            renderizarTabelaRematricula();
+            notificarRematricula(`Vaga 2027 garantida para ${item.aluno}!`);
+        }
+
+        function abrirModalContratoComItem(item) {
+            const contrato = preencherContratoParaAluno(item);
+            ultimoContratoTextoPuro = `${contrato.titulo}\n\n${contrato.texto}`;
+            document.getElementById('contrato-titulo').innerText = `${contrato.titulo} — ${item.aluno}`;
+            document.getElementById('contrato-corpo').innerHTML = `
+                <div class="bg-white p-4 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <p><strong>Aluno:</strong> ${item.aluno}</p>
+                    <p><strong>Responsável:</strong> ${item.responsavel}</p>
+                    <p><strong>Turma Atual (2026):</strong> ${item.turma2026}</p>
+                    <p><strong>Turma Projetada (2027):</strong> <span class="text-marinho font-bold">${item.projecao2027}</span></p>
+                    <p><strong>Taxa de Rematrícula:</strong> <span class="font-bold text-laranja">${contrato.taxa}</span></p>
+                    <p><strong>Situação:</strong> <span class="font-bold uppercase">${item.status}</span> ${item.detalheStatus ? `(${item.detalheStatus})` : ''}</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 whitespace-pre-line leading-relaxed text-slate-700">${contrato.texto}</div>
+            `;
+            document.getElementById('modalContratoRematricula').classList.remove('hidden');
+        }
+
+        function verContrato(id) {
+            const item = obterListaRematricula().find(i => i.id === id);
+            if (!item) return;
+            abrirModalContratoComItem(item);
+        }
+
+        function previsualizarPrimeiroAluno() {
+            const lista = obterListaRematricula();
+            if (!lista.length) return;
+            abrirModalContratoComItem(lista[0]);
+        }
+
+        function copiarContratoPreenchido() {
+            if (!ultimoContratoTextoPuro) return;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(ultimoContratoTextoPuro).then(() => {
+                    notificarRematricula('Contrato preenchido copiado para a área de transferência!');
+                }).catch(() => {
+                    notificarRematricula('Não foi possível copiar automaticamente.');
+                });
+            }
+        }
+
+        function fecharModalContrato() {
+            document.getElementById('modalContratoRematricula').classList.add('hidden');
+        }
+
+        function dispararLembretesMassa() {
+            const pendentes = obterListaRematricula().filter(i => i.status !== 'confirmado');
+            if (pendentes.length === 0) {
+                notificarRematricula('Todos os alunos listados já confirmaram a rematrícula!');
+                return;
+            }
+            window.open(construirLinkWhatsApp(pendentes[0]), '_blank');
+            notificarRematricula(`Lembrete preparado para ${pendentes.length} família(s) pendente(s)/aguardando.`);
+        }
+
+        function abrirModalNovaRematricula() {
+            document.getElementById('modalNovaRematricula').classList.remove('hidden');
+        }
+
+        function fecharModalNovaRematricula() {
+            document.getElementById('modalNovaRematricula').classList.add('hidden');
+        }
+
+        function salvarNovaRematricula() {
+            const aluno = document.getElementById('remAlunoNome').value.trim();
+            const responsavel = document.getElementById('remRespNome').value.trim();
+            const telefone = document.getElementById('remRespTel').value.trim() || '5521900000000';
+            const turma2026 = document.getElementById('remTurmaAtual').value.trim() || 'Turma 2026';
+            const projecao2027 = document.getElementById('remTurma2027').value.trim() || 'Turma 2027';
+
+            if (!aluno || !responsavel) {
+                notificarRematricula('Informe o nome do aluno e do responsável.');
+                return;
+            }
+
+            const lista = obterListaRematricula();
+            lista.push({
+                id: 'REM-2027-' + String(lista.length + 1).padStart(2, '0'),
+                aluno,
+                responsavel,
+                telefone,
+                turma2026,
+                projecao2027,
+                status: 'pendente',
+                detalheStatus: ''
+            });
+            salvarListaRematricula(lista);
+
+            ['remAlunoNome', 'remRespNome', 'remRespTel', 'remTurmaAtual', 'remTurma2027'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+
+            fecharModalNovaRematricula();
+            atualizarResumoEspelhoRematricula();
+            atualizarPainelRetencao();
+            renderizarTabelaRematricula();
+            notificarRematricula(`${aluno} incluído na campanha de rematrícula 2027!`);
+        }
+
+        function renderizarTabelaRematricula() {
+            const tbody = document.getElementById('tabela-rematricula');
+            const busca = (document.getElementById('buscaRematricula')?.value || '').toLowerCase();
+            const lista = obterListaRematricula().filter(item => {
+                const matchStatus = filtroStatusAtual === 'todos' || item.status === filtroStatusAtual;
+                const matchBusca = item.aluno.toLowerCase().includes(busca) || item.responsavel.toLowerCase().includes(busca);
+                return matchStatus && matchBusca;
+            });
+
+            tbody.innerHTML = '';
+            if (lista.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400">Nenhum aluno encontrado para o filtro selecionado.</td></tr>`;
+                return;
+            }
+
+            lista.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 transition';
+
+                let badgeHtml = '';
+                let acoesHtml = '';
+
+                if (item.status === 'confirmado') {
+                    badgeHtml = `
+                        <span class="bg-green-100 text-green-700 py-1.5 px-3 rounded-lg text-xs font-bold inline-flex items-center gap-1">
+                            ✅ Vaga Garantida (2027)
+                        </span>
+                        ${item.detalheStatus ? `<p class="text-[10px] text-slate-400 mt-1">${item.detalheStatus}</p>` : ''}
+                    `;
+                    acoesHtml = `<button type="button" onclick="verContrato('${item.id}')" class="text-slate-600 hover:text-marinho font-semibold text-xs px-2.5 py-1.5 rounded-lg hover:bg-slate-100 transition">Ver Contrato</button>`;
+                } else if (item.status === 'enviado') {
+                    badgeHtml = `
+                        <span class="bg-blue-50 text-blue-600 border border-blue-200 py-1.5 px-3 rounded-lg text-xs font-bold inline-flex items-center">
+                            📄 Aguardando Assinatura
+                        </span>
+                        ${item.detalheStatus ? `<p class="text-[10px] text-blue-500 mt-1">${item.detalheStatus}</p>` : ''}
+                    `;
+                    acoesHtml = `
+                        <div class="flex flex-col items-end gap-1.5">
+                            <button type="button" onclick="verContrato('${item.id}')" class="text-slate-600 hover:text-marinho font-semibold text-[11px] hover:underline">Ver Contrato</button>
+                            <button type="button" onclick="confirmarPagamentoRematricula('${item.id}')" class="bg-marinho text-white font-semibold text-[11px] px-3 py-1.5 rounded-lg hover:bg-blue-900 transition">Confirmar Pagamento</button>
+                            <button type="button" onclick="enviarContrato('${item.id}')" class="text-blue-600 font-bold text-[11px] hover:underline">Reenviar Link</button>
+                        </div>
+                    `;
+                } else {
+                    badgeHtml = `
+                        <span class="bg-slate-100 text-slate-600 py-1.5 px-3 rounded-lg text-xs font-bold inline-flex items-center">
+                            ⚠️ Pendente
+                        </span>
+                    `;
+                    acoesHtml = `
+                        <div class="flex flex-col items-end gap-1.5">
+                            <button type="button" onclick="verContrato('${item.id}')" class="text-slate-600 hover:text-marinho font-semibold text-[11px] hover:underline">Ver Contrato</button>
+                            <button type="button" onclick="enviarContrato('${item.id}')" class="bg-green-500 text-white font-bold text-[11px] px-3 py-1.5 rounded-lg inline-flex items-center gap-1 hover:bg-green-600 transition shadow-sm">
+                                💬 Enviar Contrato Digital
+                            </button>
+                        </div>
+                    `;
+                }
+
+                tr.innerHTML = `
+                    <td class="px-5 py-4">
+                        <p class="font-bold text-slate-800 text-xs sm:text-sm">${item.aluno}</p>
+                        <p class="text-[11px] text-slate-500 mt-0.5">Resp: ${item.responsavel}</p>
+                    </td>
+                    <td class="px-5 py-4 text-slate-600 font-medium">${item.turma2026}</td>
+                    <td class="px-5 py-4">
+                        <span class="font-bold text-marinho inline-flex items-center gap-1">
+                            <span class="text-slate-300">↳</span> ${item.projecao2027}
+                        </span>
+                    </td>
+                    <td class="px-5 py-4">${badgeHtml}</td>
+                    <td class="px-5 py-4 text-right whitespace-nowrap">${acoesHtml}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('modo_gestor') === '1') {
+                localStorage.setItem('peniel_modo_gestor', 'ativo');
+            }
+
+            if (localStorage.getItem('peniel_modo_gestor') === 'ativo') {
+                const menuLateral = document.getElementById('menu-lateral');
+                if (menuLateral) menuLateral.remove();
+
+                const main = document.querySelector('main');
+                if (main && !document.getElementById('barraExecutivaMaster')) {
+                    const barraGestor = document.createElement('div');
+                    barraGestor.id = 'barraExecutivaMaster';
+                    barraGestor.className = 'bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl mb-2 flex flex-wrap justify-between items-center gap-3 border-2 border-blue-500/40 z-50';
+                    barraGestor.innerHTML = `
+                        <div class="flex items-center gap-3 text-xs font-bold text-blue-300">
+                            <span class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></span>
+                            <span>Modo Gestor Master Ativo (Tela Cheia Executiva)</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <a href="configuracoes.html?modo_gestor=1" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                                &larr; Voltar à Central de Bordo
+                            </a>
+                            <button type="button" onclick="sairModoGestorGlobal()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-xl text-xs font-bold transition shadow-sm">
+                                🔒 Sair do Modo Gestor
+                            </button>
+                        </div>
+                    `;
+                    main.prepend(barraGestor);
+                }
+            } else {
+                const corSalva = localStorage.getItem('peniel_cor_sessao') || '#003057';
+                const menuLat = document.getElementById('menu-lateral');
+                if (menuLat) menuLat.style.backgroundColor = corSalva;
+                const unidadeSalva = localStorage.getItem('peniel_unidade') || 'Matriz';
+                const unidEl = document.querySelector('#menu-lateral span.text-blue-300');
+                if (unidEl) unidEl.innerText = 'Unidade ' + unidadeSalva;
+            }
+
+            carregarCamposModeloNaTela();
+            atualizarResumoEspelhoRematricula();
+            atualizarPainelRetencao();
+            renderizarTabelaRematricula();
+            importarAlunosBaseParaRematricula(false);
         });
+
+        function sairModoGestorGlobal() {
+            if (confirm("Deseja realmente encerrar a sessão de Gestor Master e bloquear o painel?")) {
+                localStorage.removeItem('peniel_modo_gestor');
+                window.location.href = 'configuracoes.html';
+            }
+        }
     </script>
 </body>
 </html>
