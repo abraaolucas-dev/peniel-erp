@@ -69,6 +69,11 @@
         </div>
     </aside>
 
+    <div id="toast-matriculas" class="fixed bottom-5 right-5 z-[200] hidden max-w-sm bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-white/10 text-xs font-semibold flex items-center gap-2.5">
+        <span>✅</span>
+        <span id="toast-matriculas-texto">Operação concluída</span>
+    </div>
+
     <!-- Área Principal -->
     <main class="flex-1 p-3 sm:p-5 md:p-8 flex flex-col gap-5 w-full max-w-full overflow-x-hidden">
         
@@ -86,9 +91,12 @@
                 </div>
             </div>
             
-            <button type="button" onclick="abrirModalNovaMatricula()" class="bg-laranja hover:bg-orange-600 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition flex items-center gap-1.5 whitespace-nowrap">
-                ➕ Nova Matrícula Completa
-            </button>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
+                <span id="status-sync-matriculas" class="text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-3 py-2 rounded-xl text-center">⏳ Sincronizando...</span>
+                <button type="button" onclick="abrirModalNovaMatricula()" class="bg-laranja hover:bg-orange-600 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition flex items-center justify-center gap-1.5 whitespace-nowrap">
+                    ➕ Nova Matrícula Completa
+                </button>
+            </div>
         </header>
 
         <!-- ABAS DE NAVEGAÇÃO POR SEGMENTO / TURMA -->
@@ -125,17 +133,13 @@
                             <th class="px-5 py-3.5 text-right">Ações & Prontuário</th>
                         </tr>
                     </thead>
-                    <tbody id="tabela-alunos-turma" class="divide-y divide-slate-100">
-                        <!-- Renderizado via JS -->
-                    </tbody>
+                    <tbody id="tabela-alunos-turma" class="divide-y divide-slate-100"></tbody>
                 </table>
             </div>
         </div>
     </main>
 
-    <!-- ========================================================================= -->
     <!-- MODAL: BOLETIM ACADÊMICO ANUAL EDITÁVEL (4 TRIMESTRES) -->
-    <!-- ========================================================================= -->
     <div id="modalBoletimAnual" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[140] p-3 sm:p-4 overflow-y-auto">
         <div class="bg-white w-full max-w-5xl rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto max-h-[95vh]">
             <div class="p-5 bg-marinho text-white flex justify-between items-center shrink-0">
@@ -157,7 +161,6 @@
                     </div>
                 </div>
 
-                <!-- Tabela Editável de Notas por Período -->
                 <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                     <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
                         <h4 class="font-bold text-slate-700 text-xs uppercase tracking-wider">Notas por Disciplina e Período (1º ao 4º Trimestre)</h4>
@@ -176,9 +179,7 @@
                                     <th class="px-4 py-3 text-right">Situação</th>
                                 </tr>
                             </thead>
-                            <tbody id="tabela-notas-anual" class="divide-y divide-slate-100 text-xs">
-                                <!-- Preenchido dinamicamente via JS com inputs editáveis -->
-                            </tbody>
+                            <tbody id="tabela-notas-anual" class="divide-y divide-slate-100 text-xs"></tbody>
                         </table>
                     </div>
                 </div>
@@ -191,9 +192,7 @@
         </div>
     </div>
 
-    <!-- ========================================================================= -->
     <!-- MODAL 1: AVALIAÇÃO DA EDUCAÇÃO INFANTIL -->
-    <!-- ========================================================================= -->
     <div id="modalAvaliacaoInfantil" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[130] p-3 sm:p-4 overflow-y-auto">
         <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto max-h-[95vh]">
             <div class="p-5 bg-marinho text-white flex justify-between items-center shrink-0">
@@ -232,9 +231,7 @@
         </div>
     </div>
 
-    <!-- ========================================================================= -->
     <!-- MODAL 2: EDITAR INFORMAÇÕES DO ALUNO -->
-    <!-- ========================================================================= -->
     <div id="modalEditarAluno" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[130] p-3 sm:p-4 overflow-y-auto">
         <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto">
             <div class="p-5 bg-marinho text-white flex justify-between items-center">
@@ -283,9 +280,7 @@
         </div>
     </div>
 
-    <!-- ========================================================================= -->
     <!-- MODAL 3: NOVA MATRÍCULA COMPLETA -->
-    <!-- ========================================================================= -->
     <div id="modalNovaMatricula" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[130] p-3 sm:p-4 overflow-y-auto">
         <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto max-h-[95vh]">
             <div class="p-5 bg-marinho text-white flex justify-between items-center shrink-0">
@@ -362,8 +357,154 @@
         </div>
     </div>
 
-    <!-- SCRIPT DO MÓDULO DE MATRÍCULAS -->
     <script>
+        const SUPABASE_URL = 'https://fxjdmhrlujiajkouduhg.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_EANH7zIXleZ3G18S6z7KFw_26oySNP9';
+
+        async function supabaseFetchMatriculas(path, options = {}) {
+            const resp = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+                ...options,
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': options.prefer || 'resolution=merge-duplicates,return=representation',
+                    ...(options.headers || {})
+                }
+            });
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const text = await resp.text();
+            return text ? JSON.parse(text) : null;
+        }
+
+        function atualizarBadgeSyncMatriculas(online) {
+            const el = document.getElementById('status-sync-matriculas');
+            if (!el) return;
+            if (online) {
+                el.className = 'text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-2 rounded-xl text-center';
+                el.innerText = '🟢 Supabase Sincronizado';
+            } else {
+                el.className = 'text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-3 py-2 rounded-xl text-center';
+                el.innerText = '🟡 Modo Local';
+            }
+        }
+
+        function registrarNotificacaoDashboard(titulo, horarioDescricao = 'Agora • Secretaria') {
+            const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
+            const atuais = JSON.parse(localStorage.getItem('peniel_reunioes_ok') || '[]');
+            atuais.push({
+                id: Date.now(),
+                titulo,
+                horario: horarioDescricao,
+                confirmada: false,
+                localOnly: true
+            });
+            localStorage.setItem('peniel_reunioes_ok', JSON.stringify(atuais));
+
+            supabaseFetchMatriculas('reunioes_pautas', {
+                method: 'POST',
+                body: JSON.stringify({
+                    unidade,
+                    titulo,
+                    horario_descricao: horarioDescricao,
+                    confirmada: false
+                })
+            }).catch(() => {});
+        }
+
+        function rowParaAlunoMat(r) {
+            const existente = (JSON.parse(localStorage.getItem('peniel_banco_fichas_detalhadas')) || {})[String(r.ra)] || {};
+            return {
+                ra: String(r.ra),
+                nome: r.nome || '',
+                turmaChave: r.turma_chave || 'fundamental1',
+                turma: r.turma || chaveParaNomeTurma[r.turma_chave] || 'Ensino Fundamental',
+                status: r.status || 'Ativo',
+                nasc: r.nasc || '',
+                nat: r.nat || 'Rio de Janeiro - RJ',
+                cpf: r.cpf || '',
+                pai: r.pai || '',
+                paiTel: r.pai_tel || '',
+                paiEmail: r.pai_email || '',
+                mae: r.mae || '',
+                maeTel: r.mae_tel || '',
+                sangue: r.sangue || 'O+',
+                alergia: r.alergia || 'Nenhuma',
+                med: r.med || 'Não utiliza',
+                obs: r.obs || '',
+                relatorio: existente.relatorio || '',
+                fotos: existente.fotos || [],
+                historico: Array.isArray(r.historico) ? r.historico : []
+            };
+        }
+
+        function alunoParaRowMat(aluno) {
+            const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
+            return {
+                ra: String(aluno.ra),
+                unidade,
+                nome: aluno.nome,
+                turma_chave: aluno.turmaChave || 'fundamental1',
+                turma: aluno.turma || chaveParaNomeTurma[aluno.turmaChave] || 'Ensino Fundamental',
+                status: aluno.status || 'Ativo',
+                nasc: aluno.nasc || '',
+                nat: aluno.nat || 'Rio de Janeiro - RJ',
+                cpf: aluno.cpf || '',
+                pai: aluno.pai || '',
+                pai_tel: aluno.paiTel || '',
+                pai_email: aluno.paiEmail || '',
+                mae: aluno.mae || '',
+                mae_tel: aluno.maeTel || '',
+                sangue: aluno.sangue || 'O+',
+                alergia: aluno.alergia || 'Nenhuma',
+                med: aluno.med || 'Não utiliza',
+                obs: aluno.obs || '',
+                historico: aluno.historico || [],
+                atualizado_em: new Date().toISOString()
+            };
+        }
+
+        async function sincronizarMatriculasSupabase() {
+            const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
+            try {
+                const rows = await supabaseFetchMatriculas(`fichas_alunos?unidade=eq.${encodeURIComponent(unidade)}&order=nome.asc`);
+                if (Array.isArray(rows)) {
+                    const baseLocal = obterBancoGeralAlunos();
+                    rows.forEach(r => {
+                        baseLocal[String(r.ra)] = rowParaAlunoMat(r);
+                    });
+                    salvarBancoGeralAlunos(baseLocal);
+                    atualizarContagensEHeader();
+                    renderizarTabelaAlunos();
+                    atualizarBadgeSyncMatriculas(true);
+                }
+            } catch (_) {
+                atualizarBadgeSyncMatriculas(false);
+            }
+        }
+
+        async function persistirAlunoMatriculaSupabase(aluno) {
+            try {
+                await supabaseFetchMatriculas('fichas_alunos?on_conflict=ra', {
+                    method: 'POST',
+                    body: JSON.stringify(alunoParaRowMat(aluno))
+                });
+                atualizarBadgeSyncMatriculas(true);
+            } catch (_) {
+                atualizarBadgeSyncMatriculas(false);
+            }
+        }
+
+        let toastMatTimer = null;
+        function notificarMatricula(msg) {
+            const el = document.getElementById('toast-matriculas');
+            if (!el) return;
+            document.getElementById('toast-matriculas-texto').innerText = msg;
+            el.classList.remove('hidden');
+            clearTimeout(toastMatTimer);
+            toastMatTimer = setTimeout(() => el.classList.add('hidden'), 3500);
+        }
+
         function toggleMenuMobile() {
             const menu = document.getElementById('menu-lateral');
             const overlay = document.getElementById('overlay-mobile');
@@ -372,16 +513,14 @@
         }
 
         function sairDoSistema() {
-            if(confirm("Deseja encerrar sua sessão?")) { window.location.href = 'login.html'; }
+            if (confirm("Deseja encerrar sua sessão?")) { window.location.href = 'login.html'; }
         }
 
-        // MOTOR CENTRAL UNIFICADO
         function obterBancoGeralAlunos() {
-            let base = JSON.parse(localStorage.getItem('peniel_banco_fichas_detalhadas')) || {
+            return JSON.parse(localStorage.getItem('peniel_banco_fichas_detalhadas')) || {
                 '2027501': { ra: '2027501', nome: 'Helena Santos', turmaChave: 'maternal1', turma: 'Maternal 1', status: 'Ativo', nasc: '15/04/2023', nat: 'Rio de Janeiro - RJ', cpf: '000.111.222-33', pai: 'Camila Santos', paiTel: '(21) 98888-1111', paiEmail: 'camila@email.com', mae: 'Ana Santos', maeTel: '(21) 97777-2222', sangue: 'O+', alergia: 'Nenhuma', med: 'Não utiliza', obs: 'Excelente adaptação.', relatorio: 'Boa adaptação.', fotos: [], historico: [{ data: '12/02/2026', titulo: 'Adaptação', desc: 'Concluída com sucesso.' }] },
                 '2027001': { ra: '2027001', nome: 'Davi Lucas', turmaChave: 'fundamental1', turma: 'Ensino Fundamental', status: 'Ativo', nasc: '15/04/2018', nat: 'Rio de Janeiro - RJ', cpf: '111.222.333-44', pai: 'Carlos Lucas', paiTel: '(21) 99999-1111', paiEmail: 'carlos.lucas@email.com', mae: 'Ana Carolina Lucas', maeTel: '(21) 98888-2222', sangue: 'O+', alergia: 'Amendoim', med: 'Não utiliza', obs: 'Participativo.', relatorio: '', fotos: [], historico: [{ data: '10/03/2026', titulo: 'Início', desc: 'Matrícula renovada.' }] }
             };
-            return base;
         }
 
         function salvarBancoGeralAlunos(base) {
@@ -416,9 +555,7 @@
             for (let ra in base) {
                 totalEscola++;
                 const tc = base[ra].turmaChave;
-                if (contagens[tc] !== undefined) {
-                    contagens[tc]++;
-                }
+                if (contagens[tc] !== undefined) contagens[tc]++;
             }
 
             document.getElementById('badge-total-geral-escola').innerText = `Total Escola: ${totalEscola} alunos`;
@@ -434,11 +571,9 @@
             turmaAtual = turmaKey;
             ['todas', 'maternal1', 'maternal2', 'pre1', 'pre2', 'fundamental1'].forEach(k => {
                 const btn = document.getElementById(`btn-${k}`);
-                if (k === turmaKey) {
-                    btn.className = 'px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-marinho text-white shadow-sm';
-                } else {
-                    btn.className = 'px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200';
-                }
+                btn.className = k === turmaKey
+                    ? 'px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-marinho text-white shadow-sm'
+                    : 'px-4 py-2.5 rounded-xl font-bold text-xs transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200';
             });
 
             document.getElementById('titulo-turma-atual').innerText = infoTurmas[turmaKey].titulo;
@@ -453,15 +588,11 @@
             const base = obterBancoGeralAlunos();
             const busca = document.getElementById('buscaMatricula').value.toLowerCase();
             
-            let filtrados = [];
-            for (let ra in base) {
-                const aluno = base[ra];
+            const filtrados = Object.values(base).filter(aluno => {
                 const matchTurma = (turmaAtual === 'todas' || aluno.turmaChave === turmaAtual);
                 const matchBusca = (aluno.nome.toLowerCase().includes(busca) || aluno.pai.toLowerCase().includes(busca) || aluno.ra.toLowerCase().includes(busca));
-                if (matchTurma && matchBusca) {
-                    filtrados.push(aluno);
-                }
-            }
+                return matchTurma && matchBusca;
+            });
 
             if (filtrados.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400 text-xs">Nenhum aluno encontrado.</td></tr>`;
@@ -472,20 +603,9 @@
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition";
                 
-                let botoesAcao = '';
-                if (aluno.turmaChave === 'fundamental1') {
-                    botoesAcao = `
-                        <button type="button" onclick="abrirBoletimAnual('${aluno.ra}')" class="bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-bold text-xs transition">📊 Notas</button>
-                        <button type="button" onclick="abrirModalEditarAluno('${aluno.ra}')" class="bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 px-3 py-1.5 rounded-lg font-bold text-xs transition">✏️ Editar Rápido</button>
-                        <a href="fichas.html?ra=${aluno.ra}" class="bg-marinho text-white hover:bg-blue-900 px-3 py-1.5 rounded-lg font-bold text-xs transition inline-block">👥 Ficha Completa</a>
-                    `;
-                } else {
-                    botoesAcao = `
-                        <button type="button" onclick="abrirModalInfantil('${aluno.ra}')" class="bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 px-3 py-1.5 rounded-lg font-bold text-xs transition">📝 Relatório</button>
-                        <button type="button" onclick="abrirModalEditarAluno('${aluno.ra}')" class="bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 px-3 py-1.5 rounded-lg font-bold text-xs transition">✏️ Editar Rápido</button>
-                        <a href="fichas.html?ra=${aluno.ra}" class="bg-marinho text-white hover:bg-blue-900 px-3 py-1.5 rounded-lg font-bold text-xs transition inline-block">👥 Ficha Completa</a>
-                    `;
-                }
+                const acaoPrincipal = aluno.turmaChave === 'fundamental1'
+                    ? `<button type="button" onclick="abrirBoletimAnual('${aluno.ra}')" class="bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-bold text-xs transition">📊 Notas</button>`
+                    : `<button type="button" onclick="abrirModalInfantil('${aluno.ra}')" class="bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 px-3 py-1.5 rounded-lg font-bold text-xs transition">📝 Relatório</button>`;
 
                 tr.innerHTML = `
                     <td class="px-5 py-3.5">
@@ -500,7 +620,9 @@
                         <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-bold">${aluno.status}</span>
                     </td>
                     <td class="px-5 py-3.5 text-right whitespace-nowrap space-x-1">
-                        ${botoesAcao}
+                        ${acaoPrincipal}
+                        <button type="button" onclick="abrirModalEditarAluno('${aluno.ra}')" class="bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 px-3 py-1.5 rounded-lg font-bold text-xs transition">✏️ Editar Rápido</button>
+                        <a href="fichas.html?ra=${aluno.ra}" class="bg-marinho text-white hover:bg-blue-900 px-3 py-1.5 rounded-lg font-bold text-xs transition inline-block">👥 Ficha Completa</a>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -509,20 +631,14 @@
 
         function filtrarAlunosTurma() { renderizarTabelaAlunos(); }
 
-        // =====================================================================
-        // LÓGICA DO BOLETIM COM LANÇAMENTO DIRETO (4 TRIMESTRES)
-        // =====================================================================
         const materiasPadrao = ['Matemática', 'Português', 'Ciências', 'História', 'Geografia'];
 
         function abrirBoletimAnual(ra) {
             alunoEditandoNotasRa = ra;
-            const baseAlunos = obterBancoGeralAlunos();
-            const aluno = baseAlunos[ra];
+            const aluno = obterBancoGeralAlunos()[ra];
             if (!aluno) return;
-
             document.getElementById('boletim-nome-aluno').innerText = `Desempenho Acadêmico: ${aluno.nome}`;
             document.getElementById('boletim-ra').innerText = aluno.ra;
-
             renderizarTabelaBoletimEditable(ra);
             document.getElementById('modalBoletimAnual').classList.remove('hidden');
         }
@@ -536,21 +652,10 @@
             let totalDisciplinasAvaliadas = 0;
 
             materiasPadrao.forEach(materia => {
-                const valT1 = extrairNotaTrimestre(bancoNotas[`${ra}_${materia}_T1`]);
-                const valT2 = extrairNotaTrimestre(bancoNotas[`${ra}_${materia}_T2`]);
-                const valT3 = extrairNotaTrimestre(bancoNotas[`${ra}_${materia}_T3`]);
-                const valT4 = extrairNotaTrimestre(bancoNotas[`${ra}_${materia}_T4`]);
+                const vals = ['T1', 'T2', 'T3', 'T4'].map(p => extrairNotaTrimestre(bancoNotas[`${ra}_${materia}_${p}`]));
+                const preenchidas = vals.filter(v => v !== '').map(Number);
+                const mediaAnual = preenchidas.length > 0 ? (preenchidas.reduce((a, b) => a + b, 0) / preenchidas.length).toFixed(1) : '--';
 
-                let countTrimestres = 0;
-                let somaTrimestres = 0;
-                
-                if (valT1 !== '') { somaTrimestres += parseFloat(valT1); countTrimestres++; }
-                if (valT2 !== '') { somaTrimestres += parseFloat(valT2); countTrimestres++; }
-                if (valT3 !== '') { somaTrimestres += parseFloat(valT3); countTrimestres++; }
-                if (valT4 !== '') { somaTrimestres += parseFloat(valT4); countTrimestres++; }
-
-                const mediaAnual = countTrimestres > 0 ? (somaTrimestres / countTrimestres).toFixed(1) : '--';
-                
                 if (mediaAnual !== '--') {
                     somaMediasAnuais += parseFloat(mediaAnual);
                     totalDisciplinasAvaliadas++;
@@ -558,48 +663,34 @@
 
                 let situacaoHtml = '<span class="bg-slate-100 text-slate-500 px-2 py-0.5 rounded font-bold">Aguardando</span>';
                 if (mediaAnual !== '--') {
-                    if (parseFloat(mediaAnual) >= 7.0) {
-                        situacaoHtml = '<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded font-bold">Aprovado</span>';
-                    } else {
-                        situacaoHtml = '<span class="bg-orange-100 text-orange-800 px-2 py-0.5 rounded font-bold">Recuperação</span>';
-                    }
+                    situacaoHtml = parseFloat(mediaAnual) >= 7.0
+                        ? '<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded font-bold">Aprovado</span>'
+                        : '<span class="bg-orange-100 text-orange-800 px-2 py-0.5 rounded font-bold">Recuperação</span>';
                 }
 
                 const matKey = materia.toLowerCase().replace(/ç/g, 'c').replace(/á/g, 'a').replace(/ê/g, 'e');
-
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition";
                 tr.innerHTML = `
                     <td class="px-4 py-3 font-bold text-slate-800">${materia}</td>
-                    <td class="px-3 py-3 text-center">
-                        <input type="number" step="0.1" min="0" max="10" id="input_${matKey}_T1" value="${valT1}" placeholder="0.0" class="w-16 border border-slate-300 rounded px-2 py-1 text-center font-bold text-xs focus:ring-2 focus:ring-marinho focus:outline-none">
-                    </td>
-                    <td class="px-3 py-3 text-center">
-                        <input type="number" step="0.1" min="0" max="10" id="input_${matKey}_T2" value="${valT2}" placeholder="0.0" class="w-16 border border-slate-300 rounded px-2 py-1 text-center font-bold text-xs focus:ring-2 focus:ring-marinho focus:outline-none">
-                    </td>
-                    <td class="px-3 py-3 text-center">
-                        <input type="number" step="0.1" min="0" max="10" id="input_${matKey}_T3" value="${valT3}" placeholder="0.0" class="w-16 border border-slate-300 rounded px-2 py-1 text-center font-bold text-xs focus:ring-2 focus:ring-marinho focus:outline-none">
-                    </td>
-                    <td class="px-3 py-3 text-center">
-                        <input type="number" step="0.1" min="0" max="10" id="input_${matKey}_T4" value="${valT4}" placeholder="0.0" class="w-16 border border-slate-300 rounded px-2 py-1 text-center font-bold text-xs focus:ring-2 focus:ring-marinho focus:outline-none">
-                    </td>
+                    ${['T1', 'T2', 'T3', 'T4'].map((p, idx) => `
+                        <td class="px-3 py-3 text-center">
+                            <input type="number" step="0.1" min="0" max="10" id="input_${matKey}_${p}" value="${vals[idx]}" placeholder="0.0" class="w-16 border border-slate-300 rounded px-2 py-1 text-center font-bold text-xs focus:ring-2 focus:ring-marinho focus:outline-none">
+                        </td>
+                    `).join('')}
                     <td class="px-4 py-3 text-center font-black text-marinho text-sm">${mediaAnual}</td>
                     <td class="px-4 py-3 text-right">${situacaoHtml}</td>
                 `;
                 tbody.appendChild(tr);
             });
 
-            // Atualiza status geral
             const statusGeralEl = document.getElementById('boletim-status-geral');
             if (totalDisciplinasAvaliadas > 0) {
                 const mediaGeralAno = somaMediasAnuais / totalDisciplinasAvaliadas;
-                if (mediaGeralAno >= 7.0) {
-                    statusGeralEl.className = 'bg-green-100 text-green-800 px-3 py-1.5 rounded-xl text-xs font-bold';
-                    statusGeralEl.innerText = `Média Geral: ${mediaGeralAno.toFixed(1)} — Aprovado`;
-                } else {
-                    statusGeralEl.className = 'bg-orange-100 text-orange-800 px-3 py-1.5 rounded-xl text-xs font-bold';
-                    statusGeralEl.innerText = `Média Geral: ${mediaGeralAno.toFixed(1)} — Em Recuperação`;
-                }
+                statusGeralEl.className = mediaGeralAno >= 7.0
+                    ? 'bg-green-100 text-green-800 px-3 py-1.5 rounded-xl text-xs font-bold'
+                    : 'bg-orange-100 text-orange-800 px-3 py-1.5 rounded-xl text-xs font-bold';
+                statusGeralEl.innerText = `Média Geral: ${mediaGeralAno.toFixed(1)} — ${mediaGeralAno >= 7.0 ? 'Aprovado' : 'Em Recuperação'}`;
             } else {
                 statusGeralEl.className = 'bg-slate-100 text-slate-700 px-3 py-1.5 rounded-xl text-xs font-bold';
                 statusGeralEl.innerText = 'Digite as notas para calcular o desempenho';
@@ -609,14 +700,9 @@
         function extrairNotaTrimestre(obj) {
             if (!obj) return '';
             if (obj.notaFinal !== undefined && obj.notaFinal !== null && obj.notaFinal !== '') return obj.notaFinal;
-            const v1 = parseFloat(obj.n1);
-            const v2 = parseFloat(obj.n2);
-            const v3 = parseFloat(obj.n3);
+            const v1 = parseFloat(obj.n1), v2 = parseFloat(obj.n2), v3 = parseFloat(obj.n3);
             if (!isNaN(v1) || !isNaN(v2) || !isNaN(v3)) {
-                const n1 = isNaN(v1) ? 0 : v1;
-                const n2 = isNaN(v2) ? 0 : v2;
-                const n3 = isNaN(v3) ? 0 : v3;
-                return (((n1 * 3) + (n2 * 4) + (n3 * 3)) / 10).toFixed(1);
+                return ((((isNaN(v1) ? 0 : v1) * 3) + ((isNaN(v2) ? 0 : v2) * 4) + ((isNaN(v3) ? 0 : v3) * 3)) / 10).toFixed(1);
             }
             return '';
         }
@@ -624,40 +710,29 @@
         function salvarNotasBoletim() {
             if (!alunoEditandoNotasRa) return;
             const bancoNotas = JSON.parse(localStorage.getItem('peniel_banco_notas')) || {};
-
             materiasPadrao.forEach(materia => {
                 const matKey = materia.toLowerCase().replace(/ç/g, 'c').replace(/á/g, 'a').replace(/ê/g, 'e');
                 ['T1', 'T2', 'T3', 'T4'].forEach(periodo => {
                     const inp = document.getElementById(`input_${matKey}_${periodo}`);
-                    if (inp) {
+                    if (inp && inp.value.trim() !== '') {
                         const val = inp.value.trim();
-                        const chave = `${alunoEditandoNotasRa}_${materia}_${periodo}`;
-                        if (val !== '') {
-                            bancoNotas[chave] = {
-                                n1: val, n2: val, n3: val,
-                                notaFinal: val,
-                                dataAtualizacao: new Date().toLocaleDateString('pt-BR')
-                            };
-                        }
+                        bancoNotas[`${alunoEditandoNotasRa}_${materia}_${periodo}`] = {
+                            n1: val, n2: val, n3: val, notaFinal: val,
+                            dataAtualizacao: new Date().toLocaleDateString('pt-BR')
+                        };
                     }
                 });
             });
-
             localStorage.setItem('peniel_banco_notas', JSON.stringify(bancoNotas));
             renderizarTabelaBoletimEditable(alunoEditandoNotasRa);
-            alert('✅ Notas salvas e médias atualizadas com sucesso!');
+            notificarMatricula('Notas salvas e médias atualizadas com sucesso!');
         }
 
-        function fecharModalBoletim() {
-            document.getElementById('modalBoletimAnual').classList.add('hidden');
-        }
+        function fecharModalBoletim() { document.getElementById('modalBoletimAnual').classList.add('hidden'); }
 
-        // EDITAR ALUNO RÁPIDO
         function abrirModalEditarAluno(ra) {
-            const base = obterBancoGeralAlunos();
-            const aluno = base[ra];
+            const aluno = obterBancoGeralAlunos()[ra];
             if (!aluno) return;
-
             document.getElementById('editAlunoRa').value = aluno.ra;
             document.getElementById('editAlunoNome').value = aluno.nome;
             document.getElementById('editAlunoTurma').value = aluno.turmaChave || 'maternal1';
@@ -681,87 +756,28 @@
                 base[ra].pai = document.getElementById('editAlunoResp').value.trim();
                 base[ra].paiTel = document.getElementById('editAlunoTel').value.trim();
                 salvarBancoGeralAlunos(base);
-
-            // --- GERAÇÃO AUTOMÁTICA DE ESTRUTURA DE BOLETOS AO MATRICULAR NOVO ALUNO ---
-            (function gerarBoletosAutomaticosNovaMatricula() {
-                const chaveBoletos = 'peniel_boletos_automaticos';
-                const listaBoletos = JSON.parse(localStorage.getItem(chaveBoletos) || '[]');
-
-                // Regras configuráveis por turma/plano
-                const regrasTurma = {
-                    maternal1:    { valorBase: 950.00, parcelas: 12, diaVencimento: 10, descontoPontualidadePct: 5, multaPct: 2, jurosMesPct: 1 },
-                    maternal2:    { valorBase: 950.00, parcelas: 12, diaVencimento: 10, descontoPontualidadePct: 5, multaPct: 2, jurosMesPct: 1 },
-                    pre1:         { valorBase: 920.00, parcelas: 12, diaVencimento: 10, descontoPontualidadePct: 5, multaPct: 2, jurosMesPct: 1 },
-                    pre2:         { valorBase: 920.00, parcelas: 12, diaVencimento: 10, descontoPontualidadePct: 5, multaPct: 2, jurosMesPct: 1 },
-                    fundamental1: { valorBase: 890.00, parcelas: 12, diaVencimento: 10, descontoPontualidadePct: 5, multaPct: 2, jurosMesPct: 1 }
-                };
-
-                const regra = regrasTurma[turmaKey] || { valorBase: 890.00, parcelas: 12, diaVencimento: 10, descontoPontualidadePct: 5, multaPct: 2, jurosMesPct: 1 };
-                const hoje = new Date();
-                const mesInicial = hoje.getMonth(); // 0..11
-                const anoInicial = hoje.getFullYear();
-
-                for (let i = 0; i < regra.parcelas; i++) {
-                    const dataVenc = new Date(anoInicial, mesInicial + i, regra.diaVencimento);
-                    const vencStr = dataVenc.toLocaleDateString('pt-BR');
-                    const mesRef = dataVenc.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' }).replace('.', '');
-
-                    const valorOriginal = regra.valorBase;
-                    const valorDesconto = +(valorOriginal * (regra.descontoPontualidadePct / 100)).toFixed(2);
-                    const valorComDesconto = +(valorOriginal - valorDesconto).toFixed(2);
-                    const valorMultaReais = +(valorOriginal * (regra.multaPct / 100)).toFixed(2);
-
-                    listaBoletos.push({
-                        id: 'BOL-' + novoRa + '-' + String(i + 1).padStart(2, '0'),
-                        raAluno: novoRa,
-                        nomeAluno: nomeAluno,
-                        turma: chaveParaNomeTurma[turmaKey] || 'Turma Regular',
-                        responsavel: nomeResp,
-                        cpfResponsavel: cpfResp,
-                        emailResponsavel: emailResp,
-                        telefoneResponsavel: telResp,
-                        parcela: (i + 1) + '/' + regra.parcelas,
-                        referencia: 'Mensalidade ' + mesRef,
-                        vencimento: vencStr,
-                        valorOriginal: valorOriginal,
-                        descontoPct: regra.descontoPontualidadePct,
-                        valorComDesconto: valorComDesconto,
-                        multaPct: regra.multaPct,
-                        valorMultaReais: valorMultaReais,
-                        jurosMesPct: regra.jurosMesPct,
-                        status: i === 0 ? 'pendente' : 'agendado',
-                        linhaDigitavel: '34191.79001 01043.510047 91020.150008 6 ' + Math.floor(10000000000000 + Math.random() * 89999999999999),
-                        urlBoleto: '',
-                        gatewayId: ''
-                    });
-                }
-
-                localStorage.setItem(chaveBoletos, JSON.stringify(listaBoletos));
-            })();
-
+            }
+            if (base[ra]) {
+                persistirAlunoMatriculaSupabase(base[ra]);
             }
             fecharModalEditarAluno();
             atualizarContagensEHeader();
             renderizarTabelaAlunos();
-            alert('✅ Dados cadastrais e turma atualizados com sucesso!');
+            notificarMatricula('Dados cadastrais e turma atualizados com sucesso!');
         }
 
-        // AVALIAÇÃO INFANTIL
         let alunoEditandoRa = null;
         let fotosTemporarias = [];
 
         function abrirModalInfantil(ra) {
-            const base = obterBancoGeralAlunos();
-            const aluno = base[ra];
+            const aluno = obterBancoGeralAlunos()[ra];
             if (!aluno) return;
             alunoEditandoRa = ra;
-
             document.getElementById('badge-turma-modal').innerText = aluno.turma || 'Educação Infantil';
             document.getElementById('nome-aluno-modal').innerText = `Ficha: ${aluno.nome}`;
             document.getElementById('texto-relatorio-infantil').value = aluno.relatorio || '';
             fotosTemporarias = aluno.fotos ? [...aluno.fotos] : ['🎨 Atividade Lúdica'];
             renderizarMuralFotos();
-
             document.getElementById('modalAvaliacaoInfantil').classList.remove('hidden');
         }
 
@@ -805,35 +821,80 @@
                 salvarBancoGeralAlunos(base);
             }
             fecharModalAvaliacaoInfantil();
-            alert('✅ Relatório e fotos salvos com sucesso!');
+            notificarMatricula('Relatório e fotos salvos com sucesso!');
         }
 
-        // MATRÍCULA COMPLETA
         function abrirModalNovaMatricula() { document.getElementById('modalNovaMatricula').classList.remove('hidden'); }
         function fecharModalNovaMatricula() { document.getElementById('modalNovaMatricula').classList.add('hidden'); }
+
+        function gerarBoletosParaAluno(alunoObj, cpfResp, emailResp) {
+            const chaveBoletos = 'peniel_boletos_automaticos';
+            const listaBoletos = JSON.parse(localStorage.getItem(chaveBoletos) || '[]');
+            const regrasTurma = {
+                maternal1:    { valorBase: 950.00, parcelas: 12, diaVencimento: 10, descontoPontualidadePct: 5, multaPct: 2, jurosMesPct: 1 },
+                maternal2:    { valorBase: 950.00, parcelas: 12, diaVencimento: 10, descontoPontualidadePct: 5, multaPct: 2, jurosMesPct: 1 },
+                pre1:         { valorBase: 920.00, parcelas: 12, diaVencimento: 10, descontoPontualidadePct: 5, multaPct: 2, jurosMesPct: 1 },
+                pre2:         { valorBase: 920.00, parcelas: 12, diaVencimento: 10, descontoPontualidadePct: 5, multaPct: 2, jurosMesPct: 1 },
+                fundamental1: { valorBase: 890.00, parcelas: 12, diaVencimento: 10, descontoPontualidadePct: 5, multaPct: 2, jurosMesPct: 1 }
+            };
+            const regra = regrasTurma[alunoObj.turmaChave] || { valorBase: 890.00, parcelas: 12, diaVencimento: 10, descontoPontualidadePct: 5, multaPct: 2, jurosMesPct: 1 };
+            const hoje = new Date();
+
+            for (let i = 0; i < regra.parcelas; i++) {
+                const dataVenc = new Date(hoje.getFullYear(), hoje.getMonth() + i, regra.diaVencimento);
+                const vencStr = dataVenc.toLocaleDateString('pt-BR');
+                const mesRef = dataVenc.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' }).replace('.', '');
+                const valorOriginal = regra.valorBase;
+                const valorDesconto = +(valorOriginal * (regra.descontoPontualidadePct / 100)).toFixed(2);
+                const valorComDesconto = +(valorOriginal - valorDesconto).toFixed(2);
+                const valorMultaReais = +(valorOriginal * (regra.multaPct / 100)).toFixed(2);
+
+                listaBoletos.push({
+                    id: 'BOL-' + alunoObj.ra + '-' + String(i + 1).padStart(2, '0'),
+                    raAluno: alunoObj.ra,
+                    nomeAluno: alunoObj.nome,
+                    turma: alunoObj.turma,
+                    responsavel: alunoObj.pai,
+                    cpfResponsavel: cpfResp,
+                    emailResponsavel: emailResp,
+                    telefoneResponsavel: alunoObj.paiTel,
+                    parcela: (i + 1) + '/' + regra.parcelas,
+                    referencia: 'Mensalidade ' + mesRef,
+                    vencimento: vencStr,
+                    valorOriginal,
+                    descontoPct: regra.descontoPontualidadePct,
+                    valorComDesconto,
+                    multaPct: regra.multaPct,
+                    valorMultaReais,
+                    jurosMesPct: regra.jurosMesPct,
+                    status: i === 0 ? 'pendente' : 'agendado',
+                    linhaDigitavel: '34191.79001 01043.510047 91020.150008 6 ' + Math.floor(10000000000000 + Math.random() * 89999999999999),
+                    urlBoleto: '',
+                    gatewayId: ''
+                });
+            }
+            localStorage.setItem(chaveBoletos, JSON.stringify(listaBoletos));
+        }
 
         function salvarMatriculaCompleta() {
             const nomeAluno = document.getElementById('matAlunoNome').value.trim();
             const nascAluno = document.getElementById('matAlunoNasc').value.trim() || '01/01/2021';
             const turmaKey = document.getElementById('matTurmaKey').value;
-            
             const nomeResp = document.getElementById('matRespNome').value.trim();
             const cpfResp = document.getElementById('matRespCpf').value.trim() || '000.000.000-00';
             const telResp = document.getElementById('matRespTel').value.trim() || '(21) 90000-0000';
             const emailResp = document.getElementById('matRespEmail').value.trim() || 'responsavel@email.com';
-
             const sangue = document.getElementById('matSangue').value.trim() || 'O+';
             const alergia = document.getElementById('matAlergia').value.trim() || 'Nenhuma';
 
             if (!nomeAluno || !nomeResp) {
-                alert('Preencha pelo menos o Nome do Aluno e o Nome do Responsável.');
+                notificarMatricula('Preencha pelo menos o Nome do Aluno e o Nome do Responsável.');
                 return;
             }
 
             const novoRa = '2027' + Math.floor(100 + Math.random() * 900);
             const base = obterBancoGeralAlunos();
-
-            base[novoRa] = {
+            const novoAluno = {
                 ra: novoRa,
                 nome: nomeAluno,
                 turmaChave: turmaKey,
@@ -847,8 +908,8 @@
                 paiEmail: emailResp,
                 mae: 'Co-responsável',
                 maeTel: telResp,
-                sangue: sangue,
-                alergia: alergia,
+                sangue,
+                alergia,
                 med: 'Não utiliza',
                 obs: 'Matrícula recente efetivada pela secretaria.',
                 relatorio: 'Matrícula recente iniciada.',
@@ -856,24 +917,31 @@
                 historico: [{ data: new Date().toLocaleDateString('pt-BR'), titulo: 'Efetivação de Matrícula', desc: 'Cadastro completo realizado.' }]
             };
 
+            base[novoRa] = novoAluno;
             salvarBancoGeralAlunos(base);
+            persistirAlunoMatriculaSupabase(novoAluno);
+            gerarBoletosParaAluno(novoAluno, cpfResp, emailResp);
+            registrarNotificacaoDashboard(`Nova matrícula: ${novoAluno.nome} (${novoAluno.turma})`, 'Agora • Matrículas');
             fecharModalNovaMatricula();
 
-            document.getElementById('matAlunoNome').value = '';
-            document.getElementById('matAlunoNasc').value = '';
-            document.getElementById('matRespNome').value = '';
-            document.getElementById('matRespCpf').value = '';
-            document.getElementById('matRespTel').value = '';
-            document.getElementById('matRespEmail').value = '';
-            document.getElementById('matSangue').value = '';
-            document.getElementById('matAlergia').value = '';
+            ['matAlunoNome', 'matAlunoNasc', 'matRespNome', 'matRespCpf', 'matRespTel', 'matRespEmail', 'matSangue', 'matAlergia'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
 
             mudarTurmaMatricula(turmaKey);
-            alert(`✅ Matrícula Completa efetivada com sucesso!
-O aluno já está disponível na tela de Fichas e Prontuários (RA: ${novoRa}).`);
+            notificarMatricula(`Matrícula efetivada com sucesso! RA: ${novoRa}`);
         }
 
-        document.addEventListener('DOMContentLoaded', () => { mudarTurmaMatricula('todas'); });
+        document.addEventListener('DOMContentLoaded', () => {
+            const corSalva = localStorage.getItem('peniel_cor_sessao') || '#003057';
+            const menuLat = document.getElementById('menu-lateral');
+            if (menuLat) menuLat.style.backgroundColor = corSalva;
+            const unidadeSalva = localStorage.getItem('peniel_unidade') || 'Matriz';
+            const unidEl = document.querySelector('#menu-lateral span.text-blue-300');
+            if (unidEl) unidEl.innerText = 'Unidade ' + unidadeSalva;
+            mudarTurmaMatricula('todas');
+            sincronizarMatriculasSupabase();
+        });
     </script>
 </body>
 </html>
