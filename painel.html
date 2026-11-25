@@ -2,11 +2,11 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Interno | Peniel Christian School</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Leads Typebot | Peniel Christian School</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -18,267 +18,339 @@
         }
     </script>
     <style>
-        @keyframes pulsoSuaveEmpresa {
-            0%, 100% {
-                transform: scale(1);
-                box-shadow: 0 2px 10px rgba(0, 48, 87, 0.06);
-                border-color: rgba(226, 232, 240, 1);
-            }
-            50% {
-                transform: scale(1.018);
-                box-shadow: 0 10px 26px rgba(232, 93, 4, 0.20);
-                border-color: rgba(232, 93, 4, 0.55);
-            }
-        }
-        .card-grafico-pulsante {
-            animation: pulsoSuaveEmpresa 3.2s ease-in-out infinite;
-            transition: all 0.4s ease;
-        }
-        .card-grafico-pulsante-atraso {
-            animation: pulsoSuaveEmpresa 3.2s ease-in-out 1.6s infinite;
-            transition: all 0.4s ease;
-        }
-        @keyframes fadeBadgeInfo {
-            0% { opacity: 0.35; transform: translateY(2px); }
-            15%, 85% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0.35; transform: translateY(-2px); }
-        }
-        .info-empresa-pulsante {
-            animation: fadeBadgeInfo 4s ease-in-out infinite;
-        }
-        @keyframes numPop {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.12); color: #E85D04; }
-            100% { transform: scale(1); }
-        }
-        .numero-animado {
-            display: inline-block;
-            animation: numPop 0.6s ease-out;
+        /* Mantem cards e textos estaticos e nitidos; animacao apenas nos badges e nas partes internas do grafico */
+        .info-empresa-estatica {
+            opacity: 1 !important;
+            filter: none !important;
+            transform: none !important;
+            animation: none !important;
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col md:flex-row overflow-x-hidden">
 
-    <div class="flex h-screen overflow-hidden">
-        
-        <!-- Menu Lateral Interno -->
-        <!-- Menu Lateral Interno -->
-        <aside class="w-64 bg-marinho text-white flex flex-col hidden md:flex">
-            <div class="p-6">
-                <h1 class="font-heading text-2xl font-bold tracking-tight">PENIEL <span class="text-sm font-sans font-normal block text-blue-300">Sistema Interno</span></h1>
+    <!-- Barra de topo mobile -->
+    <div id="barra-topo-mobile" class="md:hidden bg-marinho text-white px-4 py-3.5 flex justify-between items-center shadow-lg sticky top-0 z-[80] border-b border-white/10">
+        <div class="flex items-center gap-3">
+            <button type="button" onclick="toggleMenuMobile()" class="bg-laranja hover:bg-orange-600 text-white px-3 py-2 rounded-xl font-bold text-sm flex items-center gap-1.5 shadow-md active:scale-95">
+                <span class="text-base leading-none">☰</span> Menu
+            </button>
+            <div>
+                <h1 class="font-heading text-base font-extrabold tracking-tight leading-none">PENIEL</h1>
+                <span class="text-[10px] text-blue-200 font-medium block mt-0.5" id="label-unidade-mobile">Unidade Matriz</span>
             </div>
-            <nav class="flex-1 px-2 space-y-1 mt-2 overflow-y-auto pb-6">
-                
-                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-4 px-4">Captação</div>
-                <a href="painel.html" class="block px-4 py-2.5 bg-blue-900 rounded-lg font-medium text-white shadow-inner">📥 Leads Typebot</a>
-                
-                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Secretaria</div>
-                <a href="matriculas.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📝 Matrículas</a>
-                <a href="fichas.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">👥 Fichas (Alunos/Pais)</a>
-                <a href="rematricula.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">🔄 Rematrícula</a>
-
-                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Acadêmico</div>
-                <a href="calendario.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📅 Calendário Escolar</a>
-                <a href="notas.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📊 Notas e Avaliações</a>
-
-                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Administrativo</div>
-                <a href="financeiro.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">💰 Gestão Financeira</a>
-                <a href="configuracoes.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">⚙️ Configurações</a>
-            
-            </nav>
-        </aside>
-
-        <!-- Área Principal de Conteúdo -->
-        <main class="flex-1 overflow-y-auto p-6 md:p-10">
-            <header class="flex justify-between items-center mb-8">
-                <h2 class="font-heading text-3xl font-bold text-slate-800">Gestão de Captação (2027)</h2>
-                <div class="text-sm text-slate-500 font-medium">Secretaria</div>
-            </header>
-
-            <!-- Tabela de Dados -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                    <h3 class="font-semibold text-lg text-slate-800">Leads Recebidos via Typebot</h3>
-                    <span id="contador" class="bg-blue-100 text-marinho py-1 px-3 rounded-full text-xs font-bold tracking-wide">
-                        A carregar...
-                    </span>
-                </div>
-                
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-50 text-slate-500 border-b border-slate-200">
-                            <tr>
-                                <th class="px-6 py-4 font-semibold">Data e Hora</th>
-                                <th class="px-6 py-4 font-semibold">Nome do Aluno</th>
-                                <th class="px-6 py-4 font-semibold">Idade</th>
-                                <th class="px-6 py-4 font-semibold">Série</th>
-                                <th class="px-6 py-4 font-semibold text-right">Ação</th>
-                            </tr>
-                        </thead>
-                        <tbody id="corpo-tabela" class="divide-y divide-slate-100">
-                            <tr>
-                                <td colspan="5" class="px-6 py-12 text-center text-slate-500 font-medium">
-                                    <span class="animate-pulse">A buscar dados no banco...</span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- PAINEL INFERIOR DE GRÁFICOS EM TEMPO REAL (PULSAÇÃO SUAVE + NÚMEROS DINÂMICOS) -->
-            <section class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Gráfico 1: Leads por Série Pretendida -->
-                <div class="card-grafico-pulsante bg-white p-5 rounded-2xl border-2 border-slate-200 shadow-sm flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-3">
-                        <div>
-                            <span class="inline-flex items-center gap-1.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> Tempo Real • Supabase
-                            </span>
-                            <h3 class="font-heading font-bold text-slate-800 text-base mt-1">📊 Distribuição de Leads por Série</h3>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-[10px] uppercase font-bold text-slate-400 block">Total Captado</span>
-                            <span id="num-total-leads" class="text-2xl font-extrabold text-marinho">0</span>
-                        </div>
-                    </div>
-
-                    <div class="h-44 relative w-full">
-                        <canvas id="graficoSeriesLeads"></canvas>
-                    </div>
-
-                    <div id="ticker-leads-series" class="info-empresa-pulsante mt-3 w-full text-center bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-2 text-xs font-bold text-marinho">
-                        Sincronizando métricas de captação 2027...
-                    </div>
-                </div>
-
-                <!-- Gráfico 2: Contato & Conversão WhatsApp -->
-                <div class="card-grafico-pulsante-atraso bg-white p-5 rounded-2xl border-2 border-slate-200 shadow-sm flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-3">
-                        <div>
-                            <span class="inline-flex items-center gap-1.5 text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2.5 py-0.5 rounded-full">
-                                <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-ping"></span> Atualização Automática
-                            </span>
-                            <h3 class="font-heading font-bold text-slate-800 text-base mt-1">💬 Leads com WhatsApp & Hoje</h3>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-[10px] uppercase font-bold text-slate-400 block">Com WhatsApp</span>
-                            <span id="num-leads-whats" class="text-2xl font-extrabold text-emerald-600">0</span>
-                        </div>
-                    </div>
-
-                    <div class="h-44 relative w-full">
-                        <canvas id="graficoContatoLeads"></canvas>
-                    </div>
-
-                    <div id="ticker-leads-contato" class="info-empresa-pulsante mt-3 w-full text-center bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-2 text-xs font-bold text-emerald-700">
-                        Peniel Christian School • Captação 2027 Ativa
-                    </div>
-                </div>
-            </section>
-        </main>
+        </div>
+        <span class="text-[11px] bg-white/15 px-2.5 py-1 rounded-lg font-bold">Captação</span>
     </div>
 
-    <!-- Script que faz o navegador buscar os dados com segurança -->
+    <!-- Overlay mobile -->
+    <div id="overlay-mobile" onclick="toggleMenuMobile()" class="fixed inset-0 bg-slate-950/75 z-[95] hidden md:hidden backdrop-blur-sm"></div>
+
+    <!-- Menu lateral padronizado com o Dashboard -->
+    <aside id="menu-lateral" class="fixed md:sticky left-0 top-0 w-72 md:w-64 bg-marinho text-white flex-col h-screen z-[100] transform -translate-x-full md:translate-x-0 flex shrink-0 shadow-2xl md:shadow-none border-r-4 border-laranja md:border-r-0">
+        <div class="p-6 flex justify-between items-center shrink-0 border-b border-white/10 bg-black/15">
+            <div>
+                <h1 class="font-heading text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-laranja inline-block"></span> PENIEL
+                </h1>
+                <span class="text-xs font-sans font-semibold block text-blue-300 mt-0.5" id="label-unidade-menu">Unidade Matriz</span>
+            </div>
+            <button type="button" onclick="toggleMenuMobile()" class="md:hidden bg-white/10 hover:bg-red-500/30 text-white w-9 h-9 rounded-xl text-xl font-bold flex items-center justify-center">&times;</button>
+        </div>
+
+        <nav class="flex-1 px-3 space-y-1.5 mt-3 overflow-y-auto pb-6">
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-3 px-3">Geral</div>
+            <a href="index.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium">📈 Dashboard</a>
+
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Captação</div>
+            <a href="painel.html" class="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-laranja to-orange-500 rounded-xl font-bold text-white shadow-md">
+                <span>📥 Leads Typebot</span>
+                <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full">Ativo</span>
+            </a>
+
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Secretaria</div>
+            <a href="matriculas.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium">📝 Matrículas</a>
+            <a href="fichas.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium">👥 Fichas (Alunos/Pais)</a>
+            <a href="rematricula.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium">🔄 Rematrícula</a>
+
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Acadêmico</div>
+            <a href="calendario.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium">📅 Calendário e Equipe</a>
+            <a href="notas.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium">📊 Notas e Avaliações</a>
+
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Administrativo</div>
+            <a href="financeiro.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium">💰 Gestão Financeira</a>
+            <a href="configuracoes.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium">⚙️ Configurações / ADM</a>
+        </nav>
+
+        <div class="p-4 border-t border-white/10 bg-black/20 shrink-0">
+            <button type="button" onclick="sairDoSistema()" class="w-full flex items-center justify-center gap-2 bg-red-600/80 hover:bg-red-600 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm">
+                🚪 Sair do Sistema
+            </button>
+        </div>
+    </aside>
+
+    <!-- Area principal de conteudo -->
+    <main class="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 flex flex-col gap-6 w-full max-w-full">
+        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm gap-3">
+            <div>
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="bg-blue-100 text-marinho text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">Funil de Captação</span>
+                    <span class="text-xs text-emerald-700 font-bold flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-600"></span> Sincronizado
+                    </span>
+                </div>
+                <h2 class="font-heading text-xl sm:text-2xl md:text-3xl font-bold text-slate-900">Gestão de Captação (2027)</h2>
+                <p class="text-xs text-slate-600">Leads recebidos pelo Typebot, atendimento via WhatsApp e encaminhamento para matrícula.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                <input type="text" id="filtroBuscaLead" oninput="filtrarTabelaLeads()" placeholder="Buscar aluno ou série..." class="flex-1 sm:w-56 border border-slate-300 rounded-xl px-3 py-2 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-marinho">
+                <button type="button" onclick="carregarDados()" class="bg-marinho hover:bg-blue-900 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-sm">
+                    ↻ Atualizar
+                </button>
+            </div>
+        </header>
+
+        <!-- Tabela de dados -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="p-5 border-b border-slate-100 flex flex-wrap justify-between items-center gap-2 bg-slate-50">
+                <h3 class="font-semibold text-base sm:text-lg text-slate-900">Leads Recebidos via Typebot</h3>
+                <span id="contador" class="bg-blue-100 text-marinho py-1 px-3 rounded-full text-xs font-bold tracking-wide">
+                    Carregando...
+                </span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-slate-100 text-slate-700 border-b border-slate-200">
+                        <tr>
+                            <th class="px-5 py-3.5 font-bold">Data e Hora</th>
+                            <th class="px-5 py-3.5 font-bold">Nome do Aluno</th>
+                            <th class="px-5 py-3.5 font-bold">Idade</th>
+                            <th class="px-5 py-3.5 font-bold">Série</th>
+                            <th class="px-5 py-3.5 font-bold text-right">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpo-tabela" class="divide-y divide-slate-100">
+                        <tr>
+                            <td colspan="5" class="px-6 py-12 text-center text-slate-600 font-medium">
+                                Buscando dados no banco...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Painel inferior de graficos: card estatico, animacao apenas no badge e nas partes internas -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-3">
+                    <div>
+                        <span class="inline-flex items-center gap-1.5 text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-ping"></span> Ao Vivo • Supabase
+                        </span>
+                        <h3 class="font-heading font-bold text-slate-900 text-base mt-1">📊 Distribuição de Leads por Série</h3>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[10px] uppercase font-bold text-slate-500 block">Total Captado</span>
+                        <span id="num-total-leads" class="text-2xl font-extrabold text-marinho">0</span>
+                    </div>
+                </div>
+
+                <div class="h-44 relative w-full">
+                    <canvas id="graficoSeriesLeads"></canvas>
+                </div>
+
+                <div id="ticker-leads-series" class="info-empresa-estatica mt-3 w-full text-center bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-marinho">
+                    Peniel Christian School • Captação 2027 Ativa
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-3">
+                    <div>
+                        <span class="inline-flex items-center gap-1.5 text-[10px] font-bold text-blue-800 bg-blue-50 border border-blue-200 px-2.5 py-0.5 rounded-full">
+                            <span class="w-1.5 h-1.5 rounded-full bg-blue-600 animate-ping"></span> Indicador
+                        </span>
+                        <h3 class="font-heading font-bold text-slate-900 text-base mt-1">💬 Leads com WhatsApp & Hoje</h3>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[10px] uppercase font-bold text-slate-500 block">Com WhatsApp</span>
+                        <span id="num-leads-whats" class="text-2xl font-extrabold text-emerald-700">0</span>
+                    </div>
+                </div>
+
+                <div class="h-44 relative w-full">
+                    <canvas id="graficoContatoLeads"></canvas>
+                </div>
+
+                <div id="ticker-leads-contato" class="info-empresa-estatica mt-3 w-full text-center bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-emerald-800">
+                    Monitoramento de contatos WhatsApp ativo
+                </div>
+            </div>
+        </section>
+    </main>
+
     <script>
-        // Configurações do Supabase
-        const apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4amRtaHJsdWppYWprb3VkdWhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MjcwNTcsImV4cCI6MjA5NzQwMzA1N30.EebEMiPS5NjfltzchFH--_HWSKVDhnmhJsa2YtKBzl8';
-        const url = 'https://fxjdmhrlujiajkouduhg.supabase.co/rest/v1/mensagens_typebot?select=*&order=criado_at.desc';
+        const SUPABASE_URL = 'https://fxjdmhrlujiajkouduhg.supabase.co';
+        const SUPABASE_API_KEY = 'sb_publishable_EANH7zIXleZ3G18S6z7KFw_26oySNP9';
+        const SUPABASE_LEADS_URL = `${SUPABASE_URL}/rest/v1/mensagens_typebot?select=*&order=criado_at.desc`;
+
+        let leadsEmMemoria = [];
+        let requisicaoEmAndamento = false;
+        let chartSeries = null;
+        let chartContato = null;
+        let indiceDestaqueInterno = 0;
+
+        function toggleMenuMobile() {
+            const menu = document.getElementById('menu-lateral');
+            const overlay = document.getElementById('overlay-mobile');
+            menu.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        function sairDoSistema() {
+            if (confirm('Deseja encerrar sua sessão e voltar para a tela inicial de Login?')) {
+                localStorage.removeItem('peniel_modo_gestor');
+                localStorage.removeItem('peniel_sessao_ativa');
+                window.location.href = 'login.html';
+            }
+        }
+
+        function mapearSerieParaTurmaChave(serieTexto) {
+            const s = (serieTexto || '').toLowerCase();
+            if (s.includes('maternal 1') || s.includes('maternal i')) return 'maternal1';
+            if (s.includes('maternal 2') || s.includes('maternal ii')) return 'maternal2';
+            if (s.includes('pré 1') || s.includes('pre 1') || s.includes('pré-escola 1') || s.includes('pré i')) return 'pre1';
+            if (s.includes('pré 2') || s.includes('pre 2') || s.includes('pré-escola 2') || s.includes('pré ii')) return 'pre2';
+            return 'fundamental1';
+        }
+
+        function enviarParaMatricula(lead) {
+            const payload = {
+                nome_aluno: lead.nome_aluno || '',
+                idade_aluno: lead.idade_aluno || '',
+                serie_pretendida: lead.serie_pretendida || '',
+                turma_chave: mapearSerieParaTurmaChave(lead.serie_pretendida),
+                telefone_responsavel: lead.telefone_responsavel || ''
+            };
+            localStorage.setItem('peniel_lead_matricula', JSON.stringify(payload));
+
+            const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
+            const tituloNotif = `Lead encaminhado p/ matrícula: ${payload.nome_aluno || 'Sem nome'} (${payload.serie_pretendida || 'Série não informada'})`;
+            const atuais = JSON.parse(localStorage.getItem('peniel_reunioes_ok') || '[]');
+            atuais.push({
+                id: Date.now(),
+                titulo: tituloNotif,
+                horario: 'Agora • Leads Typebot',
+                confirmada: false,
+                localOnly: true
+            });
+            localStorage.setItem('peniel_reunioes_ok', JSON.stringify(atuais));
+
+            fetch(`${SUPABASE_URL}/rest/v1/reunioes_pautas`, {
+                method: 'POST',
+                headers: {
+                    'apikey': SUPABASE_API_KEY,
+                    'Authorization': `Bearer ${SUPABASE_API_KEY}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=representation'
+                },
+                body: JSON.stringify({
+                    unidade,
+                    titulo: tituloNotif,
+                    horario_descricao: 'Agora • Leads Typebot',
+                    confirmada: false
+                })
+            }).catch(() => {}).finally(() => {
+                window.location.href = 'matriculas.html';
+            });
+        }
+
+        function renderizarTabelaLeads(lista) {
+            document.getElementById('contador').innerText = `${lista.length} Registros`;
+            const tbody = document.getElementById('corpo-tabela');
+            tbody.innerHTML = '';
+
+            if (lista.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-12 text-center text-slate-600 font-medium">Nenhum lead encontrado para o filtro atual.</td></tr>';
+                return;
+            }
+
+            lista.forEach((linha, idx) => {
+                let dataFormatada = 'N/D';
+                if (linha.criado_at) {
+                    const data = new Date(linha.criado_at);
+                    dataFormatada = data.toLocaleDateString('pt-BR') + ' ' + data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                }
+
+                const telefone = linha.telefone_responsavel || '';
+                const telefoneLimpo = telefone.replace(/[^0-9]/g, '');
+
+                const botaoWhats = telefoneLimpo
+                    ? `<a href="https://wa.me/55${telefoneLimpo}?text=Olá,%20somos%20da%20secretaria%20da%20Peniel%20Christian%20School!" target="_blank" class="inline-flex items-center justify-center bg-emerald-600 text-white px-3 py-1.5 rounded-lg font-bold text-xs hover:bg-emerald-700 shadow-sm">💬 WhatsApp</a>`
+                    : '<span class="text-slate-500 text-xs">Sem contato</span>';
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50';
+                tr.innerHTML = `
+                    <td class="px-5 py-3.5 text-slate-600 whitespace-nowrap">${dataFormatada}</td>
+                    <td class="px-5 py-3.5 font-semibold text-slate-900">${linha.nome_aluno || '-'}</td>
+                    <td class="px-5 py-3.5 text-slate-700 whitespace-nowrap">${linha.idade_aluno || '-'} anos</td>
+                    <td class="px-5 py-3.5 text-slate-700"><span class="bg-slate-100 border border-slate-200 text-slate-800 py-1 px-2 rounded-md text-xs font-semibold">${linha.serie_pretendida || '-'}</span></td>
+                    <td class="px-5 py-3.5 text-right whitespace-nowrap">
+                        <div class="inline-flex items-center gap-2">
+                            ${botaoWhats}
+                            <button type="button" onclick="enviarParaMatricula(leadsEmMemoria[${idx}])" class="bg-marinho hover:bg-blue-900 text-white px-3 py-1.5 rounded-lg font-bold text-xs shadow-sm">
+                                📝 Matricular
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filtrarTabelaLeads() {
+            const termo = (document.getElementById('filtroBuscaLead').value || '').toLowerCase().trim();
+            if (!termo) {
+                renderizarTabelaLeads(leadsEmMemoria);
+                return;
+            }
+            const filtrados = leadsEmMemoria.filter(item =>
+                (item.nome_aluno || '').toLowerCase().includes(termo) ||
+                (item.serie_pretendida || '').toLowerCase().includes(termo) ||
+                (item.telefone_responsavel || '').includes(termo)
+            );
+            renderizarTabelaLeads(filtrados);
+        }
 
         async function carregarDados() {
+            if (requisicaoEmAndamento) return;
+            requisicaoEmAndamento = true;
+
             try {
-                // Navegador conecta diretamente ao HTTPS do Supabase
-                const resposta = await fetch(url, {
+                const resposta = await fetch(SUPABASE_LEADS_URL, {
                     method: 'GET',
                     headers: {
-                        'apikey': apiKey,
-                        'Authorization': 'Bearer ' + apiKey,
+                        'apikey': SUPABASE_API_KEY,
+                        'Authorization': 'Bearer ' + SUPABASE_API_KEY,
                         'Content-Type': 'application/json'
                     }
                 });
 
                 const matriculas = await resposta.json();
-                
-                // Atualiza o contador
-                document.getElementById('contador').innerText = matriculas.length + ' Registros';
+                if (!Array.isArray(matriculas)) return;
 
-                const tbody = document.getElementById('corpo-tabela');
-                tbody.innerHTML = ''; // Limpa a mensagem "A buscar..."
-
-                if (matriculas.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-12 text-center text-slate-500 font-medium">Nenhum lead recebido ainda. Faça um teste no Typebot!</td></tr>';
-                    return;
-                }
-
-                // Preenche as linhas
-                matriculas.forEach(linha => {
-                    // Formata a Data
-                    let dataFormatada = 'N/D';
-                    if(linha.criado_at) {
-                        const data = new Date(linha.criado_at);
-                        dataFormatada = data.toLocaleDateString('pt-BR') + ' ' + data.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
-                    }
-
-                    // Prepara o Telefone para o WhatsApp
-                    const telefone = linha.telefone_responsavel || '';
-                    const telefoneLimpo = telefone.replace(/[^0-9]/g, '');
-
-                    let botaoWhats = '<span class="text-slate-400 text-xs">Sem contato</span>';
-                    if (telefoneLimpo) {
-                        botaoWhats = `<a href="https://wa.me/55${telefoneLimpo}?text=Olá,%20somos%20da%20secretaria%20da%20Peniel%20Christian%20School!" target="_blank" class="inline-flex items-center justify-center bg-green-500 text-white px-4 py-2 rounded-lg font-medium text-sm hover:bg-green-600 transition shadow-sm">💬 Contatar Pai/Mãe</a>`;
-                    }
-
-                    // Cria a linha na tabela
-                    const tr = document.createElement('tr');
-                    tr.className = 'hover:bg-slate-50 transition duration-150 group';
-                    tr.innerHTML = `
-                        <td class="px-6 py-4 text-slate-500">${dataFormatada}</td>
-                        <td class="px-6 py-4 font-medium text-slate-800">${linha.nome_aluno || '-'}</td>
-                        <td class="px-6 py-4 text-slate-600">${linha.idade_aluno || '-'} anos</td>
-                        <td class="px-6 py-4 text-slate-600"><span class="bg-slate-100 border border-slate-200 text-slate-700 py-1 px-2 rounded-md text-xs font-medium">${linha.serie_pretendida || '-'}</span></td>
-                        <td class="px-6 py-4 text-right">${botaoWhats}</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-
+                leadsEmMemoria = matriculas;
+                filtrarTabelaLeads();
+                atualizarGraficosLeads(matriculas);
             } catch (erro) {
-                console.error("Erro ao puxar dados:", erro);
-                document.getElementById('corpo-tabela').innerHTML = '<tr><td colspan="5" class="px-6 py-12 text-center text-red-500 font-medium">Falha na conexão com o Supabase. Verifique a sua internet.</td></tr>';
+                console.error('Erro ao puxar dados:', erro);
+                document.getElementById('corpo-tabela').innerHTML = '<tr><td colspan="5" class="px-6 py-12 text-center text-red-600 font-medium">Falha na conexão com o Supabase. Verifique a sua internet.</td></tr>';
+            } finally {
+                requisicaoEmAndamento = false;
             }
-        }
-
-        let chartSeries = null;
-        let chartContato = null;
-        let ultimoTotalLeads = -1;
-        let ultimoComWhats = -1;
-        let passoPulsoLeads = 0;
-        let mensagensTickerSeries = ['Peniel Christian School • Captação 2027 Ativa'];
-        let mensagensTickerContato = ['Monitoramento de contatos WhatsApp em tempo real'];
-
-        function animarNumero(elId, novoValor, valorAnterior) {
-            const el = document.getElementById(elId);
-            if (!el) return;
-            if (novoValor === valorAnterior) {
-                el.innerText = novoValor;
-                return;
-            }
-            const inicio = valorAnterior < 0 ? 0 : valorAnterior;
-            const duracao = 700;
-            const inicioTempo = performance.now();
-
-            function passo(agora) {
-                const progresso = Math.min((agora - inicioTempo) / duracao, 1);
-                const atual = Math.round(inicio + (novoValor - inicio) * progresso);
-                el.innerText = atual;
-                if (progresso < 1) {
-                    requestAnimationFrame(passo);
-                } else {
-                    el.classList.remove('numero-animado');
-                    void el.offsetWidth;
-                    el.classList.add('numero-animado');
-                }
-            }
-            requestAnimationFrame(passo);
         }
 
         function atualizarGraficosLeads(matriculas) {
@@ -302,10 +374,8 @@
                 contagemSeries[serie] = (contagemSeries[serie] || 0) + 1;
             });
 
-            animarNumero('num-total-leads', total, ultimoTotalLeads);
-            animarNumero('num-leads-whats', comWhats, ultimoComWhats);
-            ultimoTotalLeads = total;
-            ultimoComWhats = comWhats;
+            document.getElementById('num-total-leads').innerText = total;
+            document.getElementById('num-leads-whats').innerText = comWhats;
 
             const labelsSeries = Object.keys(contagemSeries);
             const valoresSeries = Object.values(contagemSeries);
@@ -316,16 +386,10 @@
                 : 'Nenhuma';
             const taxaWhats = total > 0 ? Math.round((comWhats / total) * 100) : 0;
 
-            mensagensTickerSeries = [
-                `Total de ${total} Leads Captados • Peniel 2027`,
-                `Série Mais Procurada: ${serieTop} (${contagemSeries[serieTop] || 0})`,
-                `${leadsHoje} Novo(s) Lead(s) Recebido(s) Hoje`
-            ];
-            mensagensTickerContato = [
-                `${taxaWhats}% dos Leads com WhatsApp Válido (${comWhats}/${total})`,
-                `${comWhats} Responsáveis Prontos para Atendimento`,
-                `Sincronizado com Typebot & Supabase • Ao Vivo`
-            ];
+            document.getElementById('ticker-leads-series').innerText =
+                `Total: ${total} Leads • Destaque: ${serieTop} (${contagemSeries[serieTop] || 0}) • Hoje: ${leadsHoje}`;
+            document.getElementById('ticker-leads-contato').innerText =
+                `${taxaWhats}% com WhatsApp (${comWhats}/${total}) • Peniel 2027`;
 
             const ctxSeries = document.getElementById('graficoSeriesLeads')?.getContext('2d');
             if (ctxSeries) {
@@ -338,17 +402,18 @@
                                 label: 'Leads',
                                 data: valoresSeries,
                                 backgroundColor: labelsSeries.map((_, i) => coresPalette[i % coresPalette.length]),
-                                borderRadius: 8
+                                borderRadius: 8,
+                                hoverOffset: 6
                             }]
                         },
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
-                            animation: { duration: 900, easing: 'easeOutQuart' },
+                            animation: { duration: 450 },
                             plugins: { legend: { display: false } },
                             scales: {
-                                y: { beginAtZero: true, ticks: { precision: 0, font: { size: 10 } } },
-                                x: { ticks: { font: { size: 10 } } }
+                                y: { beginAtZero: true, ticks: { precision: 0, color: '#334155', font: { size: 10, weight: '600' } } },
+                                x: { ticks: { color: '#334155', font: { size: 10, weight: '600' } } }
                             }
                         }
                     });
@@ -372,15 +437,20 @@
                                 backgroundColor: ['#10B981', '#94A3B8', '#E85D04'],
                                 borderWidth: 2,
                                 borderColor: '#ffffff',
-                                hoverOffset: 8
+                                hoverOffset: 10
                             }]
                         },
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
                             cutout: '62%',
-                            animation: { duration: 900, easing: 'easeInOutQuart' },
-                            plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } }
+                            animation: { duration: 450 },
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: { boxWidth: 10, color: '#1e293b', font: { size: 10, weight: '600' } }
+                                }
+                            }
                         }
                     });
                 } else {
@@ -390,96 +460,34 @@
             }
         }
 
-        const carregarDadosOriginal = carregarDados;
-        carregarDados = async function() {
-            await carregarDadosOriginal();
-            try {
-                const resposta = await fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'apikey': apiKey,
-                        'Authorization': 'Bearer ' + apiKey,
-                        'Content-Type': 'application/json'
-                    }
-                });
-                const matriculas = await resposta.json();
-                if (Array.isArray(matriculas)) {
-                    atualizarGraficosLeads(matriculas);
-                }
-            } catch (e) {
-                console.error("Erro ao atualizar gráficos:", e);
-            }
-        };
+        document.addEventListener('DOMContentLoaded', () => {
+            const corSalva = localStorage.getItem('peniel_cor_sessao') || '#003057';
+            const menuLat = document.getElementById('menu-lateral');
+            const barraMobile = document.getElementById('barra-topo-mobile');
+            if (menuLat) menuLat.style.backgroundColor = corSalva;
+            if (barraMobile) barraMobile.style.backgroundColor = corSalva;
 
-        // Executa a busca assim que a página abrir e atualiza em tempo real
-        window.onload = () => {
+            const unidadeSalva = localStorage.getItem('peniel_unidade') || 'Matriz';
+            document.getElementById('label-unidade-menu').innerText = `Unidade ${unidadeSalva}`;
+            const lblMob = document.getElementById('label-unidade-mobile');
+            if (lblMob) lblMob.innerText = `Unidade ${unidadeSalva}`;
+
             carregarDados();
-            // Atualiza dados reais do Supabase a cada 10 segundos
             setInterval(carregarDados, 10000);
-            // Alterna os destaques pulsantes a cada 4 segundos
+
+            // Animacao ciclica apenas nas partes internas dos graficos
             setInterval(() => {
-                passoPulsoLeads++;
-                const elS = document.getElementById('ticker-leads-series');
-                const elC = document.getElementById('ticker-leads-contato');
-                if (elS) elS.innerText = mensagensTickerSeries[passoPulsoLeads % mensagensTickerSeries.length];
-                if (elC) elC.innerText = mensagensTickerContato[passoPulsoLeads % mensagensTickerContato.length];
+                indiceDestaqueInterno = (indiceDestaqueInterno + 1) % 3;
                 if (chartContato && chartContato.data.datasets[0].data.length) {
-                    chartContato.setActiveElements([{ datasetIndex: 0, index: passoPulsoLeads % 3 }]);
+                    chartContato.setActiveElements([{ datasetIndex: 0, index: indiceDestaqueInterno }]);
                     chartContato.update();
                 }
-            }, 4000);
-        };
-    </script>
-
-    <!-- ======================================================= -->
-    <!-- SCRIPT DO MENU MOBILE (IPHONE / ANDROID) -->
-    <!-- ======================================================= -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const menuLateral = document.querySelector('aside');
-            const header = document.querySelector('header');
-            
-            // Verifica se a tela tem menu lateral e se não está no modo Gestor Tela Cheia
-            if (menuLateral && header && !document.getElementById('btnMobile')) {
-                
-                // 1. Adapta as classes do Tailwind para o menu deslizar no celular
-                menuLateral.classList.remove('hidden'); // Remove o bloqueio original
-                menuLateral.classList.add(
-                    'fixed', 'left-0', 'top-0', 'h-full', 'z-[100]', 
-                    'transform', '-translate-x-full', 'transition-transform', 'duration-300',
-                    'md:relative', 'md:translate-x-0' // Mantém fixo no Computador
-                );
-
-                // 2. Cria o Fundo Escuro (Overlay) para a tela do iPhone
-                const overlay = document.createElement('div');
-                overlay.className = 'fixed inset-0 bg-slate-900/60 z-[90] hidden backdrop-blur-sm md:hidden transition-opacity';
-                document.body.appendChild(overlay);
-
-                // 3. Função para Abrir e Fechar o menu
-                const toggleMenu = () => {
-                    const estaFechado = menuLateral.classList.contains('-translate-x-full');
-                    if(estaFechado) {
-                        menuLateral.classList.remove('-translate-x-full');
-                        overlay.classList.remove('hidden');
-                    } else {
-                        menuLateral.classList.add('-translate-x-full');
-                        overlay.classList.add('hidden');
-                    }
-                };
-
-                // Fechar menu ao clicar no fundo escuro
-                overlay.onclick = toggleMenu;
-
-                // 4. Cria o Botão "Hambúrguer" no Header (Só aparece no celular)
-                const btnMobile = document.createElement('button');
-                btnMobile.id = 'btnMobile';
-                btnMobile.className = 'md:hidden w-full sm:w-auto bg-marinho text-white px-4 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-md mb-4 sm:mb-0 transition active:scale-95';
-                btnMobile.innerHTML = '☰ Abrir Menu do Sistema';
-                btnMobile.onclick = toggleMenu;
-
-                // Insere o botão no topo do Header
-                header.insertBefore(btnMobile, header.firstChild);
-            }
+                if (chartSeries && chartSeries.data.datasets[0].data.length) {
+                    const barIdx = indiceDestaqueInterno % chartSeries.data.datasets[0].data.length;
+                    chartSeries.setActiveElements([{ datasetIndex: 0, index: barIdx }]);
+                    chartSeries.update();
+                }
+            }, 2500);
         });
     </script>
 </body>
