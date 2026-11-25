@@ -6,6 +6,7 @@
     <title>Calendário Acadêmico em Tempo Real | Peniel Christian School</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+
     <script>
         tailwind.config = {
             theme: {
@@ -19,6 +20,75 @@
     <style>
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .day-cards-scroll::-webkit-scrollbar { width: 4px; }
+        .day-cards-scroll::-webkit-scrollbar-track { background: transparent; }
+        .day-cards-scroll::-webkit-scrollbar-thumb { background: rgba(0, 48, 87, 0.25); border-radius: 9999px; }
+        .day-cards-scroll::-webkit-scrollbar-thumb:hover { background: rgba(0, 48, 87, 0.45); }
+    
+        #overlayTimelineGrade {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            pointer-events: none;
+            z-index: 30;
+        }
+        .linha-vertical-tempo-real {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            transform: translateX(-50%);
+            transition: left 0.4s linear, background-color 0.5s ease, box-shadow 0.5s ease;
+            pointer-events: none;
+        }
+        .pino-vertical-tempo-real {
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 2px 7px;
+            border-radius: 9999px;
+            font-size: 9px;
+            font-weight: 800;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            color: #ffffff;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            transition: background-color 0.5s ease;
+            pointer-events: none;
+        }
+        .timeline-dom-a-dom-track {
+            position: relative;
+            width: 6px;
+            border-radius: 9999px;
+            background: rgba(220, 38, 38, 0.16);
+            overflow: visible;
+        }
+        .timeline-dom-a-dom-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            border-radius: 9999px;
+            transition: height 0.5s ease, background-color 0.5s ease, box-shadow 0.5s ease;
+        }
+        .timeline-dom-a-dom-marker {
+            position: absolute;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            border-radius: 9999px;
+            border: 2px solid #ffffff;
+            transition: top 0.5s ease, background-color 0.5s ease, transform 0.3s ease;
+            z-index: 5;
+        }
+
+    
+
+
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col md:flex-row overflow-x-hidden">
@@ -69,24 +139,30 @@
         </div>
     </aside>
 
+    <div id="toast-calendario" class="fixed bottom-5 right-5 z-[200] hidden max-w-sm bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-white/10 text-xs font-semibold flex items-center gap-2.5">
+        <span>✅</span>
+        <span id="toast-calendario-texto">Operação concluída</span>
+    </div>
+
     <!-- Área Principal -->
-    <main class="flex-1 p-3 sm:p-5 md:p-8 flex flex-col gap-5 w-full max-w-full overflow-x-hidden">
+    <main class="flex-1 p-2.5 sm:p-4 md:p-5 flex flex-col gap-3 w-full max-w-full overflow-x-hidden">
         
         <!-- Header -->
-        <header class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm gap-4">
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white px-4 py-3 rounded-2xl border border-slate-200 shadow-sm gap-3">
             <div class="flex items-center gap-3">
                 <button type="button" onclick="toggleMenuMobile()" class="md:hidden bg-slate-100 text-marinho p-2.5 rounded-lg text-xl hover:bg-slate-200 transition active:scale-95 shadow-sm">☰</button>
                 <div>
-                    <div class="flex items-center gap-2 mb-0.5">
+                    <div class="flex flex-wrap items-center gap-2 mb-0.5">
                         <span class="bg-blue-100 text-marinho text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Tempo Real</span>
+                        <span id="badge-sync-dashboard" class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2.5 py-0.5 rounded-full">⚡ Sincronizado com Dashboard & Turmas</span>
                         <span id="relogio-tempo-real" class="bg-slate-100 text-slate-700 text-[10px] font-bold px-2.5 py-0.5 rounded-full font-mono">--:--:--</span>
                     </div>
                     <h2 class="font-heading text-xl sm:text-2xl font-bold text-slate-800">Calendário Acadêmico & Aulas em Tempo Real</h2>
-                    <p class="text-xs text-slate-500">Visualização interativa da grade de aulas, eventos escolares e agendamentos.</p>
+                    <p class="text-xs text-slate-500">Clique em qualquer card do dia para ver a descrição, editar sala, matéria ou horário e sincronizar com o sistema.</p>
                 </div>
             </div>
             
-            <div class="flex items-center gap-2 w-full md:w-auto">
+            <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
                 <button type="button" onclick="abrirModalNovoEvento()" class="bg-laranja hover:bg-orange-600 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition flex items-center justify-center gap-1.5 whitespace-nowrap w-full md:w-auto">
                     ➕ Novo Evento / Aula
                 </button>
@@ -94,7 +170,7 @@
         </header>
 
         <!-- BARRA DE CONTROLE DO CALENDÁRIO -->
-        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="bg-white px-4 py-2.5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-center gap-3">
             <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
                 <button type="button" onclick="mudarMes(-1)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 w-9 h-9 rounded-xl font-bold flex items-center justify-center transition">&larr;</button>
                 <h3 id="mesAnoTitulo" class="font-heading font-bold text-base sm:text-lg text-marinho min-w-[180px] text-center">Novembro 2026</h3>
@@ -113,11 +189,82 @@
             </div>
         </div>
 
+        
+
+        <!-- BARRA DE SIMULAÇÃO DA TIMELINE VERTICAL & EXPORTAÇÃO -->
+        <div class="bg-white px-4 py-2.5 rounded-2xl border border-slate-200 shadow-sm flex flex-col xl:flex-row justify-between items-start xl:items-center gap-3">
+            <div class="flex flex-wrap items-center gap-2 text-xs">
+                <span class="font-bold text-marinho flex items-center gap-1.5">
+                    <span>⏱️ Simulador da Timeline Vertical:</span>
+                </span>
+                <select id="simDiaSemanaTimeline" onchange="aplicarSimulacaoTimeline()" class="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-700">
+                    <option value="tempo_real">📡 Hora Real do Sistema</option>
+                    <option value="0">Domingo (Início Semana)</option>
+                    <option value="1">Segunda-feira</option>
+                    <option value="2">Terça-feira</option>
+                    <option value="3">Quarta-feira</option>
+                    <option value="4">Quinta-feira</option>
+                    <option value="5">Sexta-feira</option>
+                    <option value="6">Sábado (Fim Semana)</option>
+                </select>
+                <input type="time" id="simHoraTimeline" onchange="aplicarSimulacaoTimeline()" class="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs font-mono font-bold text-slate-700" title="Escolha um horário para testar início das aulas (07:30), meio do dia ou fim do dia (17:30+)">
+                <span id="badgeStatusTimelineAtual" class="text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-red-100 text-red-700 border border-red-200">
+                    Carregando fase...
+                </span>
+            </div>
+
+
+        </div>
+
+
+        <!-- ESPELHO EM TEMPO REAL: TURMAS, ALUNOS, PRESENÇA E SISTEMA -->
+        <div id="blocoEspelhoTurmasAlunos" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-4">
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3 border-b border-slate-100 pb-3">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase tracking-wider">
+                        📡 Espelho em Tempo Real • Turmas, Alunos & Frequência
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-base mt-1">Visão Espelhada do Sistema Escolar</h3>
+                    <p class="text-xs text-slate-500">Espelha as turmas, alunos cadastrados (incluindo fichas/matrículas/Supabase), presença e faltas das aulas e sincroniza com o Dashboard.</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" onclick="sincronizarEspelhoCompleto(true)" class="bg-marinho hover:bg-blue-900 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition shadow-sm">
+                        🔄 Espelhar Agora
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                    <span class="text-[10px] font-bold uppercase text-slate-400 block">Turmas Ativas</span>
+                    <strong id="esp-total-turmas" class="text-xl font-black text-marinho">0</strong>
+                    <span class="text-[10px] text-slate-500 block">Maternal, Pré e Fundamental</span>
+                </div>
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                    <span class="text-[10px] font-bold uppercase text-slate-400 block">Alunos Espelhados</span>
+                    <strong id="esp-total-alunos" class="text-xl font-black text-slate-800">0</strong>
+                    <span id="esp-alunos-fonte" class="text-[10px] text-emerald-700 font-semibold block">Sincronizado</span>
+                </div>
+                <div class="bg-emerald-50/60 p-3.5 rounded-xl border border-emerald-200">
+                    <span class="text-[10px] font-bold uppercase text-emerald-700 block">Presenças Registradas</span>
+                    <strong id="esp-total-presentes" class="text-xl font-black text-emerald-700">0</strong>
+                    <span class="text-[10px] text-emerald-600 block">Soma nas aulas/cards</span>
+                </div>
+                <div class="bg-red-50/60 p-3.5 rounded-xl border border-red-200">
+                    <span class="text-[10px] font-bold uppercase text-red-700 block">Faltas Registradas</span>
+                    <strong id="esp-total-faltantes" class="text-xl font-black text-red-700">0</strong>
+                    <span class="text-[10px] text-red-600 block">Clique em P/F nos cards</span>
+                </div>
+            </div>
+
+            <div id="gridCardsTurmasEspelhadas" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3"></div>
+        </div>
+
         <!-- GRADE MENSAL DO CALENDÁRIO -->
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col flex-1">
             
             <!-- Dias da Semana -->
-            <div class="grid grid-cols-7 bg-slate-50 border-b border-slate-200 text-center text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 py-3">
+            <div class="grid grid-cols-7 bg-slate-50 border-b border-slate-200 text-center text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 py-2">
                 <div class="text-red-500">Dom</div>
                 <div>Seg</div>
                 <div>Ter</div>
@@ -127,25 +274,28 @@
                 <div class="text-blue-500">Sáb</div>
             </div>
 
-            <!-- Dias do Mês (Grade Dinâmica) -->
-            <div id="gridDiasCalendario" class="grid grid-cols-7 auto-rows-fr divide-x divide-y divide-slate-100 bg-slate-100 flex-1 min-h-[550px]">
-                <!-- Preenchido via JavaScript -->
+            <!-- Dias do Mês (Grade Dinâmica + Linha Vertical de Tempo Real Dom -> Sáb) -->
+            <div class="relative flex-1">
+                <div id="overlayTimelineGrade" aria-hidden="true">
+                    <div id="linhaVerticalTempoReal" class="linha-vertical-tempo-real" style="left: 0%; background-color: #dc2626; box-shadow: 0 0 12px rgba(220, 38, 38, 0.85);">
+                        <div id="pinoVerticalTempoReal" class="pino-vertical-tempo-real" style="background-color: #dc2626;">DOM 00:00</div>
+                    </div>
+                </div>
+                <div id="gridDiasCalendario" class="grid grid-cols-7 auto-rows-fr divide-x divide-y divide-slate-100 bg-slate-100">
+                    <!-- Preenchido via JavaScript -->
+                </div>
             </div>
         </div>
 
-    
-
-        <!-- ========================================================================= -->
-        <!-- GRADE COMPLETA DE AULAS AGENDADAS (TODOS OS DIAS, HORAS E MATÉRIAS)       -->
-        <!-- ========================================================================= -->
-        <div id="blocoGradeCompletaAulas" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mt-6">
+        <!-- GRADE COMPLETA DE AULAS AGENDADAS -->
+        <div id="blocoGradeCompletaAulas" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mt-2">
             <div class="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/70 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3">
                 <div>
                     <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-blue-100 text-marinho text-[10px] font-bold uppercase tracking-wider mb-1">
-                        Grade Horária Completa • Dias, Horas e Matérias
+                        Grade Horária Completa • Dias, Horas, Salas e Matérias
                     </div>
-                    <h3 class="font-bold text-slate-800 text-base">Todas as Aulas Agendadas (Por Dia, Hora e Matéria)</h3>
-                    <p class="text-xs text-slate-500">Visualização de todas as aulas de segunda a sexta-feira em cada horário e matéria/disciplina.</p>
+                    <h3 class="font-bold text-slate-800 text-base">Todas as Aulas Agendadas (Sincronizadas com Dashboard & Turmas)</h3>
+                    <p class="text-xs text-slate-500">Clique em qualquer linha ou card para abrir, editar sala, matéria, horário ou descrição.</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
                     <select id="filtroDiaAula" onchange="renderizarGradeCompletaAulas()" class="border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 bg-white">
@@ -156,7 +306,7 @@
                         <option value="Quinta-feira">Quinta-feira</option>
                         <option value="Sexta-feira">Sexta-feira</option>
                     </select>
-                    <input type="text" id="buscaMateriaAula" onkeyup="renderizarGradeCompletaAulas()" placeholder="Filtrar matéria ou hora..." class="border border-slate-300 rounded-xl px-3 py-2 text-xs bg-white">
+                    <input type="text" id="buscaMateriaAula" onkeyup="renderizarGradeCompletaAulas()" placeholder="Filtrar sala, matéria ou hora..." class="border border-slate-300 rounded-xl px-3 py-2 text-xs bg-white">
                 </div>
             </div>
 
@@ -166,6 +316,7 @@
                         <tr>
                             <th class="px-4 py-3">Dia da Semana</th>
                             <th class="px-4 py-3">Horário</th>
+                            <th class="px-4 py-3">Sala</th>
                             <th class="px-4 py-3">Matéria / Disciplina</th>
                             <th class="px-4 py-3">Aula / Conteúdo</th>
                             <th class="px-4 py-3 text-center">Turma / Categoria</th>
@@ -176,11 +327,9 @@
             </div>
         </div>
 
-        </main>
+    </main>
 
-    <!-- ========================================================================= -->
-    <!-- MODAL: ADICIONAR / EDITAR EVENTO OU AULA -->
-    <!-- ========================================================================= -->
+    <!-- MODAL: CRIAR NOVO EVENTO OU AULA -->
     <div id="modalEvento" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[130] p-3 sm:p-4 overflow-y-auto">
         <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto">
             <div class="p-5 bg-marinho text-white flex justify-between items-center">
@@ -188,7 +337,18 @@
                 <button type="button" onclick="fecharModalEvento()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
             </div>
             
-            <div class="p-6 space-y-4 text-xs">
+            <div class="p-5 space-y-3.5 text-xs">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Matéria / Disciplina</label>
+                        <input type="text" id="eventoMateria" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold" placeholder="Ex: Matemática / Ciências">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Sala</label>
+                        <input type="text" id="eventoSala" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold" placeholder="Ex: Sala 102 / Lab. Robótica">
+                    </div>
+                </div>
+
                 <div>
                     <label class="block font-bold text-slate-700 mb-1">Título da Aula / Evento</label>
                     <input type="text" id="eventoTitulo" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold" placeholder="Ex: Aula Prática de Ciências / Reunião de Pais">
@@ -207,7 +367,7 @@
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">Categoria / Destinatário</label>
+                        <label class="block font-bold text-slate-700 mb-1">Categoria / Turma</label>
                         <select id="eventoCategoria" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs bg-white font-bold">
                             <option value="Fundamental">📚 Ensino Fundamental</option>
                             <option value="Maternal">🧸 Maternal</option>
@@ -218,10 +378,10 @@
                     <div>
                         <label class="block font-bold text-slate-700 mb-1">Cor do Indicador</label>
                         <select id="eventoCor" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs bg-white font-bold">
-                            <option value="bg-blue-500 text-white">Azul (Aula Regular)</option>
-                            <option value="bg-green-500 text-white">Verde (Atividade Extra / Projeto)</option>
-                            <option value="bg-orange-500 text-white">Laranja (Avaliação / Prova)</option>
-                            <option value="bg-purple-500 text-white">Roxo (Reunião / Evento Especial)</option>
+                            <option value="bg-blue-600 text-white">Azul (Aula Regular)</option>
+                            <option value="bg-emerald-600 text-white">Verde (Atividade Extra / Projeto)</option>
+                            <option value="bg-orange-600 text-white">Laranja (Avaliação / Prova)</option>
+                            <option value="bg-purple-600 text-white">Roxo (Reunião / Evento Especial)</option>
                         </select>
                     </div>
                 </div>
@@ -234,13 +394,384 @@
 
             <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2">
                 <button type="button" onclick="fecharModalEvento()" class="px-4 py-2 bg-white border border-slate-300 text-slate-600 font-bold rounded-xl text-xs">Cancelar</button>
-                <button type="button" onclick="salvarNovoEvento()" class="bg-marinho text-white px-5 py-2 rounded-xl font-bold text-xs shadow-sm">💾 Salvar Evento</button>
+                <button type="button" onclick="salvarNovoEvento()" class="bg-marinho hover:bg-blue-900 text-white px-5 py-2 rounded-xl font-bold text-xs shadow-sm transition">💾 Salvar Evento</button>
             </div>
         </div>
     </div>
 
-    <!-- SCRIPT DO CALENDÁRIO EM TEMPO REAL -->
+    <!-- MODAL: VISUALIZAR E EDITAR CARD DO DIA (SALA, MATÉRIA, HORÁRIO E DESCRIÇÃO) -->
+    <div id="modalDetalheCard" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[140] p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto">
+            <div class="p-5 bg-marinho text-white flex justify-between items-center">
+                <div>
+                    <span id="detalheTipoBadge" class="text-[10px] font-bold bg-laranja text-white px-2 py-0.5 rounded uppercase">Card do Dia</span>
+                    <h3 class="font-bold text-base font-heading mt-1">✏️ Detalhes e Edição da Aula / Evento</h3>
+                </div>
+                <button type="button" onclick="fecharModalDetalheCard()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
+            </div>
+
+            <div class="p-5 space-y-3.5 text-xs">
+                <input type="hidden" id="editCardId">
+                <input type="hidden" id="editCardRecorrente">
+                <input type="hidden" id="editCardDiaSemana">
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Título / Conteúdo</label>
+                    <input type="text" id="editCardTitulo" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold focus:ring-2 focus:ring-marinho focus:outline-none">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Matéria / Disciplina</label>
+                        <input type="text" id="editCardMateria" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold focus:ring-2 focus:ring-marinho focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Sala</label>
+                        <input type="text" id="editCardSala" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold focus:ring-2 focus:ring-marinho focus:outline-none" placeholder="Ex: Sala 101 / Auditório">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Horário</label>
+                        <input type="text" id="editCardHorario" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono font-bold focus:ring-2 focus:ring-marinho focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Turma / Categoria</label>
+                        <select id="editCardCategoria" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs bg-white font-bold">
+                            <option value="Fundamental">📚 Ensino Fundamental</option>
+                            <option value="Maternal">🧸 Maternal</option>
+                            <option value="Pré-Escola">🎨 Pré-Escola</option>
+                            <option value="Geral">📢 Geral da Escola</option>
+                        </select>
+                    </div>
+                    <div id="wrapEditCardData">
+                        <label class="block font-bold text-slate-700 mb-1">Data</label>
+                        <input type="date" id="editCardData" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Cor do Card</label>
+                    <select id="editCardCor" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs bg-white font-bold">
+                        <option value="bg-blue-600 text-white">Azul</option>
+                        <option value="bg-emerald-600 text-white">Verde Esmeralda</option>
+                        <option value="bg-teal-600 text-white">Verde Azulado (Teal)</option>
+                        <option value="bg-amber-600 text-white">Âmbar</option>
+                        <option value="bg-cyan-600 text-white">Ciano</option>
+                        <option value="bg-indigo-600 text-white">Índigo</option>
+                        <option value="bg-fuchsia-600 text-white">Fúcsia</option>
+                        <option value="bg-pink-600 text-white">Rosa</option>
+                        <option value="bg-violet-600 text-white">Violeta</option>
+                        <option value="bg-purple-600 text-white">Roxo</option>
+                        <option value="bg-orange-600 text-white">Laranja</option>
+                        <option value="bg-red-600 text-white">Vermelho</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Descrição / Observações</label>
+                    <textarea id="editCardDescricao" rows="3" class="w-full border border-slate-300 rounded-xl p-3 text-xs focus:ring-2 focus:ring-marinho focus:outline-none" placeholder="Descrição completa da aula ou evento..."></textarea>
+                </div>
+
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-3">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="font-bold text-slate-800 text-xs">📋 Frequência da Aula (Presentes e Faltantes)</span>
+                        <span id="resumoFrequenciaBadge" class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-blue-100 text-marinho">0 presentes • 0 faltantes</span>
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-emerald-700 mb-1 text-[11px]">✅ Alunos Presentes</label>
+                        <textarea id="editCardPresentes" rows="2" class="w-full border border-emerald-200 bg-white rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="Nomes separados por vírgula ou linha..."></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-red-700 mb-1 text-[11px]">❌ Alunos Faltantes</label>
+                        <textarea id="editCardFaltantes" rows="2" class="w-full border border-red-200 bg-white rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="Nomes separados por vírgula ou linha..."></textarea>
+                    </div>
+
+                    <div id="previewFrequenciaDescricao" class="bg-white border border-slate-200 rounded-xl p-2.5 text-[11px] text-slate-700 space-y-1"></div>
+                </div>
+            </div>
+
+            <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-between items-center gap-2">
+                <button type="button" id="btnExcluirCardModal" onclick="excluirCardDoModal()" class="px-3.5 py-2 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold rounded-xl text-xs transition">🗑️ Excluir</button>
+                <div class="flex gap-2">
+                    <button type="button" onclick="fecharModalDetalheCard()" class="px-4 py-2 bg-white border border-slate-300 text-slate-600 font-bold rounded-xl text-xs">Cancelar</button>
+                    <button type="button" onclick="salvarEdicaoCardModal()" class="bg-laranja hover:bg-orange-600 text-white px-5 py-2 rounded-xl font-bold text-xs shadow-sm transition">💾 Salvar Alterações</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: RELAÇÃO DE ALUNOS PRESENTES / FALTANTES -->
+    <div id="modalRelacaoAlunos" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[150] p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto">
+            <div id="headerRelacaoAlunos" class="p-4 bg-marinho text-white flex justify-between items-center">
+                <div>
+                    <span id="badgeTipoRelacao" class="text-[10px] font-bold px-2 py-0.5 rounded uppercase bg-white/20">Frequência</span>
+                    <h3 id="tituloRelacaoAlunos" class="font-bold text-base font-heading mt-1">Relação de Alunos</h3>
+                    <p id="subtituloRelacaoAula" class="text-[11px] opacity-90"></p>
+                </div>
+                <button type="button" onclick="fecharModalRelacaoAlunos()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
+            </div>
+
+            <div class="p-5 space-y-3 text-xs">
+                <input type="hidden" id="relacaoItemId">
+                <input type="hidden" id="relacaoItemRecorrente">
+                <input type="hidden" id="relacaoTipoFoco">
+
+                <div id="blocoListaPresentesRelacao" class="bg-emerald-50/70 border border-emerald-200 rounded-xl p-3 space-y-2">
+                    <div class="flex items-center justify-between font-bold text-emerald-800">
+                        <span>✅ Alunos Presentes</span>
+                        <span id="qtdRelacaoPresentes" class="bg-emerald-600 text-white text-[10px] px-2 py-0.5 rounded-full">0</span>
+                    </div>
+                    <div id="chipsRelacaoPresentes" class="flex flex-wrap gap-1.5"></div>
+                    <textarea id="inputRelacaoPresentes" rows="2" class="w-full border border-emerald-200 bg-white rounded-xl p-2 text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="Separados por vírgula ou linha..."></textarea>
+                </div>
+
+                <div id="blocoListaFaltantesRelacao" class="bg-red-50/70 border border-red-200 rounded-xl p-3 space-y-2">
+                    <div class="flex items-center justify-between font-bold text-red-800">
+                        <span>❌ Alunos Faltantes</span>
+                        <span id="qtdRelacaoFaltantes" class="bg-red-600 text-white text-[10px] px-2 py-0.5 rounded-full">0</span>
+                    </div>
+                    <div id="chipsRelacaoFaltantes" class="flex flex-wrap gap-1.5"></div>
+                    <textarea id="inputRelacaoFaltantes" rows="2" class="w-full border border-red-200 bg-white rounded-xl p-2 text-xs focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="Separados por vírgula ou linha..."></textarea>
+                </div>
+            </div>
+
+            <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2">
+                <button type="button" onclick="fecharModalRelacaoAlunos()" class="px-4 py-2 bg-white border border-slate-300 text-slate-600 font-bold rounded-xl text-xs">Fechar</button>
+                <button type="button" onclick="salvarRelacaoAlunosModal()" class="bg-marinho hover:bg-blue-900 text-white px-5 py-2 rounded-xl font-bold text-xs shadow-sm transition">💾 Salvar Chamada</button>
+            </div>
+        </div>
+    </div>
+
+
     <script>
+
+        const SUPABASE_URL_CAL = 'https://fxjdmhrlujiajkouduhg.supabase.co';
+        const SUPABASE_KEY_CAL = 'sb_publishable_EANH7zIXleZ3G18S6z7KFw_26oySNP9';
+
+        function obterAlunosEspelhadosLocais() {
+            const lista = [];
+            const nomesVistos = new Set();
+
+            const adicionarAluno = (nome, turma, status = 'Ativo') => {
+                const limpo = String(nome || '').trim();
+                if (!limpo) return;
+                const chave = limpo.toLowerCase();
+                if (nomesVistos.has(chave)) return;
+                nomesVistos.add(chave);
+                lista.push({
+                    nome: limpo,
+                    turma: String(turma || 'Ensino Fundamental').trim(),
+                    status: String(status || 'Ativo').trim()
+                });
+            };
+
+            try {
+                const fichas = JSON.parse(localStorage.getItem('peniel_fichas_alunos') || '[]');
+                if (Array.isArray(fichas)) {
+                    fichas.forEach(f => adicionarAluno(f.nome || f.aluno, f.turma || f.serie, f.status || 'Ativo'));
+                }
+            } catch (_) {}
+
+            try {
+                const recorrencia = JSON.parse(localStorage.getItem('peniel_alunos_recorrencia') || '[]');
+                if (Array.isArray(recorrencia)) {
+                    recorrencia.forEach(a => adicionarAluno(a.nome, a.turma, a.ativo === false ? 'Baixa' : 'Ativo'));
+                }
+            } catch (_) {}
+
+            Object.values(ALUNOS_POR_CATEGORIA_PADRAO).forEach(grupo => {
+                (grupo.presentes || []).forEach(n => adicionarAluno(n, 'Turma Regular', 'Ativo'));
+                (grupo.faltantes || []).forEach(n => adicionarAluno(n, 'Turma Regular', 'Ativo'));
+            });
+
+            return lista;
+        }
+
+        async function buscarAlunosSupabaseCalendario() {
+            const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
+            try {
+                const url = `${SUPABASE_URL_CAL}/rest/v1/fichas_alunos?unidade=eq.${encodeURIComponent(unidade)}&order=nome.asc`;
+                const resp = await fetch(url, {
+                    headers: {
+                        'apikey': SUPABASE_KEY_CAL,
+                        'Authorization': `Bearer ${SUPABASE_KEY_CAL}`
+                    }
+                });
+                if (!resp.ok) return null;
+                const rows = await resp.json();
+                if (!Array.isArray(rows) || rows.length === 0) return null;
+                return rows.map(r => ({
+                    nome: r.nome || 'Aluno',
+                    turma: r.turma || r.serie || 'Ensino Fundamental',
+                    status: r.status || 'Ativo'
+                }));
+            } catch (_) {
+                return null;
+            }
+        }
+
+        function renderizarEspelhoTurmasAlunos(alunosLista = null) {
+            const alunos = Array.isArray(alunosLista) && alunosLista.length > 0
+                ? alunosLista
+                : obterAlunosEspelhadosLocais();
+
+            const grade = obterGradeRecorrente();
+            const eventos = obterBancoEventos();
+            const todosItens = [
+                ...grade.map(g => ({ ...g, recorrente: true })),
+                ...eventos.map(e => ({ ...e, recorrente: false, materia: e.materia || e.categoria, sala: e.sala || 'Sala Padrão', desc: e.desc || e.titulo }))
+            ];
+
+            let somaPresentes = 0;
+            let somaFaltantes = 0;
+            todosItens.forEach(item => {
+                const freq = obterFrequenciaPadrao(item);
+                somaPresentes += freq.presentes.length;
+                somaFaltantes += freq.faltantes.length;
+            });
+
+            const turmasBase = ['Maternal', 'Pré-Escola', 'Fundamental', 'Geral'];
+            const elTurmas = document.getElementById('esp-total-turmas');
+            const elAlunos = document.getElementById('esp-total-alunos');
+            const elPres = document.getElementById('esp-total-presentes');
+            const elFalt = document.getElementById('esp-total-faltantes');
+            const gridTurmas = document.getElementById('gridCardsTurmasEspelhadas');
+
+            if (elTurmas) elTurmas.innerText = String(turmasBase.length);
+            if (elAlunos) elAlunos.innerText = String(alunos.length);
+            if (elPres) elPres.innerText = String(somaPresentes);
+            if (elFalt) elFalt.innerText = String(somaFaltantes);
+
+            if (!gridTurmas) return;
+
+            gridTurmas.innerHTML = turmasBase.map(cat => {
+                const aulasCat = grade.filter(g => g.categoria === cat);
+                const alunosCat = alunos.filter(a => a.turma.toLowerCase().includes(cat.toLowerCase()));
+                const listaExibir = alunosCat.length > 0 ? alunosCat : alunos.slice(0, 4);
+
+                let pCat = 0;
+                let fCat = 0;
+                aulasCat.forEach(a => {
+                    const fr = obterFrequenciaPadrao(a);
+                    pCat += fr.presentes.length;
+                    fCat += fr.faltantes.length;
+                });
+
+                const primeiraAula = aulasCat[0] || {
+                    id: `AULA-${cat.toUpperCase()}-1`,
+                    recorrente: true,
+                    diaSemana: 'Segunda-feira',
+                    horario: '08:00 - 09:00',
+                    sala: 'Sala 101',
+                    materia: cat,
+                    titulo: `Aula Espelhada • ${cat}`,
+                    categoria: cat,
+                    cor: 'bg-blue-600 text-white',
+                    desc: `Espelho da turma ${cat} com descrição, alunos e frequência.`
+                };
+
+                const payloadAula = encodeURIComponent(JSON.stringify({
+                    ...primeiraAula,
+                    corCard: (primeiraAula.cor || 'bg-blue-600 text-white') + ' border-l-4 border-white/60'
+                }));
+
+                return `
+                    <div onclick="abrirModalDetalheCard(JSON.parse(decodeURIComponent('${payloadAula}')))" class="p-3.5 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-blue-50/50 hover:border-marinho transition cursor-pointer flex flex-col justify-between gap-2.5">
+                        <div>
+                            <div class="flex items-center justify-between gap-1">
+                                <span class="font-bold text-xs text-marinho">${cat}</span>
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-700">${aulasCat.length} aula(s)/sem</span>
+                            </div>
+                            <p class="text-[11px] text-slate-600 mt-1 line-clamp-2">${primeiraAula.desc || primeiraAula.titulo}</p>
+                            <div class="mt-2 flex flex-wrap gap-1">
+                                ${listaExibir.slice(0, 4).map(al => `<span class="text-[10px] bg-white border border-slate-200 text-slate-700 px-1.5 py-0.5 rounded">${al.nome}</span>`).join('')}
+                            </div>
+                        </div>
+                        <div class="pt-2 border-t border-slate-200/80 flex items-center justify-between text-[10px] font-bold">
+                            <span class="text-emerald-700">✅ P: ${pCat}</span>
+                            <span class="text-red-700">❌ F: ${fCat}</span>
+                            <span class="text-marinho underline">Abrir / Editar</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function sincronizarEspelhoCompleto(mostrarToast = false) {
+            sincronizarComDashboardETurmas();
+            const alunosSupa = await buscarAlunosSupabaseCalendario();
+            const fonteEl = document.getElementById('esp-alunos-fonte');
+            if (alunosSupa && alunosSupa.length > 0) {
+                renderizarEspelhoTurmasAlunos(alunosSupa);
+                if (fonteEl) fonteEl.innerText = `Supabase • ${localStorage.getItem('peniel_unidade') || 'Matriz'}`;
+            } else {
+                renderizarEspelhoTurmasAlunos(null);
+                if (fonteEl) fonteEl.innerText = `Local • ${localStorage.getItem('peniel_unidade') || 'Matriz'}`;
+            }
+            if (mostrarToast) {
+                notificarCalendario('Espelho de turmas, alunos, presença e sistema atualizado!');
+            }
+        }
+
+        let simulacaoTimelineAtiva = false;
+
+        function obterDataReferenciaTimeline() {
+            const selDia = document.getElementById('simDiaSemanaTimeline');
+            const inpHora = document.getElementById('simHoraTimeline');
+            const agora = new Date();
+
+            if (!selDia || selDia.value === 'tempo_real') {
+                simulacaoTimelineAtiva = false;
+                return agora;
+            }
+
+            simulacaoTimelineAtiva = true;
+            const diaAlvo = Number(selDia.value);
+            const diffDias = diaAlvo - agora.getDay();
+            const ref = new Date(agora);
+            ref.setDate(agora.getDate() + diffDias);
+
+            if (inpHora && inpHora.value) {
+                const [hh, mm] = inpHora.value.split(':').map(Number);
+                if (!isNaN(hh) && !isNaN(mm)) {
+                    ref.setHours(hh, mm, 0, 0);
+                }
+            }
+            return ref;
+        }
+
+        function aplicarSimulacaoTimeline() {
+            const selDia = document.getElementById('simDiaSemanaTimeline');
+            const inpHora = document.getElementById('simHoraTimeline');
+            const agora = new Date();
+
+            if (selDia && selDia.value !== 'tempo_real' && inpHora && !inpHora.value) {
+                const hh = String(agora.getHours()).padStart(2, '0');
+                const mm = String(agora.getMinutes()).padStart(2, '0');
+                inpHora.value = `${hh}:${mm}`;
+            }
+            if (selDia && selDia.value === 'tempo_real' && inpHora) {
+                inpHora.value = '';
+            }
+            renderizarTimelineDomADom();
+        }
+
+        let toastCalTimer = null;
+
+        function notificarCalendario(msg) {
+            const el = document.getElementById('toast-calendario');
+            if (!el) return;
+            document.getElementById('toast-calendario-texto').innerText = msg;
+            el.classList.remove('hidden');
+            clearTimeout(toastCalTimer);
+            toastCalTimer = setTimeout(() => el.classList.add('hidden'), 3500);
+        }
+
         function toggleMenuMobile() {
             const menu = document.getElementById('menu-lateral');
             const overlay = document.getElementById('overlay-mobile');
@@ -249,29 +780,239 @@
         }
 
         function sairDoSistema() {
-            if(confirm("Deseja encerrar sua sessão?")) { window.location.href = 'login.html'; }
+            if (confirm("Deseja encerrar sua sessão?")) { window.location.href = 'login.html'; }
         }
 
-        // Relógio em tempo real no header
         setInterval(() => {
             const agora = new Date();
-            document.getElementById('relogio-tempo-real').innerText = agora.toLocaleTimeString('pt-BR');
+            const rel = document.getElementById('relogio-tempo-real');
+            if (rel) rel.innerText = agora.toLocaleTimeString('pt-BR');
+            renderizarTimelineDomADom();
         }, 1000);
 
-        let dataAtual = new Date(); // Inicia com a data atual
         
+        const DIAS_DOM_A_DOM = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+        const DIAS_CURTOS_DOM_A_DOM = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
+        function obterEstadoTempoDia(agora = new Date()) {
+            const minutosTotais = agora.getHours() * 60 + agora.getMinutes() + (agora.getSeconds() / 60);
+            const pctDia = Math.max(0, Math.min(100, (minutosTotais / 1440) * 100));
+
+            // Janela padrão das aulas: 07:30 (450 min) até 17:30 (1050 min)
+            const inicioAulasMin = 7 * 60 + 30;
+            const fimAulasMin = 17 * 60 + 30;
+
+            if (minutosTotais < inicioAulasMin) {
+                return {
+                    fase: 'pre-inicio',
+                    label: '🌅 Pré-Início das Aulas (Abertura)',
+                    descricao: 'Antes do início das aulas: timeline em vermelho vivo aguardando abertura do período letivo.',
+                    pctDia,
+                    corBarra: '#dc2626',
+                    corBorda: 'border-red-300',
+                    corFundoDia: 'bg-red-50/40',
+                    badgeClasse: 'bg-red-100 text-red-700 border-red-200',
+                    cardDestaque: 'ring-1 ring-red-400/70'
+                };
+            }
+
+            if (minutosTotais >= inicioAulasMin && minutosTotais <= fimAulasMin) {
+                const emInicio = minutosTotais <= inicioAulasMin + 45;
+                if (emInicio) {
+                    return {
+                        fase: 'inicio-aulas',
+                        label: '🚀 Início do Dia das Aulas',
+                        descricao: 'Início das aulas em andamento: cor vermelha-alaranjada de início de turno ativa.',
+                        pctDia,
+                        corBarra: '#ea580c',
+                        corBorda: 'border-orange-300',
+                        corFundoDia: 'bg-orange-50/40',
+                        badgeClasse: 'bg-orange-100 text-orange-800 border-orange-300',
+                        cardDestaque: 'ring-2 ring-orange-400/80'
+                    };
+                }
+                return {
+                    fase: 'aulas-ativas',
+                    label: '📚 Período de Aulas Ativo',
+                    descricao: 'Aulas em andamento: linha vertical vermelha acompanhando o tempo real do dia.',
+                    pctDia,
+                    corBarra: '#dc2626',
+                    corBorda: 'border-red-300',
+                    corFundoDia: 'bg-red-50/30',
+                    badgeClasse: 'bg-red-100 text-red-700 border-red-200',
+                    cardDestaque: 'ring-1 ring-red-500/60'
+                };
+            }
+
+            return {
+                fase: 'fim-do-dia',
+                label: '🌇 Fim do Dia / Encerramento das Aulas',
+                descricao: 'Fim do dia e encerramento das aulas: cor alterada para vinho/âmbar de encerramento.',
+                pctDia,
+                corBarra: '#991b1b',
+                corBorda: 'border-rose-300',
+                corFundoDia: 'bg-rose-50/50',
+                badgeClasse: 'bg-rose-100 text-rose-800 border-rose-300',
+                cardDestaque: 'ring-1 ring-rose-500/70'
+            };
+        }
+
+        function calcularProgressoSemanalDomASab(agora = new Date()) {
+            // Progresso da semana iniciando no domingo às 00:00 (0%) até o fim do sábado às 24:00 (100%)
+            // na velocidade das horas do dia.
+            const diaSemana = agora.getDay(); // 0 = Domingo ... 6 = Sábado
+            const minutosHoje = agora.getHours() * 60 + agora.getMinutes() + (agora.getSeconds() / 60);
+            const minutosDesdeDomingo = diaSemana * 1440 + minutosHoje;
+            const minutosTotaisSemana = 7 * 1440; // 10080 minutos
+            const pctSemana = Math.max(0, Math.min(100, (minutosDesdeDomingo / minutosTotaisSemana) * 100));
+            return { pctSemana, diaSemana, minutosHoje };
+        }
+
+        function obterCorFaseVertical(estado, minutosHoje) {
+            // Mudança automática de cor:
+            // - Início do dia das aulas (07:30 às 08:30): vermelho vivo / coral brilhante (#ef4444 / #f97316)
+            // - Durante o dia das aulas (08:30 às 17:30): vermelho intenso (#dc2626)
+            // - Fim do dia (após 17:30 ou antes das 07:30): vermelho escuro / bordô (#991b1b)
+            const inicioAulas = 7 * 60 + 30;
+            const fimInicioAulas = 8 * 60 + 30;
+            const fimDiaAulas = 17 * 60 + 30;
+
+            if (minutosHoje >= inicioAulas && minutosHoje <= fimInicioAulas) {
+                return {
+                    corLinha: '#f97316',
+                    sombraLinha: '0 0 14px rgba(249, 115, 22, 0.9)',
+                    rotuloFase: 'INÍCIO AULAS'
+                };
+            }
+            if (minutosHoje > fimInicioAulas && minutosHoje <= fimDiaAulas) {
+                return {
+                    corLinha: '#dc2626',
+                    sombraLinha: '0 0 12px rgba(220, 38, 38, 0.85)',
+                    rotuloFase: 'EM AULA'
+                };
+            }
+            return {
+                corLinha: '#991b1b',
+                sombraLinha: '0 0 12px rgba(153, 27, 27, 0.85)',
+                rotuloFase: 'FIM DO DIA'
+            };
+        }
+
+        function renderizarTimelineDomADom() {
+            const agora = obterDataReferenciaTimeline();
+            const diaSemanaHojeIdx = agora.getDay(); // 0 = Domingo ... 6 = Sábado
+            const estado = obterEstadoTempoDia(agora);
+            const { pctSemana, minutosHoje } = calcularProgressoSemanalDomASab(agora);
+            const estiloVertical = obterCorFaseVertical(estado, minutosHoje);
+
+            const linhaVertical = document.getElementById('linhaVerticalTempoReal');
+            const pinoVertical = document.getElementById('pinoVerticalTempoReal');
+            const horaFormatada = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+            if (linhaVertical) {
+                linhaVertical.style.left = `${pctSemana}%`;
+                linhaVertical.style.backgroundColor = estiloVertical.corLinha;
+                linhaVertical.style.boxShadow = estiloVertical.sombraLinha;
+            }
+            if (pinoVertical) {
+                pinoVertical.style.backgroundColor = estiloVertical.corLinha;
+                pinoVertical.innerText = `${DIAS_CURTOS_DOM_A_DOM[diaSemanaHojeIdx].toUpperCase()} ${horaFormatada} • ${estiloVertical.rotuloFase}`;
+            }
+            const badgeStatus = document.getElementById('badgeStatusTimelineAtual');
+            if (badgeStatus) {
+                const modoTxt = simulacaoTimelineAtiva ? 'SIMULADO' : 'AO VIVO';
+                badgeStatus.innerText = `${modoTxt} • ${estiloVertical.rotuloFase} (${horaFormatada})`;
+                badgeStatus.style.borderColor = estiloVertical.corLinha;
+                badgeStatus.style.color = estiloVertical.corLinha;
+            }
+        }
+
+        let dataAtual = new Date();
+
+        const GRADE_AULAS_BASE_PADRAO = [
+            { id: 'AULA-SEG-1', diaSemana: 'Segunda-feira', horario: '08:00 - 08:50', sala: 'Sala 201', materia: 'Matemática', titulo: 'Operações e Resolução de Problemas', categoria: 'Fundamental', cor: 'bg-blue-600 text-white', desc: 'Aula regular de Matemática com resolução de exercícios guiados.' },
+            { id: 'AULA-SEG-2', diaSemana: 'Segunda-feira', horario: '08:50 - 09:40', sala: 'Sala 201', materia: 'Português', titulo: 'Leitura, Interpretação e Gramática', categoria: 'Fundamental', cor: 'bg-emerald-600 text-white', desc: 'Compreensão de textos e análise gramatical.' },
+            { id: 'AULA-SEG-3', diaSemana: 'Segunda-feira', horario: '10:00 - 10:50', sala: 'Lab. Ciências', materia: 'Ciências', titulo: 'Descobertas e Meio Ambiente', categoria: 'Fundamental', cor: 'bg-teal-600 text-white', desc: 'Observação prática e preservação ambiental.' },
+            { id: 'AULA-SEG-4', diaSemana: 'Segunda-feira', horario: '14:00 - 14:45', sala: 'Sala Música', materia: 'Musicalização', titulo: 'Ritmo, Canto e Expressão Corporal', categoria: 'Maternal', cor: 'bg-fuchsia-600 text-white', desc: 'Atividades rítmicas e canções educativas.' },
+
+            { id: 'AULA-TER-1', diaSemana: 'Terça-feira', horario: '08:00 - 08:50', sala: 'Sala 201', materia: 'Português', titulo: 'Produção Textual e Ortografia', categoria: 'Fundamental', cor: 'bg-emerald-600 text-white', desc: 'Escrita criativa e regras ortográficas.' },
+            { id: 'AULA-TER-2', diaSemana: 'Terça-feira', horario: '08:50 - 09:40', sala: 'Sala 202', materia: 'História', titulo: 'História e Memória Social', categoria: 'Fundamental', cor: 'bg-amber-600 text-white', desc: 'Linha do tempo e transformações sociais.' },
+            { id: 'AULA-TER-3', diaSemana: 'Terça-feira', horario: '10:00 - 10:50', sala: 'Sala 202', materia: 'Geografia', titulo: 'Espaço Geográfico e Cartografia', categoria: 'Fundamental', cor: 'bg-cyan-600 text-white', desc: 'Mapas, orientação e espaços urbanos/rurais.' },
+            { id: 'AULA-TER-4', diaSemana: 'Terça-feira', horario: '14:00 - 14:45', sala: 'Ateliê Artes', materia: 'Artes Visuais', titulo: 'Pintura, Recorte e Coordenação Motora', categoria: 'Pré-Escola', cor: 'bg-pink-600 text-white', desc: 'Exploração de cores e texturas.' },
+
+            { id: 'AULA-QUA-1', diaSemana: 'Quarta-feira', horario: '08:00 - 08:50', sala: 'Sala 201', materia: 'Matemática', titulo: 'Geometria e Medidas', categoria: 'Fundamental', cor: 'bg-blue-600 text-white', desc: 'Figuras geométricas e unidades de medida.' },
+            { id: 'AULA-QUA-2', diaSemana: 'Quarta-feira', horario: '08:50 - 09:40', sala: 'Sala 203', materia: 'Inglês', titulo: 'Vocabulário e Conversação Básica', categoria: 'Fundamental', cor: 'bg-indigo-600 text-white', desc: 'Diálogos simples e vocabulário do cotidiano.' },
+            { id: 'AULA-QUA-3', diaSemana: 'Quarta-feira', horario: '10:00 - 10:50', sala: 'Quadra', materia: 'Educação Física', titulo: 'Jogos Cooperativos e Agilidade', categoria: 'Fundamental', cor: 'bg-emerald-600 text-white', desc: 'Trabalho em equipe e coordenação motora.' },
+            { id: 'AULA-QUA-4', diaSemana: 'Quarta-feira', horario: '14:00 - 14:45', sala: 'Sala Leitura', materia: 'Contação de Histórias', titulo: 'Valores, Linguagem e Imaginação', categoria: 'Maternal', cor: 'bg-violet-600 text-white', desc: 'Leitura interativa e estímulo à fala.' },
+
+            { id: 'AULA-QUI-1', diaSemana: 'Quinta-feira', horario: '08:00 - 08:50', sala: 'Lab. Ciências', materia: 'Ciências', titulo: 'Corpo Humano e Saúde', categoria: 'Fundamental', cor: 'bg-teal-600 text-white', desc: 'Hábitos saudáveis e funções do corpo.' },
+            { id: 'AULA-QUI-2', diaSemana: 'Quinta-feira', horario: '08:50 - 09:40', sala: 'Sala 201', materia: 'Matemática', titulo: 'Frações, Tabelas e Gráficos', categoria: 'Fundamental', cor: 'bg-blue-600 text-white', desc: 'Leitura de dados e operações com frações.' },
+            { id: 'AULA-QUI-3', diaSemana: 'Quinta-feira', horario: '10:00 - 10:50', sala: 'Auditório', materia: 'Ensino Religioso', titulo: 'Princípios, Ética e Convivência', categoria: 'Geral', cor: 'bg-purple-600 text-white', desc: 'Respeito mútuo e valores cristãos.' },
+            { id: 'AULA-QUI-4', diaSemana: 'Quinta-feira', horario: '14:00 - 14:45', sala: 'Sala Psico', materia: 'Psicomotricidade', titulo: 'Equilíbrio, Lateralidade e Movimento', categoria: 'Pré-Escola', cor: 'bg-pink-600 text-white', desc: 'Percurso motor e consciência corporal.' },
+
+            { id: 'AULA-SEX-1', diaSemana: 'Sexta-feira', horario: '08:00 - 08:50', sala: 'Sala 201', materia: 'Português', titulo: 'Oficina de Leitura e Oralidade', categoria: 'Fundamental', cor: 'bg-emerald-600 text-white', desc: 'Roda de leitura e apresentação oral.' },
+            { id: 'AULA-SEX-2', diaSemana: 'Sexta-feira', horario: '08:50 - 09:40', sala: 'Lab. Maker', materia: 'Robótica / Lógica', titulo: 'Raciocínio Lógico e Projetos', categoria: 'Fundamental', cor: 'bg-orange-600 text-white', desc: 'Montagem e desafios de lógica.' },
+            { id: 'AULA-SEX-3', diaSemana: 'Sexta-feira', horario: '10:00 - 10:50', sala: 'Sala 201', materia: 'Avaliação / Revisão', titulo: 'Revisão Semanal de Conteúdos', categoria: 'Fundamental', cor: 'bg-red-600 text-white', desc: 'Síntese dos tópicos trabalhados na semana.' },
+            { id: 'AULA-SEX-4', diaSemana: 'Sexta-feira', horario: '14:00 - 14:45', sala: 'Pátio', materia: 'Recreação Dirigida', titulo: 'Brincadeiras em Grupo e Socialização', categoria: 'Geral', cor: 'bg-purple-600 text-white', desc: 'Integração e encerramento da semana.' }
+        ];
+
+        function obterGradeRecorrente() {
+            const salva = JSON.parse(localStorage.getItem('peniel_grade_recorrente_calendario'));
+            if (Array.isArray(salva) && salva.length > 0) return salva;
+            return GRADE_AULAS_BASE_PADRAO.map(item => ({ ...item }));
+        }
+
+        function salvarGradeRecorrente(lista) {
+            localStorage.setItem('peniel_grade_recorrente_calendario', JSON.stringify(lista));
+            sincronizarComDashboardETurmas();
+        }
+
         function obterBancoEventos() {
-            let eventos = JSON.parse(localStorage.getItem('peniel_banco_eventos_calendario')) || [
-                { id: 1, titulo: 'Início do Ano Letivo 2027', data: '2027-02-01', horario: '08:00', categoria: 'Geral', cor: 'bg-purple-500 text-white', desc: 'Recepção dos alunos e pais.' },
-                { id: 2, titulo: 'Avaliação de Matemática', data: '2027-03-15', horario: '09:00', categoria: 'Fundamental', cor: 'bg-orange-500 text-white', desc: 'Primeira avaliação trimestral.' },
-                { id: 3, titulo: 'Aula de Robótica e Lógica', data: '2027-02-10', horario: '14:00', categoria: 'Fundamental', cor: 'bg-green-500 text-white', desc: 'Oficina prática no laboratório.' },
-                { id: 4, titulo: 'Reunião de Pais e Mestres', data: '2027-02-20', horario: '19:00', categoria: 'Geral', cor: 'bg-purple-500 text-white', desc: 'Apresentação da proposta pedagógica.' }
+            const eventos = JSON.parse(localStorage.getItem('peniel_banco_eventos_calendario'));
+            if (Array.isArray(eventos)) return eventos;
+            return [
+                { id: 1, materia: 'Geral', sala: 'Auditório', titulo: 'Início do Ano Letivo 2027', data: '2027-02-01', horario: '08:00', categoria: 'Geral', cor: 'bg-purple-600 text-white', desc: 'Recepção dos alunos e pais.' },
+                { id: 2, materia: 'Matemática', sala: 'Sala 201', titulo: 'Avaliação de Matemática', data: '2027-03-15', horario: '09:00', categoria: 'Fundamental', cor: 'bg-orange-600 text-white', desc: 'Primeira avaliação trimestral.' },
+                { id: 3, materia: 'Robótica / Lógica', sala: 'Lab. Maker', titulo: 'Aula de Robótica e Lógica', data: '2027-02-10', horario: '14:00', categoria: 'Fundamental', cor: 'bg-emerald-600 text-white', desc: 'Oficina prática no laboratório.' },
+                { id: 4, materia: 'Geral', sala: 'Auditório', titulo: 'Reunião de Pais e Mestres', data: '2027-02-20', horario: '19:00', categoria: 'Geral', cor: 'bg-purple-600 text-white', desc: 'Apresentação da proposta pedagógica.' }
             ];
-            return eventos;
         }
 
         function salvarBancoEventos(eventos) {
             localStorage.setItem('peniel_banco_eventos_calendario', JSON.stringify(eventos));
+            sincronizarComDashboardETurmas();
+        }
+
+        function sincronizarComDashboardETurmas() {
+            const grade = obterGradeRecorrente();
+            const eventos = obterBancoEventos();
+            const resumoSync = {
+                atualizadoEm: new Date().toISOString(),
+                totalAulasSemanais: grade.length,
+                totalEventosAgendados: eventos.length,
+                proximosEventos: eventos.slice(0, 6).map(e => ({
+                    id: e.id,
+                    titulo: e.titulo,
+                    materia: e.materia || e.categoria,
+                    sala: e.sala || 'A definir',
+                    data: e.data,
+                    horario: e.horario,
+                    categoria: e.categoria,
+                    desc: e.desc || ''
+                })),
+                gradeTurmas: grade.map(g => {
+                    const freq = obterFrequenciaPadrao(g);
+                    return {
+                        ...g,
+                        totalPresentes: freq.presentes.length,
+                        totalFaltantes: freq.faltantes.length,
+                        presentes: freq.presentes,
+                        faltantes: freq.faltantes
+                    };
+                })
+            };
+            localStorage.setItem('peniel_sync_dashboard_turmas_calendario', JSON.stringify(resumoSync));
+            window.dispatchEvent(new CustomEvent('peniel:calendario-atualizado', { detail: resumoSync }));
         }
 
         const nomesMeses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
@@ -301,122 +1042,182 @@
 
             const filtroTurma = document.getElementById('filtroTurmaCalendario').value;
             const eventos = obterBancoEventos();
+            const gradeRecorrente = obterGradeRecorrente();
 
-            // Dias do mês anterior para completar a primeira semana
             for (let i = primeiroDiaSemana - 1; i >= 0; i--) {
                 const diaNum = ultimoDiaMesAnterior - i;
-                const celula = criarCelulaDia(diaNum, true, null);
-                grid.appendChild(celula);
+                grid.appendChild(criarCelulaDia(diaNum, true, null));
             }
 
-            // Dias do mês atual
             const hojeStr = new Date().toISOString().slice(0, 10);
+            const diasSemanaMapa = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
 
             for (let dia = 1; dia <= ultimoDiaMes; dia++) {
                 const mesStr = String(mes + 1).padStart(2, '0');
                 const diaStr = String(dia).padStart(2, '0');
                 const dataIso = `${ano}-${mesStr}-${diaStr}`;
-
-                const eHojes = (dataIso === hojeStr);
-                const celula = criarCelulaDia(dia, false, dataIso, eHojes);
+                const eHoje = (dataIso === hojeStr);
+                const celula = criarCelulaDia(dia, false, dataIso, eHoje);
+                if (eHoje) {
+                    const estHoje = obterEstadoTempoDia(new Date());
+                    celula.classList.add('ring-2', estHoje.fase === 'fim-do-dia' ? 'ring-rose-500' : (estHoje.fase === 'inicio-aulas' ? 'ring-orange-500' : 'ring-red-500'));
+                }
 
                 const diaSemanaIndex = new Date(ano, mes, dia).getDay();
-                const diasSemanaMapa = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
                 const nomeDiaSemana = diasSemanaMapa[diaSemanaIndex];
 
-                const paletaCoresMaterias = {
-                    'Matemática':          'bg-blue-600 text-white border-l-4 border-blue-900',
-                    'Português':           'bg-emerald-600 text-white border-l-4 border-emerald-900',
-                    'Ciências':            'bg-teal-600 text-white border-l-4 border-teal-900',
-                    'História':            'bg-amber-600 text-white border-l-4 border-amber-900',
-                    'Geografia':           'bg-cyan-600 text-white border-l-4 border-cyan-900',
-                    'Inglês':              'bg-indigo-600 text-white border-l-4 border-indigo-900',
-                    'Educação Física':     'bg-lime-600 text-white border-l-4 border-lime-900',
-                    'Musicalização':       'bg-fuchsia-600 text-white border-l-4 border-fuchsia-900',
-                    'Artes Visuais':       'bg-pink-600 text-white border-l-4 border-pink-900',
-                    'Contação de Histórias': 'bg-violet-600 text-white border-l-4 border-violet-900',
-                    'Ensino Religioso':    'bg-purple-600 text-white border-l-4 border-purple-900',
-                    'Psicomotricidade':    'bg-rose-600 text-white border-l-4 border-rose-900',
-                    'Robótica / Lógica':   'bg-orange-600 text-white border-l-4 border-orange-900',
-                    'Avaliação / Revisão': 'bg-red-600 text-white border-l-4 border-red-900',
-                    'Recreação Dirigida':  'bg-sky-600 text-white border-l-4 border-sky-900'
-                };
-
-                // 1) Aulas recorrentes daquele dia da semana
-                const aulasDoDiaSemana = (typeof GRADE_AULAS_BASE_PENIEL !== 'undefined' ? GRADE_AULAS_BASE_PENIEL : [])
+                const aulasDoDiaSemana = gradeRecorrente
                     .filter(a => a.diaSemana === nomeDiaSemana && (filtroTurma === 'todas' || a.categoria === filtroTurma))
                     .map(a => ({
                         id: a.id,
                         recorrente: true,
-                        titulo: a.materia,
-                        subtitulo: a.titulo,
+                        diaSemana: nomeDiaSemana,
+                        dataIso: dataIso,
+                        materia: a.materia,
+                        sala: a.sala || 'Sala Padrão',
+                        titulo: a.titulo,
+                        presentes: obterFrequenciaPadrao(a).presentes,
+                        faltantes: obterFrequenciaPadrao(a).faltantes,
+                        desc: formatarDescricaoComFrequencia(a.desc || a.titulo, obterFrequenciaPadrao(a).presentes, obterFrequenciaPadrao(a).faltantes),
                         horario: a.horario,
                         categoria: a.categoria,
-                        corCard: paletaCoresMaterias[a.materia] || a.cor || 'bg-blue-600 text-white border-l-4 border-blue-900'
+                        corCard: (a.cor || 'bg-blue-600 text-white') + ' border-l-4 border-white/60'
                     }));
 
-                // 2) Eventos/aulas pontuais agendados naquela data exata
                 const eventosDoDia = eventos
                     .filter(ev => ev.data === dataIso && (filtroTurma === 'todas' || ev.categoria === filtroTurma))
                     .map(ev => ({
                         id: ev.id,
                         recorrente: false,
+                        diaSemana: nomeDiaSemana,
+                        dataIso: ev.data,
+                        materia: ev.materia || ev.categoria,
+                        sala: ev.sala || 'Sala Padrão',
                         titulo: ev.titulo,
-                        subtitulo: ev.desc || ev.categoria,
+                        presentes: obterFrequenciaPadrao(ev).presentes,
+                        faltantes: obterFrequenciaPadrao(ev).faltantes,
+                        desc: formatarDescricaoComFrequencia(ev.desc || ev.titulo, obterFrequenciaPadrao(ev).presentes, obterFrequenciaPadrao(ev).faltantes),
                         horario: ev.horario,
                         categoria: ev.categoria,
-                        corCard: (ev.cor || 'bg-purple-600 text-white') + ' border-l-4 border-black/30'
+                        corCard: (ev.cor || 'bg-purple-600 text-white') + ' border-l-4 border-white/60'
                     }));
 
                 const itensDoDia = [...aulasDoDiaSemana, ...eventosDoDia];
                 const containerEventos = celula.querySelector('.eventos-container');
+                const badgeContador = celula.querySelector('.contador-turmas-dia');
+                const btnExpandirDia = celula.querySelector('.btn-expandir-dia');
 
-                itensDoDia.forEach(item => {
+                if (itensDoDia.length > 0 && badgeContador) {
+                    const turmasUnicas = [...new Set(itensDoDia.map(x => x.categoria).filter(Boolean))];
+                    badgeContador.innerText = `${itensDoDia.length} aula(s) • ${turmasUnicas.length} turma(s)`;
+                    badgeContador.classList.remove('hidden');
+                }
+
+                let expandidoNoDia = false;
+
+                function montarCardItem(item) {
+                    const freq = obterFrequenciaPadrao(item);
+                    const totalPresentes = freq.presentes.length;
+                    const totalFaltantes = freq.faltantes.length;
+
                     const card = document.createElement('div');
-                    card.className = `p-1.5 rounded-lg shadow-xs ${item.corCard} mb-1.5 cursor-pointer hover:brightness-110 transition flex flex-col gap-0.5 text-left`;
+                    card.className = `p-1.5 rounded-lg ${item.corCard} shadow-xs cursor-pointer hover:brightness-110 transition flex flex-col gap-1 text-left shrink-0`;
                     card.innerHTML = `
-                        <div class="flex items-center justify-between gap-1 text-[9px] font-mono opacity-90">
-                            <span>⏰ ${item.horario}</span>
-                            <span class="bg-black/20 px-1 rounded text-[8px] uppercase">${item.categoria}</span>
+                        <div class="flex items-center justify-between gap-1 text-[9px] font-mono opacity-95">
+                            <span class="font-bold">⏰ ${item.horario}</span>
+                            <span class="bg-black/25 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase truncate max-w-[76px]">🏫 ${item.sala}</span>
                         </div>
-                        <div class="text-[10px] font-extrabold leading-tight truncate">${item.titulo}</div>
-                        <div class="text-[9px] opacity-90 leading-tight truncate">${item.subtitulo}</div>
+                        <div class="text-[10px] font-extrabold leading-tight truncate">${item.materia} • ${item.titulo}</div>
+                        <div class="flex items-center justify-between gap-1 pt-0.5">
+                            <div class="flex items-center gap-1">
+                                <button type="button" data-role="presentes" class="btn-freq-card bg-emerald-500/95 hover:bg-emerald-400 text-white px-1.5 py-0.5 rounded text-[8px] font-extrabold shadow-2xs transition cursor-pointer" title="Clique para ver a relação de alunos presentes">
+                                    P: ${totalPresentes}
+                                </button>
+                                <button type="button" data-role="faltantes" class="btn-freq-card bg-red-500/95 hover:bg-red-400 text-white px-1.5 py-0.5 rounded text-[8px] font-extrabold shadow-2xs transition cursor-pointer" title="Clique para ver a relação de alunos faltantes">
+                                    F: ${totalFaltantes}
+                                </button>
+                            </div>
+                            <span class="bg-white/20 px-1 py-0.2 rounded text-[8px] font-bold shrink-0">${item.categoria}</span>
+                        </div>
                     `;
-                    card.title = `${item.titulo} (${item.horario}) • ${item.subtitulo}`;
+                    card.title = 'Clique no card para detalhes; clique em P ou F para ver a relação de alunos';
                     card.onclick = (e) => {
                         e.stopPropagation();
-                        if (item.recorrente) {
-                            alert(`📚 Aula Semanal (${nomeDiaSemana})\nMatéria: ${item.titulo}\nHorário: ${item.horario}\nTurma: ${item.categoria}\nConteúdo: ${item.subtitulo}`);
-                        } else if (confirm(`Remover o evento "${item.titulo}"?`)) {
-                            removerEvento(item.id);
-                        }
+                        abrirModalDetalheCard(item);
                     };
-                    containerEventos.appendChild(card);
-                });
+
+                    const btnP = card.querySelector('[data-role="presentes"]');
+                    const btnF = card.querySelector('[data-role="faltantes"]');
+
+                    if (btnP) {
+                        btnP.onclick = (e) => {
+                            e.stopPropagation();
+                            abrirModalRelacaoAlunos(item, 'presentes');
+                        };
+                    }
+                    if (btnF) {
+                        btnF.onclick = (e) => {
+                            e.stopPropagation();
+                            abrirModalRelacaoAlunos(item, 'faltantes');
+                        };
+                    }
+
+                    return card;
+                }
+
+                function pintarCardsDoDia() {
+                    containerEventos.innerHTML = '';
+                    itensDoDia.forEach(item => containerEventos.appendChild(montarCardItem(item)));
+
+                    if (itensDoDia.length > 1 && btnExpandirDia) {
+                        btnExpandirDia.classList.remove('hidden');
+                        btnExpandirDia.innerText = expandidoNoDia
+                            ? '🔼 Recolher dia'
+                            : `⤢ Expandir (${itensDoDia.length})`;
+                        btnExpandirDia.onclick = (e) => {
+                            e.stopPropagation();
+                            expandidoNoDia = !expandidoNoDia;
+                            if (expandidoNoDia) {
+                                celula.classList.remove('h-[124px]');
+                                celula.classList.add('min-h-[124px]', 'z-20', 'ring-2', 'ring-marinho', 'shadow-lg', 'bg-blue-50/40');
+                                containerEventos.classList.remove('max-h-[82px]', 'overflow-y-auto');
+                            } else {
+                                celula.classList.add('h-[124px]');
+                                celula.classList.remove('min-h-[124px]', 'z-20', 'ring-2', 'ring-marinho', 'shadow-lg', 'bg-blue-50/40');
+                                containerEventos.classList.add('max-h-[82px]', 'overflow-y-auto');
+                            }
+                            pintarCardsDoDia();
+                        };
+                    }
+                }
+
+                pintarCardsDoDia();
 
                 grid.appendChild(celula);
             }
 
-            // Dias do próximo mês para completar a grade (6 semanas = 42 células)
             const totalCelulasFeitas = primeiroDiaSemana + ultimoDiaMes;
             const proximoMesDias = totalCelulasFeitas <= 35 ? (35 - totalCelulasFeitas) : (42 - totalCelulasFeitas);
 
             for (let dia = 1; dia <= proximoMesDias; dia++) {
-                const celula = criarCelulaDia(dia, true, null);
-                grid.appendChild(celula);
+                grid.appendChild(criarCelulaDia(dia, true, null));
             }
+
+            renderizarGradeCompletaAulas();
+            renderizarEspelhoTurmasAlunos(null);
+            renderizarTimelineDomADom();
         }
 
         function criarCelulaDia(numeroDia, outroMes, dataIso, eHoje = false) {
             const div = document.createElement('div');
-            div.className = `bg-white p-2 sm:p-3 flex flex-col transition min-h-[165px] ${outroMes ? 'bg-slate-50/50 text-slate-300' : 'text-slate-700 hover:bg-blue-50/30'}`;
-            
+            div.className = `bg-white p-1.5 sm:p-2 flex flex-col transition h-[124px] ${outroMes ? 'bg-slate-50/50 text-slate-300' : 'text-slate-700 hover:bg-blue-50/30'}`;
+
             if (dataIso) {
                 div.onclick = () => abrirModalNovoEventoComData(dataIso);
                 div.style.cursor = 'pointer';
             }
 
-            let estiloNumero = "font-bold text-xs sm:text-sm mb-1.5 w-7 h-7 flex items-center justify-center rounded-full";
+            let estiloNumero = "font-bold text-[11px] sm:text-xs w-6 h-6 flex items-center justify-center rounded-full shrink-0";
             if (eHoje) {
                 estiloNumero += " bg-laranja text-white shadow-sm";
             } else if (outroMes) {
@@ -426,13 +1227,306 @@
             }
 
             div.innerHTML = `
-                <div class="flex justify-between items-center">
-                    <span class="${estiloNumero}">${numeroDia}</span>
-                    ${dataIso ? '<span class="text-[10px] text-slate-300 group-hover:text-slate-500">+</span>' : ''}
+                <div class="flex justify-between items-center gap-1 shrink-0">
+                    <div class="flex items-center gap-1 min-w-0">
+                        <span class="${estiloNumero}">${numeroDia}</span>
+                        <span class="contador-turmas-dia hidden text-[8px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600 truncate"></span>
+                    </div>
+                    <div class="flex items-center gap-1 shrink-0">
+                        <button type="button" class="btn-expandir-dia hidden text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-50 hover:bg-blue-100 text-marinho border border-blue-200 transition"></button>
+                        ${dataIso ? '<span class="text-[10px] text-slate-300 px-0.5">+</span>' : ''}
+                    </div>
                 </div>
-                <div class="eventos-container flex-1 overflow-y-auto space-y-1 mt-1 hide-scrollbar"></div>
+                <div class="eventos-container flex-1 max-h-[82px] overflow-y-auto day-cards-scroll space-y-1 mt-1 pr-0.5"></div>
             `;
             return div;
+        }
+
+
+        const ALUNOS_POR_CATEGORIA_PADRAO = {
+            'Fundamental': {
+                presentes: ['Lucas Gabriel', 'Sofia Mendes', 'Pedro Henrique', 'Clara Rocha', 'Gabriel Alves'],
+                faltantes: ['Enzo Miguel']
+            },
+            'Maternal': {
+                presentes: ['Theo Silva', 'Helena Costa', 'Arthur Lima'],
+                faltantes: ['Alice Martins']
+            },
+            'Pré-Escola': {
+                presentes: ['Miguel Santos', 'Laura Oliveira', 'Davi Souza', 'Valentina Pereira'],
+                faltantes: ['Heitor Ribeiro']
+            },
+            'Geral': {
+                presentes: ['Lucas Gabriel', 'Sofia Mendes', 'Miguel Santos', 'Laura Oliveira'],
+                faltantes: ['Enzo Miguel', 'Alice Martins']
+            }
+        };
+
+        function normalizarListaAlunos(valor) {
+            if (Array.isArray(valor)) {
+                return valor.map(v => String(v).trim()).filter(Boolean);
+            }
+            if (!valor) return [];
+            return String(valor)
+                .split(/[,;\n]+/)
+                .map(v => v.trim())
+                .filter(Boolean);
+        }
+
+        function obterFrequenciaPadrao(item) {
+            const base = ALUNOS_POR_CATEGORIA_PADRAO[item.categoria] || ALUNOS_POR_CATEGORIA_PADRAO['Fundamental'];
+            const presentes = Array.isArray(item.presentes) && item.presentes.length > 0
+                ? [...item.presentes]
+                : [...base.presentes];
+            const faltantes = Array.isArray(item.faltantes) && item.faltantes.length > 0
+                ? [...item.faltantes]
+                : [...base.faltantes];
+            return { presentes, faltantes };
+        }
+
+        function formatarDescricaoComFrequencia(descBase, presentes, faltantes) {
+            const limpaBase = String(descBase || '')
+                .replace(/\n?\n?📋 Frequência:[\s\S]*$/m, '')
+                .trim();
+
+            const txtPresentes = presentes.length ? presentes.join(', ') : 'Nenhum';
+            const txtFaltantes = faltantes.length ? faltantes.join(', ') : 'Nenhum';
+
+            const blocoFreq = [
+                `📋 Frequência (${presentes.length} presentes / ${faltantes.length} faltantes):`,
+                `• Presentes: ${txtPresentes}`,
+                `• Faltantes: ${txtFaltantes}`
+            ].join('\n');
+
+            return limpaBase ? `${limpaBase}\n\n${blocoFreq}` : blocoFreq;
+        }
+
+        function atualizarResumoFrequenciaModal() {
+            const presentes = normalizarListaAlunos(document.getElementById('editCardPresentes').value);
+            const faltantes = normalizarListaAlunos(document.getElementById('editCardFaltantes').value);
+            const descBase = document.getElementById('editCardDescricao').value;
+
+            const badge = document.getElementById('resumoFrequenciaBadge');
+            if (badge) {
+                badge.innerText = `${presentes.length} presentes • ${faltantes.length} faltantes`;
+            }
+
+            const preview = document.getElementById('previewFrequenciaDescricao');
+            if (preview) {
+                const descCompleta = formatarDescricaoComFrequencia(descBase, presentes, faltantes);
+                preview.innerHTML = `
+                    <div class="font-bold text-marinho text-[10px] uppercase tracking-wider mb-1">Descrição Completa do Card</div>
+                    <div class="whitespace-pre-line text-slate-700 leading-relaxed">${descCompleta}</div>
+                `;
+            }
+        }
+
+
+        function renderizarChipsRelacao(containerId, lista, classeChip) {
+            const el = document.getElementById(containerId);
+            if (!el) return;
+            if (!lista.length) {
+                el.innerHTML = '<span class="text-[11px] italic text-slate-500">Nenhum aluno listado.</span>';
+                return;
+            }
+            el.innerHTML = lista
+                .map(nome => `<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold ${classeChip}">${nome}</span>`)
+                .join('');
+        }
+
+        function atualizarPreviaRelacaoModal() {
+            const presentes = normalizarListaAlunos(document.getElementById('inputRelacaoPresentes').value);
+            const faltantes = normalizarListaAlunos(document.getElementById('inputRelacaoFaltantes').value);
+
+            document.getElementById('qtdRelacaoPresentes').innerText = presentes.length;
+            document.getElementById('qtdRelacaoFaltantes').innerText = faltantes.length;
+
+            renderizarChipsRelacao('chipsRelacaoPresentes', presentes, 'bg-emerald-100 text-emerald-900 border border-emerald-300');
+            renderizarChipsRelacao('chipsRelacaoFaltantes', faltantes, 'bg-red-100 text-red-900 border border-red-300');
+        }
+
+        function abrirModalRelacaoAlunos(item, tipoFoco) {
+            const freq = obterFrequenciaPadrao(item);
+            document.getElementById('relacaoItemId').value = item.id;
+            document.getElementById('relacaoItemRecorrente').value = item.recorrente ? '1' : '0';
+            document.getElementById('relacaoTipoFoco').value = tipoFoco;
+
+            const ehPresentes = tipoFoco === 'presentes';
+            document.getElementById('badgeTipoRelacao').innerText = ehPresentes
+                ? `Presenças (${freq.presentes.length})`
+                : `Faltas (${freq.faltantes.length})`;
+            document.getElementById('tituloRelacaoAlunos').innerText = ehPresentes
+                ? '✅ Relação de Alunos Presentes'
+                : '❌ Relação de Alunos Faltantes';
+            document.getElementById('subtituloRelacaoAula').innerText =
+                `${item.materia} • ${item.titulo} (${item.horario} • ${item.sala})`;
+
+            document.getElementById('inputRelacaoPresentes').value = freq.presentes.join(', ');
+            document.getElementById('inputRelacaoFaltantes').value = freq.faltantes.join(', ');
+
+            document.getElementById('blocoListaPresentesRelacao').classList.toggle('ring-2', ehPresentes);
+            document.getElementById('blocoListaPresentesRelacao').classList.toggle('ring-emerald-500', ehPresentes);
+            document.getElementById('blocoListaFaltantesRelacao').classList.toggle('ring-2', !ehPresentes);
+            document.getElementById('blocoListaFaltantesRelacao').classList.toggle('ring-red-500', !ehPresentes);
+
+            document.getElementById('inputRelacaoPresentes').oninput = atualizarPreviaRelacaoModal;
+            document.getElementById('inputRelacaoFaltantes').oninput = atualizarPreviaRelacaoModal;
+            atualizarPreviaRelacaoModal();
+
+            document.getElementById('modalRelacaoAlunos').classList.remove('hidden');
+        }
+
+        function fecharModalRelacaoAlunos() {
+            document.getElementById('modalRelacaoAlunos').classList.add('hidden');
+        }
+
+        function salvarRelacaoAlunosModal() {
+            const id = document.getElementById('relacaoItemId').value;
+            const recorrente = document.getElementById('relacaoItemRecorrente').value === '1';
+            const presentes = normalizarListaAlunos(document.getElementById('inputRelacaoPresentes').value);
+            const faltantes = normalizarListaAlunos(document.getElementById('inputRelacaoFaltantes').value);
+
+            if (recorrente) {
+                const grade = obterGradeRecorrente();
+                const idx = grade.findIndex(a => String(a.id) === String(id));
+                if (idx !== -1) {
+                    const descAtualizada = formatarDescricaoComFrequencia(grade[idx].desc || grade[idx].titulo, presentes, faltantes);
+                    grade[idx] = { ...grade[idx], presentes, faltantes, desc: descAtualizada };
+                    salvarGradeRecorrente(grade);
+                }
+            } else {
+                const eventos = obterBancoEventos();
+                const idx = eventos.findIndex(ev => String(ev.id) === String(id));
+                if (idx !== -1) {
+                    const descAtualizada = formatarDescricaoComFrequencia(eventos[idx].desc || eventos[idx].titulo, presentes, faltantes);
+                    eventos[idx] = { ...eventos[idx], presentes, faltantes, desc: descAtualizada };
+                    salvarBancoEventos(eventos);
+                }
+            }
+
+            fecharModalRelacaoAlunos();
+            renderizarCalendario();
+            notificarCalendario(`Frequência atualizada: ${presentes.length} presentes e ${faltantes.length} faltantes.`);
+        }
+
+        function abrirModalDetalheCard(item) {
+            document.getElementById('editCardId').value = item.id;
+            document.getElementById('editCardRecorrente').value = item.recorrente ? '1' : '0';
+            document.getElementById('editCardDiaSemana').value = item.diaSemana || 'Segunda-feira';
+            document.getElementById('editCardTitulo').value = item.titulo || '';
+            document.getElementById('editCardMateria').value = item.materia || '';
+            document.getElementById('editCardSala').value = item.sala || '';
+            document.getElementById('editCardHorario').value = item.horario || '';
+            document.getElementById('editCardCategoria').value = item.categoria || 'Fundamental';
+            document.getElementById('editCardData').value = item.dataIso || new Date().toISOString().slice(0, 10);
+            const freq = obterFrequenciaPadrao(item);
+            document.getElementById('editCardPresentes').value = freq.presentes.join(', ');
+            document.getElementById('editCardFaltantes').value = freq.faltantes.join(', ');
+            document.getElementById('editCardDescricao').value = formatarDescricaoComFrequencia(
+                item.desc || item.titulo || '',
+                freq.presentes,
+                freq.faltantes
+            );
+            document.getElementById('editCardPresentes').oninput = atualizarResumoFrequenciaModal;
+            document.getElementById('editCardFaltantes').oninput = atualizarResumoFrequenciaModal;
+            document.getElementById('editCardDescricao').oninput = atualizarResumoFrequenciaModal;
+            atualizarResumoFrequenciaModal();
+
+            const corBase = (item.corCard || 'bg-blue-600 text-white').split(' border-l-4')[0];
+            const selectCor = document.getElementById('editCardCor');
+            const opcoes = Array.from(selectCor.options).map(o => o.value);
+            selectCor.value = opcoes.includes(corBase) ? corBase : 'bg-blue-600 text-white';
+
+            document.getElementById('detalheTipoBadge').innerText = item.recorrente
+                ? `Grade Semanal • ${item.diaSemana}`
+                : `Evento Pontual • ${item.dataIso || ''}`;
+
+            document.getElementById('wrapEditCardData').classList.toggle('hidden', !!item.recorrente);
+            document.getElementById('btnExcluirCardModal').classList.toggle('hidden', !!item.recorrente);
+
+            document.getElementById('modalDetalheCard').classList.remove('hidden');
+        }
+
+        function fecharModalDetalheCard() {
+            document.getElementById('modalDetalheCard').classList.add('hidden');
+        }
+
+        function salvarEdicaoCardModal() {
+            const id = document.getElementById('editCardId').value;
+            const recorrente = document.getElementById('editCardRecorrente').value === '1';
+            const titulo = document.getElementById('editCardTitulo').value.trim();
+            const materia = document.getElementById('editCardMateria').value.trim() || 'Disciplina';
+            const sala = document.getElementById('editCardSala').value.trim() || 'Sala Padrão';
+            const horario = document.getElementById('editCardHorario').value.trim() || '08:00';
+            const categoria = document.getElementById('editCardCategoria').value;
+            const cor = document.getElementById('editCardCor').value;
+            const presentes = normalizarListaAlunos(document.getElementById('editCardPresentes').value);
+            const faltantes = normalizarListaAlunos(document.getElementById('editCardFaltantes').value);
+            const descBruta = document.getElementById('editCardDescricao').value.trim();
+            const desc = formatarDescricaoComFrequencia(descBruta, presentes, faltantes);
+            const dataIso = document.getElementById('editCardData').value;
+
+            if (!titulo) {
+                notificarCalendario('Informe o título/conteúdo antes de salvar.');
+                return;
+            }
+
+            if (recorrente) {
+                const grade = obterGradeRecorrente();
+                const idx = grade.findIndex(a => String(a.id) === String(id));
+                if (idx !== -1) {
+                    grade[idx] = {
+                        ...grade[idx],
+                        titulo,
+                        materia,
+                        sala,
+                        horario,
+                        categoria,
+                        cor,
+                        desc,
+                        presentes,
+                        faltantes
+                    };
+                    salvarGradeRecorrente(grade);
+                }
+            } else {
+                const eventos = obterBancoEventos();
+                const idx = eventos.findIndex(ev => String(ev.id) === String(id));
+                if (idx !== -1) {
+                    eventos[idx] = {
+                        ...eventos[idx],
+                        titulo,
+                        materia,
+                        sala,
+                        horario,
+                        categoria,
+                        cor,
+                        desc,
+                        presentes,
+                        faltantes,
+                        data: dataIso || eventos[idx].data
+                    };
+                    salvarBancoEventos(eventos);
+                }
+            }
+
+            fecharModalDetalheCard();
+            renderizarCalendario();
+            notificarCalendario(`Alterações salvas (${materia} • ${sala} • ${horario}) e sincronizadas!`);
+        }
+
+        function excluirCardDoModal() {
+            const id = document.getElementById('editCardId').value;
+            const recorrente = document.getElementById('editCardRecorrente').value === '1';
+            if (recorrente) {
+                notificarCalendario('Aulas recorrentes da grade podem ser editadas, não excluídas por aqui.');
+                return;
+            }
+            const eventos = obterBancoEventos().filter(ev => String(ev.id) !== String(id));
+            salvarBancoEventos(eventos);
+            fecharModalDetalheCard();
+            renderizarCalendario();
+            notificarCalendario('Evento removido e sincronizado com o sistema.');
         }
 
         function abrirModalNovoEvento() {
@@ -447,12 +1541,16 @@
 
         function fecharModalEvento() {
             document.getElementById('modalEvento').classList.add('hidden');
+            document.getElementById('eventoMateria').value = '';
+            document.getElementById('eventoSala').value = '';
             document.getElementById('eventoTitulo').value = '';
             document.getElementById('eventoHorario').value = '';
             document.getElementById('eventoDescricao').value = '';
         }
 
         function salvarNovoEvento() {
+            const materia = document.getElementById('eventoMateria').value.trim() || 'Aula / Evento';
+            const sala = document.getElementById('eventoSala').value.trim() || 'Sala Padrão';
             const titulo = document.getElementById('eventoTitulo').value.trim();
             const data = document.getElementById('eventoData').value;
             const horario = document.getElementById('eventoHorario').value.trim() || '08:00';
@@ -461,13 +1559,15 @@
             const desc = document.getElementById('eventoDescricao').value.trim();
 
             if (!titulo || !data) {
-                alert('Preencha pelo menos o Título e a Data do evento.');
+                notificarCalendario('Preencha pelo menos o Título e a Data do evento.');
                 return;
             }
 
-            let eventos = obterBancoEventos();
+            const eventos = obterBancoEventos();
             eventos.push({
                 id: Date.now(),
+                materia,
+                sala,
                 titulo,
                 data,
                 horario,
@@ -479,19 +1579,119 @@
             salvarBancoEventos(eventos);
             fecharModalEvento();
             renderizarCalendario();
-            alert('✅ Evento ou aula agendada com sucesso!');
+            notificarCalendario('Evento ou aula agendada e sincronizada com Dashboard & Turmas!');
         }
 
-        function salvarModoGestorGlobal() { localStorage.removeItem('peniel_modo_gestor'); window.location.href = 'configuracoes.html'; }
+        function obterTodasAulasAgendadas() {
+            const eventosCalendario = obterBancoEventos();
+            const gradeRecorrente = obterGradeRecorrente();
+            const diasSemanaPt = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
 
-        function removerEvento(id) {
-            let eventos = obterBancoEventos();
-            eventos = eventos.filter(ev => ev.id !== id);
-            salvarBancoEventos(eventos);
-            renderizarCalendario();
+            const convertidos = eventosCalendario
+                .filter(ev => ev && ev.data)
+                .map(ev => {
+                    const partes = String(ev.data).split('-');
+                    let diaSemanaNome = 'Segunda-feira';
+                    if (partes.length === 3) {
+                        const dObj = new Date(Number(partes[0]), Number(partes[1]) - 1, Number(partes[2]));
+                        if (!isNaN(dObj.getTime())) {
+                            diaSemanaNome = diasSemanaPt[dObj.getDay()];
+                        }
+                    }
+                    const tituloStr = ev.titulo || 'Aula Agendada';
+                    const materiaInferida = ev.materia || (tituloStr.includes(' - ') ? tituloStr.split(' - ')[0] : tituloStr);
+                    return {
+                        id: ev.id,
+                        recorrente: false,
+                        diaSemana: diaSemanaNome,
+                        horario: ev.horario || '08:00',
+                        sala: ev.sala || 'Sala Padrão',
+                        materia: materiaInferida,
+                        titulo: tituloStr,
+                        desc: ev.desc || tituloStr,
+                        categoria: ev.categoria || 'Geral',
+                        corCard: ev.cor || 'bg-purple-600 text-white',
+                        dataIso: ev.data
+                    };
+                });
+
+            const recorrentesFormatadas = gradeRecorrente.map(a => ({
+                ...a,
+                recorrente: true,
+                sala: a.sala || 'Sala Padrão',
+                desc: a.desc || a.titulo,
+                corCard: a.cor || 'bg-blue-600 text-white'
+            }));
+
+            return [...recorrentesFormatadas, ...convertidos];
         }
+
+        function renderizarGradeCompletaAulas() {
+            const tbody = document.getElementById('corpoGradeCompletaAulas');
+            if (!tbody) return;
+
+            const filtroDia = document.getElementById('filtroDiaAula') ? document.getElementById('filtroDiaAula').value : 'todos';
+            const filtroTurma = document.getElementById('filtroTurmaCalendario') ? document.getElementById('filtroTurmaCalendario').value : 'todas';
+            const busca = document.getElementById('buscaMateriaAula') ? document.getElementById('buscaMateriaAula').value.toLowerCase().trim() : '';
+
+            const todas = obterTodasAulasAgendadas().filter(aula => {
+                const matchDia = (filtroDia === 'todos' || aula.diaSemana === filtroDia);
+                const matchTurma = (filtroTurma === 'todas' || aula.categoria === filtroTurma);
+                const matchBusca = !busca ||
+                    aula.diaSemana.toLowerCase().includes(busca) ||
+                    aula.horario.toLowerCase().includes(busca) ||
+                    (aula.sala || '').toLowerCase().includes(busca) ||
+                    aula.materia.toLowerCase().includes(busca) ||
+                    aula.titulo.toLowerCase().includes(busca);
+                return matchDia && matchTurma && matchBusca;
+            });
+
+            if (todas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-slate-400">Nenhuma aula encontrada para o filtro selecionado.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = todas.map(a => {
+                const payload = encodeURIComponent(JSON.stringify(a));
+                return `
+                    <tr onclick="abrirModalDetalheCard(JSON.parse(decodeURIComponent('${payload}')))" class="hover:bg-blue-50/50 transition cursor-pointer">
+                        <td class="px-4 py-3 font-bold text-marinho">${a.diaSemana}${a.dataIso ? ' <span class="text-[10px] font-mono text-slate-400">(' + a.dataIso + ')</span>' : ''}</td>
+                        <td class="px-4 py-3 font-mono font-semibold text-slate-700">${a.horario}</td>
+                        <td class="px-4 py-3 font-bold text-slate-800">🏫 ${a.sala || 'Sala Padrão'}</td>
+                        <td class="px-4 py-3">
+                            <span class="inline-block px-2.5 py-1 rounded-lg text-[11px] font-bold ${a.corCard} shadow-xs">${a.materia}</span>
+                        </td>
+                        <td class="px-4 py-3 text-slate-600">${a.titulo}</td>
+                        <td class="px-4 py-3 text-center"><span class="bg-blue-50 text-marinho border border-blue-200 px-2.5 py-1 rounded-lg text-[10px] font-bold">${a.categoria}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function sairModoGestorGlobal() {
+            if (confirm("Deseja realmente encerrar a sessão de Gestor Master e bloquear o painel?")) {
+                localStorage.removeItem('peniel_modo_gestor');
+                window.location.href = 'configuracoes.html';
+            }
+        }
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'peniel_banco_eventos_calendario' || e.key === 'peniel_grade_recorrente_calendario' || e.key === 'peniel_unidade' || e.key === 'peniel_cor_sessao') {
+                renderizarCalendario();
+            }
+        });
 
         document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('peniel_modo_gestor') !== 'ativo') {
+                const corSalva = localStorage.getItem('peniel_cor_sessao') || '#003057';
+                const menuLat = document.getElementById('menu-lateral');
+                if (menuLat) menuLat.style.backgroundColor = corSalva;
+                const unidadeSalva = localStorage.getItem('peniel_unidade') || 'Matriz';
+                const unidEl = document.querySelector('#menu-lateral span.text-blue-300');
+                if (unidEl) unidEl.innerText = 'Unidade ' + unidadeSalva;
+            }
+
+            sincronizarEspelhoCompleto(false);
             renderizarCalendario();
 
             const urlParams = new URLSearchParams(window.location.search);
@@ -517,7 +1717,7 @@
                             <a href="configuracoes.html?modo_gestor=1" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
                                 &larr; Voltar à Central de Bordo
                             </a>
-                            <button onclick="salvarModoGestorGlobal()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-xl text-xs font-bold transition shadow-sm">
+                            <button type="button" onclick="sairModoGestorGlobal()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-xl text-xs font-bold transition shadow-sm">
                                 🔒 Sair do Modo Gestor
                             </button>
                         </div>
@@ -526,120 +1726,6 @@
                 }
             }
         });
-    
-        // =====================================================================
-        // GRADE SEMANAL DE AULAS POR DIA, HORA E MATÉRIA (INTEGRADA AO CALENDÁRIO)
-        // =====================================================================
-        const GRADE_AULAS_BASE_PENIEL = [
-            // Segunda-feira
-            { id: 'AULA-SEG-1', diaSemana: 'Segunda-feira', horario: '08:00 - 08:50', materia: 'Matemática', titulo: 'Operações e Resolução de Problemas', categoria: 'Fundamental', cor: 'bg-blue-500 text-white' },
-            { id: 'AULA-SEG-2', diaSemana: 'Segunda-feira', horario: '08:50 - 09:40', materia: 'Português', titulo: 'Leitura, Interpretação e Gramática', categoria: 'Fundamental', cor: 'bg-blue-500 text-white' },
-            { id: 'AULA-SEG-3', diaSemana: 'Segunda-feira', horario: '10:00 - 10:50', materia: 'Ciências', titulo: 'Descobertas e Meio Ambiente', categoria: 'Fundamental', cor: 'bg-green-500 text-white' },
-            { id: 'AULA-SEG-4', diaSemana: 'Segunda-feira', horario: '14:00 - 14:45', materia: 'Musicalização', titulo: 'Ritmo, Canto e Expressão Corporal', categoria: 'Maternal', cor: 'bg-purple-500 text-white' },
-
-            // Terça-feira
-            { id: 'AULA-TER-1', diaSemana: 'Terça-feira', horario: '08:00 - 08:50', materia: 'Português', titulo: 'Produção Textual e Ortografia', categoria: 'Fundamental', cor: 'bg-blue-500 text-white' },
-            { id: 'AULA-TER-2', diaSemana: 'Terça-feira', horario: '08:50 - 09:40', materia: 'História', titulo: 'História e Memória Social', categoria: 'Fundamental', cor: 'bg-blue-500 text-white' },
-            { id: 'AULA-TER-3', diaSemana: 'Terça-feira', horario: '10:00 - 10:50', materia: 'Geografia', titulo: 'Espaço Geográfico e Cartografia', categoria: 'Fundamental', cor: 'bg-blue-500 text-white' },
-            { id: 'AULA-TER-4', diaSemana: 'Terça-feira', horario: '14:00 - 14:45', materia: 'Artes Visuais', titulo: 'Pintura, Recorte e Coordenação Motora', categoria: 'Pré-Escola', cor: 'bg-green-500 text-white' },
-
-            // Quarta-feira
-            { id: 'AULA-QUA-1', diaSemana: 'Quarta-feira', horario: '08:00 - 08:50', materia: 'Matemática', titulo: 'Geometria e Medidas', categoria: 'Fundamental', cor: 'bg-blue-500 text-white' },
-            { id: 'AULA-QUA-2', diaSemana: 'Quarta-feira', horario: '08:50 - 09:40', materia: 'Inglês', titulo: 'Vocabulário e Conversação Básica', categoria: 'Fundamental', cor: 'bg-blue-500 text-white' },
-            { id: 'AULA-QUA-3', diaSemana: 'Quarta-feira', horario: '10:00 - 10:50', materia: 'Educação Física', titulo: 'Jogos Cooperativos e Agilidade', categoria: 'Fundamental', cor: 'bg-green-500 text-white' },
-            { id: 'AULA-QUA-4', diaSemana: 'Quarta-feira', horario: '14:00 - 14:45', materia: 'Contação de Histórias', titulo: 'Valores, Linguagem e Imaginação', categoria: 'Maternal', cor: 'bg-purple-500 text-white' },
-
-            // Quinta-feira
-            { id: 'AULA-QUI-1', diaSemana: 'Quinta-feira', horario: '08:00 - 08:50', materia: 'Ciências', titulo: 'Corpo Humano e Saúde', categoria: 'Fundamental', cor: 'bg-green-500 text-white' },
-            { id: 'AULA-QUI-2', diaSemana: 'Quinta-feira', horario: '08:50 - 09:40', materia: 'Matemática', titulo: 'Frações, Tabelas e Gráficos', categoria: 'Fundamental', cor: 'bg-blue-500 text-white' },
-            { id: 'AULA-QUI-3', diaSemana: 'Quinta-feira', horario: '10:00 - 10:50', materia: 'Ensino Religioso', titulo: 'Princípios, Ética e Convivência', categoria: 'Geral', cor: 'bg-purple-500 text-white' },
-            { id: 'AULA-QUI-4', diaSemana: 'Quinta-feira', horario: '14:00 - 14:45', materia: 'Psicomotricidade', titulo: 'Equilíbrio, Lateralidade e Movimento', categoria: 'Pré-Escola', cor: 'bg-green-500 text-white' },
-
-            // Sexta-feira
-            { id: 'AULA-SEX-1', diaSemana: 'Sexta-feira', horario: '08:00 - 08:50', materia: 'Português', titulo: 'Oficina de Leitura e Oralidade', categoria: 'Fundamental', cor: 'bg-blue-500 text-white' },
-            { id: 'AULA-SEX-2', diaSemana: 'Sexta-feira', horario: '08:50 - 09:40', materia: 'Robótica / Lógica', titulo: 'Raciocínio Lógico e Projetos', categoria: 'Fundamental', cor: 'bg-orange-500 text-white' },
-            { id: 'AULA-SEX-3', diaSemana: 'Sexta-feira', horario: '10:00 - 10:50', materia: 'Avaliação / Revisão', titulo: 'Revisão Semanal de Conteúdos', categoria: 'Fundamental', cor: 'bg-orange-500 text-white' },
-            { id: 'AULA-SEX-4', diaSemana: 'Sexta-feira', horario: '14:00 - 14:45', materia: 'Recreação Dirigida', titulo: 'Brincadeiras em Grupo e Socialização', categoria: 'Geral', cor: 'bg-purple-500 text-white' }
-        ];
-
-        function obterTodasAulasAgendadas() {
-            const eventosCalendario = (typeof obterBancoEventos === 'function') ? obterBancoEventos() : [];
-            const diasSemanaPt = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
-
-            const convertidos = eventosCalendario
-                .filter(ev => ev && ev.data)
-                .map(ev => {
-                    const partes = String(ev.data).split('-');
-                    let diaSemanaNome = 'Segunda-feira';
-                    if (partes.length === 3) {
-                        const dObj = new Date(Number(partes[0]), Number(partes[1]) - 1, Number(partes[2]));
-                        if (!isNaN(dObj.getTime())) {
-                            diaSemanaNome = diasSemanaPt[dObj.getDay()];
-                        }
-                    }
-                    const tituloStr = ev.titulo || 'Aula Agendada';
-                    const materiaInferida = tituloStr.includes(' - ') ? tituloStr.split(' - ')[0] : tituloStr;
-                    return {
-                        id: 'EV-' + ev.id,
-                        diaSemana: diaSemanaNome,
-                        horario: ev.horario || '08:00',
-                        materia: materiaInferida,
-                        titulo: tituloStr,
-                        categoria: ev.categoria || 'Geral',
-                        dataIso: ev.data
-                    };
-                });
-
-            return [...GRADE_AULAS_BASE_PENIEL, ...convertidos];
-        }
-
-        function renderizarGradeCompletaAulas() {
-            const tbody = document.getElementById('corpoGradeCompletaAulas');
-            if (!tbody) return;
-
-            const filtroDia = document.getElementById('filtroDiaAula') ? document.getElementById('filtroDiaAula').value : 'todos';
-            const filtroTurma = document.getElementById('filtroTurmaCalendario') ? document.getElementById('filtroTurmaCalendario').value : 'todas';
-            const busca = document.getElementById('buscaMateriaAula') ? document.getElementById('buscaMateriaAula').value.toLowerCase().trim() : '';
-
-            const todas = obterTodasAulasAgendadas().filter(aula => {
-                const matchDia = (filtroDia === 'todos' || aula.diaSemana === filtroDia);
-                const matchTurma = (filtroTurma === 'todas' || aula.categoria === filtroTurma);
-                const matchBusca = !busca ||
-                    aula.diaSemana.toLowerCase().includes(busca) ||
-                    aula.horario.toLowerCase().includes(busca) ||
-                    aula.materia.toLowerCase().includes(busca) ||
-                    aula.titulo.toLowerCase().includes(busca);
-                return matchDia && matchTurma && matchBusca;
-            });
-
-            if (todas.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="px-4 py-8 text-center text-slate-400">Nenhuma aula encontrada para o filtro selecionado.</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = todas.map(a => `
-                <tr class="hover:bg-slate-50 transition">
-                    <td class="px-4 py-3 font-bold text-marinho">${a.diaSemana}${a.dataIso ? ' <span class="text-[10px] font-mono text-slate-400">(' + a.dataIso + ')</span>' : ''}</td>
-                    <td class="px-4 py-3 font-mono font-semibold text-slate-700">${a.horario}</td>
-                    <td class="px-4 py-3 font-bold text-slate-800">${a.materia}</td>
-                    <td class="px-4 py-3 text-slate-600">${a.titulo}</td>
-                    <td class="px-4 py-3 text-center"><span class="bg-blue-50 text-marinho border border-blue-200 px-2.5 py-1 rounded-lg text-[10px] font-bold">${a.categoria}</span></td>
-                </tr>
-            `).join('');
-        }
-
-        const _renderCalendarioOriginal = typeof renderizarCalendario === 'function' ? renderizarCalendario : null;
-        if (_renderCalendarioOriginal) {
-            renderizarCalendario = function() {
-                _renderCalendarioOriginal();
-                renderizarGradeCompletaAulas();
-            };
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            renderizarGradeCompletaAulas();
-        });
-
     </script>
 </body>
 </html>
