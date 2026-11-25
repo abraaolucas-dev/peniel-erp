@@ -18,40 +18,33 @@
         }
     </script>
     <style>
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-        @keyframes pulsoApenasGrafico {
-            0%, 100% {
-                transform: scale(1);
-                filter: drop-shadow(0 0 0 rgba(232, 93, 4, 0));
-            }
-            50% {
-                transform: scale(1.045);
-                filter: drop-shadow(0 4px 12px rgba(232, 93, 4, 0.22));
-            }
-        }
-        #graficoFrequencia,
-        #graficoFinanceiro {
-            animation: pulsoApenasGrafico 3.2s ease-in-out infinite;
-            transform-origin: center center;
-        }
-        #graficoFinanceiro {
-            animation-delay: 1.6s;
+        /* Mantem textos e indicadores nitidos e estaticos; animacao apenas nos badges Ao Vivo/Indicador e nas fatias internas */
+        #ticker-info-frequencia,
+        #ticker-info-financeiro {
+            opacity: 1 !important;
+            filter: none !important;
+            transform: none !important;
+            animation: none !important;
         }
     </style>
 </head>
 <body id="corpo-sistema" class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col md:flex-row overflow-x-hidden">
 
-    <!-- Áudio de Alarme Oculto -->
+    <!-- Audio de alerta oculto -->
     <audio id="som-alerta" preload="auto">
         <source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" type="audio/ogg">
     </audio>
 
-    <!-- BARRA DE TOPO EXCLUSIVA MOBILE -->
-    <div id="barra-topo-mobile" class="md:hidden bg-marinho text-white px-4 py-3.5 flex justify-between items-center shadow-lg sticky top-0 z-[80] border-b border-white/10 transition-colors duration-300">
+    <!-- Toast flutuante de feedback -->
+    <div id="toast-sistema" class="fixed bottom-5 right-5 z-[200] hidden max-w-sm bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-white/10 text-xs font-semibold flex items-center gap-2.5">
+        <span id="toast-icone">✅</span>
+        <span id="toast-texto">Operação concluída</span>
+    </div>
+
+    <!-- Barra de topo mobile -->
+    <div id="barra-topo-mobile" class="md:hidden bg-marinho text-white px-4 py-3.5 flex justify-between items-center shadow-lg sticky top-0 z-[80] border-b border-white/10">
         <div class="flex items-center gap-3">
-            <button type="button" onclick="toggleMenuMobile()" class="bg-laranja hover:bg-orange-600 text-white px-3 py-2 rounded-xl font-bold text-sm flex items-center gap-1.5 shadow-md active:scale-95 transition">
+            <button type="button" onclick="toggleMenuMobile()" class="bg-laranja hover:bg-orange-600 text-white px-3 py-2 rounded-xl font-bold text-sm flex items-center gap-1.5 shadow-md active:scale-95">
                 <span class="text-base leading-none">☰</span> Menu
             </button>
             <div>
@@ -67,11 +60,11 @@
         </div>
     </div>
 
-    <!-- Overlay Escuro do Menu Mobile -->
-    <div id="overlay-mobile" onclick="toggleMenuMobile()" class="fixed inset-0 bg-slate-950/75 z-[95] hidden md:hidden backdrop-blur-sm transition-opacity"></div>
+    <!-- Overlay escuro do menu mobile -->
+    <div id="overlay-mobile" onclick="toggleMenuMobile()" class="fixed inset-0 bg-slate-950/75 z-[95] hidden md:hidden backdrop-blur-sm"></div>
 
-    <!-- MENU LATERAL -->
-    <aside id="menu-lateral" class="fixed md:sticky left-0 top-0 w-72 md:w-64 bg-marinho text-white flex-col h-screen z-[100] transform -translate-x-full md:translate-x-0 transition-all duration-300 flex shrink-0 shadow-2xl md:shadow-none border-r-4 border-laranja md:border-r-0">
+    <!-- Menu lateral padronizado -->
+    <aside id="menu-lateral" class="fixed md:sticky left-0 top-0 w-72 md:w-64 bg-marinho text-white flex-col h-screen z-[100] transform -translate-x-full md:translate-x-0 flex shrink-0 shadow-2xl md:shadow-none border-r-4 border-laranja md:border-r-0">
         <div class="p-6 flex justify-between items-center shrink-0 border-b border-white/10 bg-black/15">
             <div>
                 <h1 class="font-heading text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
@@ -79,7 +72,7 @@
                 </h1>
                 <span class="text-xs font-sans font-semibold block text-blue-300 mt-0.5" id="label-unidade-menu">Unidade Matriz</span>
             </div>
-            <button type="button" onclick="toggleMenuMobile()" class="md:hidden bg-white/10 hover:bg-red-500/30 text-white w-9 h-9 rounded-xl text-xl font-bold flex items-center justify-center transition">&times;</button>
+            <button type="button" onclick="toggleMenuMobile()" class="md:hidden bg-white/10 hover:bg-red-500/30 text-white w-9 h-9 rounded-xl text-xl font-bold flex items-center justify-center">&times;</button>
         </div>
 
         <nav class="flex-1 px-3 space-y-1.5 mt-3 overflow-y-auto pb-6">
@@ -88,24 +81,24 @@
                 <span>📈 Dashboard</span>
                 <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full">Ativo</span>
             </a>
-            
+
             <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Captação</div>
-            <a href="painel.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">📥 Leads Typebot</a>
-            
+            <a href="painel.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium">📥 Leads Typebot</a>
+
             <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Secretaria</div>
-            <a href="matriculas.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">📝 Matrículas</a>
-            <a href="fichas.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">👥 Fichas (Alunos/Pais)</a>
-            <a href="rematricula.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">🔄 Rematrícula</a>
+            <a href="matriculas.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium">📝 Matrículas</a>
+            <a href="fichas.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium">👥 Fichas (Alunos/Pais)</a>
+            <a href="rematricula.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium">🔄 Rematrícula</a>
 
             <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Acadêmico</div>
-            <a href="calendario.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">📅 Calendário e Equipe</a>
-            <a href="notas.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">📊 Notas e Avaliações</a>
+            <a href="calendario.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium">📅 Calendário e Equipe</a>
+            <a href="notas.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium">📊 Notas e Avaliações</a>
 
             <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Administrativo</div>
-            <a href="financeiro.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">💰 Gestão Financeira</a>
-            <a href="configuracoes.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">⚙️ Configurações / ADM</a>
+            <a href="financeiro.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium">💰 Gestão Financeira</a>
+            <a href="configuracoes.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium">⚙️ Configurações / ADM</a>
         </nav>
-        
+
         <div class="p-4 border-t border-white/10 bg-black/20 space-y-2.5 shrink-0">
             <div class="flex items-center justify-between bg-white/10 px-3 py-2 rounded-xl">
                 <span class="text-xs font-bold text-blue-100">🎨 Cor do Tema</span>
@@ -116,33 +109,32 @@
                     <input type="color" id="seletorCorMenu" value="#003057" onchange="mudarCorSessao(this.value)" class="w-5 h-5 rounded cursor-pointer bg-transparent border-0">
                 </div>
             </div>
-            <button type="button" onclick="sairDoSistema()" class="w-full flex items-center justify-center gap-2 bg-red-600/80 hover:bg-red-600 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition">
+            <button type="button" onclick="sairDoSistema()" class="w-full flex items-center justify-center gap-2 bg-red-600/80 hover:bg-red-600 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm">
                 🚪 Sair do Sistema
             </button>
         </div>
     </aside>
 
-    <!-- ÁREA PRINCIPAL -->
+    <!-- Area principal -->
     <main class="flex-1 p-3 sm:p-5 md:p-8 flex flex-col gap-5 w-full max-w-full overflow-x-hidden">
-        
-        <!-- HEADER -->
+
+        <!-- Header -->
         <header class="flex flex-col xl:flex-row justify-between items-start xl:items-center bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm gap-4">
             <div>
                 <div class="flex flex-wrap items-center gap-2 mb-1">
                     <span class="bg-blue-100 text-marinho text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider" id="badge-unidade-atual">Unidade Matriz</span>
-                    <span class="text-xs text-green-600 font-bold flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-500 animate-ping"></span> Online</span>
+                    <span id="status-conexao-db" class="text-xs text-amber-700 font-bold flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-amber-500"></span> Sincronizando Supabase...
+                    </span>
                 </div>
                 <h2 class="font-heading text-xl sm:text-2xl md:text-3xl font-bold text-slate-800" id="saudacao-gestor">Olá, Abraão Lucas</h2>
-                <p class="text-xs text-slate-500" id="subtitulo-unidade-header">Painel de controle, turmas em tempo real e visão geral da Matriz.</p>
+                <p class="text-xs text-slate-600" id="subtitulo-unidade-header">Painel de controle, turmas em tempo real e visão geral da Matriz.</p>
             </div>
-            
+
             <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 w-full xl:w-auto">
-                
-                <!-- BOTÃO DE CALENDÁRIO INTERATIVO E CLICÁVEL -->
-                <div class="relative flex items-center bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:border-marinho transition cursor-pointer" onclick="abrirCalendarioInterativo()">
+                <div class="relative flex items-center bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:border-marinho cursor-pointer" onclick="abrirCalendarioInterativo()">
                     <span>📅</span>
                     <span id="data-topo" class="ml-1.5">--/--/----</span>
-                    <!-- Input nativo invisível cobrindo o botão para abrir o calendário nativo do sistema/navegador -->
                     <input type="date" id="inputCalendarioTopo" onchange="mudarDataSistema(this.value)" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
                 </div>
 
@@ -155,71 +147,71 @@
                     </select>
                 </div>
 
-                <button type="button" onclick="abrirModalPerfil()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5">
+                <button type="button" onclick="abrirModalPerfil()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5">
                     👤 <span id="nomeGestorBtn" class="truncate">Abraão Lucas</span>
                 </button>
-                <button type="button" onclick="ativarSistemaSonoro()" id="btn-ativar-som" class="bg-laranja hover:bg-orange-600 text-white px-3 py-2 rounded-xl text-xs font-bold shadow-sm transition flex items-center justify-center gap-1">
+                <button type="button" onclick="ativarSistemaSonoro()" id="btn-ativar-som" class="bg-laranja hover:bg-orange-600 text-white px-3 py-2 rounded-xl text-xs font-bold shadow-sm flex items-center justify-center gap-1">
                     🔊 Alertas
                 </button>
-                <button type="button" onclick="sairDoSistema()" class="col-span-2 sm:col-span-1 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-3 py-2 rounded-xl text-xs font-bold shadow-sm transition flex items-center justify-center gap-1">
+                <button type="button" onclick="sairDoSistema()" class="col-span-2 sm:col-span-1 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 px-3 py-2 rounded-xl text-xs font-bold shadow-sm flex items-center justify-center gap-1">
                     🚪 Sair
                 </button>
             </div>
         </header>
 
-        <!-- BANNER DE ALERTA -->
+        <!-- Banner de alerta -->
         <div id="alerta-visual" class="hidden bg-red-600 text-white p-4 rounded-2xl shadow-lg flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-2 border-red-300">
             <div class="flex items-center gap-3">
                 <span class="text-2xl sm:text-3xl">🚨</span>
                 <div>
                     <h4 class="font-bold text-sm sm:text-base">Atenção! Nova Solicitação de Saída na Portaria</h4>
-                    <p class="text-red-100 text-xs" id="texto-alerta-unidade">A aluna <strong>Isabela Mendes (2º Ano B)</strong> aguarda conferência e liberação na Matriz.</p>
+                    <p class="text-red-50 text-xs" id="texto-alerta-unidade">A aluna <strong>Isabela Mendes (2º Ano B)</strong> aguarda conferência e liberação na Matriz.</p>
                 </div>
             </div>
             <div class="flex gap-2 w-full sm:w-auto">
-                <button type="button" onclick="abrirModalDetalhesPortaria('isabela')" class="flex-1 sm:flex-none bg-white text-red-700 px-4 py-2 rounded-xl font-bold hover:bg-red-50 transition shadow-sm text-xs whitespace-nowrap">
+                <button type="button" id="btn-banner-detalhes" onclick="abrirPrimeiroPendentePortaria()" class="flex-1 sm:flex-none bg-white text-red-700 px-4 py-2 rounded-xl font-bold hover:bg-red-50 shadow-sm text-xs whitespace-nowrap">
                     🔍 Ver Detalhes Agora
                 </button>
-                <button type="button" onclick="verificarLiberacaoPendentes()" class="bg-red-800 text-white px-3 py-2 rounded-xl font-bold hover:bg-red-900 transition text-xs whitespace-nowrap">
+                <button type="button" onclick="verificarLiberacaoPendentes()" class="bg-red-800 text-white px-3 py-2 rounded-xl font-bold hover:bg-red-900 text-xs whitespace-nowrap">
                     Ir ao Card &darr;
                 </button>
             </div>
         </div>
 
-        <!-- KPIS -->
+        <!-- KPIs -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            <a href="matriculas.html" class="block bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm border-l-4 border-l-blue-500 hover:-translate-y-0.5 hover:shadow-md transition-all group">
-                <div class="flex justify-between items-start"><h3 class="text-slate-500 text-[10px] sm:text-xs font-bold uppercase tracking-wider">Alunos na Escola</h3><span class="text-blue-500 text-sm">↗</span></div>
-                <div class="text-lg sm:text-xl font-black text-slate-800 mt-1" id="kpi-alunos">342 <span class="text-[11px] font-semibold text-green-600 block sm:inline">de 350</span></div>
+            <a href="matriculas.html" class="block bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm border-l-4 border-l-blue-500 hover:-translate-y-0.5 hover:shadow-md">
+                <div class="flex justify-between items-start"><h3 class="text-slate-600 text-[10px] sm:text-xs font-bold uppercase tracking-wider">Alunos na Escola</h3><span class="text-blue-600 text-sm font-bold">↗</span></div>
+                <div class="text-lg sm:text-xl font-black text-slate-900 mt-1" id="kpi-alunos">342 <span class="text-[11px] font-semibold text-emerald-700 block sm:inline">de 350</span></div>
             </a>
-            <a href="notas.html" class="block bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm border-l-4 border-l-orange-500 hover:-translate-y-0.5 hover:shadow-md transition-all group">
-                <div class="flex justify-between items-start"><h3 class="text-slate-500 text-[10px] sm:text-xs font-bold uppercase tracking-wider">Faltas Hoje</h3><span class="text-orange-500 text-sm">↗</span></div>
-                <div class="text-lg sm:text-xl font-black text-slate-800 mt-1" id="kpi-faltas">8 <span class="text-[11px] font-semibold text-slate-400 block sm:inline">alunos</span></div>
+            <a href="notas.html" class="block bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm border-l-4 border-l-orange-500 hover:-translate-y-0.5 hover:shadow-md">
+                <div class="flex justify-between items-start"><h3 class="text-slate-600 text-[10px] sm:text-xs font-bold uppercase tracking-wider">Faltas Hoje</h3><span class="text-orange-600 text-sm font-bold">↗</span></div>
+                <div class="text-lg sm:text-xl font-black text-slate-900 mt-1" id="kpi-faltas">8 <span class="text-[11px] font-semibold text-slate-500 block sm:inline">alunos</span></div>
             </a>
-            <a href="financeiro.html" class="block bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm border-l-4 border-l-red-500 hover:-translate-y-0.5 hover:shadow-md transition-all group">
-                <div class="flex justify-between items-start"><h3 class="text-slate-500 text-[10px] sm:text-xs font-bold uppercase tracking-wider">Inadimplência</h3><span class="text-red-500 text-sm">↗</span></div>
-                <div class="text-lg sm:text-xl font-black text-slate-800 mt-1" id="kpi-inadimplencia">12% <span class="text-[11px] font-semibold text-red-500 block sm:inline">Atenção</span></div>
+            <a href="financeiro.html" class="block bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm border-l-4 border-l-red-500 hover:-translate-y-0.5 hover:shadow-md">
+                <div class="flex justify-between items-start"><h3 class="text-slate-600 text-[10px] sm:text-xs font-bold uppercase tracking-wider">Inadimplência</h3><span class="text-red-600 text-sm font-bold">↗</span></div>
+                <div class="text-lg sm:text-xl font-black text-slate-900 mt-1" id="kpi-inadimplencia">12% <span class="text-[11px] font-semibold text-red-600 block sm:inline">Atenção</span></div>
             </a>
-            <a href="rematricula.html" class="block bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm border-l-4 border-l-purple-500 hover:-translate-y-0.5 hover:shadow-md transition-all group">
-                <div class="flex justify-between items-start"><h3 class="text-slate-500 text-[10px] sm:text-xs font-bold uppercase tracking-wider">Retenção 2027</h3><span class="text-purple-500 text-sm">↗</span></div>
-                <div class="text-lg sm:text-xl font-black text-slate-800 mt-1" id="kpi-retencao">65% <span class="text-[11px] font-semibold text-green-600 block sm:inline">Na meta</span></div>
+            <a href="rematricula.html" class="block bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm border-l-4 border-l-purple-500 hover:-translate-y-0.5 hover:shadow-md">
+                <div class="flex justify-between items-start"><h3 class="text-slate-600 text-[10px] sm:text-xs font-bold uppercase tracking-wider">Retenção 2027</h3><span class="text-purple-600 text-sm font-bold">↗</span></div>
+                <div class="text-lg sm:text-xl font-black text-slate-900 mt-1" id="kpi-retencao">65% <span class="text-[11px] font-semibold text-emerald-700 block sm:inline">Na meta</span></div>
             </a>
         </div>
 
-        <!-- PAINEL DE SALAS E AULAS -->
+        <!-- Painel de salas e aulas -->
         <div class="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm">
             <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-5 border-b border-slate-100 pb-4 gap-3">
                 <div>
                     <div class="flex items-center gap-2">
-                        <h3 class="font-bold text-slate-800 text-base sm:text-lg">📡 Painel de Salas e Aulas (Tempo Real)</h3>
-                        <span id="badge-contagem-salas" class="bg-green-100 text-green-800 px-2.5 py-0.5 rounded-full text-xs font-bold border border-green-200">--</span>
+                        <h3 class="font-bold text-slate-900 text-base sm:text-lg">📡 Painel de Salas e Aulas (Tempo Real)</h3>
+                        <span id="badge-contagem-salas" class="bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full text-xs font-bold border border-emerald-200">--</span>
                     </div>
-                    <p class="text-xs text-slate-500 mt-0.5">As cores mudam automaticamente pelo relógio ou clique no selo para testar os status.</p>
+                    <p class="text-xs text-slate-600 mt-0.5">As cores mudam automaticamente pelo relógio ou clique no selo para alternar os status.</p>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
                     <div class="bg-slate-900 text-white px-3.5 py-2 rounded-xl text-xs font-mono font-bold flex items-center gap-2 shadow-sm">
-                        <span class="w-2 h-2 rounded-full bg-green-400 animate-ping"></span>
+                        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
                         <span>Agora:</span>
                         <span id="relogio-tempo-real" class="text-amber-300 text-sm">--:--:--</span>
                     </div>
@@ -237,56 +229,57 @@
             <div id="grid-salas-tempo-real" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4"></div>
         </div>
 
-        <!-- LAYOUT INFERIOR -->
+        <!-- Layout inferior -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            
+
             <div class="lg:col-span-5 flex flex-col gap-6">
-                
+
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-1.5 h-full bg-blue-600"></div>
                     <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-100">
                         <div>
-                            <h3 class="font-bold text-slate-800 text-sm sm:text-base flex items-center gap-2">🤝 Reuniões & Pautas Internas</h3>
-                            <p class="text-[11px] text-slate-500">Toque em <strong>Confirmar OK</strong> para validar presença.</p>
+                            <h3 class="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2">🤝 Reuniões & Pautas Internas</h3>
+                            <p class="text-[11px] text-slate-600">Toque em <strong>Confirmar OK</strong> para validar presença.</p>
                         </div>
-                        <span id="badge-reunioes-status" class="bg-blue-100 text-blue-800 text-[11px] font-bold px-2.5 py-1 rounded-full">0/3 OK</span>
+                        <span id="badge-reunioes-status" class="bg-blue-100 text-blue-900 text-[11px] font-bold px-2.5 py-1 rounded-full">0/0 OK</span>
                     </div>
 
                     <ul id="lista-reunioes" class="space-y-3 mb-4"></ul>
 
                     <div class="flex gap-2 pt-2 border-t border-slate-100">
-                        <input type="text" id="inputNovaReuniao" placeholder="Nova reunião ou aviso interno..." class="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <button type="button" onclick="adicionarReuniaoRapida()" class="bg-marinho hover:bg-blue-900 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0">
+                        <input type="text" id="inputNovaReuniao" onkeydown="if(event.key==='Enter') adicionarReuniaoRapida()" placeholder="Nova reunião ou aviso interno..." class="flex-1 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <button type="button" onclick="adicionarReuniaoRapida()" class="bg-marinho hover:bg-blue-900 text-white px-3.5 py-2 rounded-xl text-xs font-bold shrink-0">
                             + Incluir
                         </button>
                     </div>
                 </div>
 
+                <!-- Graficos estaticos por fora, com animacao apenas no badge Ao Vivo/Indicador e nas fatias internas -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center relative overflow-hidden">
                         <div class="w-full flex items-center justify-between mb-2">
-                            <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> Ao Vivo
+                            <span class="inline-flex items-center gap-1.5 text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-ping"></span> Ao Vivo
                             </span>
-                            <span class="text-[10px] font-mono text-slate-400">Peniel School</span>
+                            <span class="text-[10px] font-mono font-semibold text-slate-500">Peniel School</span>
                         </div>
-                        <h3 class="font-bold text-slate-700 mb-2 text-center text-xs uppercase tracking-wider">Frequência Diária</h3>
+                        <h3 class="font-bold text-slate-800 mb-2 text-center text-xs uppercase tracking-wider">Frequência Diária</h3>
                         <div class="w-36 h-36 relative"><canvas id="graficoFrequencia"></canvas></div>
-                        <div id="ticker-info-frequencia" class="mt-3 w-full text-center bg-slate-50 border border-slate-200/80 rounded-xl px-2.5 py-1.5 text-[11px] font-bold text-marinho">
+                        <div id="ticker-info-frequencia" class="mt-3 w-full text-center bg-slate-100 border border-slate-200 rounded-xl px-2.5 py-1.5 text-[11px] font-bold text-marinho">
                             97,7% Presença Hoje • 342 Alunos
                         </div>
                     </div>
-                    
+
                     <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center relative overflow-hidden">
                         <div class="w-full flex items-center justify-between mb-2">
-                            <span class="inline-flex items-center gap-1 text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full">
-                                <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-ping"></span> Indicador
+                            <span class="inline-flex items-center gap-1.5 text-[10px] font-bold text-blue-800 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full">
+                                <span class="w-1.5 h-1.5 rounded-full bg-blue-600 animate-ping"></span> Indicador
                             </span>
-                            <span class="text-[10px] font-mono text-slate-400">Financeiro</span>
+                            <span class="text-[10px] font-mono font-semibold text-slate-500">Financeiro</span>
                         </div>
-                        <h3 class="font-bold text-slate-700 mb-2 text-center text-xs uppercase tracking-wider">Saúde Financeira</h3>
+                        <h3 class="font-bold text-slate-800 mb-2 text-center text-xs uppercase tracking-wider">Saúde Financeira</h3>
                         <div class="w-36 h-36 relative"><canvas id="graficoFinanceiro"></canvas></div>
-                        <div id="ticker-info-financeiro" class="mt-3 w-full text-center bg-slate-50 border border-slate-200/80 rounded-xl px-2.5 py-1.5 text-[11px] font-bold text-emerald-700">
+                        <div id="ticker-info-financeiro" class="mt-3 w-full text-center bg-slate-100 border border-slate-200 rounded-xl px-2.5 py-1.5 text-[11px] font-bold text-emerald-800">
                             85% Receita Em Dia • Meta 2027
                         </div>
                     </div>
@@ -294,24 +287,24 @@
             </div>
 
             <div class="lg:col-span-7 flex flex-col gap-6">
-                
+
                 <div class="bg-amber-50 rounded-2xl border border-amber-200 shadow-sm p-4">
                     <div class="flex justify-between items-center mb-2">
-                        <h3 class="font-bold text-amber-900 text-xs sm:text-sm flex items-center gap-2">📌 Bloco de Anotações Rápidas (Diretoria)</h3>
-                        <button type="button" onclick="salvarAnotacao()" class="text-xs bg-amber-200 text-amber-900 px-3 py-1.5 rounded-lg font-bold hover:bg-amber-300 transition shadow-sm">💾 Salvar Nota</button>
+                        <h3 class="font-bold text-amber-950 text-xs sm:text-sm flex items-center gap-2">📌 Bloco de Anotações Rápidas (Diretoria)</h3>
+                        <button type="button" onclick="salvarAnotacao()" class="text-xs bg-amber-200 text-amber-950 px-3 py-1.5 rounded-lg font-bold hover:bg-amber-300 shadow-sm">💾 Salvar Nota</button>
                     </div>
-                    <textarea id="campo-anotacao" class="w-full bg-white/70 rounded-xl border border-amber-200/80 focus:outline-none focus:ring-2 focus:ring-amber-400 p-2.5 text-xs sm:text-sm text-amber-950 resize-none font-medium" rows="2" placeholder="Digite observações internas do turno..."></textarea>
+                    <textarea id="campo-anotacao" class="w-full bg-white rounded-xl border border-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-400 p-2.5 text-xs sm:text-sm text-slate-900 resize-none font-medium" rows="2" placeholder="Digite observações internas do turno..."></textarea>
                 </div>
 
                 <div id="central-liberacoes" class="bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col flex-1 scroll-mt-20 overflow-hidden">
                     <div class="p-4 border-b border-slate-100 bg-slate-50 flex flex-wrap justify-between items-center gap-2">
                         <div>
-                            <h3 class="font-bold text-slate-800 text-sm sm:text-base">🛂 Central de Liberações de Saída e Portaria</h3>
-                            <p class="text-[11px] text-slate-500">Toque em qualquer card para ver a ficha detalhada e o documento do responsável.</p>
+                            <h3 class="font-bold text-slate-900 text-sm sm:text-base">🛂 Central de Liberações de Saída e Portaria</h3>
+                            <p class="text-[11px] text-slate-600">Toque em qualquer card para ver a ficha detalhada e o documento do responsável.</p>
                         </div>
                         <span class="bg-orange-100 text-laranja text-xs font-bold px-2.5 py-1 rounded-full">Monitoramento Ativo</span>
                     </div>
-                    
+
                     <div class="p-4 sm:p-6 bg-slate-50/40 flex-1">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="container-cards-portaria"></div>
                     </div>
@@ -322,7 +315,7 @@
         </div>
     </main>
 
-    <!-- MODAIS DO SISTEMA -->
+    <!-- Modal detalhes portaria -->
     <div id="modalDetalhesPortaria" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[140] p-3 sm:p-4 overflow-y-auto">
         <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto max-h-[95vh]">
             <div id="header-modal-portaria" class="p-5 bg-red-600 text-white flex justify-between items-start gap-3">
@@ -340,22 +333,22 @@
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
                     <div class="flex flex-col sm:flex-row justify-between sm:items-center border-b border-slate-100 pb-3 mb-3 gap-2">
                         <div>
-                            <span class="text-[10px] font-bold uppercase text-slate-400">Estudante</span>
-                            <h4 class="font-extrabold text-slate-800 text-base sm:text-lg" id="det-portaria-aluno">--</h4>
-                            <p class="text-xs text-slate-500 font-medium" id="det-portaria-turma">--</p>
+                            <span class="text-[10px] font-bold uppercase text-slate-500">Estudante</span>
+                            <h4 class="font-extrabold text-slate-900 text-base sm:text-lg" id="det-portaria-aluno">--</h4>
+                            <p class="text-xs text-slate-600 font-medium" id="det-portaria-turma">--</p>
                         </div>
                         <div class="sm:text-right">
-                            <span class="text-[10px] font-bold uppercase text-slate-400 block">Horário da Solicitação</span>
+                            <span class="text-[10px] font-bold uppercase text-slate-500 block">Horário da Solicitação</span>
                             <span class="font-mono font-bold text-sm text-marinho bg-blue-50 px-2.5 py-1 rounded-lg inline-block mt-0.5" id="det-portaria-horario">--</span>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                        <div class="bg-amber-50 border border-amber-200/80 p-3 rounded-lg">
+                        <div class="bg-amber-50 border border-amber-200 p-3 rounded-lg">
                             <span class="font-bold text-amber-900 uppercase text-[10px] block mb-0.5">📋 Motivo da Saída:</span>
                             <p class="font-semibold text-amber-950" id="det-portaria-motivo">--</p>
                         </div>
                         <div class="bg-slate-50 border border-slate-200 p-3 rounded-lg">
-                            <span class="font-bold text-slate-500 uppercase text-[10px] block mb-0.5">📲 Autorização:</span>
+                            <span class="font-bold text-slate-600 uppercase text-[10px] block mb-0.5">📲 Autorização:</span>
                             <p class="font-semibold text-slate-800" id="det-portaria-origem">--</p>
                         </div>
                     </div>
@@ -364,7 +357,7 @@
                 <div class="bg-gradient-to-br from-emerald-50 via-teal-50 to-green-100 border-2 border-emerald-300 rounded-xl p-4 shadow-inner">
                     <div class="flex justify-between items-center border-b border-emerald-200 pb-2 mb-3">
                         <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-950">🪪 Documento do Responsável</span>
-                        <span class="bg-green-600 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm">✓ VALIDADE OK</span>
+                        <span class="bg-green-700 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm">✓ VALIDADE OK</span>
                     </div>
                     <div class="flex flex-col sm:flex-row gap-4 items-center">
                         <div class="w-20 h-24 bg-white border-2 border-emerald-400 rounded-xl flex flex-col items-center justify-center text-3xl shrink-0 shadow-sm" id="det-portaria-avatar">
@@ -372,21 +365,21 @@
                         </div>
                         <div class="space-y-1.5 text-xs flex-1 w-full text-center sm:text-left">
                             <div>
-                                <span class="text-[10px] text-emerald-800 font-bold uppercase block">Nome do Portador:</span>
+                                <span class="text-[10px] text-emerald-900 font-bold uppercase block">Nome do Portador:</span>
                                 <p class="font-black text-slate-900 text-sm sm:text-base" id="det-portaria-resp-nome">--</p>
                             </div>
                             <div class="grid grid-cols-2 gap-2 pt-1">
-                                <div class="bg-white/60 p-2 rounded-lg">
-                                    <span class="text-[10px] text-emerald-800 font-bold uppercase block">RG:</span>
-                                    <p class="font-mono font-bold text-slate-800" id="det-portaria-resp-rg">--</p>
+                                <div class="bg-white/80 p-2 rounded-lg">
+                                    <span class="text-[10px] text-emerald-900 font-bold uppercase block">RG:</span>
+                                    <p class="font-mono font-bold text-slate-900" id="det-portaria-resp-rg">--</p>
                                 </div>
-                                <div class="bg-white/60 p-2 rounded-lg">
-                                    <span class="text-[10px] text-emerald-800 font-bold uppercase block">CPF:</span>
-                                    <p class="font-mono font-bold text-slate-800" id="det-portaria-resp-cpf">--</p>
+                                <div class="bg-white/80 p-2 rounded-lg">
+                                    <span class="text-[10px] text-emerald-900 font-bold uppercase block">CPF:</span>
+                                    <p class="font-mono font-bold text-slate-900" id="det-portaria-resp-cpf">--</p>
                                 </div>
                             </div>
                             <div class="pt-1">
-                                <span class="text-[10px] text-emerald-800 font-bold uppercase block">Vínculo:</span>
+                                <span class="text-[10px] text-emerald-900 font-bold uppercase block">Vínculo:</span>
                                 <p class="font-bold text-marinho" id="det-portaria-resp-vinculo">--</p>
                             </div>
                         </div>
@@ -394,23 +387,23 @@
                 </div>
 
                 <div class="bg-white p-4 rounded-xl border border-slate-200 text-xs space-y-2">
-                    <div class="flex justify-between items-center"><span class="font-bold text-slate-500 uppercase text-[10px]">Agente:</span><span class="font-bold text-slate-800" id="det-portaria-porteiro">--</span></div>
-                    <div class="flex justify-between items-center"><span class="font-bold text-slate-500 uppercase text-[10px]">Protocolo:</span><span class="font-mono text-slate-600" id="det-portaria-protocolo">--</span></div>
+                    <div class="flex justify-between items-center"><span class="font-bold text-slate-600 uppercase text-[10px]">Agente:</span><span class="font-bold text-slate-900" id="det-portaria-porteiro">--</span></div>
+                    <div class="flex justify-between items-center"><span class="font-bold text-slate-600 uppercase text-[10px]">Protocolo:</span><span class="font-mono text-slate-700" id="det-portaria-protocolo">--</span></div>
                     <div class="pt-2 border-t border-slate-100">
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Observação da Portaria:</label>
-                        <input type="text" id="det-portaria-obs-input" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Observação da Portaria:</label>
+                        <input type="text" id="det-portaria-obs-input" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                 </div>
             </div>
 
             <div class="p-4 border-t border-slate-200 bg-white flex justify-end gap-2 shrink-0">
-                <button type="button" onclick="fecharModalDetalhesPortaria()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-xl text-xs transition">Fechar</button>
-                <button type="button" id="btn-modal-confirmar-saida" onclick="confirmarSaidaEstudante(); fecharModalDetalhesPortaria();" class="px-5 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-xs shadow-md transition">✅ Autorizar e Liberar Saída</button>
+                <button type="button" onclick="fecharModalDetalhesPortaria()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-xl text-xs">Fechar</button>
+                <button type="button" id="btn-modal-confirmar-saida" onclick="confirmarSaidaEstudante(); fecharModalDetalhesPortaria();" class="px-5 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-xs shadow-md">✅ Autorizar e Liberar Saída</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL PERFIL DO GESTOR -->
+    <!-- Modal perfil do gestor -->
     <div id="modalPerfil" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex justify-center items-center z-[140] p-4 overflow-y-auto">
         <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto max-h-[95vh]">
             <div class="p-5 bg-marinho text-white flex justify-between items-center">
@@ -420,22 +413,65 @@
             <div class="p-6 space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Nome Completo</label>
-                    <input type="text" id="inputNomeGestor" value="Abraão Lucas" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-bold">
+                    <input type="text" id="inputNomeGestor" value="Abraão Lucas" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-900">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">E-mail</label>
-                    <input type="email" id="inputEmailGestor" value="abraao@peniel.com" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-mono">
+                    <input type="email" id="inputEmailGestor" value="abraao@peniel.com" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-mono text-slate-900">
                 </div>
             </div>
             <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2">
-                <button type="button" onclick="fecharModalPerfil()" class="px-4 py-2 bg-white border border-slate-300 text-slate-600 font-bold rounded-xl text-xs">Cancelar</button>
+                <button type="button" onclick="fecharModalPerfil()" class="px-4 py-2 bg-white border border-slate-300 text-slate-700 font-bold rounded-xl text-xs">Cancelar</button>
                 <button type="button" onclick="salvarPerfilGestor()" class="bg-marinho text-white px-5 py-2 rounded-xl font-bold text-xs shadow-sm">Salvar</button>
             </div>
         </div>
     </div>
 
-    <!-- SCRIPT DO SISTEMA -->
     <script>
+        const SUPABASE_URL = 'https://fxjdmhrlujiajkouduhg.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_EANH7zIXleZ3G18S6z7KFw_26oySNP9';
+
+        async function supabaseFetch(path, options = {}) {
+            const resp = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+                ...options,
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': options.prefer || 'return=representation',
+                    ...(options.headers || {})
+                }
+            });
+            if (!resp.ok) {
+                throw new Error(`HTTP ${resp.status}`);
+            }
+            const text = await resp.text();
+            return text ? JSON.parse(text) : null;
+        }
+
+        let toastTimer = null;
+        function mostrarToast(mensagem, icone = '✅') {
+            const el = document.getElementById('toast-sistema');
+            if (!el) return;
+            document.getElementById('toast-icone').innerText = icone;
+            document.getElementById('toast-texto').innerText = mensagem;
+            el.classList.remove('hidden');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => el.classList.add('hidden'), 3500);
+        }
+
+        function atualizarBadgeConexao(online) {
+            const el = document.getElementById('status-conexao-db');
+            if (!el) return;
+            if (online) {
+                el.className = 'text-xs text-emerald-700 font-bold flex items-center gap-1.5';
+                el.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-600"></span> Online • Supabase Sincronizado';
+            } else {
+                el.className = 'text-xs text-amber-700 font-bold flex items-center gap-1.5';
+                el.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-600"></span> Modo Local (Aguardando Tabelas)';
+            }
+        }
+
         function toggleMenuMobile() {
             const menu = document.getElementById('menu-lateral');
             const overlay = document.getElementById('overlay-mobile');
@@ -454,14 +490,13 @@
         }
 
         function sairDoSistema() {
-            if(confirm("Deseja encerrar sua sessão e voltar para a tela inicial de Login?")) {
+            if (confirm('Deseja encerrar sua sessão e voltar para a tela inicial de Login?')) {
                 localStorage.removeItem('peniel_modo_gestor');
                 localStorage.removeItem('peniel_sessao_ativa');
                 window.location.href = 'login.html';
             }
         }
 
-        // FUNCIONALIDADE DO CALENDÁRIO INTERATIVO NO TOPO
         function abrirCalendarioInterativo() {
             const inputDate = document.getElementById('inputCalendarioTopo');
             if (inputDate && typeof inputDate.showPicker === 'function') {
@@ -475,8 +510,7 @@
             const dataFormatada = `${partes[2]}/${partes[1]}/${partes[0]}`;
             document.getElementById('data-topo').innerText = dataFormatada;
             localStorage.setItem('peniel_data_ativa', dataFormatada);
-            alert(`📅 Data do sistema alterada para: ${dataFormatada}
-(As turmas e presenças foram sincronizadas para este dia).`);
+            mostrarToast(`Data sincronizada: ${dataFormatada}`, '📅');
         }
 
         const bancoUnidades = {
@@ -500,14 +534,78 @@
             }
         };
 
-        function mudarUnidade() {
+        async function mudarUnidade() {
             const u = document.getElementById('seletorUnidade').value;
             localStorage.setItem('peniel_unidade', u);
-            aplicarDadosUnidade(u);
-            alert(`🏫 Unidade alterada com sucesso para: ${u}`);
+            await carregarDadosUnidade(u);
+            mostrarToast(`Unidade alterada: ${u}`, '🏫');
         }
 
-        function aplicarDadosUnidade(uKey) {
+        
+        let mapaFichasPorNome = {};
+        let mapaFichasPorRa = {};
+
+        async function sincronizarFichasDashboard(unidade) {
+            try {
+                const rows = await supabaseFetch(`fichas_alunos?unidade=eq.${encodeURIComponent(unidade)}&order=nome.asc`);
+                if (Array.isArray(rows) && rows.length > 0) {
+                    const baseLocal = JSON.parse(localStorage.getItem('peniel_banco_fichas_detalhadas')) || {};
+                    mapaFichasPorNome = {};
+                    mapaFichasPorRa = {};
+                    let ativos = 0;
+
+                    rows.forEach(r => {
+                        if ((r.status || 'Ativo') === 'Ativo') ativos++;
+                        const raStr = String(r.ra);
+                        const objAluno = {
+                            ra: raStr,
+                            nome: r.nome || '',
+                            turmaChave: r.turma_chave || 'fundamental1',
+                            turma: r.turma || 'Ensino Fundamental',
+                            status: r.status || 'Ativo',
+                            nasc: r.nasc || '',
+                            nat: r.nat || 'Rio de Janeiro - RJ',
+                            cpf: r.cpf || '',
+                            pai: r.pai || '',
+                            paiTel: r.pai_tel || '',
+                            paiEmail: r.pai_email || '',
+                            mae: r.mae || '',
+                            maeTel: r.mae_tel || '',
+                            sangue: r.sangue || 'O+',
+                            alergia: r.alergia || 'Nenhuma',
+                            med: r.med || 'Não utiliza',
+                            obs: r.obs || '',
+                            historico: Array.isArray(r.historico) ? r.historico : []
+                        };
+                        baseLocal[raStr] = objAluno;
+                        mapaFichasPorRa[raStr] = objAluno;
+                        if (r.nome) mapaFichasPorNome[r.nome.trim().toLowerCase()] = objAluno;
+                    });
+
+                    localStorage.setItem('peniel_banco_fichas_detalhadas', JSON.stringify(baseLocal));
+                    const kpiAlunosEl = document.getElementById('kpi-alunos');
+                    if (kpiAlunosEl && ativos > 0) {
+                        kpiAlunosEl.innerHTML = `${ativos} <span class="text-[11px] font-semibold text-emerald-700 block sm:inline">fichas ativas</span>`;
+                    }
+                    atualizarBadgeConexao(true);
+                    renderizarCardsPortaria();
+                }
+            } catch (_) {
+                const baseLocal = JSON.parse(localStorage.getItem('peniel_banco_fichas_detalhadas')) || {};
+                Object.values(baseLocal).forEach(a => {
+                    mapaFichasPorRa[String(a.ra)] = a;
+                    if (a.nome) mapaFichasPorNome[a.nome.trim().toLowerCase()] = a;
+                });
+            }
+        }
+
+        function buscarFichaDoAluno(alunoRa, alunoNome) {
+            if (alunoRa && mapaFichasPorRa[String(alunoRa)]) return mapaFichasPorRa[String(alunoRa)];
+            if (alunoNome && mapaFichasPorNome[alunoNome.trim().toLowerCase()]) return mapaFichasPorNome[alunoNome.trim().toLowerCase()];
+            return null;
+        }
+
+        async function carregarDadosUnidade(uKey) {
             const dados = bancoUnidades[uKey] || bancoUnidades['Matriz'];
             document.getElementById('badge-unidade-atual').innerText = `Unidade ${uKey}`;
             document.getElementById('label-unidade-menu').innerText = `Unidade ${uKey}`;
@@ -515,27 +613,56 @@
             if (lblMob) lblMob.innerText = `Unidade ${uKey}`;
 
             document.getElementById('subtitulo-unidade-header').innerText = dados.sub;
-            document.getElementById('kpi-alunos').innerHTML = `${dados.alunos} <span class="text-[11px] font-semibold text-green-600 block sm:inline">vagas</span>`;
+            document.getElementById('kpi-alunos').innerHTML = `${dados.alunos} <span class="text-[11px] font-semibold text-emerald-700 block sm:inline">vagas</span>`;
             document.getElementById('kpi-faltas').innerHTML = `${dados.faltas}`;
-            document.getElementById('kpi-inadimplencia').innerHTML = `${dados.inadimplencia} <span class="text-[11px] font-semibold text-red-500 block sm:inline">Atenção</span>`;
-            document.getElementById('kpi-retencao').innerHTML = `${dados.retencao} <span class="text-[11px] font-semibold text-green-600 block sm:inline">Na meta</span>`;
-            
+            document.getElementById('kpi-inadimplencia').innerHTML = `${dados.inadimplencia} <span class="text-[11px] font-semibold text-red-600 block sm:inline">Atenção</span>`;
+            document.getElementById('kpi-retencao').innerHTML = `${dados.retencao} <span class="text-[11px] font-semibold text-emerald-700 block sm:inline">Na meta</span>`;
+
             const txtAlerta = document.getElementById('texto-alerta-unidade');
             if (txtAlerta) txtAlerta.innerHTML = dados.alertaTexto;
+
+            await sincronizarFichasDashboard(uKey);
+            await Promise.all([
+                sincronizarSalasSupabase(uKey),
+                sincronizarReunioesSupabase(uKey),
+                sincronizarPortariaSupabase(uKey),
+                sincronizarAnotacoesSupabase(uKey)
+            ]);
         }
 
-        const salasEscola = [
+        let salasEscola = [
             { id: 'sala1', turma: '3º Ano A (Fundamental)', turno: 'Manhã (08h às 12h)', sala: 'Sala 02', materia: 'Ciências', prof: 'Prof. Leandro', statusManual: null },
             { id: 'sala2', turma: '2º Ano B (Fundamental)', turno: 'Tarde (13h30 às 17h30)', sala: 'Sala 04', materia: 'Português', prof: 'Prof. Mariana', statusManual: null },
             { id: 'sala3', turma: 'Pré II (Infantil)', turno: 'Semi-Integral (07h às 15h)', sala: 'Espaço Kids', materia: 'Musicalização', prof: 'Tia Ana', statusManual: null },
             { id: 'sala4', turma: 'Turma Integral Peniel', turno: 'Integral (07h às 17h30)', sala: 'Lab. Robótica', materia: 'Robótica & Xadrez', prof: 'Prof. Roberto', statusManual: null }
         ];
 
+        async function sincronizarSalasSupabase(unidade) {
+            try {
+                const rows = await supabaseFetch(`salas_aulas?unidade=eq.${encodeURIComponent(unidade)}&order=id.asc`);
+                if (Array.isArray(rows) && rows.length > 0) {
+                    salasEscola = rows.map(r => ({
+                        id: r.id,
+                        turma: r.turma,
+                        turno: r.turno,
+                        sala: r.sala,
+                        materia: r.materia,
+                        prof: r.professor,
+                        statusManual: r.status_manual || null
+                    }));
+                    atualizarBadgeConexao(true);
+                }
+            } catch (_) {
+                atualizarBadgeConexao(false);
+            }
+            atualizarSalasTempoReal();
+        }
+
         const estilosStatusSala = {
-            'EM_AULA': { borda: 'border-green-300 bg-green-50/50', faixa: 'bg-green-500', badge: 'bg-green-100 text-green-800 border border-green-300', dot: 'bg-green-500 animate-ping', texto: 'Em Aula Agora' },
-            'INTERVALO': { borda: 'border-amber-300 bg-amber-50/60', faixa: 'bg-amber-500', badge: 'bg-amber-100 text-amber-800 border border-amber-300', dot: 'bg-amber-500 animate-pulse', texto: '☕ Recreio' },
-            'AGUARDANDO': { borda: 'border-blue-200 bg-blue-50/40', faixa: 'bg-blue-500', badge: 'bg-blue-100 text-blue-800 border border-blue-200', dot: 'bg-blue-500', texto: '⏳ Aguardando' },
-            'ENCERRADO': { borda: 'border-slate-200 bg-slate-100/70 opacity-80', faixa: 'bg-slate-400', badge: 'bg-slate-200 text-slate-700 border border-slate-300', dot: 'bg-slate-500', texto: '✅ Encerrado' }
+            'EM_AULA': { borda: 'border-emerald-300 bg-emerald-50/50', faixa: 'bg-emerald-600', badge: 'bg-emerald-100 text-emerald-900 border border-emerald-300', dot: 'bg-emerald-600', texto: 'Em Aula Agora' },
+            'INTERVALO': { borda: 'border-amber-300 bg-amber-50/60', faixa: 'bg-amber-500', badge: 'bg-amber-100 text-amber-900 border border-amber-300', dot: 'bg-amber-600', texto: '☕ Recreio' },
+            'AGUARDANDO': { borda: 'border-blue-200 bg-blue-50/40', faixa: 'bg-blue-600', badge: 'bg-blue-100 text-blue-900 border border-blue-200', dot: 'bg-blue-600', texto: '⏳ Aguardando' },
+            'ENCERRADO': { borda: 'border-slate-200 bg-slate-100/80', faixa: 'bg-slate-500', badge: 'bg-slate-200 text-slate-800 border border-slate-300', dot: 'bg-slate-600', texto: '✅ Encerrado' }
         };
 
         function calcularStatusSala(salaObj, modo, horaDecimal) {
@@ -553,19 +680,28 @@
             return 'EM_AULA';
         }
 
-        function alternarStatusManualSala(index) {
+        async function alternarStatusManualSala(index) {
             const ordem = ['EM_AULA', 'INTERVALO', 'AGUARDANDO', 'ENCERRADO'];
             const atual = salasEscola[index].statusManual || 'EM_AULA';
-            const proxIndex = (ordem.indexOf(atual) + 1) % ordem.length;
-            salasEscola[index].statusManual = ordem[proxIndex];
+            const proximo = ordem[(ordem.indexOf(atual) + 1) % ordem.length];
+            salasEscola[index].statusManual = proximo;
             atualizarSalasTempoReal();
+
+            if (typeof salasEscola[index].id === 'number') {
+                try {
+                    await supabaseFetch(`salas_aulas?id=eq.${salasEscola[index].id}`, {
+                        method: 'PATCH',
+                        body: JSON.stringify({ status_manual: proximo })
+                    });
+                } catch (_) {}
+            }
         }
 
         function atualizarSalasTempoReal() {
             const agora = new Date();
             const horaStr = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
             const horaCurta = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-            
+
             document.getElementById('relogio-tempo-real').innerText = horaStr;
             const relMob = document.getElementById('relogio-mobile');
             if (relMob) relMob.innerText = horaCurta;
@@ -580,38 +716,54 @@
             salasEscola.forEach((s, idx) => {
                 const stKey = calcularStatusSala(s, modo, horaDecimal);
                 if (stKey === 'EM_AULA' || stKey === 'INTERVALO') ativasCount++;
-                const cfg = estilosStatusSala[stKey];
+                const cfg = estilosStatusSala[stKey] || estilosStatusSala['EM_AULA'];
 
                 const card = document.createElement('div');
-                card.className = `border-2 ${cfg.borda} rounded-2xl p-4 shadow-sm relative overflow-hidden transition-all duration-300 flex flex-col justify-between`;
+                card.className = `border-2 ${cfg.borda} rounded-2xl p-4 shadow-sm relative overflow-hidden flex flex-col justify-between`;
                 card.innerHTML = `
                     <div class="absolute top-0 left-0 w-1.5 h-full ${cfg.faixa}"></div>
                     <div>
                         <div class="flex justify-between items-start gap-2 mb-2">
-                            <button type="button" onclick="alternarStatusManualSala(${idx})" title="Clique para alternar status" class="${cfg.badge} text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 cursor-pointer hover:opacity-80 transition">
+                            <button type="button" onclick="alternarStatusManualSala(${idx})" title="Clique para alternar status" class="${cfg.badge} text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 cursor-pointer hover:opacity-85">
                                 <span class="w-2 h-2 rounded-full ${cfg.dot}"></span>
                                 ${cfg.texto} ↻
                             </button>
-                            <span class="text-[11px] font-bold text-slate-600 bg-white border border-slate-200 px-2 py-0.5 rounded-lg">${s.sala}</span>
+                            <span class="text-[11px] font-bold text-slate-700 bg-white border border-slate-200 px-2 py-0.5 rounded-lg">${s.sala}</span>
                         </div>
-                        <h4 class="font-extrabold text-slate-800 text-sm sm:text-base mt-2">${s.turma}</h4>
+                        <h4 class="font-extrabold text-slate-900 text-sm sm:text-base mt-2">${s.turma}</h4>
                         <p class="text-xs font-semibold text-marinho mt-0.5">📘 ${s.materia} • ${s.prof}</p>
-                        <div class="mt-3 bg-white/80 border border-slate-200/80 rounded-xl p-2 text-[11px] text-slate-600 space-y-0.5">
-                            <p class="font-bold text-slate-700">🕒 ${s.turno}</p>
+                        <div class="mt-3 bg-white border border-slate-200/80 rounded-xl p-2 text-[11px] text-slate-700 space-y-0.5">
+                            <p class="font-bold text-slate-800">🕒 ${s.turno}</p>
                         </div>
                     </div>
                 `;
                 grid.appendChild(card);
             });
 
-            document.getElementById('badge-contagem-salas').innerText = `${ativasCount} de 4 Salas`;
+            document.getElementById('badge-contagem-salas').innerText = `${ativasCount} de ${salasEscola.length} Salas`;
         }
 
         let listaReunioes = JSON.parse(localStorage.getItem('peniel_reunioes_ok')) || [
-            { id: 1, titulo: 'Atendimento Pais: Davi Lucas', horario: '14:30 • Coordenação', confirmada: false },
-            { id: 2, titulo: 'Conselho de Classe (3º Bimestre)', horario: '17:00 • Sala Professores', confirmada: true },
-            { id: 3, titulo: 'Alinhamento: Portaria & Turnos', horario: '18:00 • Diretoria', confirmada: false }
+            { id: 1, titulo: 'Atendimento Pais: Davi Lucas', horario: '14:30 • Coordenação', confirmada: false, localOnly: true },
+            { id: 2, titulo: 'Conselho de Classe (3º Bimestre)', horario: '17:00 • Sala Professores', confirmada: true, localOnly: true },
+            { id: 3, titulo: 'Alinhamento: Portaria & Turnos', horario: '18:00 • Diretoria', confirmada: false, localOnly: true }
         ];
+
+        async function sincronizarReunioesSupabase(unidade) {
+            try {
+                const rows = await supabaseFetch(`reunioes_pautas?unidade=eq.${encodeURIComponent(unidade)}&order=id.asc`);
+                if (Array.isArray(rows) && rows.length > 0) {
+                    listaReunioes = rows.map(r => ({
+                        id: r.id,
+                        titulo: r.titulo,
+                        horario: r.horario_descricao || 'Agendado',
+                        confirmada: Boolean(r.confirmada),
+                        localOnly: false
+                    }));
+                }
+            } catch (_) {}
+            renderizarReunioes();
+        }
 
         function renderizarReunioes() {
             const ul = document.getElementById('lista-reunioes');
@@ -622,15 +774,15 @@
                 if (r.confirmada) confirmadas++;
                 const li = document.createElement('li');
                 li.className = r.confirmada
-                    ? 'p-3 rounded-xl border border-green-200 bg-green-50/70 flex justify-between items-center gap-2'
-                    : 'p-3 rounded-xl border border-slate-200 bg-slate-50/70 flex justify-between items-center gap-2';
+                    ? 'p-3 rounded-xl border border-emerald-200 bg-emerald-50 flex justify-between items-center gap-2'
+                    : 'p-3 rounded-xl border border-slate-200 bg-slate-50 flex justify-between items-center gap-2';
 
                 li.innerHTML = `
                     <div class="min-w-0 flex-1">
-                        <p class="text-xs font-bold ${r.confirmada ? 'text-green-900 line-through' : 'text-slate-800'} truncate">${r.titulo}</p>
-                        <p class="text-[11px] ${r.confirmada ? 'text-green-700 font-semibold' : 'text-slate-500'}">${r.horario}</p>
+                        <p class="text-xs font-bold ${r.confirmada ? 'text-emerald-950 line-through' : 'text-slate-900'} truncate">${r.titulo}</p>
+                        <p class="text-[11px] ${r.confirmada ? 'text-emerald-800 font-semibold' : 'text-slate-600'}">${r.horario}</p>
                     </div>
-                    <button type="button" onclick="alternarOkReuniao(${idx})" class="${r.confirmada ? 'bg-green-600 text-white' : 'bg-white border border-slate-300 text-slate-700 hover:bg-blue-50'} px-3 py-1.5 rounded-xl text-[11px] font-bold shadow-sm transition shrink-0">
+                    <button type="button" onclick="alternarOkReuniao(${idx})" class="${r.confirmada ? 'bg-emerald-700 text-white' : 'bg-white border border-slate-300 text-slate-800 hover:bg-blue-50'} px-3 py-1.5 rounded-xl text-[11px] font-bold shadow-sm shrink-0">
                         ${r.confirmada ? '✓ Presença OK' : 'Confirmar OK'}
                     </button>
                 `;
@@ -640,92 +792,162 @@
             localStorage.setItem('peniel_reunioes_ok', JSON.stringify(listaReunioes));
         }
 
-        function alternarOkReuniao(idx) {
-            listaReunioes[idx].confirmada = !listaReunioes[idx].confirmada;
+        async function alternarOkReuniao(idx) {
+            const item = listaReunioes[idx];
+            item.confirmada = !item.confirmada;
             renderizarReunioes();
+
+            if (!item.localOnly) {
+                try {
+                    await supabaseFetch(`reunioes_pautas?id=eq.${item.id}`, {
+                        method: 'PATCH',
+                        body: JSON.stringify({ confirmada: item.confirmada })
+                    });
+                } catch (_) {}
+            }
         }
 
-        function adicionarReuniaoRapida() {
+        async function adicionarReuniaoRapida() {
             const input = document.getElementById('inputNovaReuniao');
             const texto = input.value.trim();
             if (!texto) return;
-            listaReunioes.push({ id: Date.now(), titulo: texto, horario: 'Incluído hoje • Interno', confirmada: false });
+
+            const unidade = document.getElementById('seletorUnidade').value;
+            let novoItem = { id: Date.now(), titulo: texto, horario: 'Incluído hoje • Interno', confirmada: false, localOnly: true };
+
+            try {
+                const inserted = await supabaseFetch('reunioes_pautas', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        unidade,
+                        titulo: texto,
+                        horario_descricao: 'Incluído hoje • Interno',
+                        confirmada: false
+                    })
+                });
+                if (Array.isArray(inserted) && inserted[0]) {
+                    novoItem = {
+                        id: inserted[0].id,
+                        titulo: inserted[0].titulo,
+                        horario: inserted[0].horario_descricao,
+                        confirmada: Boolean(inserted[0].confirmada),
+                        localOnly: false
+                    };
+                }
+            } catch (_) {}
+
+            listaReunioes.push(novoItem);
             input.value = '';
             renderizarReunioes();
+            mostrarToast('Pauta incluída com sucesso!', '🤝');
         }
 
-        let dadosPortaria = {
-            isabela: {
+        let registrosPortaria = [
+            {
+                id: 'isabela',
                 aluno: 'Isabela Mendes', turma: '2º Ano B - Vespertino (Sala 04)', status: 'PENDENTE',
                 horario: 'Hoje às 15:40 (Aguardando na Portaria)', motivo: 'Consulta odontológica agendada pela família.',
                 origemAutorizacao: 'App dos Pais Peniel (Token #88492 assinado por Mariana)',
                 respNome: 'Roberto Souza', respVinculo: 'Tio Materno (Autorizado)', respRg: '12.345.678-9', respCpf: '111.222.333-44', avatar: '🧑🏽‍💼',
-                porteiro: 'Carlos Eduardo', protocolo: 'PRT-2026-9941A', observacao: 'Documento original verificado.'
+                porteiro: 'Carlos Eduardo', protocolo: 'PRT-2026-9941A', observacao: 'Documento original verificado.',
+                localOnly: true
             },
-            davi: {
+            {
+                id: 'davi',
+                alunoRa: '2027001',
                 aluno: 'Davi Lucas', turma: '3º Ano A - Matutino (Sala 02)', status: 'LIBERADO',
                 horario: 'Hoje às 11:30 (Saída Mais Cedo)', motivo: 'Exame médico de rotina.',
                 origemAutorizacao: 'Solicitação via Secretaria / WhatsApp do Pai',
                 respNome: 'Maria Silva', respVinculo: 'Avó Materna (Autorizada)', respRg: '08.999.888-2', respCpf: '555.444.333-22', avatar: '👵🏻',
-                porteiro: 'Carlos Eduardo', protocolo: 'PRT-2026-9918B', observacao: 'Aluno entregue à avó.'
+                porteiro: 'Carlos Eduardo', protocolo: 'PRT-2026-9918B', observacao: 'Aluno entregue à avó.',
+                localOnly: true
             }
-        };
+        ];
 
-        let chavePortariaAberta = null;
+        let idPortariaAberta = null;
 
-        function renderizarCardsPortaria() {
-            const cardIsa = document.getElementById('container-cards-portaria');
-            const isa = dadosPortaria.isabela;
-            const davi = dadosPortaria.davi;
-
-            cardIsa.innerHTML = `
-                <div class="border-2 ${isa.status === 'PENDENTE' ? 'border-red-500 bg-red-50/95' : 'border-green-300 bg-green-50/60'} rounded-2xl p-4 shadow-md flex flex-col justify-between">
-                    <div onclick="abrirModalDetalhesPortaria('isabela')" class="cursor-pointer group">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-[11px] font-bold ${isa.status === 'PENDENTE' ? 'bg-red-600 text-white animate-pulse' : 'bg-green-600 text-white'} px-2.5 py-1 rounded-lg">
-                                ${isa.status === 'PENDENTE' ? '🚨 Aguardando Liberação' : '✅ Saída Liberada'}
-                            </span>
-                            <span class="text-xs font-bold text-blue-600 group-hover:underline">Detalhes &rarr;</span>
-                        </div>
-                        <h4 class="font-extrabold text-base text-slate-900">${isa.aluno}</h4>
-                        <p class="text-xs text-slate-600 mb-3">${isa.turma}</p>
-                        <div class="bg-white p-3 rounded-xl border mb-3 shadow-sm space-y-1">
-                            <p class="text-[10px] uppercase font-bold text-slate-400">Responsável:</p>
-                            <p class="text-xs sm:text-sm font-bold text-slate-900">${isa.respNome} (${isa.respVinculo})</p>
-                            <p class="text-[11px] text-amber-800 font-medium">📋 ${isa.motivo}</p>
-                        </div>
-                    </div>
-                    <div class="flex gap-2">
-                        ${isa.status === 'PENDENTE' ? `<button type="button" onclick="confirmarSaidaEstudante()" class="flex-1 bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2.5 px-2 rounded-xl shadow-sm transition">✅ Autorizar Saída</button>` : ''}
-                        <button type="button" onclick="abrirModalDetalhesPortaria('isabela')" class="flex-1 bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs font-bold py-2.5 px-2 rounded-xl transition shadow-sm">🔍 Ver Ficha & RG</button>
-                    </div>
-                </div>
-
-                <div class="border border-slate-200 bg-white rounded-2xl p-4 shadow-sm flex flex-col justify-between hover:border-blue-300 transition">
-                    <div onclick="abrirModalDetalhesPortaria('davi')" class="cursor-pointer group">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-[11px] font-bold bg-blue-100 text-marinho px-2.5 py-1 rounded-lg border border-blue-200">🕒 Saiu Mais Cedo (11:30)</span>
-                            <span class="text-xs font-bold text-blue-600 group-hover:underline">Detalhes &rarr;</span>
-                        </div>
-                        <h4 class="font-extrabold text-base text-slate-900">${davi.aluno}</h4>
-                        <p class="text-xs text-slate-600 mb-3">${davi.turma}</p>
-                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 mb-3 space-y-1">
-                            <p class="text-[10px] uppercase font-bold text-slate-400">Acompanhante:</p>
-                            <p class="text-xs sm:text-sm font-bold text-slate-900">${davi.respNome} (${davi.respVinculo})</p>
-                            <p class="text-[11px] text-slate-600">📋 ${davi.motivo}</p>
-                        </div>
-                    </div>
-                    <button type="button" onclick="abrirModalDetalhesPortaria('davi')" class="w-full bg-marinho/10 hover:bg-marinho hover:text-white text-marinho border border-marinho/20 text-xs font-bold py-2.5 rounded-xl transition shadow-sm">
-                        🔍 Ver Detalhes da Saída
-                    </button>
-                </div>
-            `;
+        async function sincronizarPortariaSupabase(unidade) {
+            try {
+                const rows = await supabaseFetch(`liberacoes_portaria?unidade=eq.${encodeURIComponent(unidade)}&order=criado_at.desc&limit=6`);
+                if (Array.isArray(rows) && rows.length > 0) {
+                    registrosPortaria = rows.map(r => ({
+                        id: r.id,
+                        alunoRa: r.aluno_ra || '',
+                        aluno: r.aluno_nome,
+                        turma: r.turma || '',
+                        status: r.status || 'PENDENTE',
+                        horario: r.horario_solicitacao || '',
+                        motivo: r.motivo || '',
+                        origemAutorizacao: r.origem_autorizacao || '',
+                        respNome: r.responsavel_nome || '',
+                        respVinculo: r.responsavel_vinculo || '',
+                        respRg: r.responsavel_rg || '',
+                        respCpf: r.responsavel_cpf || '',
+                        avatar: '🧑🏽‍💼',
+                        porteiro: r.agente_portaria || 'Portaria',
+                        protocolo: r.protocolo || `PRT-${r.id}`,
+                        observacao: r.observacao || '',
+                        localOnly: false
+                    }));
+                }
+            } catch (_) {}
+            renderizarCardsPortaria();
+            atualizarBannerPortaria();
         }
 
-        function abrirModalDetalhesPortaria(chave) {
-            const info = dadosPortaria[chave];
+        function atualizarBannerPortaria() {
+            const pendente = registrosPortaria.find(p => p.status === 'PENDENTE');
+            const banner = document.getElementById('alerta-visual');
+            if (!banner) return;
+            if (pendente) {
+                document.getElementById('texto-alerta-unidade').innerHTML = `O(A) estudante <strong>${pendente.aluno} (${pendente.turma})</strong> aguarda conferência e liberação na portaria.`;
+                banner.classList.remove('hidden');
+            } else {
+                banner.classList.add('hidden');
+            }
+        }
+
+        function abrirPrimeiroPendentePortaria() {
+            const pendente = registrosPortaria.find(p => p.status === 'PENDENTE') || registrosPortaria[0];
+            if (pendente) abrirModalDetalhesPortaria(pendente.id);
+        }
+
+        function renderizarCardsPortaria() {
+            const container = document.getElementById('container-cards-portaria');
+            if (!container) return;
+            container.innerHTML = registrosPortaria.map(item => {
+                const pendente = item.status === 'PENDENTE';
+                return `
+                    <div class="border-2 ${pendente ? 'border-red-500 bg-red-50' : 'border-slate-200 bg-white'} rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+                        <div onclick="abrirModalDetalhesPortaria('${item.id}')" class="cursor-pointer group">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-[11px] font-bold ${pendente ? 'bg-red-600 text-white' : 'bg-emerald-100 text-emerald-900 border border-emerald-200'} px-2.5 py-1 rounded-lg">
+                                    ${pendente ? '🚨 Aguardando Liberação' : '✅ Saída Liberada'}
+                                </span>
+                                <span class="text-xs font-bold text-blue-700 group-hover:underline">Detalhes &rarr;</span>
+                            </div>
+                            <h4 class="font-extrabold text-base text-slate-900">${item.aluno}</h4>
+                            <p class="text-xs text-slate-600 mb-3">${item.turma}</p>
+                            <div class="bg-white p-3 rounded-xl border border-slate-200 mb-3 shadow-sm space-y-1">
+                                <p class="text-[10px] uppercase font-bold text-slate-500">Responsável / Portador:</p>
+                                <p class="text-xs sm:text-sm font-bold text-slate-900">${item.respNome} (${item.respVinculo})</p>
+                                <p class="text-[11px] text-amber-900 font-medium">📋 ${item.motivo}</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            ${pendente ? `<button type="button" onclick="confirmarSaidaEstudante('${item.id}')" class="flex-1 bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2.5 px-2 rounded-xl shadow-sm">✅ Autorizar Saída</button>` : ''}
+                            <button type="button" onclick="abrirModalDetalhesPortaria('${item.id}')" class="flex-1 bg-white border border-slate-300 text-slate-800 hover:bg-slate-100 text-xs font-bold py-2.5 px-2 rounded-xl shadow-sm">🔍 Ver Saída & RG</button>
+                            ${(() => { const f = buscarFichaDoAluno(item.alunoRa, item.aluno); return f ? `<a href="fichas.html?ra=${encodeURIComponent(f.ra)}" class="bg-blue-50 hover:bg-blue-100 text-marinho border border-blue-200 text-xs font-bold py-2.5 px-3 rounded-xl shadow-sm text-center">📂 Prontuário</a>` : ''; })()}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function abrirModalDetalhesPortaria(id) {
+            const info = registrosPortaria.find(p => String(p.id) === String(id));
             if (!info) return;
-            chavePortariaAberta = chave;
+            idPortariaAberta = info.id;
 
             document.getElementById('det-portaria-aluno').innerText = info.aluno;
             document.getElementById('det-portaria-turma').innerText = info.turma;
@@ -736,31 +958,66 @@
             document.getElementById('det-portaria-resp-vinculo').innerText = info.respVinculo;
             document.getElementById('det-portaria-resp-rg').innerText = info.respRg;
             document.getElementById('det-portaria-resp-cpf').innerText = info.respCpf;
-            document.getElementById('det-portaria-avatar').innerHTML = `${info.avatar}`;
+            document.getElementById('det-portaria-avatar').innerHTML = info.avatar || '🧑🏽‍💼';
             document.getElementById('det-portaria-porteiro').innerText = info.porteiro;
             document.getElementById('det-portaria-protocolo').innerText = info.protocolo;
-            document.getElementById('det-portaria-obs-input').value = info.observacao;
+            document.getElementById('det-portaria-obs-input').value = info.observacao || '';
 
             const btnConfirmar = document.getElementById('btn-modal-confirmar-saida');
-            if (info.status === 'PENDENTE') btnConfirmar.classList.remove('hidden');
-            else btnConfirmar.classList.add('hidden');
+            if (info.status === 'PENDENTE') {
+                btnConfirmar.classList.remove('hidden');
+                btnConfirmar.onclick = () => {
+                    confirmarSaidaEstudante(info.id);
+                    fecharModalDetalhesPortaria();
+                };
+            } else {
+                btnConfirmar.classList.add('hidden');
+            }
 
             document.getElementById('modalDetalhesPortaria').classList.remove('hidden');
         }
 
-        function fecharModalDetalhesPortaria() {
-            if (chavePortariaAberta && dadosPortaria[chavePortariaAberta]) {
-                dadosPortaria[chavePortariaAberta].observacao = document.getElementById('det-portaria-obs-input').value;
+        async function fecharModalDetalhesPortaria() {
+            const info = registrosPortaria.find(p => String(p.id) === String(idPortariaAberta));
+            if (info) {
+                const novaObs = document.getElementById('det-portaria-obs-input').value;
+                info.observacao = novaObs;
+                if (!info.localOnly) {
+                    try {
+                        await supabaseFetch(`liberacoes_portaria?id=eq.${info.id}`, {
+                            method: 'PATCH',
+                            body: JSON.stringify({ observacao: novaObs })
+                        });
+                    } catch (_) {}
+                }
             }
             document.getElementById('modalDetalhesPortaria').classList.add('hidden');
         }
 
-        function confirmarSaidaEstudante() {
-            dadosPortaria.isabela.status = 'LIBERADO';
-            dadosPortaria.isabela.horario = `Liberada agora às ${new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}`;
-            document.getElementById('alerta-visual').classList.add('hidden');
+        async function confirmarSaidaEstudante(idAlvo) {
+            const info = registrosPortaria.find(p => String(p.id) === String(idAlvo || idPortariaAberta));
+            if (!info) return;
+
+            const horaAgora = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            info.status = 'LIBERADO';
+            info.horario = `Liberada agora às ${horaAgora}`;
+
+            if (!info.localOnly) {
+                try {
+                    await supabaseFetch(`liberacoes_portaria?id=eq.${info.id}`, {
+                        method: 'PATCH',
+                        body: JSON.stringify({
+                            status: 'LIBERADO',
+                            horario_solicitacao: info.horario,
+                            observacao: info.observacao
+                        })
+                    });
+                } catch (_) {}
+            }
+
             renderizarCardsPortaria();
-            alert('✅ Saída de Isabela Mendes autorizada e registrada na portaria com sucesso!');
+            atualizarBannerPortaria();
+            mostrarToast(`Saída de ${info.aluno} autorizada e registrada!`, '✅');
         }
 
         function verificarLiberacaoPendentes() {
@@ -772,56 +1029,86 @@
         function fecharModalPerfil() { document.getElementById('modalPerfil').classList.add('hidden'); }
         function salvarPerfilGestor() {
             const n = document.getElementById('inputNomeGestor').value.trim();
-            if(!n) return;
+            if (!n) return;
             localStorage.setItem('peniel_nome_gestor', n);
             document.getElementById('saudacao-gestor').innerText = `Olá, ${n}`;
             document.getElementById('nomeGestorBtn').innerText = n;
             fecharModalPerfil();
-            alert('✅ Perfil atualizado!');
+            mostrarToast('Perfil atualizado com sucesso!', '👤');
         }
-        function salvarAnotacao() {
-            localStorage.setItem('anotacaoSecretaria', document.getElementById('campo-anotacao').value);
-            alert('📌 Nota salva!');
+
+        async function sincronizarAnotacoesSupabase(unidade) {
+            try {
+                const rows = await supabaseFetch(`anotacoes_diretoria?unidade=eq.${encodeURIComponent(unidade)}&order=atualizado_em.desc&limit=1`);
+                if (Array.isArray(rows) && rows[0]) {
+                    document.getElementById('campo-anotacao').value = rows[0].conteudo || '';
+                    return;
+                }
+            } catch (_) {}
+            if (localStorage.getItem('anotacaoSecretaria')) {
+                document.getElementById('campo-anotacao').value = localStorage.getItem('anotacaoSecretaria');
+            }
         }
+
+        async function salvarAnotacao() {
+            const conteudo = document.getElementById('campo-anotacao').value;
+            const unidade = document.getElementById('seletorUnidade').value;
+            const email = document.getElementById('inputEmailGestor').value.trim() || 'abraao@peniel.com';
+            localStorage.setItem('anotacaoSecretaria', conteudo);
+
+            try {
+                await supabaseFetch('anotacoes_diretoria', {
+                    method: 'POST',
+                    body: JSON.stringify({ unidade, gestor_email: email, conteudo })
+                });
+            } catch (_) {}
+
+            mostrarToast('Nota salva no sistema!', '📌');
+        }
+
         function ativarSistemaSonoro() {
             document.getElementById('btn-ativar-som').classList.add('hidden');
             document.getElementById('som-alerta').play().catch(() => {});
-            alert("🔊 Alertas ativados!");
+            mostrarToast('Alertas sonoros ativados!', '🔊');
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             const dataSalva = localStorage.getItem('peniel_data_ativa') || new Date().toLocaleDateString('pt-BR');
             document.getElementById('data-topo').innerText = dataSalva;
 
             const corSalva = localStorage.getItem('peniel_cor_sessao') || '#003057';
             mudarCorSessao(corSalva);
 
-            const unidadeSalva = localStorage.getItem('peniel_unidade') || 'Matriz';
-            document.getElementById('seletorUnidade').value = unidadeSalva;
-            aplicarDadosUnidade(unidadeSalva);
-
             const nome = localStorage.getItem('peniel_nome_gestor');
-            if(nome) {
+            if (nome) {
                 document.getElementById('saudacao-gestor').innerText = `Olá, ${nome}`;
                 document.getElementById('nomeGestorBtn').innerText = nome;
                 document.getElementById('inputNomeGestor').value = nome;
             }
 
-            if(localStorage.getItem('anotacaoSecretaria')) { 
-                document.getElementById('campo-anotacao').value = localStorage.getItem('anotacaoSecretaria'); 
-            }
+            const unidadeSalva = localStorage.getItem('peniel_unidade') || 'Matriz';
+            document.getElementById('seletorUnidade').value = unidadeSalva;
+            await carregarDadosUnidade(unidadeSalva);
 
-            atualizarSalasTempoReal();
             setInterval(atualizarSalasTempoReal, 1000);
-            renderizarReunioes();
-            renderizarCardsPortaria();
 
+            // Configuracao limpa e legivel com animacao apenas no hover/destaque das fatias internas
             const chartOpts = {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: { duration: 1100, easing: 'easeInOutQuart' },
-                plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, font: { size: 9 } } } }
+                animation: { duration: 450 },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            boxWidth: 10,
+                            color: '#1e293b',
+                            font: { size: 10, weight: '600' }
+                        }
+                    }
+                }
             };
+
             const chartFreq = new Chart(document.getElementById('graficoFrequencia').getContext('2d'), {
                 type: 'doughnut',
                 data: {
@@ -831,11 +1118,12 @@
                         backgroundColor: ['#10B981', '#EF4444', '#F59E0B'],
                         borderWidth: 2,
                         borderColor: '#ffffff',
-                        hoverOffset: 8
+                        hoverOffset: 10
                     }]
                 },
                 options: { ...chartOpts, cutout: '65%' }
             });
+
             const chartFin = new Chart(document.getElementById('graficoFinanceiro').getContext('2d'), {
                 type: 'pie',
                 data: {
@@ -845,53 +1133,23 @@
                         backgroundColor: ['#3B82F6', '#EF4444', '#8B5CF6'],
                         borderWidth: 2,
                         borderColor: '#ffffff',
-                        hoverOffset: 8
+                        hoverOffset: 10
                     }]
                 },
                 options: chartOpts
             });
 
-            // Pulsação suave em segundos destacando métricas da Peniel Christian School
-            const destaquesFreq = [
-                { texto: '97,7% Presença Hoje • 342 Alunos', idx: 0, cor: 'text-emerald-700' },
-                { texto: '6 Faltas Justificadas no Turno', idx: 1, cor: 'text-red-600' },
-                { texto: '97,7% Ocupação • 342/350 Vagas', idx: 0, cor: 'text-marinho' }
-            ];
-            const destaquesFin = [
-                { texto: '85% Receita Em Dia • Fluxo Positivo', idx: 0, cor: 'text-blue-700' },
-                { texto: '65% Retenção Rematrículas 2027', idx: 2, cor: 'text-purple-700' },
-                { texto: '12% Pendências em Negociação', idx: 1, cor: 'text-red-600' }
-            ];
-            let passoPulso = 0;
-
+            // Destaque ciclico apenas nas fatias internas dos graficos (Presentes/Faltas/Atestado e Pago/Atraso/Acordo)
+            let fatiaIdx = 0;
             setInterval(() => {
-                passoPulso++;
-                const itemFreq = destaquesFreq[passoPulso % destaquesFreq.length];
-                const itemFin = destaquesFin[passoPulso % destaquesFin.length];
-
-                const elFreq = document.getElementById('ticker-info-frequencia');
-                const elFin = document.getElementById('ticker-info-financeiro');
-                if (elFreq) {
-                    elFreq.className = `mt-3 w-full text-center bg-slate-50 border border-slate-200/80 rounded-xl px-2.5 py-1.5 text-[11px] font-bold ${itemFreq.cor}`;
-                    elFreq.innerText = itemFreq.texto;
-                }
-                if (elFin) {
-                    elFin.className = `mt-3 w-full text-center bg-slate-50 border border-slate-200/80 rounded-xl px-2.5 py-1.5 text-[11px] font-bold ${itemFin.cor}`;
-                    elFin.innerText = itemFin.texto;
-                }
-
-                // Realce suave nas fatias do gráfico
-                chartFreq.setActiveElements([{ datasetIndex: 0, index: itemFreq.idx }]);
+                fatiaIdx = (fatiaIdx + 1) % 3;
+                chartFreq.setActiveElements([{ datasetIndex: 0, index: fatiaIdx }]);
                 chartFreq.update();
-                chartFin.setActiveElements([{ datasetIndex: 0, index: itemFin.idx }]);
+                chartFin.setActiveElements([{ datasetIndex: 0, index: fatiaIdx }]);
                 chartFin.update();
-            }, 4000);
-
-            setTimeout(() => {
-                if (dadosPortaria.isabela.status === 'PENDENTE') {
-                    document.getElementById('alerta-visual').classList.remove('hidden');
-                }
             }, 2500);
+
+            setTimeout(atualizarBannerPortaria, 2000);
         });
     </script>
 </body>
