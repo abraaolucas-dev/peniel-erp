@@ -23,6 +23,9 @@
 </head>
 <body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col md:flex-row overflow-x-hidden">
 
+    <!-- Container de Notificações (Toast) -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-[140] flex flex-col gap-2 max-w-sm pointer-events-none"></div>
+
     <!-- Overlay Mobile -->
     <div id="overlay-mobile" onclick="toggleMenuMobile()" class="fixed inset-0 bg-slate-950/75 z-[95] hidden md:hidden backdrop-blur-sm transition-opacity"></div>
 
@@ -63,7 +66,7 @@
         </nav>
         
         <div class="p-4 border-t border-white/10 bg-black/20 shrink-0">
-            <button type="button" onclick="sairDoSistema()" class="w-full flex items-center justify-center gap-2 bg-red-600/80 hover:bg-red-600 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition">
+            <button type="button" onclick="sairDoSistema()" class="w-full flex items-center justify-center gap-2 bg-red-600/80 hover:bg-red-600 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition cursor-pointer">
                 🚪 Sair do Sistema
             </button>
         </div>
@@ -77,17 +80,21 @@
             <div class="flex items-center gap-3">
                 <button type="button" onclick="toggleMenuMobile()" class="md:hidden bg-slate-100 text-marinho p-2.5 rounded-lg text-xl hover:bg-slate-200 transition active:scale-95 shadow-sm">☰</button>
                 <div>
-                    <div class="flex items-center gap-2 mb-0.5">
+                    <div class="flex flex-wrap items-center gap-2 mb-0.5">
                         <span class="bg-blue-100 text-marinho text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Tempo Real</span>
                         <span id="relogio-tempo-real" class="bg-slate-100 text-slate-700 text-[10px] font-bold px-2.5 py-0.5 rounded-full font-mono">--:--:--</span>
+                        <span id="statusSyncSistema" class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold px-2.5 py-0.5 rounded-full">LocalStorage Ativo</span>
                     </div>
                     <h2 class="font-heading text-xl sm:text-2xl font-bold text-slate-800">Calendário Acadêmico & Aulas em Tempo Real</h2>
                     <p class="text-xs text-slate-500">Visualização interativa da grade de aulas, eventos escolares e agendamentos.</p>
                 </div>
             </div>
             
-            <div class="flex items-center gap-2 w-full md:w-auto">
-                <button type="button" onclick="abrirModalNovoEvento()" class="bg-laranja hover:bg-orange-600 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition flex items-center justify-center gap-1.5 whitespace-nowrap w-full md:w-auto">
+            <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                <button type="button" onclick="sincronizarComSupabase(true)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-2.5 rounded-xl font-bold text-xs shadow-sm transition flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer">
+                    ☁️ Sync Supabase
+                </button>
+                <button type="button" onclick="abrirModalNovoEvento()" class="bg-laranja hover:bg-orange-600 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition flex items-center justify-center gap-1.5 whitespace-nowrap flex-1 md:flex-none cursor-pointer">
                     ➕ Novo Evento / Aula
                 </button>
             </div>
@@ -96,10 +103,10 @@
         <!-- BARRA DE CONTROLE DO CALENDÁRIO -->
         <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
-                <button type="button" onclick="mudarMes(-1)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 w-9 h-9 rounded-xl font-bold flex items-center justify-center transition">&larr;</button>
+                <button type="button" onclick="mudarMes(-1)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 w-9 h-9 rounded-xl font-bold flex items-center justify-center transition cursor-pointer">&larr;</button>
                 <h3 id="mesAnoTitulo" class="font-heading font-bold text-base sm:text-lg text-marinho min-w-[180px] text-center">Novembro 2026</h3>
-                <button type="button" onclick="mudarMes(1)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 w-9 h-9 rounded-xl font-bold flex items-center justify-center transition">&rarr;</button>
-                <button type="button" onclick="irParaHoje()" class="bg-blue-50 text-marinho hover:bg-blue-100 px-3 py-2 rounded-xl text-xs font-bold transition">Hoje</button>
+                <button type="button" onclick="mudarMes(1)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 w-9 h-9 rounded-xl font-bold flex items-center justify-center transition cursor-pointer">&rarr;</button>
+                <button type="button" onclick="irParaHoje()" class="bg-blue-50 text-marinho hover:bg-blue-100 px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer">Hoje</button>
             </div>
 
             <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
@@ -142,7 +149,7 @@
         <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto">
             <div class="p-5 bg-marinho text-white flex justify-between items-center">
                 <h3 class="font-bold text-base font-heading">📅 Agendar Aula ou Evento Escolar</h3>
-                <button type="button" onclick="fecharModalEvento()" class="text-white hover:text-red-300 font-bold text-2xl leading-none">&times;</button>
+                <button type="button" onclick="fecharModalEvento()" class="text-white hover:text-red-300 font-bold text-2xl leading-none cursor-pointer">&times;</button>
             </div>
             
             <div class="p-6 space-y-4 text-xs">
@@ -190,14 +197,35 @@
             </div>
 
             <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2">
-                <button type="button" onclick="fecharModalEvento()" class="px-4 py-2 bg-white border border-slate-300 text-slate-600 font-bold rounded-xl text-xs">Cancelar</button>
-                <button type="button" onclick="salvarNovoEvento()" class="bg-marinho text-white px-5 py-2 rounded-xl font-bold text-xs shadow-sm">💾 Salvar Evento</button>
+                <button type="button" onclick="fecharModalEvento()" class="px-4 py-2 bg-white border border-slate-300 text-slate-600 font-bold rounded-xl text-xs cursor-pointer">Cancelar</button>
+                <button type="button" onclick="salvarNovoEvento()" class="bg-marinho text-white px-5 py-2 rounded-xl font-bold text-xs shadow-sm cursor-pointer">💾 Salvar Evento</button>
             </div>
         </div>
     </div>
 
-    <!-- SCRIPT DO CALENDÁRIO EM TEMPO REAL -->
+    <!-- SCRIPT DO CALENDÁRIO, SINCRONIZAÇÃO ENTRE ARQUIVOS E SUPABASE -->
     <script>
+        function notificar(mensagem, tipo = 'sucesso') {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+
+            const cores = {
+                sucesso: 'bg-slate-900 text-white border-emerald-500',
+                alerta: 'bg-amber-900 text-amber-50 border-amber-400',
+                info: 'bg-marinho text-white border-blue-400'
+            };
+
+            const toast = document.createElement('div');
+            toast.className = `pointer-events-auto px-4 py-3 rounded-xl border-l-4 shadow-xl text-xs font-bold transition-all duration-300 ${cores[tipo] || cores.sucesso}`;
+            toast.innerText = mensagem;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3200);
+        }
+
         function toggleMenuMobile() {
             const menu = document.getElementById('menu-lateral');
             const overlay = document.getElementById('overlay-mobile');
@@ -206,29 +234,155 @@
         }
 
         function sairDoSistema() {
-            if(confirm("Deseja encerrar sua sessão?")) { window.location.href = 'login.html'; }
+            if (confirm("Deseja encerrar sua sessão?")) {
+                localStorage.removeItem('peniel_modo_gestor');
+                window.location.href = 'login.html';
+            }
         }
 
-        // Relógio em tempo real no header
         setInterval(() => {
             const agora = new Date();
-            document.getElementById('relogio-tempo-real').innerText = agora.toLocaleTimeString('pt-BR');
+            const el = document.getElementById('relogio-tempo-real');
+            if (el) el.innerText = agora.toLocaleTimeString('pt-BR');
         }, 1000);
 
-        let dataAtual = new Date(); // Inicia com a data atual
-        
+        let dataAtual = new Date();
+
+        const EVENTOS_PADRAO = [
+            { id: 1, titulo: 'Início do Ano Letivo 2027', data: '2027-02-01', horario: '08:00', categoria: 'Geral', cor: 'bg-purple-500 text-white', desc: 'Recepção dos alunos e pais.' },
+            { id: 2, titulo: 'Avaliação de Matemática', data: '2027-03-15', horario: '09:00', categoria: 'Fundamental', cor: 'bg-orange-500 text-white', desc: 'Primeira avaliação trimestral.' },
+            { id: 3, titulo: 'Aula de Robótica e Lógica', data: '2027-02-10', horario: '14:00', categoria: 'Fundamental', cor: 'bg-green-500 text-white', desc: 'Oficina prática no laboratório.' },
+            { id: 4, titulo: 'Reunião de Pais e Mestres', data: '2027-02-20', horario: '19:00', categoria: 'Geral', cor: 'bg-purple-500 text-white', desc: 'Apresentação da proposta pedagógica.' }
+        ];
+
         function obterBancoEventos() {
-            let eventos = JSON.parse(localStorage.getItem('peniel_banco_eventos_calendario')) || [
-                { id: 1, titulo: 'Início do Ano Letivo 2027', data: '2027-02-01', horario: '08:00', categoria: 'Geral', cor: 'bg-purple-500 text-white', desc: 'Recepção dos alunos e pais.' },
-                { id: 2, titulo: 'Avaliação de Matemática', data: '2027-03-15', horario: '09:00', categoria: 'Fundamental', cor: 'bg-orange-500 text-white', desc: 'Primeira avaliação trimestral.' },
-                { id: 3, titulo: 'Aula de Robótica e Lógica', data: '2027-02-10', horario: '14:00', categoria: 'Fundamental', cor: 'bg-green-500 text-white', desc: 'Oficina prática no laboratório.' },
-                { id: 4, titulo: 'Reunião de Pais e Mestres', data: '2027-02-20', horario: '19:00', categoria: 'Geral', cor: 'bg-purple-500 text-white', desc: 'Apresentação da proposta pedagógica.' }
-            ];
-            return eventos;
+            const raw = localStorage.getItem('peniel_banco_eventos_calendario');
+            if (!raw) {
+                localStorage.setItem('peniel_banco_eventos_calendario', JSON.stringify(EVENTOS_PADRAO));
+                return [...EVENTOS_PADRAO];
+            }
+            try {
+                const parsed = JSON.parse(raw);
+                return Array.isArray(parsed) ? parsed : [...EVENTOS_PADRAO];
+            } catch {
+                return [...EVENTOS_PADRAO];
+            }
         }
 
-        function salvarBancoEventos(eventos) {
+        function publicarSyncSistema(eventos) {
+            const syncAnterior = JSON.parse(localStorage.getItem('peniel_sync_dashboard_turmas_calendario') || 'null') || {};
+            const pacoteSync = {
+                ...syncAnterior,
+                atualizadoEm: new Date().toISOString(),
+                origem: 'calendario',
+                eventosCalendario: eventos,
+                gradeTurmas: Array.isArray(syncAnterior.gradeTurmas) ? syncAnterior.gradeTurmas : []
+            };
+            localStorage.setItem('peniel_sync_dashboard_turmas_calendario', JSON.stringify(pacoteSync));
+            window.dispatchEvent(new CustomEvent('peniel:calendario-atualizado', { detail: pacoteSync }));
+        }
+
+        function salvarBancoEventos(eventos, opcoes = {}) {
             localStorage.setItem('peniel_banco_eventos_calendario', JSON.stringify(eventos));
+            publicarSyncSistema(eventos);
+            if (opcoes.syncSupabase !== false) {
+                sincronizarComSupabase(false);
+            }
+        }
+
+        // --- INTEGRAÇÃO SUPABASE (REST / UPSERT + PULL) ---
+        function obterConfigSupabase() {
+            const globalCfg = window.PENIEL_SUPABASE_CONFIG || {};
+            let localCfg = {};
+            try {
+                localCfg = JSON.parse(localStorage.getItem('peniel_supabase_config') || '{}') || {};
+            } catch {
+                localCfg = {};
+            }
+            const url = (globalCfg.url || localCfg.url || '').trim().replace(/\/+$/, '');
+            const apiKey = (globalCfg.anonKey || globalCfg.publishableKey || localCfg.anonKey || localCfg.publishableKey || '').trim();
+            const tabela = (globalCfg.tabelaEventos || localCfg.tabelaEventos || 'calendario_eventos').trim();
+            return { url, apiKey, tabela, configurado: Boolean(url && apiKey) };
+        }
+
+        function atualizarBadgeSync(texto, estilo = 'local') {
+            const badge = document.getElementById('statusSyncSistema');
+            if (!badge) return;
+            if (estilo === 'online') {
+                badge.className = 'bg-emerald-100 text-emerald-800 border border-emerald-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full';
+            } else if (estilo === 'alerta') {
+                badge.className = 'bg-amber-100 text-amber-800 border border-amber-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full';
+            } else {
+                badge.className = 'bg-blue-50 text-marinho border border-blue-200 text-[10px] font-bold px-2.5 py-0.5 rounded-full';
+            }
+            badge.innerText = texto;
+        }
+
+        async function sincronizarComSupabase(mostrarFeedback = true) {
+            const cfg = obterConfigSupabase();
+            if (!cfg.configurado) {
+                atualizarBadgeSync('LocalStorage Ativo', 'local');
+                if (mostrarFeedback) {
+                    notificar('ℹ️ Supabase não configurado em peniel_supabase_config. Dados salvos localmente.', 'info');
+                }
+                return;
+            }
+
+            const eventosLocais = obterBancoEventos();
+            const headers = {
+                'Content-Type': 'application/json',
+                'apikey': cfg.apiKey,
+                'Authorization': `Bearer ${cfg.apiKey}`,
+                'Prefer': 'resolution=merge-duplicates,return=representation'
+            };
+
+            try {
+                const endpoint = `${cfg.url}/rest/v1/${encodeURIComponent(cfg.tabela)}`;
+                const payload = eventosLocais.map(ev => ({
+                    id: String(ev.id),
+                    titulo: ev.titulo,
+                    data_evento: ev.data,
+                    horario: ev.horario,
+                    categoria: ev.categoria,
+                    cor: ev.cor,
+                    descricao: ev.desc || ''
+                }));
+
+                await fetch(`${endpoint}?on_conflict=id`, {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify(payload)
+                });
+
+                const resPull = await fetch(`${endpoint}?order=data_evento.asc`, { headers });
+                if (resPull.ok) {
+                    const remotos = await resPull.json();
+                    if (Array.isArray(remotos) && remotos.length > 0) {
+                        const normalizados = remotos.map(r => ({
+                            id: /^\d+$/.test(String(r.id)) ? Number(r.id) : r.id,
+                            titulo: r.titulo || '',
+                            data: r.data_evento || r.data || '',
+                            horario: r.horario || '08:00',
+                            categoria: r.categoria || 'Geral',
+                            cor: r.cor || 'bg-blue-500 text-white',
+                            desc: r.descricao || r.desc || ''
+                        }));
+                        localStorage.setItem('peniel_banco_eventos_calendario', JSON.stringify(normalizados));
+                        publicarSyncSistema(normalizados);
+                        renderizarCalendario();
+                    }
+                }
+
+                atualizarBadgeSync('Supabase Sincronizado', 'online');
+                if (mostrarFeedback) {
+                    notificar('☁️ Calendário sincronizado com o Supabase!');
+                }
+            } catch (err) {
+                atualizarBadgeSync('Modo Offline (Local)', 'alerta');
+                if (mostrarFeedback) {
+                    notificar('⚠️ Falha na conexão com Supabase; mantido no armazenamento local.', 'alerta');
+                }
+            }
         }
 
         const nomesMeses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
@@ -259,25 +413,22 @@
             const filtroTurma = document.getElementById('filtroTurmaCalendario').value;
             const eventos = obterBancoEventos();
 
-            // Dias do mês anterior para completar a primeira semana
             for (let i = primeiroDiaSemana - 1; i >= 0; i--) {
                 const diaNum = ultimoDiaMesAnterior - i;
-                const celula = criarCelulaDia(diaNum, true, null);
-                grid.appendChild(celula);
+                grid.appendChild(criarCelulaDia(diaNum, true, null));
             }
 
-            // Dias do mês atual
-            const hojeStr = new Date().toISOString().slice(0, 10);
+            const agoraLocal = new Date();
+            const hojeStr = `${agoraLocal.getFullYear()}-${String(agoraLocal.getMonth() + 1).padStart(2, '0')}-${String(agoraLocal.getDate()).padStart(2, '0')}`;
 
             for (let dia = 1; dia <= ultimoDiaMes; dia++) {
                 const mesStr = String(mes + 1).padStart(2, '0');
                 const diaStr = String(dia).padStart(2, '0');
                 const dataIso = `${ano}-${mesStr}-${diaStr}`;
 
-                const eHojes = (dataIso === hojeStr);
-                const celula = criarCelulaDia(dia, false, dataIso, eHojes);
+                const eHoje = (dataIso === hojeStr);
+                const celula = criarCelulaDia(dia, false, dataIso, eHoje);
 
-                // Filtrar e inserir eventos do dia
                 const eventosDoDia = eventos.filter(ev => ev.data === dataIso && (filtroTurma === 'todas' || ev.categoria === filtroTurma));
                 
                 const containerEventos = celula.querySelector('.eventos-container');
@@ -288,7 +439,7 @@
                     badge.title = `${ev.titulo} (${ev.horario}) - ${ev.desc || ''}`;
                     badge.onclick = (e) => {
                         e.stopPropagation();
-                        if(confirm(`Remover o evento "${ev.titulo}"?`)) {
+                        if (confirm(`Remover o evento "${ev.titulo}"?`)) {
                             removerEvento(ev.id);
                         }
                     };
@@ -298,13 +449,11 @@
                 grid.appendChild(celula);
             }
 
-            // Dias do próximo mês para completar a grade (6 semanas = 42 células)
             const totalCelulasFeitas = primeiroDiaSemana + ultimoDiaMes;
             const proximoMesDias = totalCelulasFeitas <= 35 ? (35 - totalCelulasFeitas) : (42 - totalCelulasFeitas);
 
             for (let dia = 1; dia <= proximoMesDias; dia++) {
-                const celula = criarCelulaDia(dia, true, null);
-                grid.appendChild(celula);
+                grid.appendChild(criarCelulaDia(dia, true, null));
             }
         }
 
@@ -362,11 +511,11 @@
             const desc = document.getElementById('eventoDescricao').value.trim();
 
             if (!titulo || !data) {
-                alert('Preencha pelo menos o Título e a Data do evento.');
+                notificar('⚠️ Preencha pelo menos o Título e a Data do evento.', 'alerta');
                 return;
             }
 
-            let eventos = obterBancoEventos();
+            const eventos = obterBancoEventos();
             eventos.push({
                 id: Date.now(),
                 titulo,
@@ -380,22 +529,31 @@
             salvarBancoEventos(eventos);
             fecharModalEvento();
             renderizarCalendario();
-            alert('✅ Evento ou aula agendada com sucesso!');
+            notificar('✅ Evento ou aula agendada e sincronizada!');
         }
 
-        function salvarModoGestorGlobal() { localStorage.removeItem('peniel_modo_gestor'); window.location.href = 'configuracoes.html'; }
-
-        function salvarModoGestorGlobal() { localStorage.removeItem('peniel_modo_gestor'); window.location.href = 'configuracoes.html'; }
+        function salvarModoGestorGlobal() {
+            localStorage.removeItem('peniel_modo_gestor');
+            window.location.href = 'configuracoes.html';
+        }
 
         function removerEvento(id) {
             let eventos = obterBancoEventos();
             eventos = eventos.filter(ev => ev.id !== id);
             salvarBancoEventos(eventos);
             renderizarCalendario();
+            notificar('🗑️ Evento removido do calendário.');
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             renderizarCalendario();
+            sincronizarComSupabase(false);
+
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'peniel_banco_eventos_calendario' || e.key === 'peniel_sync_dashboard_turmas_calendario') {
+                    renderizarCalendario();
+                }
+            });
 
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('modo_gestor') === '1') {
@@ -420,7 +578,7 @@
                             <a href="configuracoes.html?modo_gestor=1" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
                                 &larr; Voltar à Central de Bordo
                             </a>
-                            <button onclick="salvarModoGestorGlobal()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-xl text-xs font-bold transition shadow-sm">
+                            <button type="button" onclick="salvarModoGestorGlobal()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer">
                                 🔒 Sair do Modo Gestor
                             </button>
                         </div>
