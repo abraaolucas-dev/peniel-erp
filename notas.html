@@ -21,6 +21,9 @@
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
 
+    <!-- Container de Notificações (Toast) -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-[120] flex flex-col gap-2 max-w-sm pointer-events-none"></div>
+
     <div class="flex h-screen overflow-hidden">
         
         <!-- Menu Lateral -->
@@ -84,12 +87,13 @@
             </header>
 
             <!-- Abas do Diário -->
-            <div class="flex bg-slate-100 p-1 rounded-xl border border-slate-200 w-full md:w-fit">
-                <button type="button" onclick="mudarAbaDiario('frequencia')" id="btnAbaFrequencia" class="flex-1 md:flex-none px-6 py-2.5 rounded-lg font-bold text-sm bg-white text-marinho shadow-sm transition border border-slate-200">📝 Chamada e Diário do Dia</button>
-                <button type="button" onclick="mudarAbaDiario('notas')" id="btnAbaNotas" class="flex-1 md:flex-none px-6 py-2.5 rounded-lg font-bold text-sm text-slate-500 hover:text-slate-800 transition border border-transparent">📊 Lançamento de Notas</button>
+            <div class="flex flex-wrap bg-slate-100 p-1 rounded-xl border border-slate-200 w-full md:w-fit gap-1">
+                <button type="button" onclick="mudarAbaDiario('frequencia')" id="btnAbaFrequencia" class="flex-1 md:flex-none px-5 py-2.5 rounded-lg font-bold text-sm bg-white text-marinho shadow-sm transition border border-slate-200">📝 Chamada e Diário do Dia</button>
+                <button type="button" onclick="mudarAbaDiario('notas')" id="btnAbaNotas" class="flex-1 md:flex-none px-5 py-2.5 rounded-lg font-bold text-sm text-slate-500 hover:text-slate-800 transition border border-transparent">📊 Lançamento de Notas</button>
+                <button type="button" onclick="mudarAbaDiario('boletim')" id="btnAbaBoletim" class="flex-1 md:flex-none px-5 py-2.5 rounded-lg font-bold text-sm text-slate-500 hover:text-slate-800 transition border border-transparent">🎓 Boletim & Fim de Ano</button>
             </div>
 
-            <!-- Seletor de Matéria (Comum para as duas abas) -->
+            <!-- Seletor de Matéria (Comum para as abas) -->
             <div class="flex gap-2 overflow-x-auto pb-2 border-b border-slate-200" id="botoesMateria">
                 <button type="button" onclick="selecionarMateria('Matemática')" data-materia="Matemática" class="btn-materia bg-marinho text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow-sm whitespace-nowrap transition">Matemática</button>
                 <button type="button" onclick="selecionarMateria('Português')" data-materia="Português" class="btn-materia bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 px-5 py-2.5 rounded-lg text-sm font-bold whitespace-nowrap transition">Português</button>
@@ -112,7 +116,7 @@
                         
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">Data da Aula</label>
-                            <input type="date" id="dataAula" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
+                            <input type="date" id="dataAula" onchange="carregarDiarioDaData()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
                         </div>
                         
                         <div>
@@ -125,16 +129,16 @@
                             <textarea id="tarefaAula" rows="2" placeholder="Ex: Exercícios página 45 a 47." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"></textarea>
                         </div>
 
-                        <button type="button" onclick="salvarConteudoDiario()" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg font-bold text-sm shadow-sm transition">
+                        <button type="button" onclick="salvarConteudoDiario()" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg font-bold text-sm shadow-sm transition cursor-pointer">
                             Salvar Conteúdo
                         </button>
                     </div>
 
                     <!-- Frequência (Chamada) -->
                     <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-                        <div class="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                        <div class="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center gap-2">
                             <h3 class="font-bold text-slate-800 text-sm">✋ Chamada de Alunos</h3>
-                            <button type="button" onclick="salvarChamada()" class="bg-laranja hover:bg-orange-600 text-white px-5 py-2 rounded-lg font-bold text-xs shadow-sm transition">
+                            <button type="button" onclick="salvarChamada()" class="bg-laranja hover:bg-orange-600 text-white px-5 py-2 rounded-lg font-bold text-xs shadow-sm transition cursor-pointer">
                                 💾 Salvar Chamada
                             </button>
                         </div>
@@ -193,7 +197,7 @@
                             <input type="text" id="buscaAluno" onkeyup="renderAmbasTabelas()" placeholder="Buscar aluno..." class="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm">
                         </div>
 
-                        <button type="button" onclick="salvarTodasNotas()" class="w-full sm:w-auto bg-laranja hover:bg-orange-600 text-white px-5 py-2 rounded-lg font-bold text-xs shadow-sm transition">
+                        <button type="button" onclick="salvarTodasNotas()" class="w-full sm:w-auto bg-laranja hover:bg-orange-600 text-white px-5 py-2 rounded-lg font-bold text-xs shadow-sm transition cursor-pointer">
                             💾 Salvar Notas
                         </button>
                     </div>
@@ -202,12 +206,13 @@
                         <table class="w-full text-left text-sm">
                             <thead class="bg-slate-50 text-slate-500 border-b border-slate-200 uppercase text-[11px] tracking-wider font-bold">
                                 <tr>
-                                    <th class="px-6 py-3.5">RA / Aluno</th>
-                                    <th class="px-6 py-3.5 text-center">Av 1 <span class="block text-[9px] text-slate-400 font-normal">Peso 3</span></th>
-                                    <th class="px-6 py-3.5 text-center">Av 2 <span class="block text-[9px] text-slate-400 font-normal">Peso 4</span></th>
-                                    <th class="px-6 py-3.5 text-center">Trabalhos <span class="block text-[9px] text-slate-400 font-normal">Peso 3</span></th>
-                                    <th class="px-6 py-3.5 text-center">Média Final</th>
-                                    <th class="px-6 py-3.5 text-right">Situação</th>
+                                    <th class="px-4 py-3.5">RA / Aluno</th>
+                                    <th class="px-3 py-3.5 text-center">1º Trim <span class="block text-[9px] text-slate-400 font-normal">T1</span></th>
+                                    <th class="px-3 py-3.5 text-center">2º Trim <span class="block text-[9px] text-slate-400 font-normal">T2</span></th>
+                                    <th class="px-3 py-3.5 text-center">3º Trim <span class="block text-[9px] text-slate-400 font-normal">T3</span></th>
+                                    <th class="px-3 py-3.5 text-center">4º Trim <span class="block text-[9px] text-slate-400 font-normal">T4</span></th>
+                                    <th class="px-4 py-3.5 text-center bg-blue-50/70 text-marinho">Média Parcial <span class="block text-[9px] text-slate-500 font-normal">Lançados</span></th>
+                                    <th class="px-4 py-3.5 text-right">Situação</th>
                                 </tr>
                             </thead>
                             <tbody id="tabelaAlunos" class="divide-y divide-slate-100">
@@ -215,6 +220,61 @@
                             </tbody>
                         </table>
                         <div id="msgSemAlunos" class="hidden p-8 text-center text-slate-500 font-medium">Nenhum aluno encontrado.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================================================================== -->
+            <!-- ABA 3: BOLETIM ANUAL, PONTUAÇÃO E FECHAMENTO DE FIM DE ANO           -->
+            <!-- ===================================================================== -->
+            <div id="moduloBoletim" class="space-y-6 hidden animate-fade-in">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-marinho">
+                        <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider">Aprovados no Ano</h3>
+                        <div id="kpiAprovadosAno" class="text-3xl font-black text-marinho mt-1">--</div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-amber-500">
+                        <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider">Recuperação / Exame</h3>
+                        <div id="kpiRecuperacaoAno" class="text-3xl font-black text-amber-600 mt-1">--</div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-emerald-500">
+                        <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider">Justificativas Registradas</h3>
+                        <div id="kpiJustificativasAno" class="text-3xl font-black text-emerald-700 mt-1">--</div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-laranja">
+                        <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider">Pontuação Média (0–100)</h3>
+                        <div id="kpiPontuacaoMedia" class="text-3xl font-black text-laranja mt-1">--</div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-4 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-sm">🎓 Boletim Consolidado & Fechamento de Fim de Ano</h3>
+                            <p class="text-xs text-slate-500">Combina T1–T4, presenças, faltas, justificativas (do diário e do calendário) e pontuação anual.</p>
+                        </div>
+                        <button type="button" onclick="salvarConsolidadoBoletim()" class="bg-marinho hover:bg-blue-900 text-white px-4 py-2 rounded-lg font-bold text-xs shadow-sm transition cursor-pointer">
+                            💾 Consolidar Boletim
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-50 text-slate-500 border-b border-slate-200 uppercase text-[10px] font-bold">
+                                <tr>
+                                    <th class="px-4 py-3">Aluno / RA</th>
+                                    <th class="px-4 py-3 text-center">T1</th>
+                                    <th class="px-4 py-3 text-center">T2</th>
+                                    <th class="px-4 py-3 text-center">T3</th>
+                                    <th class="px-4 py-3 text-center">T4</th>
+                                    <th class="px-4 py-3 text-center">Média Anual</th>
+                                    <th class="px-4 py-3 text-center">P / F / J</th>
+                                    <th class="px-4 py-3 text-center">Pontuação</th>
+                                    <th class="px-4 py-3 text-right">Parecer Fim de Ano</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelaBoletimFimAno" class="divide-y divide-slate-100"></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -227,6 +287,27 @@
     <!-- MOTOR JAVASCRIPT -->
     <!-- ========================================================================= -->
     <script>
+        function notificar(mensagem, tipo = 'sucesso') {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+
+            const cores = {
+                sucesso: 'bg-slate-900 text-white border-emerald-500',
+                alerta: 'bg-amber-900 text-amber-50 border-amber-400',
+                info: 'bg-marinho text-white border-blue-400'
+            };
+
+            const toast = document.createElement('div');
+            toast.className = `pointer-events-auto px-4 py-3 rounded-xl border-l-4 shadow-xl text-xs font-bold transition-all duration-300 ${cores[tipo] || cores.sucesso}`;
+            toast.innerText = mensagem;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3200);
+        }
+
         // --- BANCO DE DADOS (ALUNOS) ---
         const baseAlunos = [
             { ra: '2027001', nome: 'Davi Lucas', turma: '3A', faltas: 2 },
@@ -239,29 +320,72 @@
         ];
 
         let bancoNotas = JSON.parse(localStorage.getItem('peniel_banco_notas')) || {};
-        let bancoChamada = {}; // Guarda estado temporário da chamada (P, F, A)
+        let bancoChamadaSalva = JSON.parse(localStorage.getItem('peniel_banco_chamada')) || {};
+        let bancoChamada = {};
 
         let filtroTurma = '3A';
         let filtroTrimestre = 'T3';
         let filtroMateria = 'Matemática';
 
+        function getDataAulaAtual() {
+            const input = document.getElementById('dataAula');
+            if (input && input.value) return input.value;
+            return new Date().toISOString().split('T')[0];
+        }
+
+        function getChaveChamadaAtual() {
+            return `${filtroTurma}_${filtroMateria}_${filtroTrimestre}_${getDataAulaAtual()}`;
+        }
+
+        function carregarChamadaDoEstado() {
+            const chave = getChaveChamadaAtual();
+            bancoChamada = { ...(bancoChamadaSalva[chave] || {}) };
+        }
+
+        function carregarDiarioDaData() {
+            const dataAula = getDataAulaAtual();
+            const chave = `${filtroTurma}_${filtroMateria}_${filtroTrimestre}_${dataAula}`;
+            const reg = bancoDiarioAulas[chave];
+            const campoConteudo = document.getElementById('conteudoAula');
+            const campoTarefa = document.getElementById('tarefaAula');
+
+            if (campoConteudo) campoConteudo.value = reg ? (reg.conteudo || '') : '';
+            if (campoTarefa) campoTarefa.value = reg ? (reg.tarefa || '') : '';
+
+            carregarChamadaDoEstado();
+            renderTabelaChamada();
+        }
+
         // --- NAVEGAÇÃO ENTRE ABAS ---
         function mudarAbaDiario(aba) {
             const modFreq = document.getElementById('moduloFrequencia');
             const modNotas = document.getElementById('moduloNotas');
+            const modBol = document.getElementById('moduloBoletim');
             const btnFreq = document.getElementById('btnAbaFrequencia');
             const btnNotas = document.getElementById('btnAbaNotas');
+            const btnBol = document.getElementById('btnAbaBoletim');
 
-            if(aba === 'frequencia') {
+            const estiloAtivo = 'flex-1 md:flex-none px-5 py-2.5 rounded-lg font-bold text-sm bg-white text-marinho shadow-sm border border-slate-200 transition';
+            const estiloInativo = 'flex-1 md:flex-none px-5 py-2.5 rounded-lg font-bold text-sm text-slate-500 hover:text-slate-800 border border-transparent transition';
+
+            modFreq.classList.add('hidden'); modFreq.classList.remove('block');
+            modNotas.classList.add('hidden'); modNotas.classList.remove('block');
+            if (modBol) { modBol.classList.add('hidden'); modBol.classList.remove('block'); }
+
+            btnFreq.className = estiloInativo;
+            btnNotas.className = estiloInativo;
+            if (btnBol) btnBol.className = estiloInativo;
+
+            if (aba === 'frequencia') {
                 modFreq.classList.remove('hidden'); modFreq.classList.add('block');
-                modNotas.classList.remove('block'); modNotas.classList.add('hidden');
-                btnFreq.className = 'flex-1 md:flex-none px-6 py-2.5 rounded-lg font-bold text-sm bg-white text-marinho shadow-sm border border-slate-200 transition';
-                btnNotas.className = 'flex-1 md:flex-none px-6 py-2.5 rounded-lg font-bold text-sm text-slate-500 hover:text-slate-800 border border-transparent transition';
-            } else {
+                btnFreq.className = estiloAtivo;
+            } else if (aba === 'notas') {
                 modNotas.classList.remove('hidden'); modNotas.classList.add('block');
-                modFreq.classList.remove('block'); modFreq.classList.add('hidden');
-                btnNotas.className = 'flex-1 md:flex-none px-6 py-2.5 rounded-lg font-bold text-sm bg-white text-marinho shadow-sm border border-slate-200 transition';
-                btnFreq.className = 'flex-1 md:flex-none px-6 py-2.5 rounded-lg font-bold text-sm text-slate-500 hover:text-slate-800 border border-transparent transition';
+                btnNotas.className = estiloAtivo;
+            } else if (aba === 'boletim' && modBol) {
+                modBol.classList.remove('hidden'); modBol.classList.add('block');
+                if (btnBol) btnBol.className = estiloAtivo;
+                renderTabelaBoletim();
             }
         }
 
@@ -269,7 +393,8 @@
         function atualizarFiltrosGlobais() {
             filtroTurma = document.getElementById('seletorTurma').value;
             filtroTrimestre = document.getElementById('seletorTrimestre').value;
-            bancoChamada = {}; // Reseta o estado temporário da chamada
+            carregarChamadaDoEstado();
+            carregarDiarioDaData();
             renderAmbasTabelas();
         }
 
@@ -280,13 +405,36 @@
                 if(matBtn === materiaSelecionada) btn.className = 'btn-materia bg-marinho text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow-sm whitespace-nowrap transition';
                 else btn.className = 'btn-materia bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 px-5 py-2.5 rounded-lg text-sm font-bold whitespace-nowrap transition';
             });
-            bancoChamada = {}; // Reseta a chamada para a nova matéria
+            carregarChamadaDoEstado();
+            carregarDiarioDaData();
             renderAmbasTabelas();
         }
 
         function renderAmbasTabelas() {
             renderTabelaNotas();
             renderTabelaChamada();
+            renderTabelaBoletim();
+        }
+
+        let bancoJustificativas = JSON.parse(localStorage.getItem('peniel_banco_justificativas_diario')) || {};
+        let bancoDiarioAulas = JSON.parse(localStorage.getItem('peniel_banco_diario_aulas')) || {};
+
+        function obterJustificativasCalendarioPorAluno() {
+            const mapa = {};
+            const sync = JSON.parse(localStorage.getItem('peniel_sync_dashboard_turmas_calendario') || 'null');
+            const grade = sync && Array.isArray(sync.gradeTurmas) ? sync.gradeTurmas : [];
+
+            grade.forEach(item => {
+                (item.justificativas || []).forEach(txt => {
+                    const partes = String(txt).split(':');
+                    const nomeAluno = partes[0].trim().toLowerCase();
+                    const motivo = partes.slice(1).join(':').trim() || String(txt).trim();
+                    if (!nomeAluno) return;
+                    if (!mapa[nomeAluno]) mapa[nomeAluno] = [];
+                    mapa[nomeAluno].push(`${item.materia || 'Aula'}: ${motivo}`);
+                });
+            });
+            return mapa;
         }
 
         // --- ABA 1: RENDERIZAÇÃO DA CHAMADA ---
@@ -300,47 +448,108 @@
             );
 
             alunosFiltrados.forEach(aluno => {
-                // Estado padrão = 'P' (Presente)
-                if(!bancoChamada[aluno.ra]) bancoChamada[aluno.ra] = 'P';
-                
+                if (!bancoChamada[aluno.ra]) bancoChamada[aluno.ra] = 'P';
                 const status = bancoChamada[aluno.ra];
-                let btnHtml = '';
+                const chaveJust = `${aluno.ra}_${filtroMateria}_${filtroTrimestre}`;
+                const justAtual = bancoJustificativas[chaveJust] || '';
 
+                let btnHtml = '';
                 if (status === 'P') {
-                    btnHtml = `<button type="button" onclick="alternarChamada('${aluno.ra}')" class="bg-green-100 text-green-700 border border-green-300 px-4 py-1.5 rounded-lg font-bold text-xs shadow-sm w-24">Presente</button>`;
+                    btnHtml = `<button type="button" onclick="alternarChamada('${aluno.ra}')" class="bg-green-100 text-green-700 border border-green-300 px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-sm w-28 cursor-pointer">✅ Presente</button>`;
                 } else if (status === 'F') {
-                    btnHtml = `<button type="button" onclick="alternarChamada('${aluno.ra}')" class="bg-red-100 text-red-700 border border-red-300 px-4 py-1.5 rounded-lg font-bold text-xs shadow-sm w-24">Falta</button>`;
+                    btnHtml = `<button type="button" onclick="alternarChamada('${aluno.ra}')" class="bg-red-100 text-red-700 border border-red-300 px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-sm w-28 cursor-pointer">❌ Falta</button>`;
                 } else {
-                    btnHtml = `<button type="button" onclick="alternarChamada('${aluno.ra}')" class="bg-orange-100 text-orange-700 border border-orange-300 px-4 py-1.5 rounded-lg font-bold text-xs shadow-sm w-24">Atraso</button>`;
+                    btnHtml = `<button type="button" onclick="alternarChamada('${aluno.ra}')" class="bg-amber-100 text-amber-800 border border-amber-300 px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-sm w-28 cursor-pointer">📝 Justificada</button>`;
                 }
 
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
                 tr.innerHTML = `
-                    <td class="px-6 py-3 font-semibold text-slate-800 text-xs">${aluno.nome}</td>
-                    <td class="px-6 py-3 text-right">${btnHtml}</td>
+                    <td class="px-6 py-3 text-xs">
+                        <div class="font-semibold text-slate-800">${aluno.nome}</div>
+                        <input type="text" value="${justAtual}" onchange="atualizarJustificativaAluno('${aluno.ra}', this.value)" placeholder="Justificativa (ex: atestado médico)..." class="mt-1.5 w-full border border-amber-200 bg-amber-50/40 rounded-lg px-2.5 py-1 text-[11px] text-slate-700 focus:ring-2 focus:ring-amber-400 focus:outline-none">
+                    </td>
+                    <td class="px-6 py-3 text-right align-middle">${btnHtml}</td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
+        function atualizarJustificativaAluno(ra, texto) {
+            const chaveJust = `${ra}_${filtroMateria}_${filtroTrimestre}`;
+            if (texto.trim()) {
+                bancoJustificativas[chaveJust] = texto.trim();
+                if (bancoChamada[ra] === 'F') {
+                    bancoChamada[ra] = 'J';
+                }
+            } else {
+                delete bancoJustificativas[chaveJust];
+            }
+            localStorage.setItem('peniel_banco_justificativas_diario', JSON.stringify(bancoJustificativas));
+            renderTabelaChamada();
+            renderTabelaBoletim();
+        }
+
         function alternarChamada(ra) {
             const atual = bancoChamada[ra];
-            if(atual === 'P') bancoChamada[ra] = 'F';
-            else if(atual === 'F') bancoChamada[ra] = 'A';
+            if (atual === 'P') bancoChamada[ra] = 'F';
+            else if (atual === 'F') bancoChamada[ra] = 'J';
             else bancoChamada[ra] = 'P';
-            renderTabelaChamada(); // Re-renderiza a lista pra mudar a cor do botão
+            renderTabelaChamada();
         }
 
         function salvarConteudoDiario() {
-            alert('✅ Registro de Aula (Conteúdo e Tarefa) salvo com sucesso!');
+            const dataAula = getDataAulaAtual();
+            const conteudo = document.getElementById('conteudoAula').value.trim();
+            const tarefa = document.getElementById('tarefaAula').value.trim();
+            const chave = `${filtroTurma}_${filtroMateria}_${filtroTrimestre}_${dataAula}`;
+            bancoDiarioAulas[chave] = { turma: filtroTurma, materia: filtroMateria, trimestre: filtroTrimestre, dataAula, conteudo, tarefa, atualizadoEm: new Date().toISOString() };
+            localStorage.setItem('peniel_banco_diario_aulas', JSON.stringify(bancoDiarioAulas));
+            notificar('✅ Registro de Aula (Conteúdo e Tarefa) salvo com sucesso!');
         }
 
         function salvarChamada() {
-            alert('✅ Chamada do dia registrada no sistema escolar!');
+            const chaveAula = getChaveChamadaAtual();
+            const chamadaAnterior = bancoChamadaSalva[chaveAula] || {};
+
+            localStorage.setItem('peniel_banco_justificativas_diario', JSON.stringify(bancoJustificativas));
+
+            const alunosDaTurma = baseAlunos.filter(a => a.turma === filtroTurma);
+            alunosDaTurma.forEach(a => {
+                const stNovo = bancoChamada[a.ra] || 'P';
+                const stAnterior = chamadaAnterior[a.ra] || 'P';
+                if (stNovo === 'F' && stAnterior !== 'F') {
+                    a.faltas = (a.faltas || 0) + 1;
+                } else if (stNovo !== 'F' && stAnterior === 'F') {
+                    a.faltas = Math.max(0, (a.faltas || 0) - 1);
+                }
+            });
+
+            bancoChamadaSalva[chaveAula] = { ...bancoChamada };
+            localStorage.setItem('peniel_banco_chamada', JSON.stringify(bancoChamadaSalva));
+
+            renderTabelaNotas();
+            renderTabelaBoletim();
+            notificar('✅ Chamada (Presença, Falta e Justificativa) registrada no sistema escolar!');
         }
 
-        // --- ABA 2: RENDERIZAÇÃO DE NOTAS E CÁLCULOS ---
+        function lerNotaTrimestre(ra, materia, tri) {
+            const reg = bancoNotas[`${ra}_${materia}_${tri}`];
+            if (!reg) return '';
+            if (typeof reg.nota === 'number' || (typeof reg.nota === 'string' && reg.nota !== '')) {
+                return reg.nota;
+            }
+            const v1 = parseFloat(reg.n1);
+            const v2 = parseFloat(reg.n2);
+            const v3 = parseFloat(reg.n3);
+            if (isNaN(v1) && isNaN(v2) && isNaN(v3)) return '';
+            const n1 = isNaN(v1) ? 0 : v1;
+            const n2 = isNaN(v2) ? 0 : v2;
+            const n3 = isNaN(v3) ? 0 : v3;
+            return (((n1 * 3) + (n2 * 4) + (n3 * 3)) / 10).toFixed(1);
+        }
+
+        // --- ABA 2: RENDERIZAÇÃO DE NOTAS (4 TRIMESTRES + MÉDIA PARCIAL) ---
         function renderTabelaNotas() {
             const tbody = document.getElementById('tabelaAlunos');
             const busca = document.getElementById('buscaAluno').value.toLowerCase();
@@ -348,77 +557,79 @@
 
             const selectTurma = document.getElementById('seletorTurma');
             const nomeTurmaText = selectTurma.options[selectTurma.selectedIndex].text;
-            const selectTri = document.getElementById('seletorTrimestre');
-            const nomeTrimestreText = selectTri.options[selectTri.selectedIndex].text;
 
-            document.getElementById('tituloTabelaNotas').innerText = `${filtroMateria} • ${nomeTurmaText} • ${nomeTrimestreText}`;
+            document.getElementById('tituloTabelaNotas').innerText = `${filtroMateria} • ${nomeTurmaText} • 1º ao 4º Trimestre (${filtroTrimestre} em foco)`;
 
             const alunosFiltrados = baseAlunos.filter(aluno => 
                 aluno.turma === filtroTurma && aluno.nome.toLowerCase().includes(busca)
             );
 
-            if(alunosFiltrados.length === 0) document.getElementById('msgSemAlunos').classList.remove('hidden');
+            if (alunosFiltrados.length === 0) document.getElementById('msgSemAlunos').classList.remove('hidden');
             else document.getElementById('msgSemAlunos').classList.add('hidden');
 
             alunosFiltrados.forEach(aluno => {
-                const chave = `${aluno.ra}_${filtroMateria}_${filtroTrimestre}`;
-                const notas = bancoNotas[chave] || { n1: '', n2: '', n3: '' };
+                const t1 = lerNotaTrimestre(aluno.ra, filtroMateria, 'T1');
+                const t2 = lerNotaTrimestre(aluno.ra, filtroMateria, 'T2');
+                const t3 = lerNotaTrimestre(aluno.ra, filtroMateria, 'T3');
+                const t4 = lerNotaTrimestre(aluno.ra, filtroMateria, 'T4');
 
                 let trClass = "hover:bg-slate-50 transition";
-                if(aluno.faltas > 10) trClass = "bg-red-50/20 hover:bg-red-50 transition";
+                if (aluno.faltas > 10) trClass = "bg-red-50/20 hover:bg-red-50 transition";
 
                 const tr = document.createElement('tr');
                 tr.className = trClass;
                 tr.innerHTML = `
-                    <td class="px-6 py-4">
+                    <td class="px-4 py-3.5">
                         <p class="font-bold text-slate-800">${aluno.nome}</p>
                         <p class="text-[11px] text-slate-400 font-mono">RA: ${aluno.ra} ${aluno.faltas > 10 ? '<span class="text-red-500 font-bold ml-1">(! Faltas)</span>' : ''}</p>
                     </td>
-                    <td class="px-6 py-4 text-center"><input type="number" step="0.5" min="0" max="10" value="${notas.n1}" data-ra="${aluno.ra}" data-tipo="n1" oninput="calcularLinha(this)" class="w-16 text-center border border-slate-300 rounded p-1 font-semibold text-slate-700 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"></td>
-                    <td class="px-6 py-4 text-center"><input type="number" step="0.5" min="0" max="10" value="${notas.n2}" data-ra="${aluno.ra}" data-tipo="n2" oninput="calcularLinha(this)" class="w-16 text-center border border-slate-300 rounded p-1 font-semibold text-slate-700 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"></td>
-                    <td class="px-6 py-4 text-center"><input type="number" step="0.5" min="0" max="10" value="${notas.n3}" data-ra="${aluno.ra}" data-tipo="n3" oninput="calcularLinha(this)" class="w-16 text-center border border-slate-300 rounded p-1 font-semibold text-slate-700 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"></td>
-                    <td class="px-6 py-4 text-center"><div id="media-${aluno.ra}" class="font-black text-slate-400 text-base">--</div></td>
-                    <td class="px-6 py-4 text-right" id="status-${aluno.ra}"><span class="bg-slate-100 text-slate-500 px-2.5 py-1 rounded text-xs font-bold border border-slate-200">Aguardando</span></td>
+                    <td class="px-3 py-3.5 text-center"><input type="number" step="0.5" min="0" max="10" value="${t1}" data-ra="${aluno.ra}" data-tri="T1" oninput="calcularLinha(this)" class="w-16 text-center border ${filtroTrimestre === 'T1' ? 'border-blue-400 ring-1 ring-blue-200' : 'border-slate-300'} rounded-lg p-1.5 font-semibold text-slate-700 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"></td>
+                    <td class="px-3 py-3.5 text-center"><input type="number" step="0.5" min="0" max="10" value="${t2}" data-ra="${aluno.ra}" data-tri="T2" oninput="calcularLinha(this)" class="w-16 text-center border ${filtroTrimestre === 'T2' ? 'border-blue-400 ring-1 ring-blue-200' : 'border-slate-300'} rounded-lg p-1.5 font-semibold text-slate-700 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"></td>
+                    <td class="px-3 py-3.5 text-center"><input type="number" step="0.5" min="0" max="10" value="${t3}" data-ra="${aluno.ra}" data-tri="T3" oninput="calcularLinha(this)" class="w-16 text-center border ${filtroTrimestre === 'T3' ? 'border-blue-400 ring-1 ring-blue-200' : 'border-slate-300'} rounded-lg p-1.5 font-semibold text-slate-700 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"></td>
+                    <td class="px-3 py-3.5 text-center"><input type="number" step="0.5" min="0" max="10" value="${t4}" data-ra="${aluno.ra}" data-tri="T4" oninput="calcularLinha(this)" class="w-16 text-center border ${filtroTrimestre === 'T4' ? 'border-blue-400 ring-1 ring-blue-200' : 'border-slate-300'} rounded-lg p-1.5 font-semibold text-slate-700 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"></td>
+                    <td class="px-4 py-3.5 text-center bg-blue-50/40"><div id="media-${aluno.ra}" class="font-black text-slate-400 text-base media-valor">--</div></td>
+                    <td class="px-4 py-3.5 text-right" id="status-${aluno.ra}"><span class="bg-slate-100 text-slate-500 px-2.5 py-1 rounded text-xs font-bold border border-slate-200">Aguardando</span></td>
                 `;
                 tbody.appendChild(tr);
 
-                if(notas.n1 !== '' || notas.n2 !== '' || notas.n3 !== '') {
-                    calcularMatematicaDaLinha(aluno.ra, notas.n1, notas.n2, notas.n3);
-                }
+                calcularMatematicaDaLinha(aluno.ra, t1, t2, t3, t4);
             });
             calcularKPIs();
+            renderTabelaBoletim();
         }
 
         function calcularLinha(input) {
             const ra = input.getAttribute('data-ra');
             const tr = input.closest('tr');
             const inputs = tr.querySelectorAll('input');
-            const n1 = inputs[0].value;
-            const n2 = inputs[1].value;
-            const n3 = inputs[2].value;
+            const vals = [inputs[0].value, inputs[1].value, inputs[2].value, inputs[3].value];
+            const tris = ['T1', 'T2', 'T3', 'T4'];
 
-            // Salva na memória RAM temporária
-            const chave = `${ra}_${filtroMateria}_${filtroTrimestre}`;
-            if(!bancoNotas[chave]) bancoNotas[chave] = { n1:'', n2:'', n3:'' };
-            
-            bancoNotas[chave].n1 = n1;
-            bancoNotas[chave].n2 = n2;
-            bancoNotas[chave].n3 = n3;
+            tris.forEach((tri, idx) => {
+                const chave = `${ra}_${filtroMateria}_${tri}`;
+                const raw = vals[idx];
+                if (raw === '' || raw === null || raw === undefined) {
+                    delete bancoNotas[chave];
+                } else {
+                    const num = Math.max(0, Math.min(10, parseFloat(raw)));
+                    bancoNotas[chave] = { nota: isNaN(num) ? '' : num };
+                }
+            });
 
-            // Executa a conta
-            calcularMatematicaDaLinha(ra, n1, n2, n3);
+            calcularMatematicaDaLinha(ra, vals[0], vals[1], vals[2], vals[3]);
             calcularKPIs();
+            renderTabelaBoletim();
         }
 
-        function calcularMatematicaDaLinha(ra, n1, n2, n3) {
+        function calcularMatematicaDaLinha(ra, t1, t2, t3, t4) {
             const mediaDiv = document.getElementById(`media-${ra}`);
             const statusDiv = document.getElementById(`status-${ra}`);
-            
-            const v1 = parseFloat(n1);
-            const v2 = parseFloat(n2);
-            const v3 = parseFloat(n3);
 
-            if(isNaN(v1) && isNaN(v2) && isNaN(v3)) {
+            const notasInformadas = [t1, t2, t3, t4]
+                .map(v => parseFloat(v))
+                .filter(v => !isNaN(v));
+
+            if (notasInformadas.length === 0) {
                 mediaDiv.innerText = '--';
                 mediaDiv.className = 'font-black text-slate-400 text-base media-valor';
                 mediaDiv.setAttribute('data-valor', '');
@@ -426,19 +637,14 @@
                 return;
             }
 
-            // Pesos: N1(3), N2(4), N3(3) = Total 10
-            const nota1 = isNaN(v1) ? 0 : v1;
-            const nota2 = isNaN(v2) ? 0 : v2;
-            const nota3 = isNaN(v3) ? 0 : v3;
-
-            const mediaFinal = ((nota1 * 3) + (nota2 * 4) + (nota3 * 3)) / 10;
-            const mediaFormatada = mediaFinal.toFixed(1);
+            const somaNotas = notasInformadas.reduce((acc, v) => acc + v, 0);
+            const mediaParcial = somaNotas / notasInformadas.length;
+            const mediaFormatada = mediaParcial.toFixed(1);
 
             mediaDiv.innerText = mediaFormatada;
             mediaDiv.setAttribute('data-valor', mediaFormatada);
 
-            // Onde estava mediaFinal >= 6.0, altere para 7.0
-            if(mediaFinal >= 7.0) {
+            if (mediaParcial >= 7.0) {
                 mediaDiv.className = 'font-black text-blue-900 text-base media-valor';
                 statusDiv.innerHTML = '<span class="bg-green-100 text-green-700 border border-green-200 px-2.5 py-1 rounded text-xs font-bold shadow-sm">Aprovado</span>';
             } else {
@@ -465,7 +671,6 @@
                 }
             });
 
-            // Média Geral
             if(qtdValidos > 0) {
                 const mediaGeral = (soma / qtdValidos).toFixed(1);
                 let corMedia = mediaGeral >= 7.0 ? 'text-green-500' : 'text-orange-500';
@@ -478,7 +683,6 @@
             document.getElementById('kpiAcimaMedia').innerHTML = `${acima} <span class="text-xs font-normal text-slate-400 block mt-0.5">Alunos na média</span>`;
             document.getElementById('kpiRecuperacao').innerHTML = `${recup} <span class="text-xs font-normal text-slate-400 block mt-0.5">Alunos em risco</span>`;
 
-            // Filtra os alunos visíveis na tabela que tem falta alta
             const busca = document.getElementById('buscaAluno').value.toLowerCase();
             const alunosFiltrados = baseAlunos.filter(a => a.turma === filtroTurma && a.nome.toLowerCase().includes(busca));
             const qtdFaltasAlta = alunosFiltrados.filter(a => a.faltas > 10).length;
@@ -486,21 +690,139 @@
             document.getElementById('kpiFaltas').innerHTML = `${qtdFaltasAlta} <span class="text-xs font-normal text-slate-400 block mt-0.5">Aluno(s) em alerta</span>`;
         }
 
-        // Botão Salvar
-        function salvarTodasNotas() {
-            localStorage.setItem('peniel_banco_notas', JSON.stringify(bancoNotas));
-            alert(`✅ Diário salvo com sucesso no banco de dados!`);
+        function calcularMediaTrimestreAluno(ra, materia, tri) {
+            const valStr = lerNotaTrimestre(ra, materia, tri);
+            if (valStr === '' || valStr === null || valStr === undefined) return null;
+            const num = parseFloat(valStr);
+            return isNaN(num) ? null : num;
         }
 
-        // Inicia
+        function renderTabelaBoletim() {
+            const tbody = document.getElementById('tabelaBoletimFimAno');
+            if (!tbody) return;
+            const busca = document.getElementById('buscaAluno').value.toLowerCase();
+            const justCal = obterJustificativasCalendarioPorAluno();
+
+            const alunosFiltrados = baseAlunos.filter(a =>
+                a.turma === filtroTurma && a.nome.toLowerCase().includes(busca)
+            );
+
+            let aprovados = 0;
+            let recup = 0;
+            let totalJust = 0;
+            let somaPontos = 0;
+
+            const consolidado = alunosFiltrados.map(aluno => {
+                const tris = ['T1', 'T2', 'T3', 'T4'].map(t => calcularMediaTrimestreAluno(aluno.ra, filtroMateria, t));
+                const validos = tris.filter(v => v !== null);
+                const mediaAnual = validos.length ? (tris.reduce((acc, v) => acc + (v !== null ? v : 0), 0) / 4) : 0;
+
+                const justDiario = Object.entries(bancoJustificativas)
+                    .filter(([k, val]) => k.startsWith(`${aluno.ra}_`) && String(val).trim())
+                    .map(([k, val]) => `${k.split('_')[1] || filtroMateria}: ${val}`);
+                const justExtra = justCal[aluno.nome.toLowerCase()] || [];
+                const todasJust = [...justDiario, ...justExtra];
+                totalJust += todasJust.length;
+
+                const faltasNaoJust = Math.max(0, (aluno.faltas || 0) - todasJust.length);
+                const presencasEstimadas = Math.max(0, 40 - (aluno.faltas || 0));
+
+                const ptsNota = Math.min(70, (mediaAnual / 10) * 70);
+                const ptsFreq = Math.max(0, 20 - (faltasNaoJust * 1.5));
+                const ptsJust = Math.min(10, todasJust.length * 2.5);
+                const pontuacaoFinal = Math.round(Math.max(0, Math.min(100, ptsNota + ptsFreq + ptsJust)));
+                somaPontos += pontuacaoFinal;
+
+                let parecer = 'Em Andamento';
+                let badgeClasse = 'bg-slate-100 text-slate-700 border-slate-200';
+                if (validos.length > 0 || mediaAnual > 0) {
+                    if (mediaAnual >= 7.0 && faltasNaoJust <= 10) {
+                        parecer = 'Aprovado (Fim de Ano)';
+                        badgeClasse = 'bg-green-100 text-green-700 border-green-200';
+                        aprovados++;
+                    } else {
+                        parecer = 'Recuperação / Conselho';
+                        badgeClasse = 'bg-amber-100 text-amber-800 border-amber-200';
+                        recup++;
+                    }
+                }
+
+                return {
+                    ra: aluno.ra,
+                    nome: aluno.nome,
+                    turma: aluno.turma,
+                    materia: filtroMateria,
+                    tris,
+                    mediaAnual: Number(mediaAnual.toFixed(1)),
+                    presencas: presencasEstimadas,
+                    faltas: faltasNaoJust,
+                    justificativas: todasJust,
+                    pontuacaoFinal,
+                    parecer,
+                    badgeClasse
+                };
+            });
+
+            document.getElementById('kpiAprovadosAno').innerText = aprovados;
+            document.getElementById('kpiRecuperacaoAno').innerText = recup;
+            document.getElementById('kpiJustificativasAno').innerText = totalJust;
+            document.getElementById('kpiPontuacaoMedia').innerText = consolidado.length
+                ? `${Math.round(somaPontos / consolidado.length)} pts`
+                : '--';
+
+            if (!consolidado.length) {
+                tbody.innerHTML = '<tr><td colspan="9" class="px-4 py-6 text-center text-slate-400">Nenhum aluno encontrado.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = consolidado.map(item => `
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="px-4 py-3">
+                        <div class="font-bold text-slate-800">${item.nome}</div>
+                        <div class="text-[10px] font-mono text-slate-400">RA: ${item.ra}</div>
+                    </td>
+                    ${item.tris.map(v => `<td class="px-4 py-3 text-center font-mono font-semibold">${v !== null ? v.toFixed(1) : '--'}</td>`).join('')}
+                    <td class="px-4 py-3 text-center font-black text-marinho">${item.mediaAnual.toFixed(1)}</td>
+                    <td class="px-4 py-3 text-center font-mono">
+                        <span class="text-emerald-700 font-bold">P:${item.presencas}</span> •
+                        <span class="text-red-600 font-bold">F:${item.faltas}</span> •
+                        <span class="text-amber-700 font-bold" title="${item.justificativas.join(' | ')}">J:${item.justificativas.length}</span>
+                    </td>
+                    <td class="px-4 py-3 text-center font-black text-laranja">${item.pontuacaoFinal} pts</td>
+                    <td class="px-4 py-3 text-right">
+                        <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold border ${item.badgeClasse}">${item.parecer}</span>
+                    </td>
+                </tr>
+            `).join('');
+
+            localStorage.setItem('peniel_boletim_fim_ano_resumo', JSON.stringify({
+                atualizadoEm: new Date().toISOString(),
+                turma: filtroTurma,
+                materia: filtroMateria,
+                alunos: consolidado
+            }));
+        }
+
+        function salvarConsolidadoBoletim() {
+            localStorage.setItem('peniel_banco_notas', JSON.stringify(bancoNotas));
+            renderTabelaBoletim();
+            notificar('✅ Boletim consolidado, pontuação e parecer de fim de ano salvos!');
+        }
+
+        function salvarTodasNotas() {
+            localStorage.setItem('peniel_banco_notas', JSON.stringify(bancoNotas));
+            notificar('✅ Diário salvo com sucesso no banco de dados!');
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
-            atualizarFiltrosGlobais(); // Renderiza a primeira vez
-            // Preenche automaticamente o campo de data com a data atual
             const dataAulaInput = document.getElementById('dataAula');
             if (dataAulaInput) {
                 const hoje = new Date().toISOString().split('T')[0];
                 dataAulaInput.value = hoje;
             }
+            atualizarFiltrosGlobais();
+            window.addEventListener('peniel:calendario-atualizado', () => renderTabelaBoletim());
+            window.addEventListener('storage', (e) => { if (e.key === 'peniel_sync_dashboard_turmas_calendario') renderTabelaBoletim(); });
         });
 
     </script>
@@ -524,7 +846,6 @@
                     barraGestor.id = 'barraExecutivaMaster';
                     barraGestor.className = 'bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl mb-6 flex flex-col sm:flex-row justify-between items-center border-2 border-blue-500/40 z-50 gap-4';
                     
-                    // BOTÕES COM NAVEGAÇÃO JAVASCRIPT FORÇADA E TYPE=BUTTON PARA EVITAR REDIRECTS
                     barraGestor.innerHTML = `
                         <div class="flex items-center gap-3 text-xs font-bold text-blue-300">
                             <span class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></span>
@@ -563,23 +884,18 @@
             const menuLateral = document.querySelector('aside');
             const header = document.querySelector('header');
             
-            // Verifica se a tela tem menu lateral e se não está no modo Gestor Tela Cheia
             if (menuLateral && header && !document.getElementById('btnMobile')) {
-                
-                // 1. Adapta as classes do Tailwind para o menu deslizar no celular
-                menuLateral.classList.remove('hidden'); // Remove o bloqueio original
+                menuLateral.classList.remove('hidden');
                 menuLateral.classList.add(
                     'fixed', 'left-0', 'top-0', 'h-full', 'z-[100]', 
                     'transform', '-translate-x-full', 'transition-transform', 'duration-300',
-                    'md:relative', 'md:translate-x-0' // Mantém fixo no Computador
+                    'md:relative', 'md:translate-x-0'
                 );
 
-                // 2. Cria o Fundo Escuro (Overlay) para a tela do iPhone
                 const overlay = document.createElement('div');
                 overlay.className = 'fixed inset-0 bg-slate-900/60 z-[90] hidden backdrop-blur-sm md:hidden transition-opacity';
                 document.body.appendChild(overlay);
 
-                // 3. Função para Abrir e Fechar o menu
                 const toggleMenu = () => {
                     const estaFechado = menuLateral.classList.contains('-translate-x-full');
                     if(estaFechado) {
@@ -591,17 +907,14 @@
                     }
                 };
 
-                // Fechar menu ao clicar no fundo escuro
                 overlay.onclick = toggleMenu;
 
-                // 4. Cria o Botão "Hambúrguer" no Header (Só aparece no celular)
                 const btnMobile = document.createElement('button');
                 btnMobile.id = 'btnMobile';
                 btnMobile.className = 'md:hidden w-full sm:w-auto bg-marinho text-white px-4 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-md mb-4 sm:mb-0 transition active:scale-95';
                 btnMobile.innerHTML = '☰ Abrir Menu do Sistema';
                 btnMobile.onclick = toggleMenu;
 
-                // Insere o botão no topo do Header
                 header.insertBefore(btnMobile, header.firstChild);
             }
         });
