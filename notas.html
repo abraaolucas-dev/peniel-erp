@@ -69,6 +69,7 @@
                 </div>
                 
                 <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                    <span id="status-sync-notas" class="text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-3 py-2 rounded-xl text-center">⏳ Sincronizando...</span>
                     <!-- Seletor de Turma Global -->
                     <select id="seletorTurma" onchange="atualizarFiltrosGlobais()" class="w-full sm:w-auto border border-slate-300 bg-white text-slate-700 rounded-xl px-4 py-2.5 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold text-sm">
                         <option value="3A">3º Ano A (Matutino)</option>
@@ -287,6 +288,125 @@
     <!-- MOTOR JAVASCRIPT -->
     <!-- ========================================================================= -->
     <script>
+        const SUPABASE_URL_NOTAS = 'https://fxjdmhrlujiajkouduhg.supabase.co';
+        const SUPABASE_ANON_KEY_NOTAS = 'sb_publishable_EANH7zIXleZ3G18S6z7KFw_26oySNP9';
+
+        function atualizarBadgeSyncNotas(online) {
+            const el = document.getElementById('status-sync-notas');
+            if (!el) return;
+            if (online) {
+                el.className = 'text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-2 rounded-xl text-center';
+                el.innerText = '🟢 Supabase Sincronizado';
+            } else {
+                el.className = 'text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-3 py-2 rounded-xl text-center';
+                el.innerText = '🟡 Modo Local';
+            }
+        }
+
+        async function supabaseFetchNotas(path, options = {}) {
+            const resp = await fetch(`${SUPABASE_URL_NOTAS}/rest/v1/${path}`, {
+                ...options,
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY_NOTAS,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY_NOTAS}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': options.prefer || 'resolution=merge-duplicates,return=representation',
+                    ...(options.headers || {})
+                }
+            });
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const text = await resp.text();
+            return text ? JSON.parse(text) : null;
+        }
+
+        async function sincronizarNotasComSupabase() {
+            const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
+            try {
+                const rows = await supabaseFetchNotas(
+                    `notas_avaliacoes?unidade=eq.${encodeURIComponent(unidade)}&disciplina=eq.${encodeURIComponent(filtroMateria)}`
+                );
+                if (Array.isArray(rows)) {
+                    rows.forEach(r => {
+                        if (r.aluno_ra && r.periodo && r.nota_final !== null && r.nota_final !== undefined) {
+                            bancoNotas[`${r.aluno_ra}_${r.disciplina || filtroMateria}_${r.periodo}`] = { nota: Number(r.nota_final) };
+                        }
+                    });
+                    localStorage.setItem('peniel_banco_notas', JSON.stringify(bancoNotas));
+                    renderAmbasTabelas();
+                    atualizarBadgeSyncNotas(true);
+                }
+            } catch (_) {
+                atualizarBadgeSyncNotas(false);
+            }
+        }
+
+        async function persistirNotasNoSupabase() {
+            const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
+            const anoLetivo = localStorage.getItem('peniel_ano_letivo') || '2027';
+            const alunosTurma = baseAlunos.filter(a => a.turma === filtroTurma);
+            const payload = [];
+
+            alunosTurma.forEach(aluno => {
+                ['T1', 'T2', 'T3', 'T4'].forEach(tri => {
+                    const chave = `${aluno.ra}_${filtroMateria}_${tri}`;
+                    const reg = bancoNotas[chave];
+                    const notaNum = (reg && reg.nota !== '' && reg.nota !== null && reg.nota !== undefined)
+                        ? Number(reg.nota)
+                        : null;
+
+                    payload.push({
+                        id: `${unidade}_${anoLetivo}_${aluno.ra}_${filtroMateria}_${tri}`,
+                        unidade,
+                        ano_letivo: String(anoLetivo),
+                        aluno_ra: String(aluno.ra),
+                        disciplina: filtroMateria,
+                        periodo: tri,
+                        n1: notaNum,
+                        n2: null,
+                        n3: null,
+                        nota_final: notaNum,
+                        faltas: Number(aluno.faltas || 0),
+                        atualizado_em: new Date().toISOString()
+                    });
+                });
+            });
+
+            try {
+                await supabaseFetchNotas('notas_avaliacoes?on_conflict=id', {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                atualizarBadgeSyncNotas(true);
+            } catch (_) {
+                atualizarBadgeSyncNotas(false);
+            }
+        }
+
+        async function persistirDiarioNoSupabase(chave, dados) {
+            const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
+            try {
+                await supabaseFetchNotas('diario_aulas?on_conflict=id', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        id: `${unidade}_${chave}`,
+                        unidade,
+                        turma: dados.turma || filtroTurma,
+                        materia: dados.materia || filtroMateria,
+                        trimestre: dados.trimestre || filtroTrimestre,
+                        data_aula: dados.dataAula || getDataAulaAtual(),
+                        conteudo: dados.conteudo || '',
+                        tarefa: dados.tarefa || '',
+                        chamada_json: bancoChamadaSalva[chave] || bancoChamada || {},
+                        justificativas_json: bancoJustificativas || {},
+                        atualizado_em: new Date().toISOString()
+                    })
+                });
+                atualizarBadgeSyncNotas(true);
+            } catch (_) {
+                atualizarBadgeSyncNotas(false);
+            }
+        }
+
         function notificar(mensagem, tipo = 'sucesso') {
             const container = document.getElementById('toastContainer');
             if (!container) return;
@@ -396,6 +516,7 @@
             carregarChamadaDoEstado();
             carregarDiarioDaData();
             renderAmbasTabelas();
+            sincronizarNotasComSupabase();
         }
 
         function selecionarMateria(materiaSelecionada) {
@@ -408,6 +529,7 @@
             carregarChamadaDoEstado();
             carregarDiarioDaData();
             renderAmbasTabelas();
+            sincronizarNotasComSupabase();
         }
 
         function renderAmbasTabelas() {
@@ -503,8 +625,10 @@
             const conteudo = document.getElementById('conteudoAula').value.trim();
             const tarefa = document.getElementById('tarefaAula').value.trim();
             const chave = `${filtroTurma}_${filtroMateria}_${filtroTrimestre}_${dataAula}`;
-            bancoDiarioAulas[chave] = { turma: filtroTurma, materia: filtroMateria, trimestre: filtroTrimestre, dataAula, conteudo, tarefa, atualizadoEm: new Date().toISOString() };
+            const payload = { turma: filtroTurma, materia: filtroMateria, trimestre: filtroTrimestre, dataAula, conteudo, tarefa, atualizadoEm: new Date().toISOString() };
+            bancoDiarioAulas[chave] = payload;
             localStorage.setItem('peniel_banco_diario_aulas', JSON.stringify(bancoDiarioAulas));
+            persistirDiarioNoSupabase(chave, payload);
             notificar('✅ Registro de Aula (Conteúdo e Tarefa) salvo com sucesso!');
         }
 
@@ -527,6 +651,12 @@
 
             bancoChamadaSalva[chaveAula] = { ...bancoChamada };
             localStorage.setItem('peniel_banco_chamada', JSON.stringify(bancoChamadaSalva));
+            persistirDiarioNoSupabase(chaveAula, bancoDiarioAulas[chaveAula] || {
+                turma: filtroTurma,
+                materia: filtroMateria,
+                trimestre: filtroTrimestre,
+                dataAula: getDataAulaAtual()
+            });
 
             renderTabelaNotas();
             renderTabelaBoletim();
@@ -805,12 +935,14 @@
 
         function salvarConsolidadoBoletim() {
             localStorage.setItem('peniel_banco_notas', JSON.stringify(bancoNotas));
+            persistirNotasNoSupabase();
             renderTabelaBoletim();
             notificar('✅ Boletim consolidado, pontuação e parecer de fim de ano salvos!');
         }
 
         function salvarTodasNotas() {
             localStorage.setItem('peniel_banco_notas', JSON.stringify(bancoNotas));
+            persistirNotasNoSupabase();
             notificar('✅ Diário salvo com sucesso no banco de dados!');
         }
 
