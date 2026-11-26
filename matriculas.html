@@ -357,6 +357,203 @@
         </div>
     </div>
 
+    <!-- MOTOR DE COBRANÇAS AUTOMÁTICAS AO CADASTRAR / MATRICULAR ALUNO -->
+    <script>
+    (function () {
+        function lerJson(chave, fallback) {
+            try {
+                const raw = localStorage.getItem(chave);
+                return raw ? JSON.parse(raw) : fallback;
+            } catch {
+                return fallback;
+            }
+        }
+
+        function montarDataVencimento(ano, mesIndice0, diaVencimento) {
+            const ultimoDiaDoMes = new Date(ano, mesIndice0 + 1, 0).getDate();
+            const diaSeguro = Math.max(1, Math.min(Number(diaVencimento) || 10, ultimoDiaDoMes));
+            const m = String(mesIndice0 + 1).padStart(2, '0');
+            const d = String(diaSeguro).padStart(2, '0');
+            return `${ano}-${m}-${d}`;
+        }
+
+        function calcularMultaEJuros(cobranca, configGlobal) {
+            const hojeIso = new Date().toISOString().slice(0, 10);
+            const valorBase = Number(cobranca.valorBase ?? cobranca.valor ?? 0);
+            if (cobranca.status === 'pago' || cobranca.dataPagamento) {
+                return {
+                    valorBase,
+                    multaAplicada: 0,
+                    jurosAplicados: 0,
+                    valorFinal: Number(cobranca.valorPago ?? valorBase).toFixed(2)
+                };
+            }
+
+            if (!cobranca.dataVencimento || cobranca.dataVencimento >= hojeIso) {
+                return {
+                    valorBase,
+                    multaAplicada: 0,
+                    jurosAplicados: 0,
+                    valorFinal: valorBase.toFixed(2)
+                };
+            }
+
+            const multaPct = parseFloat(String(configGlobal?.escola?.multaAtraso ?? '2.0').replace(',', '.')) || 2.0;
+            const multaAplicada = Number((valorBase * (multaPct / 100)).toFixed(2));
+            const valorFinal = Number((valorBase + multaAplicada).toFixed(2));
+
+            return {
+                valorBase,
+                multaAplicada,
+                jurosAplicados: 0,
+                valorFinal: valorFinal.toFixed(2)
+            };
+        }
+
+        async function sincronizarCobrancasSupabase(cobrancas) {
+            const cfg = lerJson('peniel_supabase_config', {});
+            const globalCfg = window.PENIEL_SUPABASE_CONFIG || {};
+            const url = (globalCfg.url || cfg.url || '').trim().replace(/\/+$/, '');
+            const apiKey = (globalCfg.anonKey || globalCfg.publishableKey || cfg.anonKey || cfg.publishableKey || '').trim();
+            const tabela = (globalCfg.tabelaCobrancas || cfg.tabelaCobrancas || 'cobrancas_alunos').trim();
+
+            if (!url || !apiKey || !Array.isArray(cobrancas) || cobrancas.length === 0) return;
+
+            try {
+                const payload = cobrancas.map(c => ({
+                    id: String(c.id),
+                    aluno_id: String(c.alunoId || ''),
+                    aluno_nome: c.alunoNome || '',
+                    turma: c.turma || '',
+                    ano_letivo: String(c.anoLetivo || ''),
+                    parcela: Number(c.parcela || 1),
+                    total_parcelas: Number(c.totalParcelas || 1),
+                    valor_base: Number(c.valorBase || 0),
+                    multa_aplicada: Number(c.multaAplicada || 0),
+                    valor_final: Number(c.valorFinal || c.valorBase || 0),
+                    data_cadastro: c.dataCadastro,
+                    data_vencimento: c.dataVencimento,
+                    data_pagamento: c.dataPagamento || null,
+                    status: c.status || 'pendente'
+                }));
+
+                await fetch(`${url}/rest/v1/${encodeURIComponent(tabela)}?on_conflict=id`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': apiKey,
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Prefer': 'resolution=merge-duplicates,return=minimal'
+                    },
+                    body: JSON.stringify(payload)
+                });
+            } catch {
+                // Mantém persistência local sem interromper o fluxo do usuário
+            }
+        }
+
+        function gerarCobrancasAluno(aluno) {
+            if (!aluno || !aluno.nome) return [];
+
+            const configGlobal = lerJson('peniel_config_sistema_global', {});
+            const diaVencimento = Number(aluno.diaVencimento || configGlobal?.financeiro?.diaVencimento || 10);
+            const anoLetivo = String(aluno.anoLetivo || configGlobal?.escola?.anoLetivo || new Date().getFullYear());
+            const valorMensalidade = Number(aluno.valorMensalidade ?? aluno.mensalidade ?? 0);
+            const totalParcelas = Math.max(1, Number(aluno.qtdParcelas ?? aluno.parcelas ?? 12));
+
+            const dataCadastroIso = (aluno.dataCadastro || new Date().toISOString().slice(0, 10)).slice(0, 10);
+            const [anoCad, mesCad, diaCad] = dataCadastroIso.split('-').map(Number);
+
+            let anoBase = anoCad || new Date().getFullYear();
+            let mesBaseIdx = (mesCad ? mesCad - 1 : new Date().getMonth());
+
+            if ((diaCad || 1) > diaVencimento) {
+                mesBaseIdx += 1;
+                if (mesBaseIdx > 11) {
+                    mesBaseIdx = 0;
+                    anoBase += 1;
+                }
+            }
+
+            const alunoId = String(aluno.id || aluno.ra || `${aluno.nome.toLowerCase().replace(/\s+/g, '-')}-${anoLetivo}`);
+            const novasCobrancas = [];
+
+            for (let i = 0; i < totalParcelas; i++) {
+                const mesAbsoluto = mesBaseIdx + i;
+                const anoParcela = anoBase + Math.floor(mesAbsoluto / 12);
+                const mesParcelaIdx = mesAbsoluto % 12;
+                const dataVencimento = montarDataVencimento(anoParcela, mesParcelaIdx, diaVencimento);
+
+                const cobrancaBase = {
+                    id: `cob_${alunoId}_${anoLetivo}_p${i + 1}`,
+                    alunoId,
+                    alunoNome: aluno.nome,
+                    turma: aluno.turma || '',
+                    anoLetivo,
+                    parcela: i + 1,
+                    totalParcelas,
+                    valorBase: Number(valorMensalidade.toFixed(2)),
+                    dataCadastro: dataCadastroIso,
+                    dataVencimento,
+                    dataPagamento: null,
+                    valorPago: null,
+                    status: 'pendente',
+                    regra: configGlobal?.financeiro?.regraFinanceira || 'Padrão'
+                };
+
+                const encargos = calcularMultaEJuros(cobrancaBase, configGlobal);
+                novasCobrancas.push({
+                    ...cobrancaBase,
+                    ...encargos
+                });
+            }
+
+            const bancoAtual = lerJson('peniel_banco_cobrancas', []);
+            const semDuplicar = bancoAtual.filter(item => !novasCobrancas.some(novo => novo.id === item.id));
+            const atualizado = [...novasCobrancas, ...semDuplicar];
+
+            localStorage.setItem('peniel_banco_cobrancas', JSON.stringify(atualizado));
+            window.dispatchEvent(new CustomEvent('peniel:cobrancas-atualizadas', {
+                detail: { alunoId, cobrancas: novasCobrancas, totalCobrancas: atualizado }
+            }));
+            sincronizarCobrancasSupabase(novasCobrancas);
+
+            return novasCobrancas;
+        }
+
+        function registrarPagamentoCobranca(cobrancaId, dataPagamentoIso, valorPago) {
+            const banco = lerJson('peniel_banco_cobrancas', []);
+            const dataPgto = (dataPagamentoIso || new Date().toISOString().slice(0, 10)).slice(0, 10);
+
+            const atualizado = banco.map(item => {
+                if (String(item.id) !== String(cobrancaId)) return item;
+                const pago = Number(valorPago ?? item.valorFinal ?? item.valorBase ?? 0);
+                return {
+                    ...item,
+                    dataPagamento: dataPgto,
+                    valorPago: Number(pago.toFixed(2)),
+                    valorFinal: Number(pago.toFixed(2)).toFixed(2),
+                    multaAplicada: 0,
+                    status: 'pago'
+                };
+            });
+
+            localStorage.setItem('peniel_banco_cobrancas', JSON.stringify(atualizado));
+            window.dispatchEvent(new CustomEvent('peniel:cobrancas-atualizadas', {
+                detail: { cobrancaId, totalCobrancas: atualizado }
+            }));
+            sincronizarCobrancasSupabase(atualizado.filter(c => String(c.id) === String(cobrancaId)));
+            return atualizado;
+        }
+
+        window.PenielFinanceiroAuto = {
+            gerarCobrancasAluno,
+            registrarPagamentoCobranca,
+            calcularMultaEJuros
+        };
+    })();
+    </script>
+
     <script>
         const SUPABASE_URL = 'https://fxjdmhrlujiajkouduhg.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_EANH7zIXleZ3G18S6z7KFw_26oySNP9';
@@ -942,6 +1139,27 @@
             salvarBancoGeralAlunos(base);
             persistirAlunoMatriculaSupabase(novoAluno);
             gerarBoletosParaAluno(novoAluno, cpfResp, emailResp);
+
+            const valoresBaseTurma = {
+                maternal1: 950.00,
+                maternal2: 950.00,
+                pre1: 920.00,
+                pre2: 920.00,
+                fundamental1: 890.00
+            };
+            const alunoSalvo = novoAluno;
+            const cobrancasGeradas = window.PenielFinanceiroAuto.gerarCobrancasAluno({
+                id: alunoSalvo.id || alunoSalvo.ra,
+                ra: alunoSalvo.ra,
+                nome: alunoSalvo.nome,
+                turma: alunoSalvo.turma,
+                valorMensalidade: Number(document.getElementById('valorMensalidade')?.value || valoresBaseTurma[turmaKey] || 890.00),
+                qtdParcelas: Number(document.getElementById('qtdParcelas')?.value || 12),
+                dataCadastro: document.getElementById('dataCadastro')?.value || new Date().toISOString().slice(0, 10),
+                diaVencimento: document.getElementById('diaVencimentoAluno')?.value
+            });
+            console.log('Cobranças automáticas geradas na matrícula:', cobrancasGeradas);
+
             registrarNotificacaoDashboard(`Nova matrícula: ${novoAluno.nome} (${novoAluno.turma})`, 'Agora • Matrículas');
             fecharModalNovaMatricula();
 
