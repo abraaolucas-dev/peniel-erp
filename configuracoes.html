@@ -21,12 +21,9 @@
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
 
-    <!-- Container de Notificações (Toast) -->
-    <div id="toastContainer" class="fixed bottom-5 right-5 z-[140] flex flex-col gap-2 max-w-sm pointer-events-none"></div>
-
     <div class="flex h-screen overflow-hidden">
         
-        <!-- Menu Lateral Padrão (Será ocultado via JS se o modo gestor estiver ativo) -->
+        <!-- Menu Lateral Padrão (Sera ocultado via JS se o modo gestor estiver ativo) -->
         <aside id="menuLateralPadrao" class="w-64 bg-marinho text-white flex flex-col hidden md:flex transition-all">
             <div class="p-6">
                 <h1 class="font-heading text-2xl font-bold tracking-tight">PENIEL <span class="text-sm font-sans font-normal block text-blue-300">Sistema Interno</span></h1>
@@ -56,33 +53,23 @@
         <!-- Área Principal -->
         <main class="flex-1 overflow-y-auto p-6 md:p-8 flex flex-col gap-6">
             
-            <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <div class="flex flex-wrap items-center gap-2 mb-1">
-                        <span id="badgeConexaoSupabase" class="bg-blue-50 text-marinho border border-blue-200 text-[10px] font-bold px-2.5 py-0.5 rounded-full">Supabase Local/Pendente</span>
-                        <span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2.5 py-0.5 rounded-full">Governança Central</span>
-                    </div>
                     <h2 class="font-heading text-3xl font-bold text-slate-800">Painel Administrativo & Governança</h2>
-                    <p class="text-slate-500 text-sm">Parâmetros globais de todos os módulos, integração Supabase, segurança e acesso master.</p>
+                    <p class="text-slate-500">Parâmetros globais, segurança e controle de acesso master.</p>
                 </div>
                 
-                <div class="flex flex-wrap items-center gap-2">
-                    <button type="button" onclick="salvarTodasConfiguracoes()" class="bg-laranja hover:bg-orange-600 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition cursor-pointer">
-                        💾 Salvar Tudo
+                <!-- Botão de Autenticação Master -->
+                <div id="blocoBotaoMaster">
+                    <button onclick="solicitarSenhaMaster()" class="bg-slate-800 hover:bg-slate-900 text-white px-5 py-2.5 rounded-xl font-bold text-xs shadow-sm transition flex items-center gap-2">
+                        🔒 Acesso Modo Gestor (Senha Master)
                     </button>
-
-                    <!-- Botão de Autenticação Master -->
-                    <div id="blocoBotaoMaster">
-                        <button type="button" onclick="solicitarSenhaMaster()" class="bg-slate-800 hover:bg-slate-900 text-white px-5 py-2.5 rounded-xl font-bold text-xs shadow-sm transition flex items-center gap-2 cursor-pointer">
-                            🔒 Acesso Modo Gestor (Senha Master)
-                        </button>
-                    </div>
-                    <div id="blocoStatusMaster" class="hidden flex items-center gap-3">
-                        <span class="bg-green-100 text-green-800 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5">
-                            <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Modo Gestor Master Ativo
-                        </span>
-                        <button type="button" onclick="bloquearModoMaster()" class="text-xs text-red-600 hover:underline font-bold cursor-pointer">Bloquear / Sair</button>
-                    </div>
+                </div>
+                <div id="blocoStatusMaster" class="hidden flex items-center gap-3">
+                    <span class="bg-green-100 text-green-800 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Modo Gestor Master Ativo
+                    </span>
+                    <button onclick="bloquearModoMaster()" class="text-xs text-red-600 hover:underline font-bold">Bloquear / Sair</button>
                 </div>
             </header>
 
@@ -97,7 +84,7 @@
                         <p class="text-xs text-slate-500">Libere o acesso individual por e-mail para consulta de boletins e diário de classe.</p>
                     </div>
 
-                    <button type="button" onclick="abrirModalLiberarApp()" class="bg-marinho hover:bg-blue-900 text-white px-4 py-2.5 rounded-lg font-bold text-xs shadow-sm transition cursor-pointer">
+                    <button onclick="abrirModalLiberarApp()" class="bg-marinho hover:bg-blue-900 text-white px-4 py-2.5 rounded-lg font-bold text-xs shadow-sm transition">
                         ➕ Autorizar Novo E-mail
                     </button>
                 </div>
@@ -108,18 +95,16 @@
                             <h4 class="font-bold text-sm text-slate-800">App dos Pais & Responsáveis</h4>
                             <p class="text-xs text-slate-500">Boletim, autorizações e financeiro</p>
                         </div>
-                        <input type="checkbox" id="appPaisAtivo" onchange="salvarAppsHabilitados()" checked class="w-5 h-5 accent-marinho cursor-pointer">
+                        <input type="checkbox" checked class="w-5 h-5 accent-marinho cursor-pointer">
                     </div>
                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex justify-between items-center">
                         <div>
                             <h4 class="font-bold text-sm text-slate-800">App dos Professores & Docentes</h4>
                             <p class="text-xs text-slate-500">Notas, faltas e diário de classe</p>
                         </div>
-                        <input type="checkbox" id="appProfessoresAtivo" onchange="salvarAppsHabilitados()" checked class="w-5 h-5 accent-marinho cursor-pointer">
+                        <input type="checkbox" checked class="w-5 h-5 accent-marinho cursor-pointer">
                     </div>
                 </div>
-
-                <div id="listaEmailsAutorizados" class="mt-4 flex flex-wrap gap-2"></div>
             </div>
 
             <!-- ======================================================= -->
@@ -134,7 +119,7 @@
                         <p class="text-xs text-blue-200/70">Visão macro de toda a operação escolar. Acesso direto a qualquer módulo em modo tela cheia.</p>
                     </div>
 
-                    <button type="button" onclick="abrirModalNovoFuncionario()" class="bg-laranja hover:bg-orange-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs shadow-md transition flex items-center gap-2 cursor-pointer">
+                    <button onclick="abrirModalNovoFuncionario()" class="bg-laranja hover:bg-orange-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs shadow-md transition flex items-center gap-2">
                         ➕ Cadastrar Novo Funcionário
                     </button>
                 </div>
@@ -210,7 +195,15 @@
                                         <th class="px-5 py-3 text-right">Ações</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-blue-950 text-slate-200 text-xs"></tbody>
+                                <tbody class="divide-y divide-blue-950 text-slate-200 text-xs">
+                                    <tr class="hover:bg-blue-900/20 transition">
+                                        <td class="px-5 py-3.5 font-bold text-white">Maria da Secretaria <br><span class="text-[10px] text-slate-400 font-mono">secretaria@peniel.com</span></td>
+                                        <td class="px-5 py-3.5">Atendente</td>
+                                        <td class="px-5 py-3.5"><span class="bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded text-[10px]">Matrículas, Fichas</span></td>
+                                        <td class="px-5 py-3.5"><span class="bg-green-500/20 text-green-400 px-2 py-0.5 rounded font-bold text-[10px]">Ativo</span></td>
+                                        <td class="px-5 py-3.5 text-right"><button onclick="editarPermissoes('Maria')" class="text-blue-400 hover:underline font-bold">Editar</button></td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -218,130 +211,36 @@
 
             </div>
 
-            <!-- Parâmetros Gerais e Configuração de Todos os Módulos -->
-            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-6">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-100 pb-4 gap-3">
-                    <div>
-                        <h3 class="font-bold text-slate-800 text-lg">🏫 Parâmetros da Instituição & Regras por Módulo</h3>
-                        <p class="text-xs text-slate-500">Definições globais compartilhadas entre Dashboard, Painel, Calendário, Matrícula, Rematrícula, Notas, Colaboradores, Financeiro, Login e Fichas.</p>
-                    </div>
-                    <button type="button" onclick="salvarTodasConfiguracoes()" class="bg-marinho hover:bg-blue-900 text-white px-4 py-2 rounded-lg text-xs font-bold transition cursor-pointer">
-                        💾 Salvar Parâmetros
-                    </button>
+            <!-- Parâmetros Gerais -->
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-4">
+                <div class="border-b border-slate-100 pb-3">
+                    <h3 class="font-bold text-slate-800 text-base">🏫 Parâmetros da Instituição</h3>
+                    <p class="text-xs text-slate-500">Definições globais do ano letivo e regras de cobrança.</p>
                 </div>
 
-                <!-- Dados Institucionais -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Nome Oficial da Escola</label>
-                        <input type="text" id="cfgNomeEscola" value="Peniel Christian School" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
+                        <input type="text" value="Peniel Christian School" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Ano Letivo Vigente</label>
-                        <select id="cfgAnoLetivo" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500">
-                            <option value="2027" selected>2027</option>
-                            <option value="2026">2026</option>
+                        <select class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500">
+                            <option>2026</option>
+                            <option selected>2027</option>
+                            <option>2028</option>
+                            <option>2029</option>
+                            <option>2030</option>
+                            <option>2031</option>
+                            <option>2032</option>
+                            <option>2033</option>
+                            <option>2034</option>
+                            <option>2035</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Multa por Atraso (%)</label>
-                        <input type="text" id="cfgMultaAtraso" value="2.0%" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Média Mínima Aprovação</label>
-                        <input type="number" step="0.5" min="0" max="10" id="cfgMediaMinima" value="7.0" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
-                    </div>
-                </div>
-
-                <!-- Grade de Configuração por Módulo do Sistema -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-2 text-xs">
-                    <!-- Dashboard & Painel -->
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2.5">
-                        <h4 class="font-bold text-marinho text-sm">📈 Dashboard & Painel (Leads Typebot)</h4>
-                        <label class="block font-semibold text-slate-700">Intervalo Atualização KPIs (seg)</label>
-                        <input type="number" id="cfgIntervaloDashboard" value="30" min="5" class="w-full border border-slate-300 bg-white rounded-lg px-2.5 py-1.5">
-                        <label class="block font-semibold text-slate-700">Webhook / Origem Leads Typebot</label>
-                        <input type="text" id="cfgWebhookTypebot" placeholder="https://..." class="w-full border border-slate-300 bg-white rounded-lg px-2.5 py-1.5 font-mono">
-                    </div>
-
-                    <!-- Calendário & Colaboradores -->
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2.5">
-                        <h4 class="font-bold text-marinho text-sm">📅 Calendário & Colaboradores</h4>
-                        <label class="block font-semibold text-slate-700">Turno Padrão das Turmas</label>
-                        <select id="cfgTurnoPadrao" class="w-full border border-slate-300 bg-white rounded-lg px-2.5 py-1.5 font-semibold">
-                            <option value="Manhã">Manhã</option>
-                            <option value="Tarde">Tarde</option>
-                            <option value="Integral">Integral</option>
-                        </select>
-                        <label class="flex items-center gap-2 font-semibold text-slate-700 pt-1 cursor-pointer">
-                            <input type="checkbox" id="cfgSyncCalendarioNotas" checked class="w-4 h-4 accent-marinho"> Sincronizar eventos e justificativas com Notas
-                        </label>
-                    </div>
-
-                    <!-- Matrícula, Rematrícula & Fichas -->
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2.5">
-                        <h4 class="font-bold text-marinho text-sm">📝 Matrícula, Rematrícula & Fichas</h4>
-                        <label class="block font-semibold text-slate-700">Prazo Limite Rematrícula</label>
-                        <input type="date" id="cfgPrazoRematricula" value="2026-12-20" class="w-full border border-slate-300 bg-white rounded-lg px-2.5 py-1.5">
-                        <label class="flex items-center gap-2 font-semibold text-slate-700 pt-1 cursor-pointer">
-                            <input type="checkbox" id="cfgExigirAnamnese" checked class="w-4 h-4 accent-marinho"> Exigir ficha de saúde/anamnese completa
-                        </label>
-                    </div>
-
-                    <!-- Notas & Frequência -->
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2.5">
-                        <h4 class="font-bold text-marinho text-sm">📊 Notas e Diário de Classe</h4>
-                        <label class="block font-semibold text-slate-700">Limite de Faltas para Alerta</label>
-                        <input type="number" id="cfgLimiteFaltas" value="10" min="1" class="w-full border border-slate-300 bg-white rounded-lg px-2.5 py-1.5">
-                        <label class="block font-semibold text-slate-700">Aulas Base Ano (Presença)</label>
-                        <input type="number" id="cfgAulasBaseAno" value="40" min="1" class="w-full border border-slate-300 bg-white rounded-lg px-2.5 py-1.5">
-                    </div>
-
-                    <!-- Financeiro -->
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2.5">
-                        <h4 class="font-bold text-marinho text-sm">💰 Gestão Financeira</h4>
-                        <label class="block font-semibold text-slate-700">Dia Padrão de Vencimento</label>
-                        <input type="number" id="cfgDiaVencimento" value="10" min="1" max="28" class="w-full border border-slate-300 bg-white rounded-lg px-2.5 py-1.5">
-                        <label class="block font-semibold text-slate-700">Juros Mensais (%) / Gateway</label>
-                        <input type="text" id="cfgRegraFinanceira" value="1.0% a.m. • Asaas/Pix" class="w-full border border-slate-300 bg-white rounded-lg px-2.5 py-1.5">
-                    </div>
-
-                    <!-- Login & Segurança -->
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2.5">
-                        <h4 class="font-bold text-marinho text-sm">🔐 Login e Segurança</h4>
-                        <label class="block font-semibold text-slate-700">Senha Master do Gestor</label>
-                        <input type="text" id="cfgSenhaMaster" value="peniel2027" class="w-full border border-slate-300 bg-white rounded-lg px-2.5 py-1.5 font-mono">
-                        <label class="flex items-center gap-2 font-semibold text-slate-700 pt-1 cursor-pointer">
-                            <input type="checkbox" id="cfgBloqueioInatividade" checked class="w-4 h-4 accent-marinho"> Exigir login válido ao sair da sessão
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Conexão Supabase -->
-                <div class="bg-slate-900 text-white rounded-2xl p-5 space-y-4 border border-slate-800">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-800 pb-3">
-                        <div>
-                            <h4 class="font-heading font-bold text-base text-blue-300">☁️ Integração com Supabase (Banco em Nuvem)</h4>
-                            <p class="text-xs text-slate-400">Salva em <code class="text-blue-200">peniel_supabase_config</code> para sincronizar eventos, cadastros, notas e configurações com o Supabase.</p>
-                        </div>
-                        <button type="button" onclick="salvarConfigSupabase()" class="bg-laranja hover:bg-orange-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer">
-                            ☁️ Salvar Conexão Supabase
-                        </button>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                        <div>
-                            <label class="block font-bold text-slate-300 mb-1">Supabase Project URL</label>
-                            <input type="url" id="sbUrl" placeholder="https://xxxx.supabase.co" class="w-full border border-slate-700 bg-slate-800 text-white rounded-lg px-3 py-2 font-mono">
-                        </div>
-                        <div>
-                            <label class="block font-bold text-slate-300 mb-1">Supabase Anon / Publishable Key</label>
-                            <input type="password" id="sbKey" placeholder="eyJhbGciOi..." class="w-full border border-slate-700 bg-slate-800 text-white rounded-lg px-3 py-2 font-mono">
-                        </div>
-                        <div>
-                            <label class="block font-bold text-slate-300 mb-1">Tabela de Eventos (Calendário)</label>
-                            <input type="text" id="sbTabelaEventos" value="calendario_eventos" class="w-full border border-slate-700 bg-slate-800 text-white rounded-lg px-3 py-2 font-mono">
-                        </div>
+                        <input type="text" value="2.0%" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
                     </div>
                 </div>
             </div>
@@ -349,34 +248,33 @@
         </main>
     </div>
 
-    <!-- MODAL DE CADASTRO / EDIÇÃO DE FUNCIONÁRIO E PERMISSÕES (ACL) -->
-    <div id="modalFuncionario" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center z-[130] p-4">
+    <!-- MODAL DE CADASTRO DE FUNCIONÁRIO E PERMISSÕES (ACL) -->
+    <div id="modalFuncionario" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex justify-center items-center z-50 p-4">
         <div class="bg-white w-full max-w-xl rounded-2xl shadow-xl flex flex-col overflow-hidden max-h-[90vh]">
             <div class="p-5 border-b border-slate-100 bg-blue-900 text-white flex justify-between items-center">
-                <h3 id="tituloModalFunc" class="font-bold text-base font-heading">🔐 Cadastrar Funcionário e Delimitar Acessos</h3>
-                <button type="button" onclick="fecharModalFuncionario()" class="text-white hover:text-red-300 font-bold text-xl cursor-pointer">&times;</button>
+                <h3 class="font-bold text-base font-heading">🔐 Cadastrar Funcionário e Delimitar Acessos</h3>
+                <button onclick="fecharModalFuncionario()" class="text-white hover:text-red-300 font-bold text-xl">&times;</button>
             </div>
 
-            <div class="p-6 overflow-y-auto space-y-4 text-xs">
-                <input type="hidden" id="funcIdEdit">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="p-6 overflow-y-auto space-y-4">
+                <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">Nome do Funcionário</label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Nome do Funcionário</label>
                         <input type="text" id="funcNome" placeholder="Ex: Roberto Silva" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">E-mail de Acesso</label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">E-mail de Acesso</label>
                         <input type="email" id="funcEmail" placeholder="roberto@peniel.com" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-blue-500">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1">Cargo / Função</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Cargo / Função</label>
                     <input type="text" id="funcCargo" placeholder="Ex: Auxiliar Administrativo" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
                 </div>
 
                 <div>
-                    <label class="block font-bold text-slate-700 mb-2 uppercase tracking-wider">Módulos permitidos:</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">Módulos permitidos:</label>
                     <div class="grid grid-cols-2 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
                         <label class="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer">
                             <input type="checkbox" name="permMod" value="Dashboard" class="w-4 h-4 accent-blue-900"> Dashboard Geral
@@ -395,296 +293,38 @@
             </div>
 
             <div class="p-5 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
-                <button type="button" onclick="fecharModalFuncionario()" class="px-4 py-2 text-slate-600 font-bold hover:bg-slate-200 rounded-lg text-xs cursor-pointer">Cancelar</button>
-                <button type="button" onclick="salvarNovoFuncionario()" class="bg-blue-900 hover:bg-marinho text-white px-5 py-2 rounded-lg font-bold text-xs shadow-sm cursor-pointer">
+                <button onclick="fecharModalFuncionario()" class="px-4 py-2 text-slate-600 font-bold hover:bg-slate-200 rounded-lg text-xs">Cancelar</button>
+                <button onclick="salvarNovoFuncionario()" class="bg-blue-900 hover:bg-marinho text-white px-5 py-2 rounded-lg font-bold text-xs shadow-sm">
                     💾 Salvar Permissões
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Script de Gestão Master, Configuração Global, Funcionários e Supabase -->
+    <!-- Script de Gestão Master e Sincronização de Sessão -->
     <script>
-        function notificar(mensagem, tipo = 'sucesso') {
-            const container = document.getElementById('toastContainer');
-            if (!container) return;
+        const SENHA_MASTER_GESTOR = "peniel2027";
 
-            const cores = {
-                sucesso: 'bg-slate-900 text-white border-emerald-500',
-                alerta: 'bg-amber-900 text-amber-50 border-amber-400',
-                info: 'bg-marinho text-white border-blue-400'
-            };
-
-            const toast = document.createElement('div');
-            toast.className = `pointer-events-auto px-4 py-3 rounded-xl border-l-4 shadow-xl text-xs font-bold transition-all duration-300 ${cores[tipo] || cores.sucesso}`;
-            toast.innerText = mensagem;
-            container.appendChild(toast);
-
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-2');
-                setTimeout(() => toast.remove(), 300);
-            }, 3200);
-        }
-
-        const CONFIG_PADRAO = {
-            escola: {
-                nome: 'Peniel Christian School',
-                anoLetivo: '2027',
-                multaAtraso: '2.0%',
-                mediaMinima: 7.0
-            },
-            dashboardPainel: {
-                intervaloSeg: 30,
-                webhookTypebot: ''
-            },
-            calendarioColaboradores: {
-                turnoPadrao: 'Manhã',
-                syncCalendarioNotas: true
-            },
-            matriculasFichas: {
-                prazoRematricula: '2026-12-20',
-                exigirAnamnese: true
-            },
-            notas: {
-                limiteFaltas: 10,
-                aulasBaseAno: 40
-            },
-            financeiro: {
-                diaVencimento: 10,
-                regraFinanceira: '1.0% a.m. • Asaas/Pix'
-            },
-            loginSeguranca: {
-                senhaMaster: 'peniel2027',
-                bloqueioInatividade: true
-            }
-        };
-
-        function obterConfigGlobal() {
-            try {
-                const salvo = JSON.parse(localStorage.getItem('peniel_config_sistema_global') || 'null');
-                if (!salvo) return structuredClone(CONFIG_PADRAO);
-                return {
-                    ...CONFIG_PADRAO,
-                    ...salvo,
-                    escola: { ...CONFIG_PADRAO.escola, ...(salvo.escola || {}) },
-                    dashboardPainel: { ...CONFIG_PADRAO.dashboardPainel, ...(salvo.dashboardPainel || {}) },
-                    calendarioColaboradores: { ...CONFIG_PADRAO.calendarioColaboradores, ...(salvo.calendarioColaboradores || {}) },
-                    matriculasFichas: { ...CONFIG_PADRAO.matriculasFichas, ...(salvo.matriculasFichas || {}) },
-                    notas: { ...CONFIG_PADRAO.notas, ...(salvo.notas || {}) },
-                    financeiro: { ...CONFIG_PADRAO.financeiro, ...(salvo.financeiro || {}) },
-                    loginSeguranca: { ...CONFIG_PADRAO.loginSeguranca, ...(salvo.loginSeguranca || {}) }
-                };
-            } catch {
-                return structuredClone(CONFIG_PADRAO);
-            }
-        }
-
-        function preencherCamposConfiguracao() {
-            const cfg = obterConfigGlobal();
-            document.getElementById('cfgNomeEscola').value = cfg.escola.nome;
-            document.getElementById('cfgAnoLetivo').value = cfg.escola.anoLetivo;
-            document.getElementById('cfgMultaAtraso').value = cfg.escola.multaAtraso;
-            document.getElementById('cfgMediaMinima').value = cfg.escola.mediaMinima;
-            document.getElementById('cfgIntervaloDashboard').value = cfg.dashboardPainel.intervaloSeg;
-            document.getElementById('cfgWebhookTypebot').value = cfg.dashboardPainel.webhookTypebot;
-            document.getElementById('cfgTurnoPadrao').value = cfg.calendarioColaboradores.turnoPadrao;
-            document.getElementById('cfgSyncCalendarioNotas').checked = Boolean(cfg.calendarioColaboradores.syncCalendarioNotas);
-            document.getElementById('cfgPrazoRematricula').value = cfg.matriculasFichas.prazoRematricula;
-            document.getElementById('cfgExigirAnamnese').checked = Boolean(cfg.matriculasFichas.exigirAnamnese);
-            document.getElementById('cfgLimiteFaltas').value = cfg.notas.limiteFaltas;
-            document.getElementById('cfgAulasBaseAno').value = cfg.notas.aulasBaseAno;
-            document.getElementById('cfgDiaVencimento').value = cfg.financeiro.diaVencimento;
-            document.getElementById('cfgRegraFinanceira').value = cfg.financeiro.regraFinanceira;
-            document.getElementById('cfgSenhaMaster').value = cfg.loginSeguranca.senhaMaster;
-            document.getElementById('cfgBloqueioInatividade').checked = Boolean(cfg.loginSeguranca.bloqueioInatividade);
-
-            const sb = JSON.parse(localStorage.getItem('peniel_supabase_config') || '{}');
-            document.getElementById('sbUrl').value = sb.url || '';
-            document.getElementById('sbKey').value = sb.anonKey || sb.publishableKey || '';
-            document.getElementById('sbTabelaEventos').value = sb.tabelaEventos || 'calendario_eventos';
-            atualizarBadgeSupabase(Boolean(sb.url && (sb.anonKey || sb.publishableKey)));
-        }
-
-        function atualizarBadgeSupabase(conectado) {
-            const badge = document.getElementById('badgeConexaoSupabase');
-            if (!badge) return;
-            if (conectado) {
-                badge.className = 'bg-emerald-100 text-emerald-800 border border-emerald-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full';
-                badge.innerText = 'Supabase Configurado';
-            } else {
-                badge.className = 'bg-blue-50 text-marinho border border-blue-200 text-[10px] font-bold px-2.5 py-0.5 rounded-full';
-                badge.innerText = 'Supabase Local/Pendente';
-            }
-        }
-
-        function salvarConfigSupabase() {
-            const url = document.getElementById('sbUrl').value.trim().replace(/\/+$/, '');
-            const anonKey = document.getElementById('sbKey').value.trim();
-            const tabelaEventos = document.getElementById('sbTabelaEventos').value.trim() || 'calendario_eventos';
-
-            const payload = { url, anonKey, tabelaEventos, atualizadoEm: new Date().toISOString() };
-            localStorage.setItem('peniel_supabase_config', JSON.stringify(payload));
-            window.PENIEL_SUPABASE_CONFIG = payload;
-            atualizarBadgeSupabase(Boolean(url && anonKey));
-            window.dispatchEvent(new CustomEvent('peniel:config-atualizada', { detail: { supabase: payload } }));
-            notificar('☁️ Configurações do Supabase salvas para todo o sistema!');
-        }
-
-        function salvarTodasConfiguracoes() {
-            const novaConfig = {
-                atualizadoEm: new Date().toISOString(),
-                escola: {
-                    nome: document.getElementById('cfgNomeEscola').value.trim() || 'Peniel Christian School',
-                    anoLetivo: document.getElementById('cfgAnoLetivo').value,
-                    multaAtraso: document.getElementById('cfgMultaAtraso').value.trim() || '2.0%',
-                    mediaMinima: parseFloat(document.getElementById('cfgMediaMinima').value) || 7.0
-                },
-                dashboardPainel: {
-                    intervaloSeg: parseInt(document.getElementById('cfgIntervaloDashboard').value, 10) || 30,
-                    webhookTypebot: document.getElementById('cfgWebhookTypebot').value.trim()
-                },
-                calendarioColaboradores: {
-                    turnoPadrao: document.getElementById('cfgTurnoPadrao').value,
-                    syncCalendarioNotas: document.getElementById('cfgSyncCalendarioNotas').checked
-                },
-                matriculasFichas: {
-                    prazoRematricula: document.getElementById('cfgPrazoRematricula').value,
-                    exigirAnamnese: document.getElementById('cfgExigirAnamnese').checked
-                },
-                notas: {
-                    limiteFaltas: parseInt(document.getElementById('cfgLimiteFaltas').value, 10) || 10,
-                    aulasBaseAno: parseInt(document.getElementById('cfgAulasBaseAno').value, 10) || 40
-                },
-                financeiro: {
-                    diaVencimento: parseInt(document.getElementById('cfgDiaVencimento').value, 10) || 10,
-                    regraFinanceira: document.getElementById('cfgRegraFinanceira').value.trim()
-                },
-                loginSeguranca: {
-                    senhaMaster: document.getElementById('cfgSenhaMaster').value.trim() || 'peniel2027',
-                    bloqueioInatividade: document.getElementById('cfgBloqueioInatividade').checked
-                }
-            };
-
-            localStorage.setItem('peniel_config_sistema_global', JSON.stringify(novaConfig));
-            salvarAppsHabilitados(false);
-            window.dispatchEvent(new CustomEvent('peniel:config-atualizada', { detail: novaConfig }));
-            notificar('✅ Todas as configurações do sistema foram salvas!');
-        }
-
-        function salvarAppsHabilitados(mostrarToast = true) {
-            const apps = {
-                pais: document.getElementById('appPaisAtivo')?.checked ?? true,
-                professores: document.getElementById('appProfessoresAtivo')?.checked ?? true,
-                emailsAutorizados: JSON.parse(localStorage.getItem('peniel_emails_apps') || '[]')
-            };
-            localStorage.setItem('peniel_apps_habilitados', JSON.stringify(apps));
-            renderEmailsAutorizados();
-            if (mostrarToast) notificar('📲 Preferências dos apps atualizadas.');
-        }
-
-        function abrirModalLiberarApp() {
-            const email = prompt('Digite o e-mail para liberar o acesso ao App (Pais ou Professor):');
-            if (!email || !email.trim()) return;
-            const limpo = email.trim().toLowerCase();
-            const lista = JSON.parse(localStorage.getItem('peniel_emails_apps') || '[]');
-            if (!lista.includes(limpo)) {
-                lista.push(limpo);
-                localStorage.setItem('peniel_emails_apps', JSON.stringify(lista));
-            }
-            salvarAppsHabilitados(false);
-            notificar(`✅ E-mail ${limpo} autorizado com sucesso!`);
-        }
-
-        function renderEmailsAutorizados() {
-            const box = document.getElementById('listaEmailsAutorizados');
-            if (!box) return;
-            const lista = JSON.parse(localStorage.getItem('peniel_emails_apps') || '[]');
-            box.innerHTML = lista.map(mail => `
-                <span class="bg-blue-50 text-marinho border border-blue-200 px-3 py-1 rounded-full text-xs font-mono font-bold flex items-center gap-2">
-                    ${mail}
-                    <button type="button" onclick="removerEmailApp('${mail}')" class="text-red-500 hover:text-red-700 font-sans font-black cursor-pointer">&times;</button>
-                </span>
-            `).join('');
-        }
-
-        function removerEmailApp(mail) {
-            const lista = JSON.parse(localStorage.getItem('peniel_emails_apps') || '[]').filter(m => m !== mail);
-            localStorage.setItem('peniel_emails_apps', JSON.stringify(lista));
-            renderEmailsAutorizados();
-            notificar('🗑️ E-mail removido da lista de apps.');
-        }
-
-        // --- FUNCIONÁRIOS / ACL PERSISTENTES ---
-        const FUNCIONARIOS_PADRAO = [
-            {
-                id: 'func-1',
-                nome: 'Maria da Secretaria',
-                email: 'secretaria@peniel.com',
-                cargo: 'Atendente',
-                modulos: ['Matrículas'],
-                status: 'Ativo'
-            }
-        ];
-
-        function obterFuncionarios() {
-            const raw = localStorage.getItem('peniel_banco_funcionarios');
-            if (!raw) {
-                localStorage.setItem('peniel_banco_funcionarios', JSON.stringify(FUNCIONARIOS_PADRAO));
-                return [...FUNCIONARIOS_PADRAO];
-            }
-            try {
-                const parsed = JSON.parse(raw);
-                return Array.isArray(parsed) ? parsed : [...FUNCIONARIOS_PADRAO];
-            } catch {
-                return [...FUNCIONARIOS_PADRAO];
-            }
-        }
-
-        function renderTabelaFuncionarios() {
-            const tbody = document.querySelector('#tabelaFuncionarios tbody');
-            if (!tbody) return;
-            const lista = obterFuncionarios();
-            tbody.innerHTML = lista.map(f => {
-                const badges = (f.modulos && f.modulos.length)
-                    ? f.modulos.map(m => `<span class="bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded text-[10px] font-bold">${m}</span>`).join(' ')
-                    : '<span class="text-xs text-slate-400">Nenhum módulo</span>';
-                return `
-                    <tr class="hover:bg-blue-900/20 transition">
-                        <td class="px-5 py-3.5 font-bold text-white">${f.nome} <br><span class="text-[10px] text-slate-400 font-mono">${f.email}</span></td>
-                        <td class="px-5 py-3.5">${f.cargo}</td>
-                        <td class="px-5 py-3.5"><div class="flex flex-wrap gap-1">${badges}</div></td>
-                        <td class="px-5 py-3.5"><span class="bg-green-500/20 text-green-400 px-2 py-0.5 rounded font-bold text-[10px]">${f.status || 'Ativo'}</span></td>
-                        <td class="px-5 py-3.5 text-right"><button type="button" onclick="editarPermissoes('${f.id}')" class="text-blue-400 hover:underline font-bold cursor-pointer">Editar</button></td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
+        // Ao carregar a página de configurações, verifica se o modo gestor está ativo
         document.addEventListener('DOMContentLoaded', () => {
-            preencherCamposConfiguracao();
-            renderEmailsAutorizados();
-            renderTabelaFuncionarios();
-
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('modo_gestor') === '1') {
                 localStorage.setItem('peniel_modo_gestor', 'ativo');
             }
 
-            if (localStorage.getItem('peniel_modo_gestor') === 'ativo') {
+            if(localStorage.getItem('peniel_modo_gestor') === 'ativo') {
                 ativarModoGestorVisual();
             }
         });
 
         function solicitarSenhaMaster() {
-            const cfg = obterConfigGlobal();
-            const senhaCorreta = cfg.loginSeguranca.senhaMaster || 'peniel2027';
             const senhaDigitada = prompt("🔒 Digite a Senha Master do Gestor Geral:");
-            if (senhaDigitada === senhaCorreta) {
+            if(senhaDigitada === SENHA_MASTER_GESTOR) {
                 localStorage.setItem('peniel_modo_gestor', 'ativo');
                 ativarModoGestorVisual();
-                notificar("🔓 Central de Bordo (Modo Gestor) ativada com sucesso!");
-            } else if (senhaDigitada !== null) {
-                notificar("❌ Senha incorreta! Acesso negado.", "alerta");
+                alert("🔓 Central de Bordo (Modo Gestor) ativada com sucesso!");
+            } else if(senhaDigitada !== null) {
+                alert("❌ Senha incorreta! Acesso negado.");
             }
         }
 
@@ -693,8 +333,9 @@
             document.getElementById('blocoStatusMaster').classList.remove('hidden');
             document.getElementById('centralDeBordo').classList.remove('hidden');
             
+            // Oculta a barra lateral esquerda imediatamente
             const menuLateral = document.getElementById('menuLateralPadrao');
-            if (menuLateral) { menuLateral.style.display = 'none'; }
+            if(menuLateral) { menuLateral.style.display = 'none'; }
         }
 
         function bloquearModoMaster() {
@@ -702,69 +343,38 @@
             window.location.href = 'configuracoes.html';
         }
 
-        function abrirModalNovoFuncionario() {
-            document.getElementById('funcIdEdit').value = '';
-            document.getElementById('tituloModalFunc').innerText = '🔐 Cadastrar Funcionário e Delimitar Acessos';
-            document.getElementById('funcNome').value = '';
-            document.getElementById('funcEmail').value = '';
-            document.getElementById('funcCargo').value = '';
-            document.querySelectorAll('input[name="permMod"]').forEach(cb => { cb.checked = false; });
-            document.getElementById('modalFuncionario').classList.remove('hidden');
-        }
-
-        function editarPermissoes(id) {
-            const func = obterFuncionarios().find(item => item.id === id);
-            if (!func) return;
-            document.getElementById('funcIdEdit').value = func.id;
-            document.getElementById('tituloModalFunc').innerText = `✏️ Editar Acessos — ${func.nome}`;
-            document.getElementById('funcNome').value = func.nome;
-            document.getElementById('funcEmail').value = func.email;
-            document.getElementById('funcCargo').value = func.cargo;
-            document.querySelectorAll('input[name="permMod"]').forEach(cb => {
-                cb.checked = Array.isArray(func.modulos) && func.modulos.includes(cb.value);
-            });
-            document.getElementById('modalFuncionario').classList.remove('hidden');
-        }
-
-        function fecharModalFuncionario() {
-            document.getElementById('modalFuncionario').classList.add('hidden');
-        }
+        function abrirModalNovoFuncionario() { document.getElementById('modalFuncionario').classList.remove('hidden'); }
+        function fecharModalFuncionario() { document.getElementById('modalFuncionario').classList.add('hidden'); }
 
         function salvarNovoFuncionario() {
-            const idEdit = document.getElementById('funcIdEdit').value;
             const nome = document.getElementById('funcNome').value.trim();
             const email = document.getElementById('funcEmail').value.trim();
             const cargo = document.getElementById('funcCargo').value.trim();
 
-            if (!nome || !email || !cargo) {
-                notificar('⚠️ Preencha todos os campos do funcionário.', 'alerta');
-                return;
-            }
+            if(!nome || !email || !cargo) { alert('Preencha todos os campos.'); return; }
 
-            const modulos = Array.from(document.querySelectorAll('input[name="permMod"]:checked')).map(cb => cb.value);
-            const lista = obterFuncionarios();
+            const checkboxes = document.querySelectorAll('input[name="permMod"]:checked');
+            let badgesHTML = '';
+            checkboxes.forEach(cb => { badgesHTML += `<span class="bg-blue-500/20 text-blue-300 text-[10px] font-bold px-2 py-0.5 rounded">${cb.value}</span> `; });
+            if(!badgesHTML) badgesHTML = '<span class="text-xs text-slate-400">Nenhum módulo</span>';
 
-            if (idEdit) {
-                const idx = lista.findIndex(item => item.id === idEdit);
-                if (idx !== -1) {
-                    lista[idx] = { ...lista[idx], nome, email, cargo, modulos };
-                }
-            } else {
-                lista.unshift({
-                    id: `func-${Date.now()}`,
-                    nome,
-                    email,
-                    cargo,
-                    modulos,
-                    status: 'Ativo'
-                });
-            }
+            const tbody = document.querySelector('#tabelaFuncionarios tbody');
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-blue-900/20 transition';
+            tr.innerHTML = `
+                <td class="px-5 py-3.5 font-bold text-white">${nome} <br><span class="text-[10px] text-slate-400 font-mono">${email}</span></td>
+                <td class="px-5 py-3.5">${cargo}</td>
+                <td class="px-5 py-3.5"><div class="flex flex-wrap gap-1">${badgesHTML}</div></td>
+                <td class="px-5 py-3.5"><span class="bg-green-500/20 text-green-400 px-2 py-0.5 rounded font-bold text-[10px]">Ativo</span></td>
+                <td class="px-5 py-3.5 text-right"><button onclick="editarPermissoes('${nome}')" class="text-blue-400 hover:underline font-bold">Editar</button></td>
+            `;
 
-            localStorage.setItem('peniel_banco_funcionarios', JSON.stringify(lista));
-            renderTabelaFuncionarios();
+            tbody.prepend(tr);
             fecharModalFuncionario();
-            notificar(`✅ Funcionário ${nome} salvo com sucesso!`);
+            alert(`✅ Funcionário ${nome} cadastrado!`);
         }
+
+        function editarPermissoes(nome) { alert(`Editando acessos de: ${nome}`); }
     </script>
 
     <!-- ======================================================= -->
@@ -775,21 +385,26 @@
             const menuLateral = document.querySelector('aside');
             const header = document.querySelector('header');
             
+            // Verifica se a tela tem menu lateral e se não está no modo Gestor Tela Cheia
             if (menuLateral && header && !document.getElementById('btnMobile')) {
-                menuLateral.classList.remove('hidden');
+                
+                // 1. Adapta as classes do Tailwind para o menu deslizar no celular
+                menuLateral.classList.remove('hidden'); // Remove o bloqueio original
                 menuLateral.classList.add(
                     'fixed', 'left-0', 'top-0', 'h-full', 'z-[100]', 
                     'transform', '-translate-x-full', 'transition-transform', 'duration-300',
-                    'md:relative', 'md:translate-x-0'
+                    'md:relative', 'md:translate-x-0' // Mantém fixo no Computador
                 );
 
+                // 2. Cria o Fundo Escuro (Overlay) para a tela do iPhone
                 const overlay = document.createElement('div');
                 overlay.className = 'fixed inset-0 bg-slate-900/60 z-[90] hidden backdrop-blur-sm md:hidden transition-opacity';
                 document.body.appendChild(overlay);
 
+                // 3. Função para Abrir e Fechar o menu
                 const toggleMenu = () => {
                     const estaFechado = menuLateral.classList.contains('-translate-x-full');
-                    if (estaFechado) {
+                    if(estaFechado) {
                         menuLateral.classList.remove('-translate-x-full');
                         overlay.classList.remove('hidden');
                     } else {
@@ -798,14 +413,17 @@
                     }
                 };
 
+                // Fechar menu ao clicar no fundo escuro
                 overlay.onclick = toggleMenu;
 
+                // 4. Cria o Botão "Hambúrguer" no Header (Só aparece no celular)
                 const btnMobile = document.createElement('button');
                 btnMobile.id = 'btnMobile';
                 btnMobile.className = 'md:hidden w-full sm:w-auto bg-marinho text-white px-4 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-md mb-4 sm:mb-0 transition active:scale-95';
                 btnMobile.innerHTML = '☰ Abrir Menu do Sistema';
                 btnMobile.onclick = toggleMenu;
 
+                // Insere o botão no topo do Header
                 header.insertBefore(btnMobile, header.firstChild);
             }
         });
