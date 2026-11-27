@@ -248,6 +248,21 @@
                     </div>
                 </div>
 
+                <!-- Bloco Gerador de Relatório Anual Completo (PDF) -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-3 flex-1">
+                        <label for="selectAlunoRelatorioAnual" class="text-xs font-bold text-slate-700 uppercase tracking-wider whitespace-nowrap">
+                            📄 Relatório Anual do Aluno (PDF):
+                        </label>
+                        <select id="selectAlunoRelatorioAnual" class="flex-1 max-w-md border border-slate-300 bg-white text-slate-800 rounded-lg px-3 py-2 text-xs font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <option value="">Selecione um aluno...</option>
+                        </select>
+                    </div>
+                    <button type="button" onclick="gerarRelatorioAnualPdfAluno()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-lg font-bold text-xs shadow-sm transition cursor-pointer whitespace-nowrap">
+                        📄 Gerar Relatório Anual (PDF)
+                    </button>
+                </div>
+
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                     <div class="p-4 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                         <div>
@@ -505,6 +520,7 @@
             } else if (aba === 'boletim' && modBol) {
                 modBol.classList.remove('hidden'); modBol.classList.add('block');
                 if (btnBol) btnBol.className = estiloAtivo;
+                popularSeletorRelatorioAnual();
                 renderTabelaBoletim();
             }
         }
@@ -515,6 +531,7 @@
             filtroTrimestre = document.getElementById('seletorTrimestre').value;
             carregarChamadaDoEstado();
             carregarDiarioDaData();
+            popularSeletorRelatorioAnual();
             renderAmbasTabelas();
             sincronizarNotasComSupabase();
         }
@@ -946,15 +963,434 @@
             notificar('✅ Diário salvo com sucesso no banco de dados!');
         }
 
+        // --- RELATÓRIO ANUAL COMPLETO DO ALUNO (PDF) ---
+        function popularSeletorRelatorioAnual() {
+            const select = document.getElementById('selectAlunoRelatorioAnual');
+            if (!select) return;
+
+            const alunosCache = JSON.parse(localStorage.getItem('peniel_fichas_alunos_cache') || '[]');
+            const mapaAlunos = new Map();
+
+            baseAlunos.forEach(a => {
+                mapaAlunos.set(String(a.ra), { ...a });
+            });
+            if (Array.isArray(alunosCache)) {
+                alunosCache.forEach(a => {
+                    if (a && a.ra) {
+                        const existente = mapaAlunos.get(String(a.ra)) || {};
+                        mapaAlunos.set(String(a.ra), { ...existente, ...a });
+                    }
+                });
+            }
+
+            const lista = Array.from(mapaAlunos.values()).sort((a, b) =>
+                (a.nome || '').localeCompare(b.nome || '')
+            );
+
+            const valorAtual = select.value;
+            select.innerHTML = '<option value="">Selecione um aluno...</option>';
+
+            lista.forEach(aluno => {
+                const opt = document.createElement('option');
+                opt.value = String(aluno.ra);
+                opt.textContent = `${aluno.nome} — Turma ${aluno.turma || '—'} (RA: ${aluno.ra})`;
+                select.appendChild(opt);
+            });
+
+            if (valorAtual && Array.from(select.options).some(o => o.value === valorAtual)) {
+                select.value = valorAtual;
+            } else {
+                const naTurma = lista.find(a => String(a.turma) === String(filtroTurma));
+                if (naTurma) select.value = String(naTurma.ra);
+            }
+        }
+
+        function escaparHtmlRelatorio(texto) {
+            return String(texto ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        async function buscarDadosCompletosAlunoSupabase(ra, unidade, anoLetivo) {
+            let ficha = null;
+            let notasSupabase = [];
+            let diariosSupabase = [];
+
+            try {
+                const fichas = await supabaseFetchNotas(
+                    `fichas_alunos?ra=eq.${encodeURIComponent(ra)}&select=*`,
+                    { prefer: 'return=representation' }
+                );
+                if (Array.isArray(fichas) && fichas.length > 0) {
+                    ficha = fichas[0];
+                }
+            } catch (_) {}
+
+            try {
+                const rowsNotas = await supabaseFetchNotas(
+                    `notas_avaliacoes?aluno_ra=eq.${encodeURIComponent(ra)}&ano_letivo=eq.${encodeURIComponent(anoLetivo)}&select=*`,
+                    { prefer: 'return=representation' }
+                );
+                if (Array.isArray(rowsNotas)) {
+                    notasSupabase = rowsNotas;
+                }
+            } catch (_) {}
+
+            try {
+                const rowsDiarios = await supabaseFetchNotas(
+                    `diario_aulas?unidade=eq.${encodeURIComponent(unidade)}&select=*&order=data_aula.asc`,
+                    { prefer: 'return=representation' }
+                );
+                if (Array.isArray(rowsDiarios)) {
+                    diariosSupabase = rowsDiarios;
+                }
+            } catch (_) {}
+
+            return { ficha, notasSupabase, diariosSupabase };
+        }
+
+        async function gerarRelatorioAnualPdfAluno() {
+            const select = document.getElementById('selectAlunoRelatorioAnual');
+            const ra = select ? select.value : '';
+            if (!ra) {
+                notificar('⚠️ Selecione um aluno para gerar o relatório anual.', 'alerta');
+                return;
+            }
+
+            const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
+            const anoLetivo = localStorage.getItem('peniel_ano_letivo') || '2027';
+
+            const alunoBase = baseAlunos.find(a => String(a.ra) === String(ra)) || {};
+            const { ficha, notasSupabase, diariosSupabase } = await buscarDadosCompletosAlunoSupabase(ra, unidade, anoLetivo);
+
+            const aluno = { ...alunoBase, ...(ficha || {}) };
+            const nomeAluno = aluno.nome || 'Aluno(a)';
+            const turmaAluno = aluno.turma || filtroTurma || '—';
+            const faltasBase = Number(aluno.faltas ?? alunoBase.faltas ?? 0);
+
+            const mapaNotas = {};
+
+            Object.entries(bancoNotas).forEach(([chave, reg]) => {
+                if (!chave.startsWith(`${ra}_`)) return;
+                const partes = chave.split('_');
+                if (partes.length < 3) return;
+                const tri = partes[partes.length - 1].toUpperCase();
+                const disc = partes.slice(1, partes.length - 1).join('_');
+                if (!['T1', 'T2', 'T3', 'T4'].includes(tri)) return;
+                const valor = (reg && reg.nota !== '' && reg.nota !== null && reg.nota !== undefined)
+                    ? Number(reg.nota)
+                    : null;
+                if (valor === null || Number.isNaN(valor)) return;
+
+                if (!mapaNotas[disc]) {
+                    mapaNotas[disc] = { T1: null, T2: null, T3: null, T4: null, faltas: faltasBase };
+                }
+                mapaNotas[disc][tri] = valor;
+            });
+
+            notasSupabase.forEach(item => {
+                const disc = item.disciplina || 'Geral';
+                const tri = String(item.periodo || '').toUpperCase();
+                if (!mapaNotas[disc]) {
+                    mapaNotas[disc] = { T1: null, T2: null, T3: null, T4: null, faltas: faltasBase };
+                }
+                if (['T1', 'T2', 'T3', 'T4'].includes(tri)) {
+                    const v = item.nota_final !== null && item.nota_final !== undefined
+                        ? Number(item.nota_final)
+                        : (item.n1 !== null && item.n1 !== undefined ? Number(item.n1) : null);
+                    if (v !== null && !Number.isNaN(v)) {
+                        mapaNotas[disc][tri] = v;
+                    }
+                }
+                if (typeof item.faltas === 'number') {
+                    mapaNotas[disc].faltas = Math.max(mapaNotas[disc].faltas, item.faltas);
+                }
+            });
+
+            const materiasPadrao = ['Matemática', 'Português', 'Ciências', 'História', 'Geografia'];
+            materiasPadrao.forEach(mat => {
+                if (!mapaNotas[mat]) {
+                    mapaNotas[mat] = { T1: null, T2: null, T3: null, T4: null, faltas: faltasBase };
+                }
+            });
+
+            const disciplinasOrdenadas = Object.keys(mapaNotas).sort((a, b) => {
+                const idxA = materiasPadrao.indexOf(a);
+                const idxB = materiasPadrao.indexOf(b);
+                if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+                if (idxA !== -1) return -1;
+                if (idxB !== -1) return 1;
+                return a.localeCompare(b);
+            });
+
+            const justCal = obterJustificativasCalendarioPorAluno();
+            const justExtrasAluno = justCal[nomeAluno.toLowerCase()] || [];
+
+            const justDiarioLocal = Object.entries(bancoJustificativas)
+                .filter(([k, txt]) => k.startsWith(`${ra}_`) && String(txt).trim())
+                .map(([k, txt]) => ({
+                    materia: k.split('_')[1] || 'Geral',
+                    texto: String(txt).trim()
+                }));
+
+            const registrosDiario = [];
+            const idsDiarioVistos = new Set();
+
+            diariosSupabase.forEach(aula => {
+                if (aula.turma && String(aula.turma) !== String(turmaAluno)) return;
+                const chamada = aula.chamada_json || {};
+                const justs = aula.justificativas_json || {};
+                const statusAluno = chamada[ra];
+                const justTexto = justs[ra] || '';
+
+                if (statusAluno || justTexto || aula.conteudo || aula.tarefa) {
+                    const chaveUnica = aula.id || `${aula.data_aula}_${aula.materia}_${aula.trimestre}`;
+                    idsDiarioVistos.add(chaveUnica);
+                    registrosDiario.push({
+                        data: aula.data_aula || '—',
+                        materia: aula.materia || '—',
+                        trimestre: aula.trimestre || '—',
+                        status: statusAluno || (justTexto ? 'J' : 'P'),
+                        justificativa: justTexto,
+                        conteudo: aula.conteudo || '',
+                        tarefa: aula.tarefa || ''
+                    });
+                }
+            });
+
+            Object.entries(bancoDiarioAulas).forEach(([chave, aula]) => {
+                if (!aula || String(aula.turma) !== String(turmaAluno)) return;
+                const idComp = `${unidade}_${chave}`;
+                if (idsDiarioVistos.has(idComp) || idsDiarioVistos.has(chave)) return;
+
+                const chamadaSalvaAula = bancoChamadaSalva[chave] || {};
+                const statusAluno = chamadaSalvaAula[ra];
+                const justLocalMatch = justDiarioLocal.find(j => j.materia === aula.materia);
+                const justTexto = justLocalMatch ? justLocalMatch.texto : '';
+
+                if (statusAluno || justTexto || aula.conteudo || aula.tarefa) {
+                    registrosDiario.push({
+                        data: aula.dataAula || '—',
+                        materia: aula.materia || '—',
+                        trimestre: aula.trimestre || '—',
+                        status: statusAluno || (justTexto ? 'J' : 'P'),
+                        justificativa: justTexto,
+                        conteudo: aula.conteudo || '',
+                        tarefa: aula.tarefa || ''
+                    });
+                }
+            });
+
+            registrosDiario.sort((a, b) => String(a.data).localeCompare(String(b.data)));
+
+            const totalJustificativas = justDiarioLocal.length + justExtrasAluno.length +
+                registrosDiario.filter(r => r.status === 'J' || (r.justificativa && r.justificativa.trim() !== '')).length;
+
+            let somaMediasDisciplinas = 0;
+            let qtdDisciplinasComNota = 0;
+            let maiorFaltaDisciplina = faltasBase;
+
+            const linhasNotasHtml = disciplinasOrdenadas.map(disc => {
+                const d = mapaNotas[disc];
+                const notasValidas = [d.T1, d.T2, d.T3, d.T4].filter(v => v !== null && !Number.isNaN(v));
+                const somaTri = [d.T1, d.T2, d.T3, d.T4].reduce((acc, v) => acc + (v !== null && !Number.isNaN(v) ? v : 0), 0);
+                const mediaAnual = Number((somaTri / 4).toFixed(1));
+                const faltasDisc = Number(d.faltas ?? faltasBase);
+                maiorFaltaDisciplina = Math.max(maiorFaltaDisciplina, faltasDisc);
+                const faltasEfetivas = Math.max(0, faltasDisc - totalJustificativas);
+
+                if (notasValidas.length > 0) {
+                    somaMediasDisciplinas += mediaAnual;
+                    qtdDisciplinasComNota += 1;
+                }
+
+                let situacao = 'Em Andamento';
+                if (notasValidas.length > 0) {
+                    situacao = (mediaAnual >= 7.0 && faltasEfetivas <= 10)
+                        ? 'Aprovado'
+                        : 'Recuperação / Conselho';
+                }
+
+                const fmtNota = v => (v !== null && !Number.isNaN(v)) ? Number(v).toFixed(1) : '—';
+
+                return `
+                    <tr>
+                        <td><strong>${escaparHtmlRelatorio(disc)}</strong></td>
+                        <td style="text-align:center;">${fmtNota(d.T1)}</td>
+                        <td style="text-align:center;">${fmtNota(d.T2)}</td>
+                        <td style="text-align:center;">${fmtNota(d.T3)}</td>
+                        <td style="text-align:center;">${fmtNota(d.T4)}</td>
+                        <td style="text-align:center;"><strong>${mediaAnual.toFixed(1)}</strong></td>
+                        <td style="text-align:center;">${faltasDisc}</td>
+                        <td style="text-align:center;">${escaparHtmlRelatorio(situacao)}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            const mediaGeral = qtdDisciplinasComNota > 0
+                ? (somaMediasDisciplinas / qtdDisciplinasComNota).toFixed(1)
+                : '0.0';
+
+            const faltasEfetivasGeral = Math.max(0, maiorFaltaDisciplina - totalJustificativas);
+
+            let parecerFinal = '';
+            if (qtdDisciplinasComNota === 0) {
+                parecerFinal = `O(A) estudante ${nomeAluno} (RA: ${ra}), matriculado(a) na turma ${turmaAluno}, possui registro de acompanhamento anual para o ano letivo de ${anoLetivo}. Ainda não há avaliações lançadas no boletim até o momento.`;
+            } else if (Number(mediaGeral) >= 7.0 && faltasEfetivasGeral <= 10) {
+                parecerFinal = `O(A) estudante ${nomeAluno} (RA: ${ra}), da turma ${turmaAluno}, apresenta desempenho anual satisfatório no ano letivo de ${anoLetivo}, com média geral ${mediaGeral} e frequência regular (${faltasEfetivasGeral} falta(s) não justificada(s) e ${totalJustificativas} justificativa(s) registrada(s)).`;
+            } else {
+                parecerFinal = `O(A) estudante ${nomeAluno} (RA: ${ra}), da turma ${turmaAluno}, encerra o acompanhamento de ${anoLetivo} com média geral ${mediaGeral} e ${faltasEfetivasGeral} falta(s) não justificada(s) (${totalJustificativas} justificativa(s) registrada(s)), requerendo acompanhamento pedagógico / conselho de classe conforme regimento escolar.`;
+            }
+
+            const listaJustificativasTexto = [
+                ...justDiarioLocal.map(j => `${j.materia}: ${j.texto}`),
+                ...justExtrasAluno
+            ];
+
+            const linhasDiarioHtml = registrosDiario.length
+                ? registrosDiario.map(r => {
+                    const descAula = [r.conteudo, r.tarefa ? `Tarefa: ${r.tarefa}` : ''].filter(Boolean).join(' • ') || '—';
+                    return `
+                        <tr>
+                            <td>${escaparHtmlRelatorio(r.data)}</td>
+                            <td>${escaparHtmlRelatorio(r.materia)} (${escaparHtmlRelatorio(r.trimestre)})</td>
+                            <td style="text-align:center;"><strong>${escaparHtmlRelatorio(r.status)}</strong></td>
+                            <td>${escaparHtmlRelatorio(r.justificativa || '—')}</td>
+                            <td>${escaparHtmlRelatorio(descAula)}</td>
+                        </tr>
+                    `;
+                }).join('')
+                : `<tr><td colspan="5" style="text-align:center;color:#64748b;">Nenhum registro de aula ou chamada encontrado para este aluno.</td></tr>`;
+
+            const htmlRelatorio = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <title>Relatório Anual - ${escaparHtmlRelatorio(nomeAluno)}</title>
+    <style>
+        body { font-family: Arial, Helvetica, sans-serif; color: #0f172a; margin: 28px; line-height: 1.45; }
+        .topo { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #003057; padding-bottom: 12px; margin-bottom: 18px; }
+        .topo h1 { margin: 0; font-size: 20px; color: #003057; }
+        .topo p { margin: 2px 0; font-size: 12px; color: #475569; }
+        h2 { font-size: 14px; color: #003057; border-left: 4px solid #E85D04; padding-left: 8px; margin: 20px 0 10px; }
+        .grid-info { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 18px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; font-size: 12.5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; }
+        th, td { border: 1px solid #cbd5e1; padding: 7px 8px; }
+        th { background: #eff6ff; color: #003057; text-align: left; }
+        .resumo-freq { font-size: 12.5px; margin: 6px 0 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px; }
+        .parecer { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; font-size: 12.5px; }
+        .assinaturas { display: flex; justify-content: space-between; gap: 32px; margin-top: 44px; font-size: 12px; text-align: center; }
+        .assinaturas div { flex: 1; border-top: 1px solid #64748b; padding-top: 6px; }
+        @media print {
+            body { margin: 14px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="topo">
+        <div>
+            <h1>RELATÓRIO ANUAL DO ALUNO</h1>
+            <p>Peniel Christian School — Unidade: ${escaparHtmlRelatorio(unidade)} | Ano Letivo: ${escaparHtmlRelatorio(anoLetivo)}</p>
+        </div>
+        <div style="text-align:right;">
+            <p><strong>RA:</strong> ${escaparHtmlRelatorio(ra)}</p>
+            <p><strong>Emissão:</strong> ${new Date().toLocaleDateString('pt-BR')}</p>
+        </div>
+    </div>
+
+    <h2>1. Identificação do Aluno e Responsáveis</h2>
+    <div class="grid-info">
+        <div><strong>Aluno(a):</strong> ${escaparHtmlRelatorio(nomeAluno)}</div>
+        <div><strong>Turma:</strong> ${escaparHtmlRelatorio(turmaAluno)}</div>
+        <div><strong>Nascimento:</strong> ${escaparHtmlRelatorio(aluno.nasc || '—')}</div>
+        <div><strong>Situação Cadastral:</strong> ${escaparHtmlRelatorio(aluno.status || 'Ativo')}</div>
+        <div><strong>Responsável / Pai:</strong> ${escaparHtmlRelatorio(aluno.pai || '—')} ${aluno.pai_tel ? `(${escaparHtmlRelatorio(aluno.pai_tel)})` : ''}</div>
+        <div><strong>Mãe:</strong> ${escaparHtmlRelatorio(aluno.mae || '—')} ${aluno.mae_tel ? `(${escaparHtmlRelatorio(aluno.mae_tel)})` : ''}</div>
+        <div><strong>Tipo Sanguíneo:</strong> ${escaparHtmlRelatorio(aluno.sangue || '—')}</div>
+        <div><strong>Alergias / Medicação:</strong> ${escaparHtmlRelatorio(aluno.alergia || 'Nenhuma')} / ${escaparHtmlRelatorio(aluno.med || 'Não utiliza')}</div>
+    </div>
+
+    <h2>2. Desempenho Acadêmico Anual (T1 a T4)</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Disciplina</th>
+                <th style="text-align:center;">T1</th>
+                <th style="text-align:center;">T2</th>
+                <th style="text-align:center;">T3</th>
+                <th style="text-align:center;">T4</th>
+                <th style="text-align:center;">Média Anual</th>
+                <th style="text-align:center;">Faltas</th>
+                <th style="text-align:center;">Situação</th>
+            </tr>
+        </thead>
+        <tbody>${linhasNotasHtml}</tbody>
+    </table>
+
+    <h2>3. Frequência, Justificativas e Diário de Aulas</h2>
+    <div class="resumo-freq">
+        <strong>Faltas Registradas:</strong> ${maiorFaltaDisciplina} &nbsp;|&nbsp;
+        <strong>Justificativas Registradas:</strong> ${totalJustificativas} &nbsp;|&nbsp;
+        <strong>Média Geral das Disciplinas:</strong> ${mediaGeral}
+        ${listaJustificativasTexto.length ? `<div style="margin-top:6px;color:#334155;"><strong>Observações/Justificativas:</strong> ${escaparHtmlRelatorio(listaJustificativasTexto.join(' | '))}</div>` : ''}
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Disciplina / Período</th>
+                <th style="text-align:center;">Registro</th>
+                <th>Justificativa</th>
+                <th>Conteúdo / Tarefa</th>
+            </tr>
+        </thead>
+        <tbody>${linhasDiarioHtml}</tbody>
+    </table>
+
+    <h2>4. Parecer Pedagógico Anual</h2>
+    <div class="parecer">${escaparHtmlRelatorio(parecerFinal)}</div>
+
+    <div class="assinaturas">
+        <div>Direção / Coordenação Pedagógica</div>
+        <div>Responsável Legal</div>
+    </div>
+
+    <script>
+        window.onload = function () {
+            window.print();
+        };
+    <\/script>
+</body>
+</html>`;
+
+            const janelaRelatorio = window.open('', '_blank', 'width=920,height=720');
+            if (!janelaRelatorio) {
+                notificar('⚠️ Permita pop-ups no navegador para abrir e salvar o PDF.', 'alerta');
+                return;
+            }
+            janelaRelatorio.document.open();
+            janelaRelatorio.document.write(htmlRelatorio);
+            janelaRelatorio.document.close();
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const dataAulaInput = document.getElementById('dataAula');
             if (dataAulaInput) {
                 const hoje = new Date().toISOString().split('T')[0];
                 dataAulaInput.value = hoje;
             }
+            popularSeletorRelatorioAnual();
             atualizarFiltrosGlobais();
-            window.addEventListener('peniel:calendario-atualizado', () => renderTabelaBoletim());
-            window.addEventListener('storage', (e) => { if (e.key === 'peniel_sync_dashboard_turmas_calendario') renderTabelaBoletim(); });
+            window.addEventListener('peniel:calendario-atualizado', () => {
+                renderTabelaBoletim();
+                popularSeletorRelatorioAnual();
+            });
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'peniel_sync_dashboard_turmas_calendario') renderTabelaBoletim();
+                if (e.key === 'peniel_fichas_alunos_cache') popularSeletorRelatorioAnual();
+            });
         });
 
     </script>
