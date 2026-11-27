@@ -1,3 +1,8 @@
+
+
+
+Ícone do app HTML
+notas_2
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -70,20 +75,11 @@
                 
                 <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
                     <span id="status-sync-notas" class="text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-3 py-2 rounded-xl text-center">⏳ Sincronizando...</span>
-                    <!-- Seletor de Turma Global -->
-                    <select id="seletorTurma" onchange="atualizarFiltrosGlobais()" class="w-full sm:w-auto border border-slate-300 bg-white text-slate-700 rounded-xl px-4 py-2.5 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold text-sm">
-                        <option value="3A">3º Ano A (Matutino)</option>
-                        <option value="2B">2º Ano B (Vespertino)</option>
-                        <option value="Pre2">Pré II (Infantil)</option>
-                    </select>
-
-                    <!-- Seletor de Trimestre Global -->
-                    <select id="seletorTrimestre" onchange="atualizarFiltrosGlobais()" class="w-full sm:w-auto border border-slate-300 bg-white text-slate-700 rounded-xl px-4 py-2.5 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold text-sm">
-                        <option value="T1">1º Trimestre</option>
-                        <option value="T2">2º Trimestre</option>
-                        <option value="T3" selected>3º Trimestre (Atual)</option>
-                        <option value="T4">4º Trimestre</option>
-                    </select>
+                    <!-- Seletor de Turma Sincronizado em Tempo Real -->
+                    <div class="w-full sm:w-auto flex flex-col">
+                        <label for="seletorTurma" class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1 mb-0.5">Turma Ativa</label>
+                        <select id="seletorTurma" onchange="atualizarFiltrosGlobais()" class="w-full sm:w-64 border border-slate-300 bg-white text-slate-800 rounded-xl px-3.5 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold text-xs"></select>
+                    </div>
                 </div>
             </header>
 
@@ -190,10 +186,17 @@
 
                 <!-- Painel de Busca e Tabela de Notas -->
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="p-4 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div class="p-4 border-b border-slate-100 bg-slate-50 flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-3">
                         <h3 class="font-bold text-blue-900 text-sm flex-1 bg-blue-100 px-3 py-1.5 rounded-lg inline-block" id="tituloTabelaNotas">Lançamento</h3>
+
+                        <select id="seletorTrimestre" onchange="atualizarFiltrosGlobais()" class="border border-slate-300 bg-white text-slate-700 rounded-lg px-3 py-2 text-xs font-bold focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm">
+                            <option value="T1">1º Trimestre (T1)</option>
+                            <option value="T2">2º Trimestre (T2)</option>
+                            <option value="T3" selected>3º Trimestre (T3 - Atual)</option>
+                            <option value="T4">4º Trimestre (T4)</option>
+                        </select>
                         
-                        <div class="relative w-full sm:w-64">
+                        <div class="relative w-full lg:w-64">
                             <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔍</span>
                             <input type="text" id="buscaAluno" onkeyup="renderAmbasTabelas()" placeholder="Buscar aluno..." class="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm">
                         </div>
@@ -358,7 +361,7 @@
         async function persistirNotasNoSupabase() {
             const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
             const anoLetivo = localStorage.getItem('peniel_ano_letivo') || '2027';
-            const alunosTurma = baseAlunos.filter(a => a.turma === filtroTurma);
+            const alunosTurma = baseAlunos.filter(a => normalizarNomeTurma(a.turma) === normalizarNomeTurma(filtroTurma));
             const payload = [];
 
             alunosTurma.forEach(aluno => {
@@ -443,24 +446,166 @@
             }, 3200);
         }
 
-        // --- BANCO DE DADOS (ALUNOS) ---
-        const baseAlunos = [
-            { ra: '2027001', nome: 'Davi Lucas', turma: '3A', faltas: 2 },
-            { ra: '2027002', nome: 'Isabela Mendes', turma: '3A', faltas: 5 },
-            { ra: '2027089', nome: 'Pedro Souza', turma: '3A', faltas: 12 }, 
-            { ra: '2027044', nome: 'Lucas Silva', turma: '3A', faltas: 1 },
-            { ra: '2027055', nome: 'Ana Beatriz', turma: '3A', faltas: 0 },
-            { ra: '2027101', nome: 'João Pedro', turma: '2B', faltas: 1 },
-            { ra: '2027102', nome: 'Sofia Almeida', turma: '2B', faltas: 3 }
+        // --- BASE DE ALUNOS E TURMAS SINCRONIZADAS EM TEMPO REAL ---
+        const alunosIniciaisPadrao = [
+            { ra: '2027501', nome: 'Helena Santos', turma: 'Maternal 1', turno: 'Manhã', sala: 'Sala 01', faltas: 0 },
+            { ra: '2027001', nome: 'Davi Lucas', turma: '3º Ano A (Fundamental)', turno: 'Manhã', sala: 'Sala 02', faltas: 2 },
+            { ra: '2027002', nome: 'Isabela Mendes', turma: '3º Ano A (Fundamental)', turno: 'Manhã', sala: 'Sala 02', faltas: 5 },
+            { ra: '2027089', nome: 'Pedro Souza', turma: '3º Ano A (Fundamental)', turno: 'Manhã', sala: 'Sala 02', faltas: 12 },
+            { ra: '2027044', nome: 'Lucas Silva', turma: '3º Ano A (Fundamental)', turno: 'Manhã', sala: 'Sala 02', faltas: 1 },
+            { ra: '2027055', nome: 'Ana Beatriz', turma: '3º Ano A (Fundamental)', turno: 'Manhã', sala: 'Sala 02', faltas: 0 },
+            { ra: '2027101', nome: 'João Pedro', turma: '2º Ano B (Fundamental)', turno: 'Tarde', sala: 'Sala 04', faltas: 1 },
+            { ra: '2027102', nome: 'Sofia Almeida', turma: '2º Ano B (Fundamental)', turno: 'Tarde', sala: 'Sala 04', faltas: 3 }
         ];
+
+        const turmasLegadasMap = {
+            '3A': '3º Ano A (Fundamental)',
+            '2B': '2º Ano B (Fundamental)',
+            'Pre2': 'Pré II (Infantil)',
+            'maternal1': 'Maternal 1',
+            'fundamental1': '3º Ano A (Fundamental)'
+        };
+
+        function normalizarNomeTurma(valor) {
+            const limpo = String(valor || '').trim();
+            if (!limpo) return '3º Ano A (Fundamental)';
+            return turmasLegadasMap[limpo] || limpo;
+        }
+
+        let baseAlunos = JSON.parse(JSON.stringify(alunosIniciaisPadrao));
+        let turmasDisponiveis = [];
 
         let bancoNotas = JSON.parse(localStorage.getItem('peniel_banco_notas')) || {};
         let bancoChamadaSalva = JSON.parse(localStorage.getItem('peniel_banco_chamada')) || {};
         let bancoChamada = {};
 
-        let filtroTurma = '3A';
+        let filtroTurma = '3º Ano A (Fundamental)';
         let filtroTrimestre = 'T3';
         let filtroMateria = 'Matemática';
+
+        function montarListaTurmasEAlunos(fichasExt = [], salasExt = [], matriculasExt = []) {
+            const mapaAlunos = new Map();
+            alunosIniciaisPadrao.forEach(a => mapaAlunos.set(String(a.ra), { ...a }));
+
+            const cacheFichas = JSON.parse(localStorage.getItem('peniel_fichas_alunos_cache') || '[]');
+            const fontesFichas = [
+                ...(Array.isArray(cacheFichas) ? cacheFichas : []),
+                ...(Array.isArray(fichasExt) ? fichasExt : [])
+            ];
+
+            fontesFichas.forEach(f => {
+                if (!f || !f.ra) return;
+                const raKey = String(f.ra);
+                const atual = mapaAlunos.get(raKey) || { ra: raKey, faltas: 0 };
+                mapaAlunos.set(raKey, {
+                    ...atual,
+                    ra: raKey,
+                    nome: f.nome || atual.nome || `Aluno ${raKey}`,
+                    turma: normalizarNomeTurma(f.turma || f.turma_chave || atual.turma),
+                    faltas: typeof f.faltas === 'number' ? f.faltas : (atual.faltas || 0)
+                });
+            });
+
+            const fontesMatriculas = [
+                ...(Array.isArray(matriculasExt) ? matriculasExt : []),
+                ...(Array.isArray(JSON.parse(localStorage.getItem('peniel_matriculas_cache') || '[]'))
+                    ? JSON.parse(localStorage.getItem('peniel_matriculas_cache') || '[]')
+                    : [])
+            ];
+
+            fontesMatriculas.forEach(m => {
+                if (!m) return;
+                const raKey = String(m.ra || m.aluno_ra || '').trim();
+                if (!raKey) return;
+                const atual = mapaAlunos.get(raKey) || { ra: raKey, faltas: 0 };
+                mapaAlunos.set(raKey, {
+                    ...atual,
+                    ra: raKey,
+                    nome: m.nome || m.aluno_nome || atual.nome || `Aluno ${raKey}`,
+                    turma: normalizarNomeTurma(m.turma || m.turma_destino || atual.turma)
+                });
+            });
+
+            baseAlunos = Array.from(mapaAlunos.values());
+
+            const mapaTurmas = new Map();
+            baseAlunos.forEach(a => {
+                const tNome = normalizarNomeTurma(a.turma);
+                if (!mapaTurmas.has(tNome)) {
+                    mapaTurmas.set(tNome, { nome: tNome, turno: '', sala: '' });
+                }
+            });
+
+            const fontesSalas = [
+                ...(Array.isArray(salasExt) ? salasExt : []),
+                ...(Array.isArray(JSON.parse(localStorage.getItem('peniel_salas_aulas_cache') || '[]'))
+                    ? JSON.parse(localStorage.getItem('peniel_salas_aulas_cache') || '[]')
+                    : [])
+            ];
+
+            fontesSalas.forEach(s => {
+                if (!s || !s.turma) return;
+                const tNome = normalizarNomeTurma(s.turma);
+                const info = mapaTurmas.get(tNome) || { nome: tNome, turno: '', sala: '' };
+                mapaTurmas.set(tNome, {
+                    nome: tNome,
+                    turno: s.turno || info.turno || '',
+                    sala: s.sala || info.sala || ''
+                });
+            });
+
+            turmasDisponiveis = Array.from(mapaTurmas.values());
+
+            const select = document.getElementById('seletorTurma');
+            if (select) {
+                const valorPrevio = normalizarNomeTurma(select.value || filtroTurma);
+                select.innerHTML = '';
+
+                turmasDisponiveis.forEach(t => {
+                    const qtdAlunos = baseAlunos.filter(a => normalizarNomeTurma(a.turma) === t.nome).length;
+                    const detalhes = [t.turno, t.sala].filter(Boolean).join(' • ');
+                    const sufixo = detalhes ? ` (${detalhes} • ${qtdAlunos})` : ` (${qtdAlunos} aluno${qtdAlunos === 1 ? '' : 's'})`;
+                    const opt = document.createElement('option');
+                    opt.value = t.nome;
+                    opt.textContent = `${t.nome}${sufixo}`;
+                    select.appendChild(opt);
+                });
+
+                if (turmasDisponiveis.some(t => t.nome === valorPrevio)) {
+                    select.value = valorPrevio;
+                    filtroTurma = valorPrevio;
+                } else if (turmasDisponiveis.length > 0) {
+                    filtroTurma = turmasDisponiveis[0].nome;
+                    select.value = filtroTurma;
+                }
+            }
+
+            popularSeletorRelatorioAnual();
+        }
+
+        async function sincronizarTurmasEAlunosTempoReal() {
+            const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
+            montarListaTurmasEAlunos();
+
+            try {
+                const [fichas, salas] = await Promise.all([
+                    supabaseFetchNotas(`fichas_alunos?unidade=eq.${encodeURIComponent(unidade)}&select=*`, { prefer: 'return=representation' }),
+                    supabaseFetchNotas(`salas_aulas?unidade=eq.${encodeURIComponent(unidade)}&select=*&order=ordem.asc`, { prefer: 'return=representation' })
+                ]);
+
+                if (Array.isArray(fichas)) {
+                    localStorage.setItem('peniel_fichas_alunos_cache', JSON.stringify(fichas));
+                }
+                if (Array.isArray(salas)) {
+                    localStorage.setItem('peniel_salas_aulas_cache', JSON.stringify(salas));
+                }
+
+                montarListaTurmasEAlunos(fichas || [], salas || []);
+                atualizarBadgeSyncNotas(true);
+            } catch (_) {
+                montarListaTurmasEAlunos();
+            }
+        }
 
         function getDataAulaAtual() {
             const input = document.getElementById('dataAula');
@@ -527,11 +672,13 @@
 
         // --- FILTROS ---
         function atualizarFiltrosGlobais() {
-            filtroTurma = document.getElementById('seletorTurma').value;
-            filtroTrimestre = document.getElementById('seletorTrimestre').value;
+            const selTurma = document.getElementById('seletorTurma');
+            const selTri = document.getElementById('seletorTrimestre');
+            if (selTurma && selTurma.value) filtroTurma = normalizarNomeTurma(selTurma.value);
+            if (selTri && selTri.value) filtroTrimestre = selTri.value;
+            popularSeletorRelatorioAnual();
             carregarChamadaDoEstado();
             carregarDiarioDaData();
-            popularSeletorRelatorioAnual();
             renderAmbasTabelas();
             sincronizarNotasComSupabase();
         }
@@ -583,7 +730,7 @@
             tbody.innerHTML = '';
 
             const alunosFiltrados = baseAlunos.filter(aluno => 
-                aluno.turma === filtroTurma && aluno.nome.toLowerCase().includes(busca)
+                normalizarNomeTurma(aluno.turma) === normalizarNomeTurma(filtroTurma) && aluno.nome.toLowerCase().includes(busca)
             );
 
             alunosFiltrados.forEach(aluno => {
@@ -655,7 +802,7 @@
 
             localStorage.setItem('peniel_banco_justificativas_diario', JSON.stringify(bancoJustificativas));
 
-            const alunosDaTurma = baseAlunos.filter(a => a.turma === filtroTurma);
+            const alunosDaTurma = baseAlunos.filter(a => normalizarNomeTurma(a.turma) === normalizarNomeTurma(filtroTurma));
             alunosDaTurma.forEach(a => {
                 const stNovo = bancoChamada[a.ra] || 'P';
                 const stAnterior = chamadaAnterior[a.ra] || 'P';
@@ -708,7 +855,7 @@
             document.getElementById('tituloTabelaNotas').innerText = `${filtroMateria} • ${nomeTurmaText} • 1º ao 4º Trimestre (${filtroTrimestre} em foco)`;
 
             const alunosFiltrados = baseAlunos.filter(aluno => 
-                aluno.turma === filtroTurma && aluno.nome.toLowerCase().includes(busca)
+                normalizarNomeTurma(aluno.turma) === normalizarNomeTurma(filtroTurma) && aluno.nome.toLowerCase().includes(busca)
             );
 
             if (alunosFiltrados.length === 0) document.getElementById('msgSemAlunos').classList.remove('hidden');
@@ -831,7 +978,7 @@
             document.getElementById('kpiRecuperacao').innerHTML = `${recup} <span class="text-xs font-normal text-slate-400 block mt-0.5">Alunos em risco</span>`;
 
             const busca = document.getElementById('buscaAluno').value.toLowerCase();
-            const alunosFiltrados = baseAlunos.filter(a => a.turma === filtroTurma && a.nome.toLowerCase().includes(busca));
+            const alunosFiltrados = baseAlunos.filter(a => normalizarNomeTurma(a.turma) === normalizarNomeTurma(filtroTurma) && a.nome.toLowerCase().includes(busca));
             const qtdFaltasAlta = alunosFiltrados.filter(a => a.faltas > 10).length;
 
             document.getElementById('kpiFaltas').innerHTML = `${qtdFaltasAlta} <span class="text-xs font-normal text-slate-400 block mt-0.5">Aluno(s) em alerta</span>`;
@@ -851,7 +998,7 @@
             const justCal = obterJustificativasCalendarioPorAluno();
 
             const alunosFiltrados = baseAlunos.filter(a =>
-                a.turma === filtroTurma && a.nome.toLowerCase().includes(busca)
+                normalizarNomeTurma(a.turma) === normalizarNomeTurma(filtroTurma) && a.nome.toLowerCase().includes(busca)
             );
 
             let aprovados = 0;
@@ -1375,21 +1522,32 @@
             janelaRelatorio.document.close();
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             const dataAulaInput = document.getElementById('dataAula');
             if (dataAulaInput) {
                 const hoje = new Date().toISOString().split('T')[0];
                 dataAulaInput.value = hoje;
             }
-            popularSeletorRelatorioAnual();
+            montarListaTurmasEAlunos();
             atualizarFiltrosGlobais();
+            await sincronizarTurmasEAlunosTempoReal();
+            atualizarFiltrosGlobais();
+
             window.addEventListener('peniel:calendario-atualizado', () => {
+                montarListaTurmasEAlunos();
                 renderTabelaBoletim();
-                popularSeletorRelatorioAnual();
             });
             window.addEventListener('storage', (e) => {
-                if (e.key === 'peniel_sync_dashboard_turmas_calendario') renderTabelaBoletim();
-                if (e.key === 'peniel_fichas_alunos_cache') popularSeletorRelatorioAnual();
+                if (
+                    e.key === 'peniel_fichas_alunos_cache' ||
+                    e.key === 'peniel_salas_aulas_cache' ||
+                    e.key === 'peniel_matriculas_cache'
+                ) {
+                    montarListaTurmasEAlunos();
+                    renderAmbasTabelas();
+                } else if (e.key === 'peniel_sync_dashboard_turmas_calendario') {
+                    renderTabelaBoletim();
+                }
             });
         });
 
@@ -1489,3 +1647,4 @@
     </script>
 </body>
 </html>
+Analisando
