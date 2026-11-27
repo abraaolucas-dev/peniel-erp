@@ -87,7 +87,7 @@
                         <span class="bg-slate-100 text-slate-700 text-[10px] font-bold px-2 py-0.5 rounded-full">Central de Cadastros</span>
                     </div>
                     <h2 class="font-heading text-xl sm:text-2xl font-bold text-slate-800">Fichas Cadastrais, Anamnese e Família</h2>
-                    <p class="text-xs text-slate-500">Consulta profunda de dados dos responsáveis, saúde, alergias e histórico dos alunos.</p>
+                    <p class="text-xs text-slate-500">Consulta profunda de dados dos responsáveis, saúde, alergias, ciclo escolar e histórico dos alunos.</p>
                 </div>
             </div>
             
@@ -120,7 +120,7 @@
                 <div id="detalhe-prontuario-vazio" class="p-12 text-center my-auto">
                     <span class="text-4xl mb-3 block">📂</span>
                     <h3 class="font-bold text-slate-700 text-base">Nenhum prontuário selecionado</h3>
-                    <p class="text-xs text-slate-400 mt-1">Selecione um aluno na lista ao lado para visualizar os dados completos de responsáveis, anamnese e histórico.</p>
+                    <p class="text-xs text-slate-400 mt-1">Selecione um aluno na lista ao lado para visualizar os dados completos de responsáveis, anamnese, ciclo escolar e histórico.</p>
                 </div>
 
                 <div id="detalhe-prontuario-conteudo" class="hidden flex flex-col h-full overflow-y-auto p-5 sm:p-6 space-y-6">
@@ -128,13 +128,39 @@
                     <!-- Cabeçalho do Prontuário -->
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-slate-50 p-4 rounded-2xl border border-slate-200 gap-3">
                         <div>
-                            <span id="ficha-turma-badge" class="bg-blue-100 text-marinho text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Turma</span>
+                            <div class="flex flex-wrap items-center gap-1.5">
+                                <span id="ficha-turma-badge" class="bg-blue-100 text-marinho text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Turma</span>
+                                <span id="ficha-ciclo-badge" class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Ciclo 2027</span>
+                            </div>
                             <h3 id="ficha-nome-aluno" class="font-heading text-xl font-bold text-slate-800 mt-1">Nome do Aluno</h3>
                             <p class="text-xs text-slate-500 font-mono mt-0.5">RA: <span id="ficha-ra">--</span> • Nasc: <span id="ficha-nasc">--</span> • Naturalidade: <span id="ficha-nat">--</span></p>
                         </div>
-                        <div class="flex gap-2">
+                        <div class="flex flex-wrap gap-2">
+                            <a id="ficha-link-notas" href="notas.html" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-xl text-xs font-bold transition">📊 Notas & Ciclo</a>
                             <button type="button" onclick="editarAlunoAtual()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition">✏️ Editar Dados</button>
                             <button type="button" onclick="window.print()" class="bg-marinho hover:bg-blue-900 text-white px-3 py-2 rounded-xl text-xs font-bold transition">🖨️ Imprimir Ficha</button>
+                        </div>
+                    </div>
+
+                    <!-- Resumo do Ciclo Escolar e Desempenho -->
+                    <div class="bg-blue-50/60 p-4 rounded-2xl border border-blue-200 space-y-2">
+                        <div class="flex justify-between items-center border-b border-blue-200 pb-1">
+                            <h4 class="font-bold text-marinho text-xs uppercase tracking-wider">🎓 Resumo do Ciclo Escolar Atual</h4>
+                            <span id="ficha-ciclo-situacao" class="text-[11px] font-bold text-marinho">--</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                            <div class="bg-white p-3 rounded-xl border border-blue-100">
+                                <span class="text-[10px] font-bold text-slate-400 block uppercase">Ano Letivo / Segmento</span>
+                                <span id="ficha-ciclo-ano" class="font-bold text-slate-800">--</span>
+                            </div>
+                            <div class="bg-white p-3 rounded-xl border border-blue-100">
+                                <span class="text-[10px] font-bold text-slate-400 block uppercase">Média Geral do Ciclo</span>
+                                <span id="ficha-ciclo-media" class="font-black text-marinho text-sm">--</span>
+                            </div>
+                            <div class="bg-white p-3 rounded-xl border border-blue-100">
+                                <span class="text-[10px] font-bold text-slate-400 block uppercase">Faltas Registradas</span>
+                                <span id="ficha-ciclo-faltas" class="font-bold text-slate-800">0</span>
+                            </div>
                         </div>
                     </div>
 
@@ -334,6 +360,79 @@
         const SUPABASE_URL = 'https://fxjdmhrlujiajkouduhg.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_EANH7zIXleZ3G18S6z7KFw_26oySNP9';
 
+        const nomeParaChaveTurma = {
+            'Maternal 1': 'maternal1',
+            'Maternal 2': 'maternal2',
+            'Pré-Escola 1': 'pre1',
+            'Pré-Escola 2': 'pre2',
+            'Ensino Fundamental': 'fundamental1',
+            '3º Ano A (Fundamental)': 'fundamental1',
+            '2º Ano B (Fundamental)': 'fundamental1',
+            'Pré II (Infantil)': 'pre2'
+        };
+
+        const chaveParaNomeTurma = {
+            maternal1: 'Maternal 1',
+            maternal2: 'Maternal 2',
+            pre1: 'Pré-Escola 1',
+            pre2: 'Pré-Escola 2',
+            fundamental1: 'Ensino Fundamental'
+        };
+
+        function normalizarTurma(valor) {
+            const limpo = String(valor || '').trim();
+            if (nomeParaChaveTurma[limpo]) {
+                const chave = nomeParaChaveTurma[limpo];
+                return { chave, nome: chaveParaNomeTurma[chave] };
+            }
+            if (chaveParaNomeTurma[limpo]) {
+                return { chave: limpo, nome: chaveParaNomeTurma[limpo] };
+            }
+            const lower = limpo.toLowerCase();
+            if (lower.includes('maternal 1') || lower.includes('maternal1')) return { chave: 'maternal1', nome: 'Maternal 1' };
+            if (lower.includes('maternal 2') || lower.includes('maternal2')) return { chave: 'maternal2', nome: 'Maternal 2' };
+            if (lower.includes('pré-escola 1') || lower.includes('pre1') || lower.includes('pré 1')) return { chave: 'pre1', nome: 'Pré-Escola 1' };
+            if (lower.includes('pré-escola 2') || lower.includes('pre2') || lower.includes('pré 2') || lower.includes('pré ii')) return { chave: 'pre2', nome: 'Pré-Escola 2' };
+            if (lower.includes('fundamental') || lower.includes('ano')) return { chave: 'fundamental1', nome: 'Ensino Fundamental' };
+            return { chave: 'fundamental1', nome: 'Ensino Fundamental' };
+        }
+
+        function sincronizarCachesFichas(base) {
+            const lista = Object.values(base);
+            localStorage.setItem('peniel_fichas_alunos_cache', JSON.stringify(lista));
+            localStorage.setItem('peniel_matriculas_cache', JSON.stringify(lista.map(a => ({
+                ra: a.ra,
+                aluno_ra: a.ra,
+                nome: a.nome,
+                aluno_nome: a.nome,
+                turma: a.turma,
+                turmaChave: a.turmaChave,
+                status: a.status || 'Ativo'
+            }))));
+        }
+
+        function sincronizarRegistroCicloAluno(aluno) {
+            const cicloBanco = JSON.parse(localStorage.getItem('peniel_ciclo_escolar_alunos') || '{}');
+            const norm = normalizarTurma(aluno.turmaChave || aluno.turma);
+            const anterior = cicloBanco[aluno.ra] || {};
+            cicloBanco[aluno.ra] = {
+                ...anterior,
+                ra: String(aluno.ra),
+                nome: aluno.nome,
+                anoLetivo: aluno.anoLetivo || anterior.anoLetivo || localStorage.getItem('peniel_ano_letivo') || '2027',
+                segmento: norm.chave === 'fundamental1' ? 'fundamental' : 'infantil',
+                turmaChave: norm.chave,
+                turma: norm.nome,
+                statusMatricula: aluno.status || 'Ativo',
+                ocorrenciasCount: Array.isArray(aluno.historico) ? aluno.historico.length : 0,
+                atualizadoEm: new Date().toISOString()
+            };
+            localStorage.setItem('peniel_ciclo_escolar_alunos', JSON.stringify(cicloBanco));
+            window.dispatchEvent(new CustomEvent('peniel:ciclo-aluno-atualizado', {
+                detail: { ra: String(aluno.ra), ciclo: cicloBanco[aluno.ra] }
+            }));
+        }
+
         async function supabaseFetchFichas(path, options = {}) {
             const resp = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
                 ...options,
@@ -363,36 +462,43 @@
         }
 
         function rowParaAluno(r) {
+            const existente = (JSON.parse(localStorage.getItem('peniel_banco_fichas_detalhadas')) || {})[String(r.ra)] || {};
+            const norm = normalizarTurma(r.turma_chave || r.turma || existente.turmaChave);
             return {
                 ra: String(r.ra),
-                nome: r.nome || '',
-                turmaChave: r.turma_chave || nomeParaChaveTurma[r.turma] || 'fundamental1',
-                turma: r.turma || 'Ensino Fundamental',
-                status: r.status || 'Ativo',
-                nasc: r.nasc || '',
-                nat: r.nat || 'Rio de Janeiro - RJ',
-                cpf: r.cpf || '',
-                pai: r.pai || '',
-                paiTel: r.pai_tel || '',
-                paiEmail: r.pai_email || '',
-                mae: r.mae || '',
-                maeTel: r.mae_tel || '',
-                sangue: r.sangue || 'O+',
-                alergia: r.alergia || 'Nenhuma',
-                med: r.med || 'Não utiliza',
-                obs: r.obs || '',
-                historico: Array.isArray(r.historico) ? r.historico : []
+                nome: r.nome || existente.nome || '',
+                anoLetivo: existente.anoLetivo || localStorage.getItem('peniel_ano_letivo') || '2027',
+                segmento: norm.chave === 'fundamental1' ? 'fundamental' : 'infantil',
+                turmaChave: norm.chave,
+                turma: norm.nome,
+                status: r.status || existente.status || 'Ativo',
+                nasc: r.nasc || existente.nasc || '',
+                nat: r.nat || existente.nat || 'Rio de Janeiro - RJ',
+                cpf: r.cpf || existente.cpf || '',
+                pai: r.pai || existente.pai || '',
+                paiTel: r.pai_tel || existente.paiTel || '',
+                paiEmail: r.pai_email || existente.paiEmail || '',
+                mae: r.mae || existente.mae || '',
+                maeTel: r.mae_tel || existente.maeTel || '',
+                sangue: r.sangue || existente.sangue || 'O+',
+                alergia: r.alergia || existente.alergia || 'Nenhuma',
+                med: r.med || existente.med || 'Não utiliza',
+                obs: r.obs || existente.obs || '',
+                relatorio: existente.relatorio || '',
+                fotos: existente.fotos || [],
+                historico: Array.isArray(r.historico) ? r.historico : (existente.historico || [])
             };
         }
 
         function alunoParaRow(aluno) {
             const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
+            const norm = normalizarTurma(aluno.turmaChave || aluno.turma);
             return {
                 ra: String(aluno.ra),
                 unidade,
                 nome: aluno.nome,
-                turma_chave: aluno.turmaChave || nomeParaChaveTurma[aluno.turma] || 'fundamental1',
-                turma: aluno.turma,
+                turma_chave: norm.chave,
+                turma: norm.nome,
                 status: aluno.status || 'Ativo',
                 nasc: aluno.nasc || '',
                 nat: aluno.nat || 'Rio de Janeiro - RJ',
@@ -418,7 +524,9 @@
                 if (Array.isArray(rows)) {
                     const baseLocal = obterBancoGeralAlunos();
                     rows.forEach(r => {
-                        baseLocal[String(r.ra)] = rowParaAluno(r);
+                        const normAluno = rowParaAluno(r);
+                        baseLocal[String(r.ra)] = normAluno;
+                        sincronizarRegistroCicloAluno(normAluno);
                     });
                     salvarBancoGeralAlunos(baseLocal);
                     carregarListaAlunosFichas(document.getElementById('buscaFichaGeral').value.toLowerCase());
@@ -450,6 +558,8 @@
             base[novoRa] = {
                 ra: novoRa,
                 nome: '',
+                anoLetivo: localStorage.getItem('peniel_ano_letivo') || '2027',
+                segmento: 'fundamental',
                 turmaChave: 'fundamental1',
                 turma: 'Ensino Fundamental',
                 status: 'Ativo',
@@ -468,6 +578,7 @@
                 historico: [{ data: new Date().toLocaleDateString('pt-BR'), titulo: 'Cadastro Inicial', desc: 'Ficha criada na secretaria.' }]
             };
             salvarBancoGeralAlunos(base);
+            sincronizarRegistroCicloAluno(base[novoRa]);
             alunoSelecionadoRa = novoRa;
             abrirModalEdicaoCompleta(novoRa);
             document.getElementById('titulo-modal-edicao').innerText = `➕ Nova Ficha Cadastral (RA ${novoRa})`;
@@ -494,23 +605,23 @@
             if(confirm("Deseja encerrar sua sessão?")) { window.location.href = 'login.html'; }
         }
 
-        const nomeParaChaveTurma = {
-            'Maternal 1': 'maternal1',
-            'Maternal 2': 'maternal2',
-            'Pré-Escola 1': 'pre1',
-            'Pré-Escola 2': 'pre2',
-            'Ensino Fundamental': 'fundamental1'
-        };
-
         function obterBancoGeralAlunos() {
-            return JSON.parse(localStorage.getItem('peniel_banco_fichas_detalhadas')) || {
-                '2027501': { ra: '2027501', nome: 'Helena Santos', turmaChave: 'maternal1', turma: 'Maternal 1', status: 'Ativo', nasc: '15/04/2023', nat: 'Rio de Janeiro - RJ', cpf: '000.111.222-33', pai: 'Camila Santos', paiTel: '(21) 98888-1111', paiEmail: 'camila@email.com', mae: 'Ana Santos', maeTel: '(21) 97777-2222', sangue: 'O+', alergia: 'Nenhuma', med: 'Não utiliza', obs: 'Excelente adaptação na rotina.', historico: [{ data: '12/02/2026', titulo: 'Adaptação', desc: 'Concluída com sucesso.' }] },
-                '2027001': { ra: '2027001', nome: 'Davi Lucas', turmaChave: 'fundamental1', turma: 'Ensino Fundamental', status: 'Ativo', nasc: '15/04/2018', nat: 'Rio de Janeiro - RJ', cpf: '111.222.333-44', pai: 'Carlos Lucas', paiTel: '(21) 99999-1111', paiEmail: 'carlos.lucas@email.com', mae: 'Ana Carolina Lucas', maeTel: '(21) 98888-2222', sangue: 'O+', alergia: 'Amendoim', med: 'Não utiliza', obs: 'Aluno participativo em sala de aula.', historico: [{ data: '10/03/2026', titulo: 'Matrícula', desc: 'Renovação efetuada com sucesso.' }] }
+            const bruto = JSON.parse(localStorage.getItem('peniel_banco_fichas_detalhadas'));
+            if (bruto && typeof bruto === 'object' && Object.keys(bruto).length > 0) {
+                return bruto;
+            }
+            const padrao = {
+                '2027501': { ra: '2027501', nome: 'Helena Santos', anoLetivo: '2027', segmento: 'infantil', turmaChave: 'maternal1', turma: 'Maternal 1', status: 'Ativo', nasc: '15/04/2023', nat: 'Rio de Janeiro - RJ', cpf: '000.111.222-33', pai: 'Camila Santos', paiTel: '(21) 98888-1111', paiEmail: 'camila@email.com', mae: 'Ana Santos', maeTel: '(21) 97777-2222', sangue: 'O+', alergia: 'Nenhuma', med: 'Não utiliza', obs: 'Excelente adaptação na rotina.', historico: [{ data: '12/02/2026', titulo: 'Adaptação', desc: 'Concluída com sucesso.' }] },
+                '2027001': { ra: '2027001', nome: 'Davi Lucas', anoLetivo: '2027', segmento: 'fundamental', turmaChave: 'fundamental1', turma: 'Ensino Fundamental', status: 'Ativo', nasc: '15/04/2018', nat: 'Rio de Janeiro - RJ', cpf: '111.222.333-44', pai: 'Carlos Lucas', paiTel: '(21) 99999-1111', paiEmail: 'carlos.lucas@email.com', mae: 'Ana Carolina Lucas', maeTel: '(21) 98888-2222', sangue: 'O+', alergia: 'Amendoim', med: 'Não utiliza', obs: 'Aluno participativo em sala de aula.', historico: [{ data: '10/03/2026', titulo: 'Matrícula', desc: 'Renovação efetuada com sucesso.' }] }
             };
+            localStorage.setItem('peniel_banco_fichas_detalhadas', JSON.stringify(padrao));
+            sincronizarCachesFichas(padrao);
+            return padrao;
         }
 
         function salvarBancoGeralAlunos(base) {
             localStorage.setItem('peniel_banco_fichas_detalhadas', JSON.stringify(base));
+            sincronizarCachesFichas(base);
         }
 
         let alunoSelecionadoRa = null;
@@ -523,31 +634,64 @@
             const unidEl = document.querySelector('#menu-lateral span.text-blue-300');
             if (unidEl) unidEl.innerText = 'Unidade ' + unidadeSalva;
 
+            const baseInicial = obterBancoGeralAlunos();
+            sincronizarCachesFichas(baseInicial);
             carregarListaAlunosFichas();
+
             const urlParams = new URLSearchParams(window.location.search);
             const raParam = urlParams.get('ra');
             const editarParam = urlParams.get('editar');
-            if (raParam) {
+            if (raParam && baseInicial[raParam]) {
                 selecionarAlunoFicha(raParam);
                 if (editarParam === 'true') {
                     abrirModalEdicaoCompleta(raParam);
                 }
+            } else {
+                const primeiroRa = Object.keys(baseInicial)[0];
+                if (primeiroRa) selecionarAlunoFicha(primeiroRa);
             }
+
             sincronizarFichasComSupabase();
+
+            window.addEventListener('peniel:ciclo-aluno-atualizado', (ev) => {
+                carregarListaAlunosFichas(document.getElementById('buscaFichaGeral').value.toLowerCase());
+                const raAtual = ev.detail?.ra || alunoSelecionadoRa;
+                if (raAtual && raAtual === alunoSelecionadoRa) {
+                    selecionarAlunoFicha(raAtual);
+                }
+            });
+
+            window.addEventListener('storage', (e) => {
+                if (
+                    e.key === 'peniel_banco_fichas_detalhadas' ||
+                    e.key === 'peniel_fichas_alunos_cache' ||
+                    e.key === 'peniel_ciclo_escolar_alunos' ||
+                    e.key === 'peniel_banco_notas'
+                ) {
+                    carregarListaAlunosFichas(document.getElementById('buscaFichaGeral').value.toLowerCase());
+                    if (alunoSelecionadoRa) selecionarAlunoFicha(alunoSelecionadoRa);
+                }
+            });
         });
 
         function carregarListaAlunosFichas(filtro = '') {
             const base = obterBancoGeralAlunos();
+            const cicloBanco = JSON.parse(localStorage.getItem('peniel_ciclo_escolar_alunos') || '{}');
             const container = document.getElementById('lista-alunos-fichas');
             container.innerHTML = '';
             
             let total = 0;
             for (let ra in base) {
                 const aluno = base[ra];
-                if (filtro && !aluno.nome.toLowerCase().includes(filtro) && !aluno.ra.includes(filtro) && !aluno.pai.toLowerCase().includes(filtro)) {
+                if (filtro && !aluno.nome.toLowerCase().includes(filtro) && !String(aluno.ra).includes(filtro) && !(aluno.pai || '').toLowerCase().includes(filtro)) {
                     continue;
                 }
                 total++;
+
+                const ciclo = cicloBanco[ra] || {};
+                const mediaTexto = (ciclo.mediaGeralCiclo !== null && ciclo.mediaGeralCiclo !== undefined)
+                    ? ` • Média ${Number(ciclo.mediaGeralCiclo).toFixed(1)}`
+                    : '';
 
                 const item = document.createElement('div');
                 item.className = `p-4 hover:bg-slate-50 transition cursor-pointer flex items-center justify-between border-b border-slate-100 ${alunoSelecionadoRa === ra ? 'bg-blue-50/70 border-l-4 border-l-laranja' : ''}`;
@@ -555,8 +699,8 @@
                 
                 item.innerHTML = `
                     <div>
-                        <p class="font-bold text-slate-800 text-xs sm:text-sm">${aluno.nome}</p>
-                        <p class="text-[10px] text-slate-400 font-mono">RA: ${aluno.ra} • <span class="text-blue-600 font-semibold">${aluno.turma}</span></p>
+                        <p class="font-bold text-slate-800 text-xs sm:text-sm">${aluno.nome || 'Sem nome'}</p>
+                        <p class="text-[10px] text-slate-400 font-mono">RA: ${aluno.ra} • <span class="text-blue-600 font-semibold">${aluno.turma}</span>${mediaTexto}</p>
                     </div>
                     <span class="text-xs text-slate-400">➡️</span>
                 `;
@@ -575,17 +719,34 @@
             const aluno = base[ra];
             if (!aluno) return;
 
+            const cicloBanco = JSON.parse(localStorage.getItem('peniel_ciclo_escolar_alunos') || '{}');
+            const ciclo = cicloBanco[ra] || {};
+            const norm = normalizarTurma(aluno.turmaChave || aluno.turma);
+
             alunoSelecionadoRa = ra;
             carregarListaAlunosFichas(document.getElementById('buscaFichaGeral').value.toLowerCase());
 
             document.getElementById('detalhe-prontuario-vazio').classList.add('hidden');
             document.getElementById('detalhe-prontuario-conteudo').classList.remove('hidden');
 
-            document.getElementById('ficha-turma-badge').innerText = aluno.turma;
-            document.getElementById('ficha-nome-aluno').innerText = aluno.nome;
+            document.getElementById('ficha-turma-badge').innerText = norm.nome;
+            document.getElementById('ficha-ciclo-badge').innerText = `Ciclo ${ciclo.anoLetivo || aluno.anoLetivo || '2027'} • ${aluno.status || 'Ativo'}`;
+            document.getElementById('ficha-nome-aluno').innerText = aluno.nome || 'Sem nome';
             document.getElementById('ficha-ra').innerText = aluno.ra;
             document.getElementById('ficha-nasc').innerText = aluno.nasc || 'Não informada';
             document.getElementById('ficha-nat').innerText = aluno.nat || 'Rio de Janeiro - RJ';
+
+            const linkNotas = document.getElementById('ficha-link-notas');
+            if (linkNotas) {
+                linkNotas.href = `notas.html?ra=${encodeURIComponent(aluno.ra)}&turma=${encodeURIComponent(norm.nome)}`;
+            }
+
+            document.getElementById('ficha-ciclo-situacao').innerText = ciclo.statusCiclo || 'Ativo no Ciclo';
+            document.getElementById('ficha-ciclo-ano').innerText = `${ciclo.anoLetivo || aluno.anoLetivo || '2027'} • ${norm.chave === 'fundamental1' ? 'Ensino Fundamental' : 'Educação Infantil'}`;
+            document.getElementById('ficha-ciclo-media').innerText = (ciclo.mediaGeralCiclo !== null && ciclo.mediaGeralCiclo !== undefined)
+                ? Number(ciclo.mediaGeralCiclo).toFixed(1)
+                : (norm.chave === 'fundamental1' ? 'Aguardando notas' : 'Descritivo / Lúdico');
+            document.getElementById('ficha-ciclo-faltas').innerText = `${ciclo.faltas || 0} falta(s)`;
 
             document.getElementById('ficha-pai').innerText = aluno.pai || 'Não informado';
             document.getElementById('ficha-pai-tel').innerText = aluno.paiTel || '--';
@@ -648,6 +809,7 @@
                     desc: desc
                 });
                 salvarBancoGeralAlunos(base);
+                sincronizarRegistroCicloAluno(base[alunoSelecionadoRa]);
                 persistirAlunoNoSupabase(base[alunoSelecionadoRa]);
                 fecharModalOcorrencia();
                 selecionarAlunoFicha(alunoSelecionadoRa);
@@ -660,12 +822,13 @@
             const aluno = base[ra || alunoSelecionadoRa];
             if (!aluno) return;
 
+            const norm = normalizarTurma(aluno.turmaChave || aluno.turma);
             document.getElementById('editRa').value = aluno.ra;
             document.getElementById('editNome').value = aluno.nome || '';
             document.getElementById('editNasc').value = aluno.nasc || '';
             document.getElementById('editNat').value = aluno.nat || '';
             document.getElementById('editCpf').value = aluno.cpf || '';
-            document.getElementById('editTurma').value = aluno.turma || 'Ensino Fundamental';
+            document.getElementById('editTurma').value = norm.nome;
 
             document.getElementById('editPai').value = aluno.pai || '';
             document.getElementById('editPaiTel').value = aluno.paiTel || '';
@@ -697,15 +860,14 @@
             const base = obterBancoGeralAlunos();
             if (!base[ra]) return;
 
-            const novaTurma = document.getElementById('editTurma').value;
+            const norm = normalizarTurma(document.getElementById('editTurma').value);
             base[ra].nome = document.getElementById('editNome').value.trim();
             base[ra].nasc = document.getElementById('editNasc').value.trim();
             base[ra].nat = document.getElementById('editNat').value.trim();
             base[ra].cpf = document.getElementById('editCpf').value.trim();
-            base[ra].turma = novaTurma;
-            if (nomeParaChaveTurma[novaTurma]) {
-                base[ra].turmaChave = nomeParaChaveTurma[novaTurma];
-            }
+            base[ra].turma = norm.nome;
+            base[ra].turmaChave = norm.chave;
+            base[ra].segmento = norm.chave === 'fundamental1' ? 'fundamental' : 'infantil';
 
             base[ra].pai = document.getElementById('editPai').value.trim();
             base[ra].paiTel = document.getElementById('editPaiTel').value.trim();
@@ -719,11 +881,12 @@
             base[ra].obs = document.getElementById('editObs').value.trim();
 
             salvarBancoGeralAlunos(base);
+            sincronizarRegistroCicloAluno(base[ra]);
             persistirAlunoNoSupabase(base[ra]);
             fecharModalEdicaoCompleta();
             carregarListaAlunosFichas(document.getElementById('buscaFichaGeral').value.toLowerCase());
             selecionarAlunoFicha(ra);
-            notificarFicha('Ficha salva e sincronizada com o Supabase!');
+            notificarFicha('Ficha salva e sincronizada com matrículas, ciclo e Supabase!');
         }
     </script>
 </body>
