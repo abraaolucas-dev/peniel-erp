@@ -1,13 +1,17 @@
+
+
+
+Ícone do app HTML
+notas
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diário de Classe e Notas | Peniel Christian School</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Notas, Chamada e Boletim Escolar | Peniel Christian School</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -18,291 +22,251 @@
             }
         }
     </script>
+    <style>
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .input-nota { width: 64px; text-align: center; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px; font-weight: bold; font-size: 12px; transition: all 0.2s; }
+        .input-nota:focus { border-color: #003057; box-shadow: 0 0 0 2px rgba(0,48,87,0.1); outline: none; }
+        .nota-aprovado { color: #15803d; background-color: #dcfce7; border-color: #86efac; }
+        .nota-recuperacao { color: #b91c1c; background-color: #fee2e2; border-color: #fca5a5; }
+        .nota-parcial { color: #d97706; background-color: #fef3c7; border-color: #fcd34d; }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col md:flex-row overflow-x-hidden">
 
-    <!-- Container de Notificações (Toast) -->
-    <div id="toastContainer" class="fixed bottom-5 right-5 z-[120] flex flex-col gap-2 max-w-sm pointer-events-none"></div>
+    <!-- Overlay Mobile -->
+    <div id="overlay-mobile" onclick="toggleMenuMobile()" class="fixed inset-0 bg-slate-950/75 z-[95] hidden md:hidden backdrop-blur-sm transition-opacity"></div>
 
-    <div class="flex h-screen overflow-hidden">
-        
-        <!-- Menu Lateral -->
-        <aside id="menu-lateral" class="w-64 bg-marinho text-white flex flex-col hidden md:flex transition-all z-10">
-            <div class="p-6">
-                <h1 class="font-heading text-2xl font-bold tracking-tight">PENIEL <span class="text-sm font-sans font-normal block text-blue-300">Sistema Interno</span></h1>
+    <!-- Menu Lateral -->
+    <aside id="menu-lateral" class="fixed md:sticky left-0 top-0 w-72 md:w-64 bg-marinho text-white flex-col h-screen z-[100] transform -translate-x-full md:translate-x-0 transition-all duration-300 flex shrink-0 shadow-2xl md:shadow-none border-r-4 border-laranja md:border-r-0">
+        <div class="p-6 flex justify-between items-center shrink-0 border-b border-white/10 bg-black/15">
+            <div>
+                <h1 class="font-heading text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-laranja inline-block"></span> PENIEL
+                </h1>
+                <span class="text-xs font-sans font-semibold block text-blue-300 mt-0.5">Unidade Matriz</span>
             </div>
-            <nav class="flex-1 px-2 space-y-1 mt-2 overflow-y-auto pb-6">
-                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-4 px-4">Geral</div>
-                <a href="index.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📈 Dashboard</a>
-                
-                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Captação</div>
-                <a href="painel.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📥 Leads Typebot</a>
-                
-                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Secretaria</div>
-                <a href="matriculas.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📝 Matrículas</a>
-                <a href="fichas.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">👥 Fichas (Alunos/Pais)</a>
-                <a href="rematricula.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">🔄 Rematrícula</a>
+            <button type="button" onclick="toggleMenuMobile()" class="md:hidden bg-white/10 hover:bg-red-500/30 text-white w-9 h-9 rounded-xl text-xl font-bold flex items-center justify-center transition">&times;</button>
+        </div>
 
-                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Acadêmico</div>
-                <a href="calendario.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">📅 Calendário e Equipe</a>
-                <a href="notas.html" class="block px-4 py-2.5 bg-blue-900 rounded-lg font-medium text-white shadow-inner">📊 Diário de Classe</a>
-
-                <div class="text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-1 mt-6 px-4">Administrativo</div>
-                <a href="financeiro.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">💰 Gestão Financeira</a>
-                <a href="configuracoes.html" class="block px-4 py-2.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-lg font-medium transition">⚙️ Configurações / ADM</a>
-            </nav>
-        </aside>
-
-        <!-- Área Principal -->
-        <main class="flex-1 overflow-y-auto p-6 md:p-8 flex flex-col gap-6 relative">
+        <nav class="flex-1 px-3 space-y-1.5 mt-3 overflow-y-auto pb-6">
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-3 px-3">Geral</div>
+            <a href="index.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">📈 Dashboard</a>
             
-            <!-- Header Global -->
-            <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Captação</div>
+            <a href="painel.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">📥 Leads Typebot</a>
+            
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Secretaria</div>
+            <a href="matriculas.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">📝 Matrículas & Turmas</a>
+            <a href="fichas.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">👥 Fichas (Alunos/Pais)</a>
+            <a href="rematricula.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">🔄 Rematrícula</a>
+
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Acadêmico</div>
+            <a href="calendario.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">📅 Calendário e Equipe</a>
+            <a href="notas.html" class="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-laranja to-orange-500 rounded-xl font-bold text-white shadow-md">
+                <span>📊 Notas e Avaliações</span>
+                <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full">Ativo</span>
+            </a>
+
+            <div class="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest mb-1 mt-5 px-3">Administrativo</div>
+            <a href="financeiro.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">💰 Gestão Financeira</a>
+            <a href="configuracoes.html" class="block px-4 py-2.5 text-blue-100 hover:bg-white/10 rounded-xl font-medium transition">⚙️ Configurações / ADM</a>
+        </nav>
+        
+        <div class="p-4 border-t border-white/10 bg-black/20 shrink-0">
+            <button type="button" onclick="sairDoSistema()" class="w-full flex items-center justify-center gap-2 bg-red-600/80 hover:bg-red-600 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition">
+                🚪 Sair do Sistema
+            </button>
+        </div>
+    </aside>
+
+    <!-- Área Principal -->
+    <main class="flex-1 p-3 sm:p-5 md:p-8 flex flex-col gap-5 w-full max-w-full overflow-x-hidden">
+        
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm gap-4">
+            <div class="flex items-center gap-3">
+                <button type="button" onclick="toggleMenuMobile()" class="md:hidden bg-slate-100 text-marinho p-2.5 rounded-lg text-xl hover:bg-slate-200 transition active:scale-95 shadow-sm">☰</button>
                 <div>
-                    <!-- Botão Estático Nativo -->
-                    <button type="button" onclick="window.location.assign('index.html');" class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-blue-600 transition mb-2 bg-slate-100 hover:bg-blue-50 px-3 py-1.5 rounded-lg border border-slate-200 w-fit cursor-pointer shadow-sm">
-                        &larr; Voltar ao Dashboard
-                    </button>
-                    
-                    <h2 class="font-heading text-3xl font-bold text-slate-800 mt-1">Portal do Professor</h2>
-                    <p class="text-slate-500 text-sm">Diário de classe completo: chamada, conteúdo e notas.</p>
+                    <div class="flex items-center gap-2 mb-0.5">
+                        <span class="bg-blue-100 text-marinho text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Portal Acadêmico</span>
+                        <span class="bg-slate-100 text-slate-700 text-[10px] font-bold px-2 py-0.5 rounded-full">Média de Aprovação: 7.0</span>
+                    </div>
+                    <h2 class="font-heading text-xl sm:text-2xl font-bold text-slate-800">Notas, Chamada e Boletim Escolar</h2>
+                    <p class="text-xs text-slate-500">Lançamento de notas, chamada e emissão de boletins em tempo real.</p>
                 </div>
-                
-                <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
-                    <span id="status-sync-notas" class="text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-3 py-2 rounded-xl text-center">⏳ Sincronizando...</span>
-                    <!-- Seletor de Turma Sincronizado em Tempo Real -->
-                    <div class="w-full sm:w-auto flex flex-col">
-                        <label for="seletorTurma" class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1 mb-0.5">Turma Ativa</label>
-                        <select id="seletorTurma" onchange="atualizarFiltrosGlobais()" class="w-full sm:w-64 border border-slate-300 bg-white text-slate-800 rounded-xl px-3.5 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold text-xs"></select>
-                    </div>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
+                <span id="status-sync-notas" class="text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-3 py-2 rounded-xl text-center">⏳ Sincronizando...</span>
+                <button type="button" onclick="salvarTodasNotas()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm transition flex items-center justify-center gap-1.5 whitespace-nowrap">
+                    💾 Salvar Diário
+                </button>
+            </div>
+        </header>
+
+        <!-- BARRA DE FILTROS -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap gap-3 items-center justify-between">
+            <div class="flex flex-wrap gap-3 items-center flex-1">
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Turma / Ciclo</label>
+                    <select id="seletorTurma" onchange="mudarTurma()" class="border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold bg-slate-50 focus:ring-2 focus:ring-marinho focus:outline-none">
+                        <option value="Ensino Fundamental">Ensino Fundamental</option>
+                    </select>
                 </div>
-            </header>
 
-            <!-- Abas do Diário -->
-            <div class="flex flex-wrap bg-slate-100 p-1 rounded-xl border border-slate-200 w-full md:w-fit gap-1">
-                <button type="button" onclick="mudarAbaDiario('frequencia')" id="btnAbaFrequencia" class="flex-1 md:flex-none px-5 py-2.5 rounded-lg font-bold text-sm bg-white text-marinho shadow-sm transition border border-slate-200">📝 Chamada e Diário do Dia</button>
-                <button type="button" onclick="mudarAbaDiario('notas')" id="btnAbaNotas" class="flex-1 md:flex-none px-5 py-2.5 rounded-lg font-bold text-sm text-slate-500 hover:text-slate-800 transition border border-transparent">📊 Lançamento de Notas</button>
-                <button type="button" onclick="mudarAbaDiario('boletim')" id="btnAbaBoletim" class="flex-1 md:flex-none px-5 py-2.5 rounded-lg font-bold text-sm text-slate-500 hover:text-slate-800 transition border border-transparent">🎓 Boletim & Fim de Ano</button>
-            </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Trimestre / Período</label>
+                    <select id="seletorTrimestre" onchange="mudarTrimestre()" class="border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold bg-slate-50 focus:ring-2 focus:ring-marinho focus:outline-none">
+                        <option value="T1">1º Trimestre (T1)</option>
+                        <option value="T2">2º Trimestre (T2)</option>
+                        <option value="T3" selected>3º Trimestre (T3)</option>
+                        <option value="T4">4º Trimestre (T4)</option>
+                    </select>
+                </div>
 
-            <!-- Seletor de Matéria (Comum para as abas) -->
-            <div class="flex gap-2 overflow-x-auto pb-2 border-b border-slate-200" id="botoesMateria">
-                <button type="button" onclick="selecionarMateria('Matemática')" data-materia="Matemática" class="btn-materia bg-marinho text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow-sm whitespace-nowrap transition">Matemática</button>
-                <button type="button" onclick="selecionarMateria('Português')" data-materia="Português" class="btn-materia bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 px-5 py-2.5 rounded-lg text-sm font-bold whitespace-nowrap transition">Português</button>
-                <button type="button" onclick="selecionarMateria('Ciências')" data-materia="Ciências" class="btn-materia bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 px-5 py-2.5 rounded-lg text-sm font-bold whitespace-nowrap transition">Ciências</button>
-                <button type="button" onclick="selecionarMateria('História')" data-materia="História" class="btn-materia bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 px-5 py-2.5 rounded-lg text-sm font-bold whitespace-nowrap transition">História</button>
-                <button type="button" onclick="selecionarMateria('Geografia')" data-materia="Geografia" class="btn-materia bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 px-5 py-2.5 rounded-lg text-sm font-bold whitespace-nowrap transition">Geografia</button>
-            </div>
-
-
-            <!-- ===================================================================== -->
-            <!-- ABA 1: CHAMADA E DIÁRIO DO DIA -->
-            <!-- ===================================================================== -->
-            <div id="moduloFrequencia" class="space-y-6 block animate-fade-in">
-                
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    
-                    <!-- Lançamento de Conteúdo -->
-                    <div class="lg:col-span-1 bg-white rounded-xl border border-slate-200 shadow-sm p-5 space-y-4">
-                        <h3 class="font-bold text-slate-800 border-b border-slate-100 pb-2">📚 Registro da Aula</h3>
-                        
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Data da Aula</label>
-                            <input type="date" id="dataAula" onchange="carregarDiarioDaData()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Conteúdo Lecionado</label>
-                            <textarea id="conteudoAula" rows="3" placeholder="Ex: Capítulo 4 - Frações e numerais decimais..." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"></textarea>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Tarefa de Casa (Opcional)</label>
-                            <textarea id="tarefaAula" rows="2" placeholder="Ex: Exercícios página 45 a 47." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"></textarea>
-                        </div>
-
-                        <button type="button" onclick="salvarConteudoDiario()" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg font-bold text-sm shadow-sm transition cursor-pointer">
-                            Salvar Conteúdo
-                        </button>
-                    </div>
-
-                    <!-- Frequência (Chamada) -->
-                    <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-                        <div class="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center gap-2">
-                            <h3 class="font-bold text-slate-800 text-sm">✋ Chamada de Alunos</h3>
-                            <button type="button" onclick="salvarChamada()" class="bg-laranja hover:bg-orange-600 text-white px-5 py-2 rounded-lg font-bold text-xs shadow-sm transition cursor-pointer">
-                                💾 Salvar Chamada
-                            </button>
-                        </div>
-
-                        <div class="overflow-y-auto flex-1 max-h-[400px]">
-                            <table class="w-full text-left text-sm">
-                                <thead class="bg-white border-b border-slate-200 uppercase text-[10px] tracking-wider font-bold sticky top-0 z-10 shadow-sm">
-                                    <tr>
-                                        <th class="px-6 py-3">Aluno</th>
-                                        <th class="px-6 py-3 text-right">Presença</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tabelaChamada" class="divide-y divide-slate-100">
-                                    <!-- Preenchido via JS -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Disciplina</label>
+                    <select id="seletorMateria" onchange="mudarMateria()" class="border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold bg-slate-50 focus:ring-2 focus:ring-marinho focus:outline-none">
+                        <option value="Matemática" selected>Matemática</option>
+                        <option value="Português">Português</option>
+                        <option value="Ciências">Ciências</option>
+                        <option value="História">História</option>
+                        <option value="Geografia">Geografia</option>
+                    </select>
                 </div>
             </div>
 
+            <div class="flex items-center gap-2 bg-blue-50 px-3.5 py-2 rounded-xl border border-blue-200">
+                <span class="text-xs text-marinho font-bold">Média Turma:</span>
+                <span id="media-turma-label" class="text-sm font-black text-marinho">7.8</span>
+            </div>
+        </div>
 
-            <!-- ===================================================================== -->
-            <!-- ABA 2: LANÇAMENTO DE NOTAS E CONCEITOS -->
-            <!-- ===================================================================== -->
-            <div id="moduloNotas" class="space-y-6 hidden animate-fade-in">
-                
-                <!-- Cards de Resumo Acadêmico Dinâmicos -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-blue-500">
-                        <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider">Média da Turma</h3>
-                        <div id="kpiMediaGeral" class="text-3xl font-black text-slate-800 mt-1">--</div>
-                    </div>
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-green-500">
-                        <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider">Acima da Média</h3>
-                        <div id="kpiAcimaMedia" class="text-3xl font-black text-slate-800 mt-1">--</div>
-                    </div>
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-orange-500">
-                        <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider">Em Recuperação</h3>
-                        <div id="kpiRecuperacao" class="text-3xl font-black text-orange-600 mt-1">--</div>
-                    </div>
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-red-500">
-                        <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider">Alerta Faltas Globais</h3>
-                        <div id="kpiFaltas" class="text-3xl font-black text-red-600 mt-1">--</div>
-                    </div>
-                </div>
-
-                <!-- Painel de Busca e Tabela de Notas -->
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="p-4 border-b border-slate-100 bg-slate-50 flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-3">
-                        <h3 class="font-bold text-blue-900 text-sm flex-1 bg-blue-100 px-3 py-1.5 rounded-lg inline-block" id="tituloTabelaNotas">Lançamento</h3>
-
-                        <select id="seletorTrimestre" onchange="atualizarFiltrosGlobais()" class="border border-slate-300 bg-white text-slate-700 rounded-lg px-3 py-2 text-xs font-bold focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm">
-                            <option value="T1">1º Trimestre (T1)</option>
-                            <option value="T2">2º Trimestre (T2)</option>
-                            <option value="T3" selected>3º Trimestre (T3 - Atual)</option>
-                            <option value="T4">4º Trimestre (T4)</option>
-                        </select>
-                        
-                        <div class="relative w-full lg:w-64">
-                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔍</span>
-                            <input type="text" id="buscaAluno" onkeyup="renderAmbasTabelas()" placeholder="Buscar aluno..." class="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm">
-                        </div>
-
-                        <button type="button" onclick="salvarTodasNotas()" class="w-full sm:w-auto bg-laranja hover:bg-orange-600 text-white px-5 py-2 rounded-lg font-bold text-xs shadow-sm transition cursor-pointer">
-                            💾 Salvar Notas
-                        </button>
-                    </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-sm">
-                            <thead class="bg-slate-50 text-slate-500 border-b border-slate-200 uppercase text-[11px] tracking-wider font-bold">
-                                <tr>
-                                    <th class="px-4 py-3.5">RA / Aluno</th>
-                                    <th class="px-3 py-3.5 text-center">1º Trim <span class="block text-[9px] text-slate-400 font-normal">T1</span></th>
-                                    <th class="px-3 py-3.5 text-center">2º Trim <span class="block text-[9px] text-slate-400 font-normal">T2</span></th>
-                                    <th class="px-3 py-3.5 text-center">3º Trim <span class="block text-[9px] text-slate-400 font-normal">T3</span></th>
-                                    <th class="px-3 py-3.5 text-center">4º Trim <span class="block text-[9px] text-slate-400 font-normal">T4</span></th>
-                                    <th class="px-4 py-3.5 text-center bg-blue-50/70 text-marinho">Média Parcial <span class="block text-[9px] text-slate-500 font-normal">Lançados</span></th>
-                                    <th class="px-4 py-3.5 text-right">Situação</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tabelaAlunos" class="divide-y divide-slate-100">
-                                <!-- Injetado via Javascript -->
-                            </tbody>
-                        </table>
-                        <div id="msgSemAlunos" class="hidden p-8 text-center text-slate-500 font-medium">Nenhum aluno encontrado.</div>
-                    </div>
+        <!-- TABELA 1: DIÁRIO DE CLASSE E NOTAS -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+            <div class="p-4 border-b border-slate-100 bg-slate-50/70 flex flex-wrap justify-between items-center gap-2">
+                <div>
+                    <h3 class="font-bold text-slate-800 text-sm">📝 Diário de Classe: <span id="titulo-diario-materia" class="text-marinho">Matemática — 3º Trimestre</span></h3>
+                    <p class="text-[11px] text-slate-500">Insira as notas (0.0 a 10.0) e clique em "Salvar Diário".</p>
                 </div>
             </div>
 
-            <!-- ===================================================================== -->
-            <!-- ABA 3: BOLETIM ANUAL, PONTUAÇÃO E FECHAMENTO DE FIM DE ANO           -->
-            <!-- ===================================================================== -->
-            <div id="moduloBoletim" class="space-y-6 hidden animate-fade-in">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-marinho">
-                        <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider">Aprovados no Ano</h3>
-                        <div id="kpiAprovadosAno" class="text-3xl font-black text-marinho mt-1">--</div>
-                    </div>
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-amber-500">
-                        <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider">Recuperação / Exame</h3>
-                        <div id="kpiRecuperacaoAno" class="text-3xl font-black text-amber-600 mt-1">--</div>
-                    </div>
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-emerald-500">
-                        <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider">Justificativas Registradas</h3>
-                        <div id="kpiJustificativasAno" class="text-3xl font-black text-emerald-700 mt-1">--</div>
-                    </div>
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-laranja">
-                        <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider">Pontuação Média (0–100)</h3>
-                        <div id="kpiPontuacaoMedia" class="text-3xl font-black text-laranja mt-1">--</div>
-                    </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-slate-50 text-slate-500 border-b border-slate-200 uppercase text-[10px] font-bold tracking-wider">
+                        <tr>
+                            <th class="px-5 py-3.5">Aluno / RA</th>
+                            <th class="px-3 py-3.5 text-center">1º Bim. (N1)</th>
+                            <th class="px-3 py-3.5 text-center">2º Bim. (N2)</th>
+                            <th class="px-3 py-3.5 text-center">Recup. (N3)</th>
+                            <th class="px-4 py-3.5 text-center">Média Trim.</th>
+                            <th class="px-4 py-3.5 text-center">Faltas</th>
+                            <th class="px-5 py-3.5 text-right">Situação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-notas-corpo" class="divide-y divide-slate-100 text-xs"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- CHAMADA E JUSTIFICATIVAS -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+            <div class="p-4 border-b border-slate-100 bg-slate-50/70 flex flex-wrap justify-between items-center gap-2">
+                <div>
+                    <h3 class="font-bold text-slate-800 text-sm">🗓️ Chamada do Dia & Justificativas de Falta</h3>
+                    <p class="text-[11px] text-slate-500">Marque Presente, Falta ou Justificada e salve a chamada da data selecionada.</p>
                 </div>
-
-                <!-- Bloco Gerador de Relatório Anual Completo (PDF) -->
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-                    <div class="flex flex-col sm:flex-row sm:items-center gap-3 flex-1">
-                        <label for="selectAlunoRelatorioAnual" class="text-xs font-bold text-slate-700 uppercase tracking-wider whitespace-nowrap">
-                            📄 Relatório Anual do Aluno (PDF):
-                        </label>
-                        <select id="selectAlunoRelatorioAnual" class="flex-1 max-w-md border border-slate-300 bg-white text-slate-800 rounded-lg px-3 py-2 text-xs font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                            <option value="">Selecione um aluno...</option>
-                        </select>
-                    </div>
-                    <button type="button" onclick="gerarRelatorioAnualPdfAluno()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-lg font-bold text-xs shadow-sm transition cursor-pointer whitespace-nowrap">
-                        📄 Gerar Relatório Anual (PDF)
-                    </button>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="p-4 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                        <div>
-                            <h3 class="font-bold text-slate-800 text-sm">🎓 Boletim Consolidado & Fechamento de Fim de Ano</h3>
-                            <p class="text-xs text-slate-500">Combina T1–T4, presenças, faltas, justificativas (do diário e do calendário) e pontuação anual.</p>
-                        </div>
-                        <button type="button" onclick="salvarConsolidadoBoletim()" class="bg-marinho hover:bg-blue-900 text-white px-4 py-2 rounded-lg font-bold text-xs shadow-sm transition cursor-pointer">
-                            💾 Consolidar Boletim
-                        </button>
-                    </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs">
-                            <thead class="bg-slate-50 text-slate-500 border-b border-slate-200 uppercase text-[10px] font-bold">
-                                <tr>
-                                    <th class="px-4 py-3">Aluno / RA</th>
-                                    <th class="px-4 py-3 text-center">T1</th>
-                                    <th class="px-4 py-3 text-center">T2</th>
-                                    <th class="px-4 py-3 text-center">T3</th>
-                                    <th class="px-4 py-3 text-center">T4</th>
-                                    <th class="px-4 py-3 text-center">Média Anual</th>
-                                    <th class="px-4 py-3 text-center">P / F / J</th>
-                                    <th class="px-4 py-3 text-center">Pontuação</th>
-                                    <th class="px-4 py-3 text-right">Parecer Fim de Ano</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tabelaBoletimFimAno" class="divide-y divide-slate-100"></tbody>
-                        </table>
-                    </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <input type="date" id="data-chamada" onchange="aoMudarDataChamada()" class="border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-bold bg-white">
+                    <button type="button" onclick="salvarChamadaDia()" class="bg-marinho hover:bg-blue-900 text-white px-4 py-1.5 rounded-xl text-xs font-bold shadow-sm transition">💾 Salvar Chamada</button>
                 </div>
             </div>
 
-        </main>
-    </div>
+            <div id="chamada-lista-alunos" class="p-4 space-y-2.5 text-xs"></div>
+        </div>
 
+        <!-- BOLETIM ANUAL DO ALUNO -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+            <div class="p-4 border-b border-slate-100 bg-slate-50/70 flex flex-wrap justify-between items-center gap-2">
+                <div>
+                    <h3 class="font-bold text-slate-800 text-sm">🎓 Boletim Consolidado Anual por Aluno</h3>
+                    <p class="text-[11px] text-slate-500">Visão completa de todas as disciplinas e trimestres (T1 a T4) com emissão de PDF.</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <select id="seletorAlunoRelatorio" onchange="renderTabelaBoletim()" class="border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold bg-white min-w-[210px]"></select>
+                    <button type="button" onclick="exportarBoletimPDF()" class="bg-laranja hover:bg-orange-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-sm transition">📄 Exportar Boletim PDF</button>
+                </div>
+            </div>
 
-    <!-- ========================================================================= -->
-    <!-- MOTOR JAVASCRIPT -->
-    <!-- ========================================================================= -->
+            <div id="area-impressao-boletim" class="p-4 sm:p-6 space-y-4">
+                <div class="flex flex-wrap justify-between items-center bg-slate-50 p-4 rounded-xl border border-slate-200 gap-2">
+                    <div>
+                        <p class="text-xs text-slate-500">Aluno: <strong id="boletim-nome-cabecalho" class="text-slate-800">--</strong></p>
+                        <p class="text-xs text-slate-500">Turma: <strong id="boletim-turma-cabecalho" class="text-slate-800">--</strong> • RA: <strong id="boletim-ra-cabecalho" class="text-slate-800 font-mono">--</strong></p>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[10px] font-bold uppercase text-slate-400 block">Média Geral Anual</span>
+                        <strong id="boletim-media-geral" class="text-lg font-black text-marinho">--</strong>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm border border-slate-200 rounded-xl overflow-hidden">
+                        <thead class="bg-marinho text-white uppercase text-[10px] font-bold tracking-wider">
+                            <tr>
+                                <th class="px-4 py-3">Disciplina</th>
+                                <th class="px-3 py-3 text-center">1º Trim (T1)</th>
+                                <th class="px-3 py-3 text-center">2º Trim (T2)</th>
+                                <th class="px-3 py-3 text-center">3º Trim (T3)</th>
+                                <th class="px-3 py-3 text-center">4º Trim (T4)</th>
+                                <th class="px-3 py-3 text-center">Pontuação</th>
+                                <th class="px-4 py-3 text-center">Média Anual</th>
+                                <th class="px-4 py-3 text-center">Situação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-boletim-corpo" class="divide-y divide-slate-100 text-xs bg-white"></tbody>
+                    </table>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 text-xs">
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                        <span class="text-[10px] font-bold uppercase text-slate-500 block mb-1">Frequência / Faltas</span>
+                        <p id="boletim-frequencia-resumo" class="font-bold text-slate-800">0 faltas registradas</p>
+                    </div>
+                    <div class="md:col-span-2 bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+                        <label for="parecer-fim-ano" class="text-[10px] font-bold uppercase text-slate-500 block">Parecer Descritivo de Fim de Ano</label>
+                        <textarea id="parecer-fim-ano" rows="2" class="w-full border border-slate-300 rounded-xl p-2.5 text-xs bg-white" placeholder="Escreva o parecer pedagógico final do aluno..."></textarea>
+                        <div class="flex justify-end">
+                            <button type="button" onclick="salvarConsolidadoBoletim()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded-xl text-xs font-bold shadow-sm transition">💾 Salvar Parecer e Boletim</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- SCRIPT DO MÓDULO ACADÊMICO UNIFICADO -->
     <script>
-        const SUPABASE_URL_NOTAS = 'https://fxjdmhrlujiajkouduhg.supabase.co';
-        const SUPABASE_ANON_KEY_NOTAS = 'sb_publishable_EANH7zIXleZ3G18S6z7KFw_26oySNP9';
+        const SUPABASE_URL = 'https://fxjdmhrlujiajkouduhg.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_EANH7zIXleZ3G18S6z7KFw_26oySNP9';
+
+        async function supabaseFetchNotas(path, options = {}) {
+            const resp = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+                ...options,
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': options.prefer || 'resolution=merge-duplicates,return=representation',
+                    ...(options.headers || {})
+                }
+            });
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const text = await resp.text();
+            return text ? JSON.parse(text) : null;
+        }
 
         function atualizarBadgeSyncNotas(online) {
             const el = document.getElementById('status-sync-notas');
@@ -316,214 +280,196 @@
             }
         }
 
-        async function supabaseFetchNotas(path, options = {}) {
-            const resp = await fetch(`${SUPABASE_URL_NOTAS}/rest/v1/${path}`, {
-                ...options,
-                headers: {
-                    'apikey': SUPABASE_ANON_KEY_NOTAS,
-                    'Authorization': `Bearer ${SUPABASE_ANON_KEY_NOTAS}`,
-                    'Content-Type': 'application/json',
-                    'Prefer': options.prefer || 'resolution=merge-duplicates,return=representation',
-                    ...(options.headers || {})
-                }
-            });
-            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-            const text = await resp.text();
-            return text ? JSON.parse(text) : null;
-        }
-
-        async function sincronizarNotasComSupabase() {
-            const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
-            try {
-                const rows = await supabaseFetchNotas(
-                    `notas_avaliacoes?unidade=eq.${encodeURIComponent(unidade)}&disciplina=eq.${encodeURIComponent(filtroMateria)}`
-                );
-                if (Array.isArray(rows)) {
-                    rows.forEach(r => {
-                        if (r.aluno_ra && r.periodo && r.nota_final !== null && r.nota_final !== undefined) {
-                            bancoNotas[`${r.aluno_ra}_${r.disciplina || filtroMateria}_${r.periodo}`] = { nota: Number(r.nota_final) };
-                        }
-                    });
-                    localStorage.setItem('peniel_banco_notas', JSON.stringify(bancoNotas));
-                    renderAmbasTabelas();
-                    atualizarBadgeSyncNotas(true);
-                }
-            } catch (_) {
-                atualizarBadgeSyncNotas(false);
-            }
-        }
-
-        async function persistirNotasNoSupabase() {
-            const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
-            const anoLetivo = localStorage.getItem('peniel_ano_letivo') || '2027';
-            const alunosTurma = baseAlunos.filter(a => normalizarNomeTurma(a.turma) === normalizarNomeTurma(filtroTurma));
-            const payload = [];
-
-            alunosTurma.forEach(aluno => {
-                ['T1', 'T2', 'T3', 'T4'].forEach(tri => {
-                    const chave = `${aluno.ra}_${filtroMateria}_${tri}`;
-                    const reg = bancoNotas[chave];
-                    const notaNum = (reg && reg.nota !== '' && reg.nota !== null && reg.nota !== undefined)
-                        ? Number(reg.nota)
-                        : null;
-
-                    payload.push({
-                        id: `${unidade}_${anoLetivo}_${aluno.ra}_${filtroMateria}_${tri}`,
-                        unidade,
-                        ano_letivo: String(anoLetivo),
-                        aluno_ra: String(aluno.ra),
-                        disciplina: filtroMateria,
-                        periodo: tri,
-                        n1: notaNum,
-                        n2: null,
-                        n3: null,
-                        nota_final: notaNum,
-                        faltas: Number(aluno.faltas || 0),
-                        atualizado_em: new Date().toISOString()
-                    });
-                });
-            });
-
-            try {
-                await supabaseFetchNotas('notas_avaliacoes?on_conflict=id', {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
-                });
-                atualizarBadgeSyncNotas(true);
-            } catch (_) {
-                atualizarBadgeSyncNotas(false);
-            }
-        }
-
-        async function persistirDiarioNoSupabase(chave, dados) {
-            const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
-            try {
-                await supabaseFetchNotas('diario_aulas?on_conflict=id', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        id: `${unidade}_${chave}`,
-                        unidade,
-                        turma: dados.turma || filtroTurma,
-                        materia: dados.materia || filtroMateria,
-                        trimestre: dados.trimestre || filtroTrimestre,
-                        data_aula: dados.dataAula || getDataAulaAtual(),
-                        conteudo: dados.conteudo || '',
-                        tarefa: dados.tarefa || '',
-                        chamada_json: bancoChamadaSalva[chave] || bancoChamada || {},
-                        justificativas_json: bancoJustificativas || {},
-                        atualizado_em: new Date().toISOString()
-                    })
-                });
-                atualizarBadgeSyncNotas(true);
-            } catch (_) {
-                atualizarBadgeSyncNotas(false);
-            }
-        }
-
-        function notificar(mensagem, tipo = 'sucesso') {
-            const container = document.getElementById('toastContainer');
-            if (!container) return;
-
-            const cores = {
-                sucesso: 'bg-slate-900 text-white border-emerald-500',
-                alerta: 'bg-amber-900 text-amber-50 border-amber-400',
-                info: 'bg-marinho text-white border-blue-400'
-            };
-
+        function notificar(msg) {
             const toast = document.createElement('div');
-            toast.className = `pointer-events-auto px-4 py-3 rounded-xl border-l-4 shadow-xl text-xs font-bold transition-all duration-300 ${cores[tipo] || cores.sucesso}`;
-            toast.innerText = mensagem;
-            container.appendChild(toast);
-
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-2');
-                setTimeout(() => toast.remove(), 300);
-            }, 3200);
+            toast.className = 'fixed bottom-5 right-5 bg-slate-900 text-white text-xs font-bold px-4 py-3 rounded-xl shadow-xl z-[200] transition-opacity';
+            toast.innerText = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2600);
         }
 
-        // --- BASE DE ALUNOS E TURMAS SINCRONIZADAS EM TEMPO REAL ---
-        const alunosIniciaisPadrao = [
-            { ra: '2027501', nome: 'Helena Santos', turma: 'Maternal 1', turno: 'Manhã', sala: 'Sala 01', faltas: 0 },
-            { ra: '2027001', nome: 'Davi Lucas', turma: '3º Ano A (Fundamental)', turno: 'Manhã', sala: 'Sala 02', faltas: 2 },
-            { ra: '2027002', nome: 'Isabela Mendes', turma: '3º Ano A (Fundamental)', turno: 'Manhã', sala: 'Sala 02', faltas: 5 },
-            { ra: '2027089', nome: 'Pedro Souza', turma: '3º Ano A (Fundamental)', turno: 'Manhã', sala: 'Sala 02', faltas: 12 },
-            { ra: '2027044', nome: 'Lucas Silva', turma: '3º Ano A (Fundamental)', turno: 'Manhã', sala: 'Sala 02', faltas: 1 },
-            { ra: '2027055', nome: 'Ana Beatriz', turma: '3º Ano A (Fundamental)', turno: 'Manhã', sala: 'Sala 02', faltas: 0 },
-            { ra: '2027101', nome: 'João Pedro', turma: '2º Ano B (Fundamental)', turno: 'Tarde', sala: 'Sala 04', faltas: 1 },
-            { ra: '2027102', nome: 'Sofia Almeida', turma: '2º Ano B (Fundamental)', turno: 'Tarde', sala: 'Sala 04', faltas: 3 }
+        function toggleMenuMobile() {
+            const menu = document.getElementById('menu-lateral');
+            const overlay = document.getElementById('overlay-mobile');
+            menu.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        function sairDoSistema() {
+            if (confirm("Deseja encerrar sua sessão?")) { window.location.href = 'login.html'; }
+        }
+
+        // --- INTEGRAÇÃO TOTAL COM MATRÍCULAS, FICHAS E CICLO ESCOLAR ---
+        const MAPA_TURMAS_SISTEMA = {
+            '3A': 'Ensino Fundamental',
+            '2B': 'Ensino Fundamental',
+            'Pre2': 'Pré-Escola 2',
+            'maternal1': 'Maternal 1',
+            'maternal2': 'Maternal 2',
+            'pre1': 'Pré-Escola 1',
+            'pre2': 'Pré-Escola 2',
+            'fundamental1': 'Ensino Fundamental',
+            '3º Ano A (Fundamental)': 'Ensino Fundamental',
+            '2º Ano B (Fundamental)': 'Ensino Fundamental',
+            'Pré II (Infantil)': 'Pré-Escola 2',
+            'Maternal 1': 'Maternal 1',
+            'Maternal 2': 'Maternal 2',
+            'Pré-Escola 1': 'Pré-Escola 1',
+            'Pré-Escola 2': 'Pré-Escola 2',
+            'Ensino Fundamental': 'Ensino Fundamental'
+        };
+
+        const TURMAS_PADRAO_CICLO = [
+            { nome: 'Ensino Fundamental', turno: 'Manhã / Tarde', sala: 'Fundamental' },
+            { nome: 'Maternal 1', turno: 'Manhã / Tarde', sala: 'Infantil' },
+            { nome: 'Maternal 2', turno: 'Manhã / Tarde', sala: 'Infantil' },
+            { nome: 'Pré-Escola 1', turno: 'Manhã / Tarde', sala: 'Infantil' },
+            { nome: 'Pré-Escola 2', turno: 'Manhã / Tarde', sala: 'Infantil' }
         ];
 
-        const turmasLegadasMap = {
-            '3A': '3º Ano A (Fundamental)',
-            '2B': '2º Ano B (Fundamental)',
-            'Pre2': 'Pré II (Infantil)',
-            'maternal1': 'Maternal 1',
-            'fundamental1': '3º Ano A (Fundamental)'
-        };
+        const alunosIniciaisPadrao = [
+            { ra: '2027501', nome: 'Helena Santos', turma: 'Maternal 1', turno: 'Manhã', sala: 'Sala 01', faltas: 0 },
+            { ra: '2027001', nome: 'Davi Lucas', turma: 'Ensino Fundamental', turno: 'Manhã', sala: 'Sala 02', faltas: 2 }
+        ];
 
         function normalizarNomeTurma(valor) {
             const limpo = String(valor || '').trim();
-            if (!limpo) return '3º Ano A (Fundamental)';
-            return turmasLegadasMap[limpo] || limpo;
+            if (!limpo) return 'Ensino Fundamental';
+            return MAPA_TURMAS_SISTEMA[limpo] || MAPA_TURMAS_SISTEMA[limpo.toLowerCase()] || limpo;
         }
 
-        let baseAlunos = JSON.parse(JSON.stringify(alunosIniciaisPadrao));
+        function obterAlunosReaisDoSistema() {
+            const mapa = new Map();
+            const fichasDetalhadas = JSON.parse(localStorage.getItem('peniel_banco_fichas_detalhadas') || '{}');
+            const fichasCache = JSON.parse(localStorage.getItem('peniel_fichas_alunos_cache') || '[]');
+            const matriculasCache = JSON.parse(localStorage.getItem('peniel_matriculas_cache') || '[]');
+            const cicloBanco = JSON.parse(localStorage.getItem('peniel_ciclo_escolar_alunos') || '{}');
+
+            const temDadosReais =
+                (fichasDetalhadas && Object.keys(fichasDetalhadas).length > 0) ||
+                (Array.isArray(fichasCache) && fichasCache.length > 0) ||
+                (Array.isArray(matriculasCache) && matriculasCache.length > 0);
+
+            if (!temDadosReais) {
+                alunosIniciaisPadrao.forEach(a => mapa.set(String(a.ra), { ...a }));
+            }
+
+            Object.values(fichasDetalhadas || {}).forEach(f => {
+                if (!f || !f.ra) return;
+                const raKey = String(f.ra);
+                const ciclo = cicloBanco[raKey] || {};
+                mapa.set(raKey, {
+                    ra: raKey,
+                    nome: f.nome || `Aluno ${raKey}`,
+                    turma: normalizarNomeTurma(f.turma || f.turmaChave),
+                    status: f.status || 'Ativo',
+                    pai: f.pai || '',
+                    paiTel: f.paiTel || '',
+                    faltas: typeof ciclo.faltas === 'number' ? ciclo.faltas : (typeof f.faltas === 'number' ? f.faltas : 0)
+                });
+            });
+
+            [...(Array.isArray(fichasCache) ? fichasCache : []), ...(Array.isArray(matriculasCache) ? matriculasCache : [])].forEach(item => {
+                if (!item || !item.ra) return;
+                const raKey = String(item.ra);
+                const atual = mapa.get(raKey) || { ra: raKey, faltas: 0 };
+                const ciclo = cicloBanco[raKey] || {};
+                mapa.set(raKey, {
+                    ...atual,
+                    ra: raKey,
+                    nome: item.nome || atual.nome || `Aluno ${raKey}`,
+                    turma: normalizarNomeTurma(item.turma || item.turmaChave || item.turma_chave || atual.turma),
+                    status: item.status || atual.status || 'Ativo',
+                    faltas: typeof ciclo.faltas === 'number' ? ciclo.faltas : (typeof item.faltas === 'number' ? item.faltas : (atual.faltas || 0))
+                });
+            });
+
+            return Array.from(mapa.values());
+        }
+
+        function atualizarCicloEscolarNaTela(raAlvo) {
+            const cicloBanco = JSON.parse(localStorage.getItem('peniel_ciclo_escolar_alunos') || '{}');
+            const fichasDetalhadas = JSON.parse(localStorage.getItem('peniel_banco_fichas_detalhadas') || '{}');
+            const materias = ['Matemática', 'Português', 'Ciências', 'História', 'Geografia'];
+            const tris = ['T1', 'T2', 'T3', 'T4'];
+
+            const alvos = raAlvo
+                ? baseAlunos.filter(a => String(a.ra) === String(raAlvo))
+                : baseAlunos;
+
+            alvos.forEach(aluno => {
+                const ra = String(aluno.ra);
+                const ficha = fichasDetalhadas[ra] || {};
+                const anterior = cicloBanco[ra] || {};
+                const disciplinas = anterior.disciplinas || {};
+                let soma = 0;
+                let qtd = 0;
+
+                materias.forEach(mat => {
+                    const notas = {};
+                    const validos = [];
+                    tris.forEach(t => {
+                        const raw = lerNotaTrimestre(ra, mat, t);
+                        const num = raw !== '' && raw !== null && raw !== undefined && !Number.isNaN(Number(raw)) ? Number(raw) : null;
+                        notas[t] = num;
+                        if (num !== null) validos.push(num);
+                    });
+                    const media = validos.length ? Number((validos.reduce((a, b) => a + b, 0) / validos.length).toFixed(1)) : null;
+                    if (media !== null) {
+                        soma += media;
+                        qtd += 1;
+                    }
+                    disciplinas[mat] = {
+                        ...notas,
+                        mediaAnual: media,
+                        situacao: media === null ? 'Em Andamento' : (media >= 7.0 ? 'Aprovado' : 'Recuperação')
+                    };
+                });
+
+                const mediaGeral = qtd > 0 ? Number((soma / qtd).toFixed(1)) : null;
+                cicloBanco[ra] = {
+                    ...anterior,
+                    ra,
+                    nome: aluno.nome,
+                    anoLetivo: anterior.anoLetivo || localStorage.getItem('peniel_ano_letivo') || '2027',
+                    turma: normalizarNomeTurma(aluno.turma),
+                    statusMatricula: aluno.status || ficha.status || 'Ativo',
+                    statusCiclo: mediaGeral === null ? 'Em Andamento' : (mediaGeral >= 7.0 ? 'Aprovado / Regular' : 'Em Recuperação'),
+                    mediaGeralCiclo: mediaGeral,
+                    faltas: Number(aluno.faltas || 0),
+                    disciplinas,
+                    atualizadoEm: new Date().toISOString()
+                };
+            });
+
+            localStorage.setItem('peniel_ciclo_escolar_alunos', JSON.stringify(cicloBanco));
+            window.dispatchEvent(new CustomEvent('peniel:ciclo-aluno-atualizado', { detail: { ra: raAlvo || null } }));
+        }
+
+        let baseAlunos = obterAlunosReaisDoSistema();
         let turmasDisponiveis = [];
 
         let bancoNotas = JSON.parse(localStorage.getItem('peniel_banco_notas')) || {};
         let bancoChamadaSalva = JSON.parse(localStorage.getItem('peniel_banco_chamada')) || {};
         let bancoChamada = {};
 
-        let filtroTurma = '3º Ano A (Fundamental)';
+        let filtroTurma = 'Ensino Fundamental';
         let filtroTrimestre = 'T3';
         let filtroMateria = 'Matemática';
 
         function montarListaTurmasEAlunos(fichasExt = [], salasExt = [], matriculasExt = []) {
-            const mapaAlunos = new Map();
-            alunosIniciaisPadrao.forEach(a => mapaAlunos.set(String(a.ra), { ...a }));
+            if (Array.isArray(fichasExt) && fichasExt.length > 0) {
+                localStorage.setItem('peniel_fichas_alunos_cache', JSON.stringify(fichasExt));
+            }
+            if (Array.isArray(matriculasExt) && matriculasExt.length > 0) {
+                localStorage.setItem('peniel_matriculas_cache', JSON.stringify(matriculasExt));
+            }
 
-            const cacheFichas = JSON.parse(localStorage.getItem('peniel_fichas_alunos_cache') || '[]');
-            const fontesFichas = [
-                ...(Array.isArray(cacheFichas) ? cacheFichas : []),
-                ...(Array.isArray(fichasExt) ? fichasExt : [])
-            ];
-
-            fontesFichas.forEach(f => {
-                if (!f || !f.ra) return;
-                const raKey = String(f.ra);
-                const atual = mapaAlunos.get(raKey) || { ra: raKey, faltas: 0 };
-                mapaAlunos.set(raKey, {
-                    ...atual,
-                    ra: raKey,
-                    nome: f.nome || atual.nome || `Aluno ${raKey}`,
-                    turma: normalizarNomeTurma(f.turma || f.turma_chave || atual.turma),
-                    faltas: typeof f.faltas === 'number' ? f.faltas : (atual.faltas || 0)
-                });
-            });
-
-            const fontesMatriculas = [
-                ...(Array.isArray(matriculasExt) ? matriculasExt : []),
-                ...(Array.isArray(JSON.parse(localStorage.getItem('peniel_matriculas_cache') || '[]'))
-                    ? JSON.parse(localStorage.getItem('peniel_matriculas_cache') || '[]')
-                    : [])
-            ];
-
-            fontesMatriculas.forEach(m => {
-                if (!m) return;
-                const raKey = String(m.ra || m.aluno_ra || '').trim();
-                if (!raKey) return;
-                const atual = mapaAlunos.get(raKey) || { ra: raKey, faltas: 0 };
-                mapaAlunos.set(raKey, {
-                    ...atual,
-                    ra: raKey,
-                    nome: m.nome || m.aluno_nome || atual.nome || `Aluno ${raKey}`,
-                    turma: normalizarNomeTurma(m.turma || m.turma_destino || atual.turma)
-                });
-            });
-
-            baseAlunos = Array.from(mapaAlunos.values());
+            baseAlunos = obterAlunosReaisDoSistema();
 
             const mapaTurmas = new Map();
+            TURMAS_PADRAO_CICLO.forEach(t => mapaTurmas.set(t.nome, { ...t }));
+
             baseAlunos.forEach(a => {
                 const tNome = normalizarNomeTurma(a.turma);
                 if (!mapaTurmas.has(tNome)) {
@@ -553,7 +499,9 @@
 
             const select = document.getElementById('seletorTurma');
             if (select) {
-                const valorPrevio = normalizarNomeTurma(select.value || filtroTurma);
+                const paramsUrl = new URLSearchParams(window.location.search);
+                const turmaUrl = paramsUrl.get('turma');
+                const valorPrevio = normalizarNomeTurma(turmaUrl || select.value || filtroTurma);
                 select.innerHTML = '';
 
                 turmasDisponiveis.forEach(t => {
@@ -588,10 +536,37 @@
                     supabaseFetchNotas(`salas_aulas?unidade=eq.${encodeURIComponent(unidade)}&select=*&order=ordem.asc`, { prefer: 'return=representation' })
                 ]);
 
-                if (Array.isArray(fichas)) {
-                    localStorage.setItem('peniel_fichas_alunos_cache', JSON.stringify(fichas));
+                if (Array.isArray(fichas) && fichas.length > 0) {
+                    const detalhadas = JSON.parse(localStorage.getItem('peniel_banco_fichas_detalhadas') || '{}');
+                    fichas.forEach(r => {
+                        const ra = String(r.ra);
+                        const atual = detalhadas[ra] || {};
+                        detalhadas[ra] = {
+                            ...atual,
+                            ra,
+                            nome: r.nome || atual.nome || '',
+                            turma: normalizarNomeTurma(r.turma || r.turma_chave || atual.turma),
+                            turmaChave: r.turma_chave || atual.turmaChave || 'fundamental1',
+                            status: r.status || atual.status || 'Ativo',
+                            nasc: r.nasc || atual.nasc || '',
+                            nat: r.nat || atual.nat || 'Rio de Janeiro - RJ',
+                            cpf: r.cpf || atual.cpf || '',
+                            pai: r.pai || atual.pai || '',
+                            paiTel: r.pai_tel || atual.paiTel || '',
+                            paiEmail: r.pai_email || atual.paiEmail || '',
+                            mae: r.mae || atual.mae || '',
+                            maeTel: r.mae_tel || atual.maeTel || '',
+                            sangue: r.sangue || atual.sangue || 'O+',
+                            alergia: r.alergia || atual.alergia || 'Nenhuma',
+                            med: r.med || atual.med || 'Não utiliza',
+                            obs: r.obs || atual.obs || '',
+                            historico: Array.isArray(r.historico) ? r.historico : (atual.historico || [])
+                        };
+                    });
+                    localStorage.setItem('peniel_banco_fichas_detalhadas', JSON.stringify(detalhadas));
+                    localStorage.setItem('peniel_fichas_alunos_cache', JSON.stringify(Object.values(detalhadas)));
                 }
-                if (Array.isArray(salas)) {
+                if (Array.isArray(salas) && salas.length > 0) {
                     localStorage.setItem('peniel_salas_aulas_cache', JSON.stringify(salas));
                 }
 
@@ -602,1043 +577,471 @@
             }
         }
 
-        function getDataAulaAtual() {
-            const input = document.getElementById('dataAula');
-            if (input && input.value) return input.value;
-            return new Date().toISOString().split('T')[0];
+        // --- CONTROLE DE CHAMADA E JUSTIFICATIVAS ---
+        function obterDataChamadaAtual() {
+            const el = document.getElementById('data-chamada');
+            if (el && el.value) return el.value;
+            const hoje = new Date().toISOString().split('T')[0];
+            if (el) el.value = hoje;
+            return hoje;
         }
 
-        function getChaveChamadaAtual() {
-            return `${filtroTurma}_${filtroMateria}_${filtroTrimestre}_${getDataAulaAtual()}`;
+        function obterChaveChamadaDia() {
+            return `${filtroTurma}|${obterDataChamadaAtual()}`;
         }
 
-        function carregarChamadaDoEstado() {
-            const chave = getChaveChamadaAtual();
-            bancoChamada = { ...(bancoChamadaSalva[chave] || {}) };
-        }
-
-        function carregarDiarioDaData() {
-            const dataAula = getDataAulaAtual();
-            const chave = `${filtroTurma}_${filtroMateria}_${filtroTrimestre}_${dataAula}`;
-            const reg = bancoDiarioAulas[chave];
-            const campoConteudo = document.getElementById('conteudoAula');
-            const campoTarefa = document.getElementById('tarefaAula');
-
-            if (campoConteudo) campoConteudo.value = reg ? (reg.conteudo || '') : '';
-            if (campoTarefa) campoTarefa.value = reg ? (reg.tarefa || '') : '';
-
-            carregarChamadaDoEstado();
-            renderTabelaChamada();
-        }
-
-        // --- NAVEGAÇÃO ENTRE ABAS ---
-        function mudarAbaDiario(aba) {
-            const modFreq = document.getElementById('moduloFrequencia');
-            const modNotas = document.getElementById('moduloNotas');
-            const modBol = document.getElementById('moduloBoletim');
-            const btnFreq = document.getElementById('btnAbaFrequencia');
-            const btnNotas = document.getElementById('btnAbaNotas');
-            const btnBol = document.getElementById('btnAbaBoletim');
-
-            const estiloAtivo = 'flex-1 md:flex-none px-5 py-2.5 rounded-lg font-bold text-sm bg-white text-marinho shadow-sm border border-slate-200 transition';
-            const estiloInativo = 'flex-1 md:flex-none px-5 py-2.5 rounded-lg font-bold text-sm text-slate-500 hover:text-slate-800 border border-transparent transition';
-
-            modFreq.classList.add('hidden'); modFreq.classList.remove('block');
-            modNotas.classList.add('hidden'); modNotas.classList.remove('block');
-            if (modBol) { modBol.classList.add('hidden'); modBol.classList.remove('block'); }
-
-            btnFreq.className = estiloInativo;
-            btnNotas.className = estiloInativo;
-            if (btnBol) btnBol.className = estiloInativo;
-
-            if (aba === 'frequencia') {
-                modFreq.classList.remove('hidden'); modFreq.classList.add('block');
-                btnFreq.className = estiloAtivo;
-            } else if (aba === 'notas') {
-                modNotas.classList.remove('hidden'); modNotas.classList.add('block');
-                btnNotas.className = estiloAtivo;
-            } else if (aba === 'boletim' && modBol) {
-                modBol.classList.remove('hidden'); modBol.classList.add('block');
-                if (btnBol) btnBol.className = estiloAtivo;
-                popularSeletorRelatorioAnual();
-                renderTabelaBoletim();
-            }
-        }
-
-        // --- FILTROS ---
-        function atualizarFiltrosGlobais() {
-            const selTurma = document.getElementById('seletorTurma');
-            const selTri = document.getElementById('seletorTrimestre');
-            if (selTurma && selTurma.value) filtroTurma = normalizarNomeTurma(selTurma.value);
-            if (selTri && selTri.value) filtroTrimestre = selTri.value;
-            popularSeletorRelatorioAnual();
-            carregarChamadaDoEstado();
-            carregarDiarioDaData();
-            renderAmbasTabelas();
-            sincronizarNotasComSupabase();
-        }
-
-        function selecionarMateria(materiaSelecionada) {
-            filtroMateria = materiaSelecionada;
-            document.querySelectorAll('.btn-materia').forEach(btn => {
-                const matBtn = btn.getAttribute('data-materia');
-                if(matBtn === materiaSelecionada) btn.className = 'btn-materia bg-marinho text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow-sm whitespace-nowrap transition';
-                else btn.className = 'btn-materia bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 px-5 py-2.5 rounded-lg text-sm font-bold whitespace-nowrap transition';
+        function carregarEstadoChamadaDia() {
+            const chave = obterChaveChamadaDia();
+            const salvo = bancoChamadaSalva[chave];
+            bancoChamada = {};
+            const alunosTurma = baseAlunos.filter(a => normalizarNomeTurma(a.turma) === normalizarNomeTurma(filtroTurma));
+            alunosTurma.forEach(a => {
+                if (salvo && salvo[a.ra]) {
+                    bancoChamada[a.ra] = {
+                        status: salvo[a.ra].status || 'presente',
+                        justificativa: salvo[a.ra].justificativa || ''
+                    };
+                } else {
+                    bancoChamada[a.ra] = { status: 'presente', justificativa: '' };
+                }
             });
-            carregarChamadaDoEstado();
-            carregarDiarioDaData();
+        }
+
+        function aoMudarDataChamada() {
+            carregarEstadoChamadaDia();
+            renderListaChamada();
+        }
+
+        function definirStatusChamada(ra, novoStatus) {
+            if (!bancoChamada[ra]) bancoChamada[ra] = { status: 'presente', justificativa: '' };
+            bancoChamada[ra].status = novoStatus;
+            renderListaChamada();
+        }
+
+        function atualizarJustificativaChamada(ra, texto) {
+            if (!bancoChamada[ra]) bancoChamada[ra] = { status: 'presente', justificativa: '' };
+            bancoChamada[ra].justificativa = texto;
+        }
+
+        function renderListaChamada() {
+            const cont = document.getElementById('chamada-lista-alunos');
+            if (!cont) return;
+            cont.innerHTML = '';
+
+            const alunosTurma = baseAlunos.filter(a => normalizarNomeTurma(a.turma) === normalizarNomeTurma(filtroTurma));
+            if (alunosTurma.length === 0) {
+                cont.innerHTML = `<p class="text-center text-slate-400 py-4">Nenhum aluno vinculado a esta turma.</p>`;
+                return;
+            }
+
+            alunosTurma.forEach(a => {
+                const reg = bancoChamada[a.ra] || { status: 'presente', justificativa: '' };
+                const statusAtual = reg.status;
+                const justificativaAtual = reg.justificativa || '';
+                const mostrarJustificativa = statusAtual === 'justificada' || statusAtual === 'falta' || justificativaAtual.trim() !== '';
+
+                const linha = document.createElement('div');
+                linha.className = 'bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col gap-2';
+                linha.innerHTML = `
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                            <span class="font-bold text-slate-800">${a.nome}</span>
+                            <span class="text-[10px] font-mono text-slate-400 ml-1">RA: ${a.ra} • Total de faltas: ${a.faltas || 0}</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" onclick="definirStatusChamada('${a.ra}', 'presente')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${statusAtual === 'presente' ? 'bg-green-600 text-white shadow-sm' : 'bg-white border border-slate-300 text-slate-600 hover:bg-slate-100'}">Presente</button>
+                            <button type="button" onclick="definirStatusChamada('${a.ra}', 'falta')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${statusAtual === 'falta' ? 'bg-red-600 text-white shadow-sm' : 'bg-white border border-slate-300 text-slate-600 hover:bg-slate-100'}">Falta</button>
+                            <button type="button" onclick="definirStatusChamada('${a.ra}', 'justificada')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${statusAtual === 'justificada' ? 'bg-amber-500 text-white shadow-sm' : 'bg-white border border-slate-300 text-slate-600 hover:bg-slate-100'}">Justificada</button>
+                        </div>
+                    </div>
+                    <div class="${mostrarJustificativa ? '' : 'hidden'}">
+                        <input type="text" value="${justificativaAtual.replace(/"/g, '&quot;')}" oninput="atualizarJustificativaChamada('${a.ra}', this.value)" placeholder="Justificativa da falta / atestado / observação..." class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-xs bg-white focus:ring-2 focus:ring-marinho focus:outline-none">
+                    </div>
+                `;
+                cont.appendChild(linha);
+            });
+        }
+
+        function salvarChamadaDia() {
+            const dataRef = obterDataChamadaAtual();
+            const chave = obterChaveChamadaDia();
+            const registroDia = {};
+            const alunosTurma = baseAlunos.filter(a => normalizarNomeTurma(a.turma) === normalizarNomeTurma(filtroTurma));
+
+            alunosTurma.forEach(a => {
+                const reg = bancoChamada[a.ra] || { status: 'presente', justificativa: '' };
+                registroDia[a.ra] = {
+                    status: reg.status,
+                    justificativa: (reg.justificativa || '').trim(),
+                    data: dataRef,
+                    turma: filtroTurma
+                };
+            });
+
+            bancoChamadaSalva[chave] = registroDia;
+            localStorage.setItem('peniel_banco_chamada', JSON.stringify(bancoChamadaSalva));
+
+            baseAlunos.forEach(a => {
+                let totalFaltasNaoJustificadas = 0;
+                Object.keys(bancoChamadaSalva).forEach(k => {
+                    const diaMap = bancoChamadaSalva[k];
+                    if (diaMap && diaMap[a.ra] && diaMap[a.ra].status === 'falta') {
+                        totalFaltasNaoJustificadas++;
+                    }
+                });
+                a.faltas = totalFaltasNaoJustificadas;
+            });
+
+            const detalhadas = JSON.parse(localStorage.getItem('peniel_banco_fichas_detalhadas') || '{}');
+            baseAlunos.forEach(a => {
+                if (detalhadas[a.ra]) {
+                    detalhadas[a.ra].faltas = a.faltas;
+                }
+            });
+            localStorage.setItem('peniel_banco_fichas_detalhadas', JSON.stringify(detalhadas));
+            atualizarCicloEscolarNaTela();
+
+            renderTabelaNotas();
+            renderTabelaBoletim();
+            notificar(`✅ Chamada de ${dataRef} salva com sucesso!`);
+        }
+
+        // --- TABELA DE NOTAS ---
+        function mudarTurma() {
+            filtroTurma = normalizarNomeTurma(document.getElementById('seletorTurma').value);
+            carregarEstadoChamadaDia();
             renderAmbasTabelas();
-            sincronizarNotasComSupabase();
+        }
+
+        function mudarTrimestre() {
+            filtroTrimestre = document.getElementById('seletorTrimestre').value;
+            renderAmbasTabelas();
+        }
+
+        function mudarMateria() {
+            filtroMateria = document.getElementById('seletorMateria').value;
+            renderAmbasTabelas();
         }
 
         function renderAmbasTabelas() {
             renderTabelaNotas();
-            renderTabelaChamada();
+            renderListaChamada();
             renderTabelaBoletim();
-        }
-
-        let bancoJustificativas = JSON.parse(localStorage.getItem('peniel_banco_justificativas_diario')) || {};
-        let bancoDiarioAulas = JSON.parse(localStorage.getItem('peniel_banco_diario_aulas')) || {};
-
-        function obterJustificativasCalendarioPorAluno() {
-            const mapa = {};
-            const sync = JSON.parse(localStorage.getItem('peniel_sync_dashboard_turmas_calendario') || 'null');
-            const grade = sync && Array.isArray(sync.gradeTurmas) ? sync.gradeTurmas : [];
-
-            grade.forEach(item => {
-                (item.justificativas || []).forEach(txt => {
-                    const partes = String(txt).split(':');
-                    const nomeAluno = partes[0].trim().toLowerCase();
-                    const motivo = partes.slice(1).join(':').trim() || String(txt).trim();
-                    if (!nomeAluno) return;
-                    if (!mapa[nomeAluno]) mapa[nomeAluno] = [];
-                    mapa[nomeAluno].push(`${item.materia || 'Aula'}: ${motivo}`);
-                });
-            });
-            return mapa;
-        }
-
-        // --- ABA 1: RENDERIZAÇÃO DA CHAMADA ---
-        function renderTabelaChamada() {
-            const tbody = document.getElementById('tabelaChamada');
-            const busca = document.getElementById('buscaAluno').value.toLowerCase();
-            tbody.innerHTML = '';
-
-            const alunosFiltrados = baseAlunos.filter(aluno => 
-                normalizarNomeTurma(aluno.turma) === normalizarNomeTurma(filtroTurma) && aluno.nome.toLowerCase().includes(busca)
-            );
-
-            alunosFiltrados.forEach(aluno => {
-                if (!bancoChamada[aluno.ra]) bancoChamada[aluno.ra] = 'P';
-                const status = bancoChamada[aluno.ra];
-                const chaveJust = `${aluno.ra}_${filtroMateria}_${filtroTrimestre}`;
-                const justAtual = bancoJustificativas[chaveJust] || '';
-
-                let btnHtml = '';
-                if (status === 'P') {
-                    btnHtml = `<button type="button" onclick="alternarChamada('${aluno.ra}')" class="bg-green-100 text-green-700 border border-green-300 px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-sm w-28 cursor-pointer">✅ Presente</button>`;
-                } else if (status === 'F') {
-                    btnHtml = `<button type="button" onclick="alternarChamada('${aluno.ra}')" class="bg-red-100 text-red-700 border border-red-300 px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-sm w-28 cursor-pointer">❌ Falta</button>`;
-                } else {
-                    btnHtml = `<button type="button" onclick="alternarChamada('${aluno.ra}')" class="bg-amber-100 text-amber-800 border border-amber-300 px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-sm w-28 cursor-pointer">📝 Justificada</button>`;
-                }
-
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
-                tr.innerHTML = `
-                    <td class="px-6 py-3 text-xs">
-                        <div class="font-semibold text-slate-800">${aluno.nome}</div>
-                        <input type="text" value="${justAtual}" onchange="atualizarJustificativaAluno('${aluno.ra}', this.value)" placeholder="Justificativa (ex: atestado médico)..." class="mt-1.5 w-full border border-amber-200 bg-amber-50/40 rounded-lg px-2.5 py-1 text-[11px] text-slate-700 focus:ring-2 focus:ring-amber-400 focus:outline-none">
-                    </td>
-                    <td class="px-6 py-3 text-right align-middle">${btnHtml}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function atualizarJustificativaAluno(ra, texto) {
-            const chaveJust = `${ra}_${filtroMateria}_${filtroTrimestre}`;
-            if (texto.trim()) {
-                bancoJustificativas[chaveJust] = texto.trim();
-                if (bancoChamada[ra] === 'F') {
-                    bancoChamada[ra] = 'J';
-                }
-            } else {
-                delete bancoJustificativas[chaveJust];
-            }
-            localStorage.setItem('peniel_banco_justificativas_diario', JSON.stringify(bancoJustificativas));
-            renderTabelaChamada();
-            renderTabelaBoletim();
-        }
-
-        function alternarChamada(ra) {
-            const atual = bancoChamada[ra];
-            if (atual === 'P') bancoChamada[ra] = 'F';
-            else if (atual === 'F') bancoChamada[ra] = 'J';
-            else bancoChamada[ra] = 'P';
-            renderTabelaChamada();
-        }
-
-        function salvarConteudoDiario() {
-            const dataAula = getDataAulaAtual();
-            const conteudo = document.getElementById('conteudoAula').value.trim();
-            const tarefa = document.getElementById('tarefaAula').value.trim();
-            const chave = `${filtroTurma}_${filtroMateria}_${filtroTrimestre}_${dataAula}`;
-            const payload = { turma: filtroTurma, materia: filtroMateria, trimestre: filtroTrimestre, dataAula, conteudo, tarefa, atualizadoEm: new Date().toISOString() };
-            bancoDiarioAulas[chave] = payload;
-            localStorage.setItem('peniel_banco_diario_aulas', JSON.stringify(bancoDiarioAulas));
-            persistirDiarioNoSupabase(chave, payload);
-            notificar('✅ Registro de Aula (Conteúdo e Tarefa) salvo com sucesso!');
-        }
-
-        function salvarChamada() {
-            const chaveAula = getChaveChamadaAtual();
-            const chamadaAnterior = bancoChamadaSalva[chaveAula] || {};
-
-            localStorage.setItem('peniel_banco_justificativas_diario', JSON.stringify(bancoJustificativas));
-
-            const alunosDaTurma = baseAlunos.filter(a => normalizarNomeTurma(a.turma) === normalizarNomeTurma(filtroTurma));
-            alunosDaTurma.forEach(a => {
-                const stNovo = bancoChamada[a.ra] || 'P';
-                const stAnterior = chamadaAnterior[a.ra] || 'P';
-                if (stNovo === 'F' && stAnterior !== 'F') {
-                    a.faltas = (a.faltas || 0) + 1;
-                } else if (stNovo !== 'F' && stAnterior === 'F') {
-                    a.faltas = Math.max(0, (a.faltas || 0) - 1);
-                }
-            });
-
-            bancoChamadaSalva[chaveAula] = { ...bancoChamada };
-            localStorage.setItem('peniel_banco_chamada', JSON.stringify(bancoChamadaSalva));
-            persistirDiarioNoSupabase(chaveAula, bancoDiarioAulas[chaveAula] || {
-                turma: filtroTurma,
-                materia: filtroMateria,
-                trimestre: filtroTrimestre,
-                dataAula: getDataAulaAtual()
-            });
-
-            renderTabelaNotas();
-            renderTabelaBoletim();
-            notificar('✅ Chamada (Presença, Falta e Justificativa) registrada no sistema escolar!');
         }
 
         function lerNotaTrimestre(ra, materia, tri) {
             const reg = bancoNotas[`${ra}_${materia}_${tri}`];
             if (!reg) return '';
-            if (typeof reg.nota === 'number' || (typeof reg.nota === 'string' && reg.nota !== '')) {
-                return reg.nota;
+            if (typeof reg === 'object') {
+                const cand = reg.nota !== undefined && reg.nota !== null && reg.nota !== ''
+                    ? reg.nota
+                    : (reg.notaFinal !== undefined && reg.notaFinal !== null ? reg.notaFinal : '');
+                return cand === '' ? '' : cand;
             }
-            const v1 = parseFloat(reg.n1);
-            const v2 = parseFloat(reg.n2);
-            const v3 = parseFloat(reg.n3);
-            if (isNaN(v1) && isNaN(v2) && isNaN(v3)) return '';
-            const n1 = isNaN(v1) ? 0 : v1;
-            const n2 = isNaN(v2) ? 0 : v2;
-            const n3 = isNaN(v3) ? 0 : v3;
-            return (((n1 * 3) + (n2 * 4) + (n3 * 3)) / 10).toFixed(1);
+            return reg;
         }
 
-        // --- ABA 2: RENDERIZAÇÃO DE NOTAS (4 TRIMESTRES + MÉDIA PARCIAL) ---
         function renderTabelaNotas() {
-            const tbody = document.getElementById('tabelaAlunos');
-            const busca = document.getElementById('buscaAluno').value.toLowerCase();
+            const tbody = document.getElementById('tabela-notas-corpo');
             tbody.innerHTML = '';
+            const triLabels = { T1: '1º Trimestre', T2: '2º Trimestre', T3: '3º Trimestre', T4: '4º Trimestre' };
+            document.getElementById('titulo-diario-materia').innerText = `${filtroMateria} — ${triLabels[filtroTrimestre]}`;
 
-            const selectTurma = document.getElementById('seletorTurma');
-            const nomeTurmaText = selectTurma.options[selectTurma.selectedIndex].text;
+            const alunosTurma = baseAlunos.filter(a => normalizarNomeTurma(a.turma) === normalizarNomeTurma(filtroTurma));
+            let somaMedias = 0;
+            let countMedias = 0;
 
-            document.getElementById('tituloTabelaNotas').innerText = `${filtroMateria} • ${nomeTurmaText} • 1º ao 4º Trimestre (${filtroTrimestre} em foco)`;
+            if (alunosTurma.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">Nenhum aluno encontrado para a turma "${filtroTurma}".</td></tr>`;
+                document.getElementById('media-turma-label').innerText = '--';
+                return;
+            }
 
-            const alunosFiltrados = baseAlunos.filter(aluno => 
-                normalizarNomeTurma(aluno.turma) === normalizarNomeTurma(filtroTurma) && aluno.nome.toLowerCase().includes(busca)
-            );
+            alunosTurma.forEach(a => {
+                const chave = `${a.ra}_${filtroMateria}_${filtroTrimestre}`;
+                const reg = bancoNotas[chave] || { n1: '', n2: '', n3: '', nota: '' };
 
-            if (alunosFiltrados.length === 0) document.getElementById('msgSemAlunos').classList.remove('hidden');
-            else document.getElementById('msgSemAlunos').classList.add('hidden');
+                const valN1 = reg.n1 !== '' && reg.n1 !== undefined && reg.n1 !== null ? parseFloat(reg.n1) : '';
+                const valN2 = reg.n2 !== '' && reg.n2 !== undefined && reg.n2 !== null ? parseFloat(reg.n2) : '';
+                const valN3 = reg.n3 !== '' && reg.n3 !== undefined && reg.n3 !== null ? parseFloat(reg.n3) : '';
+                const valDirect = (reg.nota !== '' && reg.nota !== undefined && reg.nota !== null) ? parseFloat(reg.nota) : null;
 
-            alunosFiltrados.forEach(aluno => {
-                const t1 = lerNotaTrimestre(aluno.ra, filtroMateria, 'T1');
-                const t2 = lerNotaTrimestre(aluno.ra, filtroMateria, 'T2');
-                const t3 = lerNotaTrimestre(aluno.ra, filtroMateria, 'T3');
-                const t4 = lerNotaTrimestre(aluno.ra, filtroMateria, 'T4');
+                let media = '--';
+                const temN1N2 = (valN1 !== '' && !isNaN(valN1)) || (valN2 !== '' && !isNaN(valN2));
+                if (temN1N2) {
+                    const n1Num = (valN1 !== '' && !isNaN(valN1)) ? valN1 : 0;
+                    const n2Num = (valN2 !== '' && !isNaN(valN2)) ? valN2 : 0;
+                    let m = (n1Num + n2Num) / 2;
+                    if (valN3 !== '' && !isNaN(valN3) && valN3 > m) m = valN3;
+                    media = m.toFixed(1);
+                } else if (valDirect !== null && !isNaN(valDirect)) {
+                    media = valDirect.toFixed(1);
+                }
 
-                let trClass = "hover:bg-slate-50 transition";
-                if (aluno.faltas > 10) trClass = "bg-red-50/20 hover:bg-red-50 transition";
+                let situacaoHtml = '<span class="bg-slate-100 text-slate-500 px-2.5 py-1 rounded text-[10px] font-bold">Pendente</span>';
+                if (media !== '--') {
+                    const numMedia = parseFloat(media);
+                    somaMedias += numMedia;
+                    countMedias++;
+                    situacaoHtml = numMedia >= 7.0
+                        ? '<span class="bg-green-100 text-green-700 px-2.5 py-1 rounded text-[10px] font-bold">Aprovado</span>'
+                        : '<span class="bg-red-100 text-red-700 px-2.5 py-1 rounded text-[10px] font-bold">Recuperação</span>';
+                }
 
                 const tr = document.createElement('tr');
-                tr.className = trClass;
+                tr.className = 'hover:bg-slate-50 transition';
                 tr.innerHTML = `
-                    <td class="px-4 py-3.5">
-                        <p class="font-bold text-slate-800">${aluno.nome}</p>
-                        <p class="text-[11px] text-slate-400 font-mono">RA: ${aluno.ra} ${aluno.faltas > 10 ? '<span class="text-red-500 font-bold ml-1">(! Faltas)</span>' : ''}</p>
-                    </td>
-                    <td class="px-3 py-3.5 text-center"><input type="number" step="0.5" min="0" max="10" value="${t1}" data-ra="${aluno.ra}" data-tri="T1" oninput="calcularLinha(this)" class="w-16 text-center border ${filtroTrimestre === 'T1' ? 'border-blue-400 ring-1 ring-blue-200' : 'border-slate-300'} rounded-lg p-1.5 font-semibold text-slate-700 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"></td>
-                    <td class="px-3 py-3.5 text-center"><input type="number" step="0.5" min="0" max="10" value="${t2}" data-ra="${aluno.ra}" data-tri="T2" oninput="calcularLinha(this)" class="w-16 text-center border ${filtroTrimestre === 'T2' ? 'border-blue-400 ring-1 ring-blue-200' : 'border-slate-300'} rounded-lg p-1.5 font-semibold text-slate-700 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"></td>
-                    <td class="px-3 py-3.5 text-center"><input type="number" step="0.5" min="0" max="10" value="${t3}" data-ra="${aluno.ra}" data-tri="T3" oninput="calcularLinha(this)" class="w-16 text-center border ${filtroTrimestre === 'T3' ? 'border-blue-400 ring-1 ring-blue-200' : 'border-slate-300'} rounded-lg p-1.5 font-semibold text-slate-700 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"></td>
-                    <td class="px-3 py-3.5 text-center"><input type="number" step="0.5" min="0" max="10" value="${t4}" data-ra="${aluno.ra}" data-tri="T4" oninput="calcularLinha(this)" class="w-16 text-center border ${filtroTrimestre === 'T4' ? 'border-blue-400 ring-1 ring-blue-200' : 'border-slate-300'} rounded-lg p-1.5 font-semibold text-slate-700 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"></td>
-                    <td class="px-4 py-3.5 text-center bg-blue-50/40"><div id="media-${aluno.ra}" class="font-black text-slate-400 text-base media-valor">--</div></td>
-                    <td class="px-4 py-3.5 text-right" id="status-${aluno.ra}"><span class="bg-slate-100 text-slate-500 px-2.5 py-1 rounded text-xs font-bold border border-slate-200">Aguardando</span></td>
+                    <td class="px-5 py-3.5 font-bold text-slate-800">${a.nome}<span class="block text-[10px] font-normal text-slate-400 font-mono">RA: ${a.ra} • ${a.turma}</span></td>
+                    <td class="px-3 py-3.5 text-center"><input type="number" step="0.1" min="0" max="10" class="input-nota" value="${valN1}" onchange="atualizarNota('${a.ra}', 'n1', this.value)" placeholder="0.0"></td>
+                    <td class="px-3 py-3.5 text-center"><input type="number" step="0.1" min="0" max="10" class="input-nota" value="${valN2}" onchange="atualizarNota('${a.ra}', 'n2', this.value)" placeholder="0.0"></td>
+                    <td class="px-3 py-3.5 text-center"><input type="number" step="0.1" min="0" max="10" class="input-nota" value="${valN3}" onchange="atualizarNota('${a.ra}', 'n3', this.value)" placeholder="0.0"></td>
+                    <td class="px-4 py-3.5 text-center font-black text-sm text-marinho">${media}</td>
+                    <td class="px-4 py-3.5 text-center font-mono text-slate-600">${a.faltas || 0}</td>
+                    <td class="px-5 py-3.5 text-right">${situacaoHtml}</td>
                 `;
                 tbody.appendChild(tr);
-
-                calcularMatematicaDaLinha(aluno.ra, t1, t2, t3, t4);
-            });
-            calcularKPIs();
-            renderTabelaBoletim();
-        }
-
-        function calcularLinha(input) {
-            const ra = input.getAttribute('data-ra');
-            const tr = input.closest('tr');
-            const inputs = tr.querySelectorAll('input');
-            const vals = [inputs[0].value, inputs[1].value, inputs[2].value, inputs[3].value];
-            const tris = ['T1', 'T2', 'T3', 'T4'];
-
-            tris.forEach((tri, idx) => {
-                const chave = `${ra}_${filtroMateria}_${tri}`;
-                const raw = vals[idx];
-                if (raw === '' || raw === null || raw === undefined) {
-                    delete bancoNotas[chave];
-                } else {
-                    const num = Math.max(0, Math.min(10, parseFloat(raw)));
-                    bancoNotas[chave] = { nota: isNaN(num) ? '' : num };
-                }
             });
 
-            calcularMatematicaDaLinha(ra, vals[0], vals[1], vals[2], vals[3]);
-            calcularKPIs();
-            renderTabelaBoletim();
+            document.getElementById('media-turma-label').innerText = countMedias > 0 ? (somaMedias / countMedias).toFixed(1) : '--';
         }
 
-        function calcularMatematicaDaLinha(ra, t1, t2, t3, t4) {
-            const mediaDiv = document.getElementById(`media-${ra}`);
-            const statusDiv = document.getElementById(`status-${ra}`);
+        function atualizarNota(ra, campo, valor) {
+            const chave = `${ra}_${filtroMateria}_${filtroTrimestre}`;
+            if (!bancoNotas[chave] || typeof bancoNotas[chave] !== 'object') {
+                const prev = bancoNotas[chave];
+                bancoNotas[chave] = { n1: '', n2: '', n3: '', nota: prev !== undefined ? prev : '' };
+            }
+            const parsed = valor === '' ? '' : Math.max(0, Math.min(10, parseFloat(valor)));
+            bancoNotas[chave][campo] = parsed;
 
-            const notasInformadas = [t1, t2, t3, t4]
-                .map(v => parseFloat(v))
-                .filter(v => !isNaN(v));
+            const n1Num = (bancoNotas[chave].n1 !== '' && bancoNotas[chave].n1 !== undefined && !isNaN(bancoNotas[chave].n1)) ? parseFloat(bancoNotas[chave].n1) : null;
+            const n2Num = (bancoNotas[chave].n2 !== '' && bancoNotas[chave].n2 !== undefined && !isNaN(bancoNotas[chave].n2)) ? parseFloat(bancoNotas[chave].n2) : null;
+            const n3Num = (bancoNotas[chave].n3 !== '' && bancoNotas[chave].n3 !== undefined && !isNaN(bancoNotas[chave].n3)) ? parseFloat(bancoNotas[chave].n3) : null;
 
-            if (notasInformadas.length === 0) {
-                mediaDiv.innerText = '--';
-                mediaDiv.className = 'font-black text-slate-400 text-base media-valor';
-                mediaDiv.setAttribute('data-valor', '');
-                statusDiv.innerHTML = '<span class="bg-slate-100 text-slate-500 px-2.5 py-1 rounded text-xs font-bold border border-slate-200">Aguardando</span>';
-                return;
+            if (n1Num !== null || n2Num !== null) {
+                let m = ((n1Num || 0) + (n2Num || 0)) / 2;
+                if (n3Num !== null && n3Num > m) m = n3Num;
+                const mediaArred = Number(m.toFixed(1));
+                bancoNotas[chave].nota = mediaArred;
+                bancoNotas[chave].notaFinal = mediaArred;
+            } else if (campo === 'nota') {
+                bancoNotas[chave].notaFinal = parsed;
             }
 
-            const somaNotas = notasInformadas.reduce((acc, v) => acc + v, 0);
-            const mediaParcial = somaNotas / notasInformadas.length;
-            const mediaFormatada = mediaParcial.toFixed(1);
-
-            mediaDiv.innerText = mediaFormatada;
-            mediaDiv.setAttribute('data-valor', mediaFormatada);
-
-            if (mediaParcial >= 7.0) {
-                mediaDiv.className = 'font-black text-blue-900 text-base media-valor';
-                statusDiv.innerHTML = '<span class="bg-green-100 text-green-700 border border-green-200 px-2.5 py-1 rounded text-xs font-bold shadow-sm">Aprovado</span>';
-            } else {
-                mediaDiv.className = 'font-black text-orange-600 text-base media-valor';
-                statusDiv.innerHTML = '<span class="bg-orange-100 text-orange-800 border border-orange-200 px-2.5 py-1 rounded text-xs font-bold shadow-sm">Recuperação</span>';
-            }
+            localStorage.setItem('peniel_banco_notas', JSON.stringify(bancoNotas));
+            atualizarCicloEscolarNaTela(ra);
+            renderAmbasTabelas();
         }
 
-        // 5. ATUALIZA OS CARDS DO TOPO (KPIS)
-        function calcularKPIs() {
-            const mediasDivs = document.querySelectorAll('.media-valor');
-            let soma = 0;
-            let qtdValidos = 0;
-            let acima = 0;
-            let recup = 0;
+        async function persistirNotasNoSupabase() {
+            const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
+            const registros = Object.entries(bancoNotas)
+                .map(([chave, val]) => {
+                    const partes = chave.split('_');
+                    if (partes.length < 3) return null;
+                    const tri = partes.pop();
+                    const materia = partes.pop();
+                    const ra = partes.join('_');
+                    const obj = typeof val === 'object' && val !== null ? val : { nota: val };
+                    const mediaCalc = obj.nota !== '' && obj.nota !== undefined && obj.nota !== null && !isNaN(Number(obj.nota))
+                        ? Number(obj.nota)
+                        : null;
+                    return {
+                        chave,
+                        unidade,
+                        ra,
+                        materia,
+                        trimestre: tri,
+                        n1: obj.n1 === '' || obj.n1 === undefined ? null : Number(obj.n1),
+                        n2: obj.n2 === '' || obj.n2 === undefined ? null : Number(obj.n2),
+                        n3: obj.n3 === '' || obj.n3 === undefined ? null : Number(obj.n3),
+                        nota_final: mediaCalc,
+                        atualizado_em: new Date().toISOString()
+                    };
+                })
+                .filter(Boolean);
 
-            mediasDivs.forEach(div => {
-                const val = parseFloat(div.getAttribute('data-valor'));
-                if(!isNaN(val)) {
-                    soma += val;
-                    qtdValidos++;
-                    if(val >= 7.0) acima++;
-                    else recup++;
-                }
-            });
+            if (registros.length === 0) return;
 
-            if(qtdValidos > 0) {
-                const mediaGeral = (soma / qtdValidos).toFixed(1);
-                let corMedia = mediaGeral >= 7.0 ? 'text-green-500' : 'text-orange-500';
-                let txtMedia = mediaGeral >= 7.0 ? 'Bom rendimento' : 'Abaixo do esperado';
-                document.getElementById('kpiMediaGeral').innerHTML = `${mediaGeral} <span class="text-xs font-normal ${corMedia} block mt-0.5">${txtMedia}</span>`;
-            } else {
-                document.getElementById('kpiMediaGeral').innerHTML = `-- <span class="text-xs font-normal text-slate-400 block mt-0.5">Sem notas</span>`;
+            try {
+                await supabaseFetchNotas('notas_avaliacoes?on_conflict=chave', {
+                    method: 'POST',
+                    body: JSON.stringify(registros)
+                });
+                atualizarBadgeSyncNotas(true);
+            } catch (_) {
+                atualizarBadgeSyncNotas(false);
             }
-
-            document.getElementById('kpiAcimaMedia').innerHTML = `${acima} <span class="text-xs font-normal text-slate-400 block mt-0.5">Alunos na média</span>`;
-            document.getElementById('kpiRecuperacao').innerHTML = `${recup} <span class="text-xs font-normal text-slate-400 block mt-0.5">Alunos em risco</span>`;
-
-            const busca = document.getElementById('buscaAluno').value.toLowerCase();
-            const alunosFiltrados = baseAlunos.filter(a => normalizarNomeTurma(a.turma) === normalizarNomeTurma(filtroTurma) && a.nome.toLowerCase().includes(busca));
-            const qtdFaltasAlta = alunosFiltrados.filter(a => a.faltas > 10).length;
-
-            document.getElementById('kpiFaltas').innerHTML = `${qtdFaltasAlta} <span class="text-xs font-normal text-slate-400 block mt-0.5">Aluno(s) em alerta</span>`;
-        }
-
-        function calcularMediaTrimestreAluno(ra, materia, tri) {
-            const valStr = lerNotaTrimestre(ra, materia, tri);
-            if (valStr === '' || valStr === null || valStr === undefined) return null;
-            const num = parseFloat(valStr);
-            return isNaN(num) ? null : num;
-        }
-
-        function renderTabelaBoletim() {
-            const tbody = document.getElementById('tabelaBoletimFimAno');
-            if (!tbody) return;
-            const busca = document.getElementById('buscaAluno').value.toLowerCase();
-            const justCal = obterJustificativasCalendarioPorAluno();
-
-            const alunosFiltrados = baseAlunos.filter(a =>
-                normalizarNomeTurma(a.turma) === normalizarNomeTurma(filtroTurma) && a.nome.toLowerCase().includes(busca)
-            );
-
-            let aprovados = 0;
-            let recup = 0;
-            let totalJust = 0;
-            let somaPontos = 0;
-
-            const consolidado = alunosFiltrados.map(aluno => {
-                const tris = ['T1', 'T2', 'T3', 'T4'].map(t => calcularMediaTrimestreAluno(aluno.ra, filtroMateria, t));
-                const validos = tris.filter(v => v !== null);
-                const mediaAnual = validos.length ? (tris.reduce((acc, v) => acc + (v !== null ? v : 0), 0) / 4) : 0;
-
-                const justDiario = Object.entries(bancoJustificativas)
-                    .filter(([k, val]) => k.startsWith(`${aluno.ra}_`) && String(val).trim())
-                    .map(([k, val]) => `${k.split('_')[1] || filtroMateria}: ${val}`);
-                const justExtra = justCal[aluno.nome.toLowerCase()] || [];
-                const todasJust = [...justDiario, ...justExtra];
-                totalJust += todasJust.length;
-
-                const faltasNaoJust = Math.max(0, (aluno.faltas || 0) - todasJust.length);
-                const presencasEstimadas = Math.max(0, 40 - (aluno.faltas || 0));
-
-                const ptsNota = Math.min(70, (mediaAnual / 10) * 70);
-                const ptsFreq = Math.max(0, 20 - (faltasNaoJust * 1.5));
-                const ptsJust = Math.min(10, todasJust.length * 2.5);
-                const pontuacaoFinal = Math.round(Math.max(0, Math.min(100, ptsNota + ptsFreq + ptsJust)));
-                somaPontos += pontuacaoFinal;
-
-                let parecer = 'Em Andamento';
-                let badgeClasse = 'bg-slate-100 text-slate-700 border-slate-200';
-                if (validos.length > 0 || mediaAnual > 0) {
-                    if (mediaAnual >= 7.0 && faltasNaoJust <= 10) {
-                        parecer = 'Aprovado (Fim de Ano)';
-                        badgeClasse = 'bg-green-100 text-green-700 border-green-200';
-                        aprovados++;
-                    } else {
-                        parecer = 'Recuperação / Conselho';
-                        badgeClasse = 'bg-amber-100 text-amber-800 border-amber-200';
-                        recup++;
-                    }
-                }
-
-                return {
-                    ra: aluno.ra,
-                    nome: aluno.nome,
-                    turma: aluno.turma,
-                    materia: filtroMateria,
-                    tris,
-                    mediaAnual: Number(mediaAnual.toFixed(1)),
-                    presencas: presencasEstimadas,
-                    faltas: faltasNaoJust,
-                    justificativas: todasJust,
-                    pontuacaoFinal,
-                    parecer,
-                    badgeClasse
-                };
-            });
-
-            document.getElementById('kpiAprovadosAno').innerText = aprovados;
-            document.getElementById('kpiRecuperacaoAno').innerText = recup;
-            document.getElementById('kpiJustificativasAno').innerText = totalJust;
-            document.getElementById('kpiPontuacaoMedia').innerText = consolidado.length
-                ? `${Math.round(somaPontos / consolidado.length)} pts`
-                : '--';
-
-            if (!consolidado.length) {
-                tbody.innerHTML = '<tr><td colspan="9" class="px-4 py-6 text-center text-slate-400">Nenhum aluno encontrado.</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = consolidado.map(item => `
-                <tr class="hover:bg-slate-50 transition">
-                    <td class="px-4 py-3">
-                        <div class="font-bold text-slate-800">${item.nome}</div>
-                        <div class="text-[10px] font-mono text-slate-400">RA: ${item.ra}</div>
-                    </td>
-                    ${item.tris.map(v => `<td class="px-4 py-3 text-center font-mono font-semibold">${v !== null ? v.toFixed(1) : '--'}</td>`).join('')}
-                    <td class="px-4 py-3 text-center font-black text-marinho">${item.mediaAnual.toFixed(1)}</td>
-                    <td class="px-4 py-3 text-center font-mono">
-                        <span class="text-emerald-700 font-bold">P:${item.presencas}</span> •
-                        <span class="text-red-600 font-bold">F:${item.faltas}</span> •
-                        <span class="text-amber-700 font-bold" title="${item.justificativas.join(' | ')}">J:${item.justificativas.length}</span>
-                    </td>
-                    <td class="px-4 py-3 text-center font-black text-laranja">${item.pontuacaoFinal} pts</td>
-                    <td class="px-4 py-3 text-right">
-                        <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold border ${item.badgeClasse}">${item.parecer}</span>
-                    </td>
-                </tr>
-            `).join('');
-
-            localStorage.setItem('peniel_boletim_fim_ano_resumo', JSON.stringify({
-                atualizadoEm: new Date().toISOString(),
-                turma: filtroTurma,
-                materia: filtroMateria,
-                alunos: consolidado
-            }));
         }
 
         function salvarConsolidadoBoletim() {
             localStorage.setItem('peniel_banco_notas', JSON.stringify(bancoNotas));
+            atualizarCicloEscolarNaTela();
             persistirNotasNoSupabase();
             renderTabelaBoletim();
-            notificar('✅ Boletim consolidado, pontuação e parecer de fim de ano salvos!');
+            notificar('✅ Boletim consolidado, ciclo escolar e parecer de fim de ano salvos!');
         }
 
         function salvarTodasNotas() {
             localStorage.setItem('peniel_banco_notas', JSON.stringify(bancoNotas));
+            atualizarCicloEscolarNaTela();
             persistirNotasNoSupabase();
-            notificar('✅ Diário salvo com sucesso no banco de dados!');
+            notificar('✅ Diário e ciclo escolar salvos com sucesso!');
         }
 
-        // --- RELATÓRIO ANUAL COMPLETO DO ALUNO (PDF) ---
+        // --- BOLETIM DO ALUNO ---
         function popularSeletorRelatorioAnual() {
-            const select = document.getElementById('selectAlunoRelatorioAnual');
+            const select = document.getElementById('seletorAlunoRelatorio');
             if (!select) return;
-
-            const alunosCache = JSON.parse(localStorage.getItem('peniel_fichas_alunos_cache') || '[]');
-            const mapaAlunos = new Map();
+            const paramsUrl = new URLSearchParams(window.location.search);
+            const raUrl = paramsUrl.get('ra');
+            const valorPrevio = raUrl || select.value;
+            select.innerHTML = '';
 
             baseAlunos.forEach(a => {
-                mapaAlunos.set(String(a.ra), { ...a });
-            });
-            if (Array.isArray(alunosCache)) {
-                alunosCache.forEach(a => {
-                    if (a && a.ra) {
-                        const existente = mapaAlunos.get(String(a.ra)) || {};
-                        mapaAlunos.set(String(a.ra), { ...existente, ...a });
-                    }
-                });
-            }
-
-            const lista = Array.from(mapaAlunos.values()).sort((a, b) =>
-                (a.nome || '').localeCompare(b.nome || '')
-            );
-
-            const valorAtual = select.value;
-            select.innerHTML = '<option value="">Selecione um aluno...</option>';
-
-            lista.forEach(aluno => {
                 const opt = document.createElement('option');
-                opt.value = String(aluno.ra);
-                opt.textContent = `${aluno.nome} — Turma ${aluno.turma || '—'} (RA: ${aluno.ra})`;
+                opt.value = a.ra;
+                opt.textContent = `${a.nome} (${a.turma} • RA ${a.ra})`;
                 select.appendChild(opt);
             });
 
-            if (valorAtual && Array.from(select.options).some(o => o.value === valorAtual)) {
-                select.value = valorAtual;
-            } else {
-                const naTurma = lista.find(a => String(a.turma) === String(filtroTurma));
-                if (naTurma) select.value = String(naTurma.ra);
+            if (valorPrevio && baseAlunos.some(a => String(a.ra) === String(valorPrevio))) {
+                select.value = valorPrevio;
+            } else if (baseAlunos.length > 0) {
+                select.value = baseAlunos[0].ra;
             }
         }
 
-        function escaparHtmlRelatorio(texto) {
-            return String(texto ?? '')
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;');
-        }
+        function renderTabelaBoletim() {
+            const select = document.getElementById('seletorAlunoRelatorio');
+            const tbody = document.getElementById('tabela-boletim-corpo');
+            if (!select || !tbody) return;
 
-        async function buscarDadosCompletosAlunoSupabase(ra, unidade, anoLetivo) {
-            let ficha = null;
-            let notasSupabase = [];
-            let diariosSupabase = [];
-
-            try {
-                const fichas = await supabaseFetchNotas(
-                    `fichas_alunos?ra=eq.${encodeURIComponent(ra)}&select=*`,
-                    { prefer: 'return=representation' }
-                );
-                if (Array.isArray(fichas) && fichas.length > 0) {
-                    ficha = fichas[0];
-                }
-            } catch (_) {}
-
-            try {
-                const rowsNotas = await supabaseFetchNotas(
-                    `notas_avaliacoes?aluno_ra=eq.${encodeURIComponent(ra)}&ano_letivo=eq.${encodeURIComponent(anoLetivo)}&select=*`,
-                    { prefer: 'return=representation' }
-                );
-                if (Array.isArray(rowsNotas)) {
-                    notasSupabase = rowsNotas;
-                }
-            } catch (_) {}
-
-            try {
-                const rowsDiarios = await supabaseFetchNotas(
-                    `diario_aulas?unidade=eq.${encodeURIComponent(unidade)}&select=*&order=data_aula.asc`,
-                    { prefer: 'return=representation' }
-                );
-                if (Array.isArray(rowsDiarios)) {
-                    diariosSupabase = rowsDiarios;
-                }
-            } catch (_) {}
-
-            return { ficha, notasSupabase, diariosSupabase };
-        }
-
-        async function gerarRelatorioAnualPdfAluno() {
-            const select = document.getElementById('selectAlunoRelatorioAnual');
-            const ra = select ? select.value : '';
-            if (!ra) {
-                notificar('⚠️ Selecione um aluno para gerar o relatório anual.', 'alerta');
+            const ra = select.value;
+            const aluno = baseAlunos.find(a => String(a.ra) === String(ra));
+            if (!aluno) {
+                tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-400">Selecione um aluno para visualizar o boletim.</td></tr>`;
                 return;
             }
 
-            const unidade = localStorage.getItem('peniel_unidade') || 'Matriz';
-            const anoLetivo = localStorage.getItem('peniel_ano_letivo') || '2027';
+            document.getElementById('boletim-nome-cabecalho').innerText = aluno.nome;
+            document.getElementById('boletim-turma-cabecalho').innerText = aluno.turma;
+            document.getElementById('boletim-ra-cabecalho').innerText = aluno.ra;
 
-            const alunoBase = baseAlunos.find(a => String(a.ra) === String(ra)) || {};
-            const { ficha, notasSupabase, diariosSupabase } = await buscarDadosCompletosAlunoSupabase(ra, unidade, anoLetivo);
+            const parecerEl = document.getElementById('parecer-fim-ano');
+            if (parecerEl && document.activeElement !== parecerEl) {
+                const parecerSalvo = bancoNotas[`parecer_${aluno.ra}`];
+                parecerEl.value = typeof parecerSalvo === 'string' ? parecerSalvo : (parecerSalvo?.texto || '');
+            }
 
-            const aluno = { ...alunoBase, ...(ficha || {}) };
-            const nomeAluno = aluno.nome || 'Aluno(a)';
-            const turmaAluno = aluno.turma || filtroTurma || '—';
-            const faltasBase = Number(aluno.faltas ?? alunoBase.faltas ?? 0);
+            const materias = ['Matemática', 'Português', 'Ciências', 'História', 'Geografia'];
+            const trimestres = ['T1', 'T2', 'T3', 'T4'];
+            tbody.innerHTML = '';
 
-            const mapaNotas = {};
+            let somaMedias = 0;
+            let countMedias = 0;
 
-            Object.entries(bancoNotas).forEach(([chave, reg]) => {
-                if (!chave.startsWith(`${ra}_`)) return;
-                const partes = chave.split('_');
-                if (partes.length < 3) return;
-                const tri = partes[partes.length - 1].toUpperCase();
-                const disc = partes.slice(1, partes.length - 1).join('_');
-                if (!['T1', 'T2', 'T3', 'T4'].includes(tri)) return;
-                const valor = (reg && reg.nota !== '' && reg.nota !== null && reg.nota !== undefined)
-                    ? Number(reg.nota)
-                    : null;
-                if (valor === null || Number.isNaN(valor)) return;
+            materias.forEach(mat => {
+                const notasTri = trimestres.map(t => {
+                    const raw = lerNotaTrimestre(aluno.ra, mat, t);
+                    const num = raw !== '' && raw !== null && raw !== undefined && !isNaN(parseFloat(raw)) ? parseFloat(raw) : null;
+                    return num;
+                });
 
-                if (!mapaNotas[disc]) {
-                    mapaNotas[disc] = { T1: null, T2: null, T3: null, T4: null, faltas: faltasBase };
-                }
-                mapaNotas[disc][tri] = valor;
-            });
+                const validas = notasTri.filter(n => n !== null);
+                const pontuacao = validas.length > 0 ? validas.reduce((a, b) => a + b, 0).toFixed(1) : '--';
+                const mediaAnual = validas.length > 0 ? (validas.reduce((a, b) => a + b, 0) / validas.length).toFixed(1) : '--';
 
-            notasSupabase.forEach(item => {
-                const disc = item.disciplina || 'Geral';
-                const tri = String(item.periodo || '').toUpperCase();
-                if (!mapaNotas[disc]) {
-                    mapaNotas[disc] = { T1: null, T2: null, T3: null, T4: null, faltas: faltasBase };
-                }
-                if (['T1', 'T2', 'T3', 'T4'].includes(tri)) {
-                    const v = item.nota_final !== null && item.nota_final !== undefined
-                        ? Number(item.nota_final)
-                        : (item.n1 !== null && item.n1 !== undefined ? Number(item.n1) : null);
-                    if (v !== null && !Number.isNaN(v)) {
-                        mapaNotas[disc][tri] = v;
-                    }
-                }
-                if (typeof item.faltas === 'number') {
-                    mapaNotas[disc].faltas = Math.max(mapaNotas[disc].faltas, item.faltas);
-                }
-            });
-
-            const materiasPadrao = ['Matemática', 'Português', 'Ciências', 'História', 'Geografia'];
-            materiasPadrao.forEach(mat => {
-                if (!mapaNotas[mat]) {
-                    mapaNotas[mat] = { T1: null, T2: null, T3: null, T4: null, faltas: faltasBase };
-                }
-            });
-
-            const disciplinasOrdenadas = Object.keys(mapaNotas).sort((a, b) => {
-                const idxA = materiasPadrao.indexOf(a);
-                const idxB = materiasPadrao.indexOf(b);
-                if (idxA !== -1 && idxB !== -1) return idxA - idxB;
-                if (idxA !== -1) return -1;
-                if (idxB !== -1) return 1;
-                return a.localeCompare(b);
-            });
-
-            const justCal = obterJustificativasCalendarioPorAluno();
-            const justExtrasAluno = justCal[nomeAluno.toLowerCase()] || [];
-
-            const justDiarioLocal = Object.entries(bancoJustificativas)
-                .filter(([k, txt]) => k.startsWith(`${ra}_`) && String(txt).trim())
-                .map(([k, txt]) => ({
-                    materia: k.split('_')[1] || 'Geral',
-                    texto: String(txt).trim()
-                }));
-
-            const registrosDiario = [];
-            const idsDiarioVistos = new Set();
-
-            diariosSupabase.forEach(aula => {
-                if (aula.turma && String(aula.turma) !== String(turmaAluno)) return;
-                const chamada = aula.chamada_json || {};
-                const justs = aula.justificativas_json || {};
-                const statusAluno = chamada[ra];
-                const justTexto = justs[ra] || '';
-
-                if (statusAluno || justTexto || aula.conteudo || aula.tarefa) {
-                    const chaveUnica = aula.id || `${aula.data_aula}_${aula.materia}_${aula.trimestre}`;
-                    idsDiarioVistos.add(chaveUnica);
-                    registrosDiario.push({
-                        data: aula.data_aula || '—',
-                        materia: aula.materia || '—',
-                        trimestre: aula.trimestre || '—',
-                        status: statusAluno || (justTexto ? 'J' : 'P'),
-                        justificativa: justTexto,
-                        conteudo: aula.conteudo || '',
-                        tarefa: aula.tarefa || ''
-                    });
-                }
-            });
-
-            Object.entries(bancoDiarioAulas).forEach(([chave, aula]) => {
-                if (!aula || String(aula.turma) !== String(turmaAluno)) return;
-                const idComp = `${unidade}_${chave}`;
-                if (idsDiarioVistos.has(idComp) || idsDiarioVistos.has(chave)) return;
-
-                const chamadaSalvaAula = bancoChamadaSalva[chave] || {};
-                const statusAluno = chamadaSalvaAula[ra];
-                const justLocalMatch = justDiarioLocal.find(j => j.materia === aula.materia);
-                const justTexto = justLocalMatch ? justLocalMatch.texto : '';
-
-                if (statusAluno || justTexto || aula.conteudo || aula.tarefa) {
-                    registrosDiario.push({
-                        data: aula.dataAula || '—',
-                        materia: aula.materia || '—',
-                        trimestre: aula.trimestre || '—',
-                        status: statusAluno || (justTexto ? 'J' : 'P'),
-                        justificativa: justTexto,
-                        conteudo: aula.conteudo || '',
-                        tarefa: aula.tarefa || ''
-                    });
-                }
-            });
-
-            registrosDiario.sort((a, b) => String(a.data).localeCompare(String(b.data)));
-
-            const totalJustificativas = justDiarioLocal.length + justExtrasAluno.length +
-                registrosDiario.filter(r => r.status === 'J' || (r.justificativa && r.justificativa.trim() !== '')).length;
-
-            let somaMediasDisciplinas = 0;
-            let qtdDisciplinasComNota = 0;
-            let maiorFaltaDisciplina = faltasBase;
-
-            const linhasNotasHtml = disciplinasOrdenadas.map(disc => {
-                const d = mapaNotas[disc];
-                const notasValidas = [d.T1, d.T2, d.T3, d.T4].filter(v => v !== null && !Number.isNaN(v));
-                const somaTri = [d.T1, d.T2, d.T3, d.T4].reduce((acc, v) => acc + (v !== null && !Number.isNaN(v) ? v : 0), 0);
-                const mediaAnual = Number((somaTri / 4).toFixed(1));
-                const faltasDisc = Number(d.faltas ?? faltasBase);
-                maiorFaltaDisciplina = Math.max(maiorFaltaDisciplina, faltasDisc);
-                const faltasEfetivas = Math.max(0, faltasDisc - totalJustificativas);
-
-                if (notasValidas.length > 0) {
-                    somaMediasDisciplinas += mediaAnual;
-                    qtdDisciplinasComNota += 1;
+                let situacaoBadge = '<span class="bg-slate-100 text-slate-500 px-2.5 py-1 rounded text-[10px] font-bold">Em Andamento</span>';
+                if (mediaAnual !== '--') {
+                    const mNum = parseFloat(mediaAnual);
+                    somaMedias += mNum;
+                    countMedias++;
+                    situacaoBadge = mNum >= 7.0
+                        ? '<span class="bg-green-100 text-green-700 px-2.5 py-1 rounded text-[10px] font-bold">Aprovado</span>'
+                        : '<span class="bg-red-100 text-red-700 px-2.5 py-1 rounded text-[10px] font-bold">Recuperação</span>';
                 }
 
-                let situacao = 'Em Andamento';
-                if (notasValidas.length > 0) {
-                    situacao = (mediaAnual >= 7.0 && faltasEfetivas <= 10)
-                        ? 'Aprovado'
-                        : 'Recuperação / Conselho';
-                }
-
-                const fmtNota = v => (v !== null && !Number.isNaN(v)) ? Number(v).toFixed(1) : '—';
-
-                return `
-                    <tr>
-                        <td><strong>${escaparHtmlRelatorio(disc)}</strong></td>
-                        <td style="text-align:center;">${fmtNota(d.T1)}</td>
-                        <td style="text-align:center;">${fmtNota(d.T2)}</td>
-                        <td style="text-align:center;">${fmtNota(d.T3)}</td>
-                        <td style="text-align:center;">${fmtNota(d.T4)}</td>
-                        <td style="text-align:center;"><strong>${mediaAnual.toFixed(1)}</strong></td>
-                        <td style="text-align:center;">${faltasDisc}</td>
-                        <td style="text-align:center;">${escaparHtmlRelatorio(situacao)}</td>
-                    </tr>
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 transition';
+                tr.innerHTML = `
+                    <td class="px-4 py-3 font-bold text-slate-800">${mat}</td>
+                    ${notasTri.map(n => `<td class="px-3 py-3 text-center font-mono ${n !== null && n < 7.0 ? 'text-red-600 font-bold' : 'text-slate-700'}">${n !== null ? n.toFixed(1) : '--'}</td>`).join('')}
+                    <td class="px-3 py-3 text-center font-bold text-slate-700">${pontuacao}</td>
+                    <td class="px-4 py-3 text-center font-black text-marinho">${mediaAnual}</td>
+                    <td class="px-4 py-3 text-center">${situacaoBadge}</td>
                 `;
-            }).join('');
+                tbody.appendChild(tr);
+            });
 
-            const mediaGeral = qtdDisciplinasComNota > 0
-                ? (somaMediasDisciplinas / qtdDisciplinasComNota).toFixed(1)
-                : '0.0';
+            document.getElementById('boletim-media-geral').innerText = countMedias > 0 ? (somaMedias / countMedias).toFixed(1) : '--';
+            document.getElementById('boletim-frequencia-resumo').innerText = `${aluno.faltas || 0} falta(s) registrada(s) no período`;
+        }
 
-            const faltasEfetivasGeral = Math.max(0, maiorFaltaDisciplina - totalJustificativas);
+        function exportarBoletimPDF() {
+            const area = document.getElementById('area-impressao-boletim');
+            const nomeAluno = document.getElementById('boletim-nome-cabecalho').innerText || 'aluno';
+            if (!area) return;
 
-            let parecerFinal = '';
-            if (qtdDisciplinasComNota === 0) {
-                parecerFinal = `O(A) estudante ${nomeAluno} (RA: ${ra}), matriculado(a) na turma ${turmaAluno}, possui registro de acompanhamento anual para o ano letivo de ${anoLetivo}. Ainda não há avaliações lançadas no boletim até o momento.`;
-            } else if (Number(mediaGeral) >= 7.0 && faltasEfetivasGeral <= 10) {
-                parecerFinal = `O(A) estudante ${nomeAluno} (RA: ${ra}), da turma ${turmaAluno}, apresenta desempenho anual satisfatório no ano letivo de ${anoLetivo}, com média geral ${mediaGeral} e frequência regular (${faltasEfetivasGeral} falta(s) não justificada(s) e ${totalJustificativas} justificativa(s) registrada(s)).`;
+            const opt = {
+                margin: 0.4,
+                filename: `boletim-${nomeAluno.toLowerCase().replace(/\s+/g, '-')}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+            };
+
+            if (typeof html2pdf !== 'undefined') {
+                html2pdf().set(opt).from(area).save();
             } else {
-                parecerFinal = `O(A) estudante ${nomeAluno} (RA: ${ra}), da turma ${turmaAluno}, encerra o acompanhamento de ${anoLetivo} com média geral ${mediaGeral} e ${faltasEfetivasGeral} falta(s) não justificada(s) (${totalJustificativas} justificativa(s) registrada(s)), requerendo acompanhamento pedagógico / conselho de classe conforme regimento escolar.`;
+                window.print();
             }
-
-            const listaJustificativasTexto = [
-                ...justDiarioLocal.map(j => `${j.materia}: ${j.texto}`),
-                ...justExtrasAluno
-            ];
-
-            const linhasDiarioHtml = registrosDiario.length
-                ? registrosDiario.map(r => {
-                    const descAula = [r.conteudo, r.tarefa ? `Tarefa: ${r.tarefa}` : ''].filter(Boolean).join(' • ') || '—';
-                    return `
-                        <tr>
-                            <td>${escaparHtmlRelatorio(r.data)}</td>
-                            <td>${escaparHtmlRelatorio(r.materia)} (${escaparHtmlRelatorio(r.trimestre)})</td>
-                            <td style="text-align:center;"><strong>${escaparHtmlRelatorio(r.status)}</strong></td>
-                            <td>${escaparHtmlRelatorio(r.justificativa || '—')}</td>
-                            <td>${escaparHtmlRelatorio(descAula)}</td>
-                        </tr>
-                    `;
-                }).join('')
-                : `<tr><td colspan="5" style="text-align:center;color:#64748b;">Nenhum registro de aula ou chamada encontrado para este aluno.</td></tr>`;
-
-            const htmlRelatorio = `<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8" />
-    <title>Relatório Anual - ${escaparHtmlRelatorio(nomeAluno)}</title>
-    <style>
-        body { font-family: Arial, Helvetica, sans-serif; color: #0f172a; margin: 28px; line-height: 1.45; }
-        .topo { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #003057; padding-bottom: 12px; margin-bottom: 18px; }
-        .topo h1 { margin: 0; font-size: 20px; color: #003057; }
-        .topo p { margin: 2px 0; font-size: 12px; color: #475569; }
-        h2 { font-size: 14px; color: #003057; border-left: 4px solid #E85D04; padding-left: 8px; margin: 20px 0 10px; }
-        .grid-info { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 18px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; font-size: 12.5px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; }
-        th, td { border: 1px solid #cbd5e1; padding: 7px 8px; }
-        th { background: #eff6ff; color: #003057; text-align: left; }
-        .resumo-freq { font-size: 12.5px; margin: 6px 0 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px; }
-        .parecer { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; font-size: 12.5px; }
-        .assinaturas { display: flex; justify-content: space-between; gap: 32px; margin-top: 44px; font-size: 12px; text-align: center; }
-        .assinaturas div { flex: 1; border-top: 1px solid #64748b; padding-top: 6px; }
-        @media print {
-            body { margin: 14px; }
-        }
-    </style>
-</head>
-<body>
-    <div class="topo">
-        <div>
-            <h1>RELATÓRIO ANUAL DO ALUNO</h1>
-            <p>Peniel Christian School — Unidade: ${escaparHtmlRelatorio(unidade)} | Ano Letivo: ${escaparHtmlRelatorio(anoLetivo)}</p>
-        </div>
-        <div style="text-align:right;">
-            <p><strong>RA:</strong> ${escaparHtmlRelatorio(ra)}</p>
-            <p><strong>Emissão:</strong> ${new Date().toLocaleDateString('pt-BR')}</p>
-        </div>
-    </div>
-
-    <h2>1. Identificação do Aluno e Responsáveis</h2>
-    <div class="grid-info">
-        <div><strong>Aluno(a):</strong> ${escaparHtmlRelatorio(nomeAluno)}</div>
-        <div><strong>Turma:</strong> ${escaparHtmlRelatorio(turmaAluno)}</div>
-        <div><strong>Nascimento:</strong> ${escaparHtmlRelatorio(aluno.nasc || '—')}</div>
-        <div><strong>Situação Cadastral:</strong> ${escaparHtmlRelatorio(aluno.status || 'Ativo')}</div>
-        <div><strong>Responsável / Pai:</strong> ${escaparHtmlRelatorio(aluno.pai || '—')} ${aluno.pai_tel ? `(${escaparHtmlRelatorio(aluno.pai_tel)})` : ''}</div>
-        <div><strong>Mãe:</strong> ${escaparHtmlRelatorio(aluno.mae || '—')} ${aluno.mae_tel ? `(${escaparHtmlRelatorio(aluno.mae_tel)})` : ''}</div>
-        <div><strong>Tipo Sanguíneo:</strong> ${escaparHtmlRelatorio(aluno.sangue || '—')}</div>
-        <div><strong>Alergias / Medicação:</strong> ${escaparHtmlRelatorio(aluno.alergia || 'Nenhuma')} / ${escaparHtmlRelatorio(aluno.med || 'Não utiliza')}</div>
-    </div>
-
-    <h2>2. Desempenho Acadêmico Anual (T1 a T4)</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Disciplina</th>
-                <th style="text-align:center;">T1</th>
-                <th style="text-align:center;">T2</th>
-                <th style="text-align:center;">T3</th>
-                <th style="text-align:center;">T4</th>
-                <th style="text-align:center;">Média Anual</th>
-                <th style="text-align:center;">Faltas</th>
-                <th style="text-align:center;">Situação</th>
-            </tr>
-        </thead>
-        <tbody>${linhasNotasHtml}</tbody>
-    </table>
-
-    <h2>3. Frequência, Justificativas e Diário de Aulas</h2>
-    <div class="resumo-freq">
-        <strong>Faltas Registradas:</strong> ${maiorFaltaDisciplina} &nbsp;|&nbsp;
-        <strong>Justificativas Registradas:</strong> ${totalJustificativas} &nbsp;|&nbsp;
-        <strong>Média Geral das Disciplinas:</strong> ${mediaGeral}
-        ${listaJustificativasTexto.length ? `<div style="margin-top:6px;color:#334155;"><strong>Observações/Justificativas:</strong> ${escaparHtmlRelatorio(listaJustificativasTexto.join(' | '))}</div>` : ''}
-    </div>
-    <table>
-        <thead>
-            <tr>
-                <th>Data</th>
-                <th>Disciplina / Período</th>
-                <th style="text-align:center;">Registro</th>
-                <th>Justificativa</th>
-                <th>Conteúdo / Tarefa</th>
-            </tr>
-        </thead>
-        <tbody>${linhasDiarioHtml}</tbody>
-    </table>
-
-    <h2>4. Parecer Pedagógico Anual</h2>
-    <div class="parecer">${escaparHtmlRelatorio(parecerFinal)}</div>
-
-    <div class="assinaturas">
-        <div>Direção / Coordenação Pedagógica</div>
-        <div>Responsável Legal</div>
-    </div>
-
-    <script>
-        window.onload = function () {
-            window.print();
-        };
-    <\/script>
-</body>
-</html>`;
-
-            const janelaRelatorio = window.open('', '_blank', 'width=920,height=720');
-            if (!janelaRelatorio) {
-                notificar('⚠️ Permita pop-ups no navegador para abrir e salvar o PDF.', 'alerta');
-                return;
-            }
-            janelaRelatorio.document.open();
-            janelaRelatorio.document.write(htmlRelatorio);
-            janelaRelatorio.document.close();
         }
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            const dataAulaInput = document.getElementById('dataAula');
-            if (dataAulaInput) {
-                const hoje = new Date().toISOString().split('T')[0];
-                dataAulaInput.value = hoje;
+        // --- INICIALIZAÇÃO ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const corSalva = localStorage.getItem('peniel_cor_sessao') || '#003057';
+            const menuLat = document.getElementById('menu-lateral');
+            if (menuLat) menuLat.style.backgroundColor = corSalva;
+            const unidadeSalva = localStorage.getItem('peniel_unidade') || 'Matriz';
+            const unidEl = document.querySelector('#menu-lateral span.text-blue-300');
+            if (unidEl) unidEl.innerText = 'Unidade ' + unidadeSalva;
+
+            const dataInput = document.getElementById('data-chamada');
+            if (dataInput && !dataInput.value) {
+                dataInput.value = new Date().toISOString().split('T')[0];
             }
+
             montarListaTurmasEAlunos();
-            atualizarFiltrosGlobais();
-            await sincronizarTurmasEAlunosTempoReal();
-            atualizarFiltrosGlobais();
+            atualizarCicloEscolarNaTela();
+            carregarEstadoChamadaDia();
+            renderAmbasTabelas();
+            sincronizarTurmasEAlunosTempoReal();
 
-            window.addEventListener('peniel:calendario-atualizado', () => {
+            window.addEventListener('peniel:ciclo-aluno-atualizado', () => {
                 montarListaTurmasEAlunos();
-                renderTabelaBoletim();
+                carregarEstadoChamadaDia();
+                renderAmbasTabelas();
             });
             window.addEventListener('storage', (e) => {
                 if (
                     e.key === 'peniel_fichas_alunos_cache' ||
+                    e.key === 'peniel_banco_fichas_detalhadas' ||
                     e.key === 'peniel_salas_aulas_cache' ||
-                    e.key === 'peniel_matriculas_cache'
+                    e.key === 'peniel_matriculas_cache' ||
+                    e.key === 'peniel_banco_notas' ||
+                    e.key === 'peniel_ciclo_escolar_alunos'
                 ) {
+                    bancoNotas = JSON.parse(localStorage.getItem('peniel_banco_notas')) || bancoNotas;
                     montarListaTurmasEAlunos();
+                    carregarEstadoChamadaDia();
                     renderAmbasTabelas();
                 } else if (e.key === 'peniel_sync_dashboard_turmas_calendario') {
                     renderTabelaBoletim();
                 }
             });
         });
-
-    </script>
-
-    <!-- BLOCO GLOBAL DE CONTROLE DO MODO GESTOR MASTER -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('modo_gestor') === '1') { localStorage.setItem('peniel_modo_gestor', 'ativo'); }
-
-            if (localStorage.getItem('peniel_modo_gestor') === 'ativo') {
-                const menuLateral = document.querySelector('aside');
-                if (menuLateral) { menuLateral.remove(); }
-
-                const containerPrincipal = document.querySelector('.flex.h-screen');
-                if (containerPrincipal) { containerPrincipal.classList.remove('overflow-hidden'); }
-
-                const main = document.querySelector('main');
-                if (main && !document.getElementById('barraExecutivaMaster')) {
-                    const barraGestor = document.createElement('div');
-                    barraGestor.id = 'barraExecutivaMaster';
-                    barraGestor.className = 'bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl mb-6 flex flex-col sm:flex-row justify-between items-center border-2 border-blue-500/40 z-50 gap-4';
-                    
-                    barraGestor.innerHTML = `
-                        <div class="flex items-center gap-3 text-xs font-bold text-blue-300">
-                            <span class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></span>
-                            <span>Modo Gestor Master Ativo (Tela Cheia)</span>
-                        </div>
-                        <div class="flex items-center gap-2 w-full sm:w-auto">
-                            <button type="button" onclick="window.location.assign('calendario.html');" class="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer">
-                                &larr; Voltar à Timeline
-                            </button>
-                            <button type="button" onclick="window.location.assign('index.html');" class="flex-1 sm:flex-none bg-slate-700 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer">
-                                🧭 Dashboard
-                            </button>
-                            <button type="button" onclick="sairModoGestorGlobal()" class="flex-1 sm:flex-none bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer">
-                                🔒 Bloquear Painel
-                            </button>
-                        </div>
-                    `;
-                    main.prepend(barraGestor);
-                }
-            }
-        });
-
-        function sairModoGestorGlobal() {
-            if(confirm("Deseja encerrar a sessão Master e bloquear o painel executivo?")) {
-                localStorage.removeItem('peniel_modo_gestor');
-                window.location.href = 'configuracoes.html';
-            }
-        }
-    </script>
-
-    <!-- ======================================================= -->
-    <!-- SCRIPT DO MENU MOBILE (IPHONE / ANDROID) -->
-    <!-- ======================================================= -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const menuLateral = document.querySelector('aside');
-            const header = document.querySelector('header');
-            
-            if (menuLateral && header && !document.getElementById('btnMobile')) {
-                menuLateral.classList.remove('hidden');
-                menuLateral.classList.add(
-                    'fixed', 'left-0', 'top-0', 'h-full', 'z-[100]', 
-                    'transform', '-translate-x-full', 'transition-transform', 'duration-300',
-                    'md:relative', 'md:translate-x-0'
-                );
-
-                const overlay = document.createElement('div');
-                overlay.className = 'fixed inset-0 bg-slate-900/60 z-[90] hidden backdrop-blur-sm md:hidden transition-opacity';
-                document.body.appendChild(overlay);
-
-                const toggleMenu = () => {
-                    const estaFechado = menuLateral.classList.contains('-translate-x-full');
-                    if(estaFechado) {
-                        menuLateral.classList.remove('-translate-x-full');
-                        overlay.classList.remove('hidden');
-                    } else {
-                        menuLateral.classList.add('-translate-x-full');
-                        overlay.classList.add('hidden');
-                    }
-                };
-
-                overlay.onclick = toggleMenu;
-
-                const btnMobile = document.createElement('button');
-                btnMobile.id = 'btnMobile';
-                btnMobile.className = 'md:hidden w-full sm:w-auto bg-marinho text-white px-4 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-md mb-4 sm:mb-0 transition active:scale-95';
-                btnMobile.innerHTML = '☰ Abrir Menu do Sistema';
-                btnMobile.onclick = toggleMenu;
-
-                header.insertBefore(btnMobile, header.firstChild);
-            }
-        });
     </script>
 </body>
 </html>
+Processado e analisado em código
